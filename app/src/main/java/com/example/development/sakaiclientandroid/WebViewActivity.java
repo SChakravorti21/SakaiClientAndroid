@@ -1,7 +1,9 @@
 package com.example.development.sakaiclientandroid;
 
+import android.os.Debug;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
@@ -25,5 +27,8 @@ public class WebViewActivity extends AppCompatActivity {
         loginSettings.setJavaScriptEnabled(true);
 
         loginWebView.loadUrl(CASBaseUrl);
+    }
+    public static void test() {
+        Log.d("test", "test u maggot");
     }
 }
