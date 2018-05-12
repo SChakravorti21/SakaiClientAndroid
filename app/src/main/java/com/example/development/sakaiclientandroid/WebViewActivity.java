@@ -1,25 +1,12 @@
 package com.example.development.sakaiclientandroid;
 
 import android.content.Intent;
-import android.os.Debug;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
-import android.util.Log;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.example.development.sakaiclientandroid.utils.CASWebViewClient;
-import com.franmontiel.persistentcookiejar.PersistentCookieJar;
-import com.franmontiel.persistentcookiejar.cache.SetCookieCache;
-import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor;
-
-import java.net.CookieHandler;
-
-import okhttp3.Cookie;
-import okhttp3.CookieJar;
-import okhttp3.OkHttpClient;
 
 public class WebViewActivity extends AppCompatActivity {
 
