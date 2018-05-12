@@ -11,6 +11,7 @@ import java.net.CookieHandler;
 import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Development on 4/26/18.
@@ -18,17 +19,28 @@ import java.util.ArrayList;
 
 public class CASWebViewClient extends WebViewClient {
 
-    CookieManager cookieManager;
+    public interface SakaiLoadedListener {
+        public void onSakaiMainPageLoaded();
+    }
 
-    ArrayList<String> urls;
+    private final String COOKIE_URL_1;
+    private final String COOKIE_URL_2;
 
-    public CASWebViewClient(CookieSyncManager syncManager) {
+    private SakaiLoadedListener sakaiLoadedListener;
+    private CookieManager cookieManager;
+    private HashMap<String, String> savedCookies;
+
+    public CASWebViewClient(String URL_1, String URL_2, SakaiLoadedListener loadedListener) {
         super();
 
-        urls = new ArrayList<>(5);
+        COOKIE_URL_1 = URL_1;
+        COOKIE_URL_2 = URL_2;
+        sakaiLoadedListener = loadedListener;
+        savedCookies = new HashMap<>();
 
         cookieManager = CookieManager.getInstance();
         cookieManager.setAcceptCookie(true);
+        cookieManager.removeSessionCookie();
     }
 
     @Override
@@ -36,20 +48,27 @@ public class CASWebViewClient extends WebViewClient {
         Log.i("URL", url);
 
         view.loadUrl(url);
-        //return true indicates that the system does not have to handle it
+        //return true indicates that the has handled the request
         return true;
     }
 
     @Override
     public void onPageFinished(WebView view, String url) {
-        String cookies = cookieManager.getCookie(url);
-        Log.i("All cookies", cookies);
-        urls.add(url);
-        cookieManager.setCookie(url, cookies);
+        if(url.equals(COOKIE_URL_1) || url.equals(COOKIE_URL_2)) {
+            String cookies = cookieManager.getCookie(url);
+            Log.d("All cookies for url: " + url, cookies);
+            savedCookies.put(url, cookies);
+            cookieManager.setCookie(url, cookies);
 
-        for(String savedUrl : urls) {
-            String cookie = cookieManager.getCookie(savedUrl);
-            Log.i(savedUrl, cookies);
+            for (String savedUrl : savedCookies.keySet()) {
+                String cookie = cookieManager.getCookie(savedUrl);
+                Log.d("In the Cookie jar: " + savedUrl + " ", cookies);
+                Log.d("In the hashmap: " + savedUrl + " ", savedCookies.get(savedUrl));
+            }
+        }
+
+        if(url.equals(COOKIE_URL_2) && sakaiLoadedListener != null) {
+            sakaiLoadedListener.onSakaiMainPageLoaded();
         }
     }
 }

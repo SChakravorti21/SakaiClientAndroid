@@ -13,4 +13,7 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+
+    <string name="COOKIE_URL_1">https://sakai.rutgers.edu/sakai-login-tool/container</string>
+    <string name="COOKIE_URL_2">https://sakai.rutgers.edu/portal</string>
 </resources>
