@@ -2,6 +2,7 @@ package com.example.development.sakaiclientandroid;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.webkit.CookieSyncManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
@@ -19,7 +20,7 @@ public class WebViewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_web_view);
 
         loginWebView = (WebView)findViewById(R.id.login_web_view);
-        webViewClient = new CASWebViewClient();
+        webViewClient = new CASWebViewClient(CookieSyncManager.getInstance());
         loginWebView.setWebViewClient(webViewClient);
         WebSettings loginSettings = loginWebView.getSettings();
         loginSettings.setJavaScriptEnabled(true);

@@ -1,10 +1,15 @@
 package com.example.development.sakaiclientandroid.utils;
 
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import java.net.CookieHandler;
+import java.net.CookieStore;
+import java.net.HttpCookie;
 import java.util.ArrayList;
 
 /**
@@ -13,13 +18,17 @@ import java.util.ArrayList;
 
 public class CASWebViewClient extends WebViewClient {
 
-    ArrayList<String> cookies;
+    CookieManager cookieManager;
 
-    public CASWebViewClient() {
+    ArrayList<String> urls;
+
+    public CASWebViewClient(CookieSyncManager syncManager) {
         super();
 
-        //There won't be a ton of cookies, so 5 should be enough
-        cookies = new ArrayList<>(5);
+        urls = new ArrayList<>(5);
+
+        cookieManager = CookieManager.getInstance();
+        cookieManager.setAcceptCookie(true);
     }
 
     @Override
@@ -33,9 +42,14 @@ public class CASWebViewClient extends WebViewClient {
 
     @Override
     public void onPageFinished(WebView view, String url) {
-        String cookies = CookieManager.getInstance().getCookie(url);
+        String cookies = cookieManager.getCookie(url);
         Log.i("All cookies", cookies);
+        urls.add(url);
+        cookieManager.setCookie(url, cookies);
 
-        this.cookies.add(cookies);
+        for(String savedUrl : urls) {
+            String cookie = cookieManager.getCookie(savedUrl);
+            Log.i(savedUrl, cookies);
+        }
     }
 }
