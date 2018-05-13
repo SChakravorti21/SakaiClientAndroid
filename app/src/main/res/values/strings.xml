@@ -14,6 +14,8 @@
         completions."
     </string>
 
+    <string name="all_sites">All Sites</string>
+
     <string name="BASE_URL">https://sakai.rutgers.edu/direct/</string>
 
     <string name="COOKIE_URL_1">https://sakai.rutgers.edu/sakai-login-tool/container</string>

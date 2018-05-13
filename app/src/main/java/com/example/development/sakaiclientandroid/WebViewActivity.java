@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
@@ -39,7 +40,8 @@ public class WebViewActivity extends AppCompatActivity {
 
         // Get the WebView from the main view and attach the custom client
         // to it for keeping track of cookies and login completion
-        WebView loginWebView = findViewById(R.id.login_web_view);
+        final WebView loginWebView = findViewById(R.id.login_web_view);
+
         CASWebViewClient webViewClient = new CASWebViewClient(
                 getString(R.string.COOKIE_URL_2),
                 new CASWebViewClient.SakaiLoadedListener() {
@@ -48,10 +50,6 @@ public class WebViewActivity extends AppCompatActivity {
                         // Once the main page loads, we should have all the cookies and
                         // headers necessary to make requests, in addition to all headers
                         SharedPrefsUtil.saveHeaders("Headers", savedHeaders);
-
-
-
-
 
 
                         String BASE_URL = getString(R.string.BASE_URL);
@@ -84,10 +82,10 @@ public class WebViewActivity extends AppCompatActivity {
 
                                 AllSites allSites = response.body();
                                 Log.i("Sites", allSites.toString());
-                                if(allSites.getSiteCollection().size() == 0) {
+                                if (allSites.getSiteCollection().size() == 0) {
                                     Log.i("List size", "no sites");
                                 } else {
-                                    for(SiteCollection site : allSites.getSiteCollection()) {
+                                    for (SiteCollection site : allSites.getSiteCollection()) {
                                         Log.i("Site", site.toString());
                                     }
                                 }
@@ -100,20 +98,12 @@ public class WebViewActivity extends AppCompatActivity {
                         });
 
 
-
-
-
-
-
-
-
-
-
 //                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
 //                        startActivity(intent);
                     }
                 }
         );
+
         loginWebView.setWebViewClient(webViewClient);
 
         //The CAS system requires Javascript for the login to even load

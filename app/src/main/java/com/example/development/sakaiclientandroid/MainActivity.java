@@ -56,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
                 .client(httpClient)
                 .build();
 
-        // Make a test request: Get the list of sites associated with a student
         SakaiService sakaiService = retrofit.create(SakaiService.class);
         Call<AllSites> fetchSitesCall = sakaiService.getAllSites();
         fetchSitesCall.enqueue(new Callback<AllSites>() {
