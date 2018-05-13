@@ -3,6 +3,7 @@ package com.example.development.sakaiclientandroid;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
@@ -19,7 +20,7 @@ public class WebViewActivity extends AppCompatActivity {
 
         // Get the WebView from the main view and attach the custom client
         // to it for keeping track of cookies and login completion
-        WebView loginWebView = findViewById(R.id.login_web_view);
+        final WebView loginWebView = findViewById(R.id.login_web_view);
         CASWebViewClient webViewClient = new CASWebViewClient(
                 getString(R.string.COOKIE_URL_1),
                 getString(R.string.COOKIE_URL_2),
@@ -28,7 +29,9 @@ public class WebViewActivity extends AppCompatActivity {
                     public void onSakaiMainPageLoaded() {
                         // Once the main page loads, we should have all the cookie necessary
                         // to make requests
-                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        Intent intent = new Intent(getApplicationContext(), AllSitesActivity.class);
+
+                        loginWebView.setVisibility(View.GONE);
                         startActivity(intent);
                     }
                 }
