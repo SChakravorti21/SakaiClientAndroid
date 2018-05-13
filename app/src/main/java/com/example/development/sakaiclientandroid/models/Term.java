@@ -38,8 +38,8 @@ public class Term implements Comparable<Term>{
         }
 
         //if reach here, years are same
-        if()
-
+        //TODO
+        return 0;
     }
 
 
