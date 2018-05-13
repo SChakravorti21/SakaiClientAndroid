@@ -22,6 +22,7 @@ public class WebViewActivity extends AppCompatActivity {
 
         loginWebView = (WebView)findViewById(R.id.login_web_view);
         webViewClient = new CASWebViewClient();
+
         loginWebView.setWebViewClient(webViewClient);
         WebSettings loginSettings = loginWebView.getSettings();
         loginSettings.setJavaScriptEnabled(true);
@@ -29,6 +30,6 @@ public class WebViewActivity extends AppCompatActivity {
         loginWebView.loadUrl(CASBaseUrl);
     }
     public static void test() {
-        Log.d("test", "test u maggot");
+        Log.d("test", "test");
     }
 }
