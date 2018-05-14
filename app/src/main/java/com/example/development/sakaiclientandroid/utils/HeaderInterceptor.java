@@ -1,8 +1,6 @@
 package com.example.development.sakaiclientandroid.utils;
 
 import java.io.IOException;
-import java.net.HttpCookie;
-import java.util.List;
 
 import android.content.Context;
 import android.util.Log;
@@ -27,7 +25,7 @@ public class HeaderInterceptor implements Interceptor {
     public HeaderInterceptor(Context ctx, String url) {
         cookieUrl = url;
         context = ctx;
-        cookies = getAndParseCookies();
+        cookies = getCookies();
     }
 
     @Override
@@ -49,32 +47,22 @@ public class HeaderInterceptor implements Interceptor {
         return response;
     }
 
-    private String getAndParseCookies() {
+    private String getCookies() {
         // Since the CookieManager was managed by reference earlier
         // in the WebViewClient, the cookies should remain updated
+        // We only need one set of cookies, the Sakai cookies,
+        // so this method does not need to parse any extra cookies.
         CookieManager cookieManager = CookieManager.getInstance();
         String cookie = cookieManager.getCookie(cookieUrl);
-
-        // IMPORTANT: The cookies from both URLs have significant overlap, so this assures
-        // that cookies with the same name are only included once
         Log.i("Cookie ", cookie);
-
-        // Efficiently construct the list of cookies as name-value pairs
-        StringBuilder sb = new StringBuilder();
-        while(cookie.contains(";")) {
-            List<HttpCookie> parsedList = HttpCookie.parse(cookie);
-            HttpCookie parsed = parsedList.get(0);
-
-            if(!parsed.getName().startsWith("___utm")) {
-                sb.append(parsed.getName()).append("=").append(parsed.getValue()).append("; ");
-            }
-
-            cookie = cookie.substring(cookie.indexOf(";") + 1);
-        }
-
-        return sb.toString().substring(0, sb.length() - 2);
+        return cookie;
     }
 
+    /**
+     * Given a Request object, logs all headers attached to it. Used
+     * solely for debugging purposes.
+     * @param request The Request object to analyze
+     */
     private void logHeaders(Request request) {
         Log.i("Intercepted request", "logging headers");
         Headers allHeaders = request.headers();
