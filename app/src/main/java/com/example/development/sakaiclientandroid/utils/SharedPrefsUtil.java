@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import okhttp3.Headers;
@@ -42,11 +41,34 @@ public class SharedPrefsUtil {
         Map<String, ?> allEntries = prefs.getAll();
         for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
             String key = entry.getKey();
+            String value = (String)entry.getValue();
+
             if(!key.contains("cookie") || !key.contains("cnection")) {
-                Log.i("Adding header ~ " + entry.getKey(), entry.getValue().toString());
-                builder.addHeader(entry.getKey(), entry.getValue().toString());
+                key = toCapitalCase(key);
+                Log.i("Adding header ~ " + key, value);
+                builder.addHeader(key, value);
             }
         }
+    }
+
+    private static String toCapitalCase(String str) {
+        StringBuilder sb = new StringBuilder();
+        boolean capitalize = true;
+
+        for(int i = 0; i < str.length(); i++) {
+            char character = str.charAt(i);
+            if(capitalize) {
+                sb.append(("" + character).toUpperCase());
+                capitalize = false;
+            } else {
+                if(character == '-')
+                    capitalize = true;
+
+                sb.append(character);
+            }
+        }
+
+        return sb.toString();
     }
 
 }

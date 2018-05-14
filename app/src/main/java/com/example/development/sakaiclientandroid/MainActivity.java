@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         SakaiService sakaiService = retrofit.create(SakaiService.class);
-        Call<AllSites> fetchSitesCall = sakaiService.getAllSites();
+        Call<AllSites> fetchSitesCall = sakaiService.getAllSites(interceptor.getAndParseCookies());
         fetchSitesCall.enqueue(new Callback<AllSites>() {
             @Override
             public void onResponse(Call<AllSites> call, Response<AllSites> response) {

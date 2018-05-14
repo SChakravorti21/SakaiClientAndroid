@@ -29,8 +29,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class WebViewActivity extends AppCompatActivity {
 
-    private final String CASBaseUrl = "https://cas.rutgers.edu/login?service=https%3A%2F%2Fsakai.rutgers.edu%2Fsakai-login-tool%2Fcontainer";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,28 +50,28 @@ public class WebViewActivity extends AppCompatActivity {
                         SharedPrefsUtil.saveHeaders("Headers", savedHeaders);
 
 
-                        String BASE_URL = getString(R.string.BASE_URL);
-                        String COOKIE_URL_1 = getString(R.string.COOKIE_URL_1);
-                        String COOKIE_URL_2 = getString(R.string.COOKIE_URL_2);
-                        String COOKIE_URL_3 = getString(R.string.COOKIE_URL_3);
+                        // MAKING A TEST REQUEST
+                        HeaderInterceptor interceptor = new HeaderInterceptor(
+                                getString(R.string.COOKIE_URL_1),
+                                getString(R.string.COOKIE_URL_2),
+                                getString(R.string.COOKIE_URL_3));
 
-                        HeaderInterceptor interceptor = new HeaderInterceptor(COOKIE_URL_1,
-                                COOKIE_URL_2, COOKIE_URL_3);
                         OkHttpClient httpClient = new OkHttpClient.Builder()
                                 .addInterceptor(interceptor)
                                 .build();
 
                         // The Retrofit instance allows us to construct our own services
                         // that will make network requests
+                        String BASE_URL = getString(R.string.BASE_URL);
                         Retrofit retrofit = new Retrofit.Builder()
                                 .baseUrl(BASE_URL)
                                 .addConverterFactory(GsonConverterFactory.create())
-                                .client(httpClient)
+                                //.client(httpClient)
                                 .build();
 
                         // Make a test request: Get the list of sites associated with a student
                         SakaiService sakaiService = retrofit.create(SakaiService.class);
-                        Call<AllSites> fetchSitesCall = sakaiService.getAllSites();
+                        Call<AllSites> fetchSitesCall = sakaiService.getAllSites(interceptor.getAndParseCookies());
                         fetchSitesCall.enqueue(new Callback<AllSites>() {
                             @Override
                             public void onResponse(Call<AllSites> call, Response<AllSites> response) {
@@ -94,16 +92,15 @@ public class WebViewActivity extends AppCompatActivity {
                             @Override
                             public void onFailure(Call<AllSites> call, Throwable t) {
                                 Log.i("Response", "failure");
+                                Log.e("Traceback", t.getMessage());
                             }
                         });
 
-
-//                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-//                        startActivity(intent);
+                        // Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        // startActivity(intent);
                     }
                 }
         );
-
         loginWebView.setWebViewClient(webViewClient);
 
         //The CAS system requires Javascript for the login to even load
@@ -111,6 +108,6 @@ public class WebViewActivity extends AppCompatActivity {
         loginSettings.setJavaScriptEnabled(true);
 
         // Load the login page once all configurations are complete
-        loginWebView.loadUrl(CASBaseUrl);
+        loginWebView.loadUrl(getString(R.string.CAS_BASE_URL));
     }
 }

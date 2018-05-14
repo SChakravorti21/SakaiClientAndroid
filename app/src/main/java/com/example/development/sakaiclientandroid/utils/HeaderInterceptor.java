@@ -51,7 +51,7 @@ public class HeaderInterceptor implements Interceptor {
         Request.Builder builder = request.newBuilder()
                 .addHeader("Cookie", cookies);
         // Add headers that tell Sakai which session to use
-        SharedPrefsUtil.applyHeaders("Headers", builder);
+        //SharedPrefsUtil.applyHeaders("Headers", builder);
 
         // Add the necessary cookies to the header for Sakai to acknowledge
         // the request
@@ -62,11 +62,7 @@ public class HeaderInterceptor implements Interceptor {
         return response;
     }
 
-    public String getParsedCookies() {
-        return cookies;
-    }
-
-    private String getAndParseCookies() {
+    public String getAndParseCookies() {
         // Since the CookieManager was managed by reference earlier
         // in the WebViewClient, the cookies should remain updated
         CookieManager cookieManager = CookieManager.getInstance();
@@ -75,9 +71,9 @@ public class HeaderInterceptor implements Interceptor {
         String cookie3 = cookieManager.getCookie(COOKIE_URL_3);
 
         String[] allCookies = new String[]{
+                cookie3,
                 cookie1,
                 cookie2,
-                cookie3
         };
 
         // IMPORTANT: The cookies from both URLs have significant overlap, so this assures

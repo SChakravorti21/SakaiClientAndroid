@@ -13,5 +13,5 @@ import retrofit2.http.Header;
 public interface SakaiService {
 
     @GET("site.json")
-    Call<AllSites> getAllSites();
+    Call<AllSites> getAllSites(@Header("Cookie") String cookies);
 }
