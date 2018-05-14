@@ -1,14 +1,17 @@
 package com.example.development.sakaiclientandroid;
 
+import android.content.Intent;
+import android.provider.SyncStateContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.example.development.sakaiclientandroid.api_models.all_sites.AllSitesAPI;
-import com.example.development.sakaiclientandroid.api_models.all_sites.SiteCollectionAPI;
+import com.example.development.sakaiclientandroid.api_models.all_sites.SiteCollectionObject;
 import com.example.development.sakaiclientandroid.models.SiteCollection;
 import com.example.development.sakaiclientandroid.services.SakaiService;
 import com.example.development.sakaiclientandroid.utils.HeaderInterceptor;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -59,17 +62,23 @@ public class MainActivity extends AppCompatActivity {
 
                 AllSitesAPI allSitesAPI = response.body();
 
-                if(allSitesAPI.getSiteCollectionAPI().size() == 0) {
+                if(allSitesAPI.getSiteCollectionObject().size() == 0) {
                     Log.i("List size", "no sites");
                 } else {
-                    for(SiteCollectionAPI site : allSitesAPI.getSiteCollectionAPI()) {
+                    for(SiteCollectionObject site : allSitesAPI.getSiteCollectionObject()) {
                         Log.i("SiteCollectionAPI", site.toString());
                     }
                 }
 
 
-                ArrayList<SiteCollection> siteCollections = SiteCollection.convertApiToSiteCollection(allSitesAPI.getSiteCollectionAPI());
+                ArrayList<SiteCollection> siteCollections = SiteCollection.convertApiToSiteCollection(allSitesAPI.getSiteCollectionObject());
 
+                Gson gS = new Gson();
+                String serialized = gS.toJson(siteCollections);
+
+                Intent i = new Intent(MainActivity.this, AllSitesActivity.class);
+                i.putExtra("siteCollections", serialized);
+                startActivity(i);
 
             }
 
