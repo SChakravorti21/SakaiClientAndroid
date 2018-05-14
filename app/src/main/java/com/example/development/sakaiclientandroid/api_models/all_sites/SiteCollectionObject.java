@@ -65,7 +65,7 @@ public class SiteCollectionObject implements Serializable
     @SerializedName("owner")
     @Expose
     private String owner;
-    @SerializedName("propsObject")
+    @SerializedName("props")
     @Expose
     private PropsObject propsObject;
     @SerializedName("providerGroupId")
