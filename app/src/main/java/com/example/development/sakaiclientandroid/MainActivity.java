@@ -2,11 +2,10 @@ package com.example.development.sakaiclientandroid;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.test.suitebuilder.annotation.Suppress;
 import android.util.Log;
 
 import com.example.development.sakaiclientandroid.api_models.all_sites.AllSites;
-import com.example.development.sakaiclientandroid.api_models.all_sites.SiteCollection;
+import com.example.development.sakaiclientandroid.api_models.all_sites.SiteCollectionAPI;
 import com.example.development.sakaiclientandroid.services.SakaiService;
 import com.example.development.sakaiclientandroid.utils.HeaderInterceptor;
 
@@ -56,12 +55,12 @@ public class MainActivity extends AppCompatActivity {
                 Log.i("Status Code", "" + response.code());
 
                 AllSites allSites = response.body();
-                Log.i("Sites", allSites.toString());
-                if(allSites.getSiteCollection().size() == 0) {
+
+                if(allSites.getSiteCollectionAPI().size() == 0) {
                     Log.i("List size", "no sites");
                 } else {
-                    for(SiteCollection site : allSites.getSiteCollection()) {
-                        Log.i("Site", site.toString());
+                    for(SiteCollectionAPI site : allSites.getSiteCollectionAPI()) {
+                        Log.i("SiteCollectionAPI", site.toString());
                     }
                 }
             }

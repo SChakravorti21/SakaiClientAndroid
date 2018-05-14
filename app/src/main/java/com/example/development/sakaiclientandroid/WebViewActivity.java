@@ -3,24 +3,13 @@ package com.example.development.sakaiclientandroid;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
-import com.example.development.sakaiclientandroid.api_models.all_sites.AllSites;
-import com.example.development.sakaiclientandroid.api_models.all_sites.SiteCollection;
-import com.example.development.sakaiclientandroid.services.SakaiService;
 import com.example.development.sakaiclientandroid.utils.CASWebViewClient;
-import com.example.development.sakaiclientandroid.utils.HeaderInterceptor;
 import com.example.development.sakaiclientandroid.utils.SharedPrefsUtil;
 
 import okhttp3.Headers;
-import okhttp3.OkHttpClient;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class WebViewActivity extends AppCompatActivity {
 
@@ -38,6 +27,7 @@ public class WebViewActivity extends AppCompatActivity {
                 new CASWebViewClient.SakaiLoadedListener() {
                     @Override
                     public void onSakaiMainPageLoaded(Headers savedHeaders) {
+
                         // Once the main page loads, we should have all the cookies and
                         // headers necessary to make requests. These headers just
                         // need to be saved for the custom OkHttpClients to be able to access.
