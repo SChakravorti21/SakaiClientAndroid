@@ -1,5 +1,7 @@
 package com.example.development.sakaiclientandroid.models;
 
+import android.util.Log;
+
 import com.example.development.sakaiclientandroid.api_models.all_sites.PropsObject;
 import com.example.development.sakaiclientandroid.api_models.all_sites.SiteCollectionObject;
 import com.example.development.sakaiclientandroid.api_models.all_sites.SiteOwnerObject;
@@ -25,7 +27,14 @@ public class SiteCollection {
         this.id = siteCollectionObject.getId();
 
         PropsObject propsObject = siteCollectionObject.getPropsObject();
-        this.term = (propsObject != null) ? new Term(propsObject.getTermEid()) : null;
+
+        if(propsObject != null && propsObject.getTermEid() != null) {
+            this.term = new Term(propsObject.getTermEid());
+        }
+        else {
+            this.term = new Term("9999:0");
+        }
+
 
 
         SiteOwnerObject siteOwnerAPI = siteCollectionObject.getSiteOwnerObject();

@@ -12,6 +12,8 @@ import android.widget.ExpandableListView;
 import android.widget.ListView;
 
 import com.example.development.sakaiclientandroid.models.SiteCollection;
+import com.example.development.sakaiclientandroid.models.SitePage;
+import com.example.development.sakaiclientandroid.models.Term;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -19,6 +21,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -51,7 +54,7 @@ public class AllSitesActivity extends AppCompatActivity {
 
         this.expListView = findViewById(R.id.lvExp);
 
-        fillListData();
+        fillListData(organizeByTerm(siteCollections));
 
         this.listAdapter = new myExpandableListAdapter(this, headersList, childsMap);
         this.expListView.setAdapter(this.listAdapter);
@@ -59,21 +62,67 @@ public class AllSitesActivity extends AppCompatActivity {
 
     }
 
-    private void fillListData() {
+    private ArrayList<ArrayList<SiteCollection>> organizeByTerm(ArrayList<SiteCollection> siteCollections) {
+
+
+        Collections.sort(siteCollections, (o1, o2) -> o1.getTerm().compareTo(o2.getTerm()));
+
+        ArrayList<ArrayList<SiteCollection>> sorted = new ArrayList<ArrayList<SiteCollection>>();
+
+        Term currTerm = siteCollections.get(0).getTerm();
+        ArrayList<SiteCollection> currSites = new ArrayList<>();
+
+        for(SiteCollection siteCollection : siteCollections) {
+
+            //if terms are the same, just add to current array list
+            if(siteCollection.getTerm().compareTo(currTerm) == 0) {
+                currSites.add(siteCollection);
+            }
+            else {
+                sorted.add(currSites);
+
+                currSites = new ArrayList<SiteCollection>();
+                currSites.add(siteCollection);
+
+                currTerm = siteCollection.getTerm();
+            }
+
+        }
+
+        //add the final current sites
+        sorted.add(currSites);
+
+        return sorted;
+    }
+
+    private void fillListData(ArrayList<ArrayList<SiteCollection>> sorted) {
+
         this.headersList = new ArrayList<>();
         this.childsMap = new HashMap<>();
 
-        this.headersList.add("1");
-        this.headersList.add("2");
-        this.headersList.add("3");
 
-        List<String> x = Arrays.asList("1","2","3");
-        this.childsMap.put(this.headersList.get(0), x);
+        for(ArrayList<SiteCollection> sitesPerTerm : sorted) {
+            Term currTerm = sitesPerTerm.get(0).getTerm();
 
-        List<String> y = Arrays.asList("4","5","6");
-        this.childsMap.put(this.headersList.get(1), y);
 
-        List<String> z = Arrays.asList("7","8","9");
-        this.childsMap.put(this.headersList.get(2), z);
+            String termKey = currTerm.getTermString();
+
+            if(!termKey.equals("None")) {
+                termKey += (" " + currTerm.getYear());
+            }
+
+            this.headersList.add(termKey);
+
+
+            List<String> tempChildList = new ArrayList<>();
+
+            for(SiteCollection collection : sitesPerTerm) {
+                tempChildList.add(collection.getTitle());
+            }
+
+
+            this.childsMap.put(termKey, tempChildList);
+        }
+
     }
 }

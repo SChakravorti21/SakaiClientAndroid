@@ -2,6 +2,7 @@ package com.example.development.sakaiclientandroid;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,9 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -23,6 +27,7 @@ public class myExpandableListAdapter extends BaseExpandableListAdapter {
         this.context = c;
         this.headerTitles = headerTitles;
         this.childTitles = childTitles;
+
     }
 
 
@@ -33,7 +38,9 @@ public class myExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getChildrenCount(int groupPos) {
-        return this.childTitles.get(this.headerTitles.get(groupPos)).size();
+
+        List<String> children = this.childTitles.get(this.headerTitles.get(groupPos));
+        return (children == null) ? 0 : children.size();
     }
 
     @Override

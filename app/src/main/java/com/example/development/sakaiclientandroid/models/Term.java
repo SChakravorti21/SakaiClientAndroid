@@ -1,14 +1,19 @@
 package com.example.development.sakaiclientandroid.models;
 
+import android.util.Log;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class Term implements Comparable<Term>{
 
     private static final Map<Integer, String> intToTerm = new HashMap<Integer, String>() {{
+
+        put(0, "None");
+
         put(1, "Spring");
         put(6, "Summer");
-
+        put(7, "Arresty");
         put(9, "Fall");
         put(12, "Winter");
     }};
