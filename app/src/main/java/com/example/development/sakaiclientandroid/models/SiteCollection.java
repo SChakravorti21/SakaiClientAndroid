@@ -1,8 +1,8 @@
 package com.example.development.sakaiclientandroid.models;
 
-import com.example.development.sakaiclientandroid.api_models.all_sites.PropsAPI;
-import com.example.development.sakaiclientandroid.api_models.all_sites.SiteCollectionAPI;
-import com.example.development.sakaiclientandroid.api_models.all_sites.SitePageAPI;
+import com.example.development.sakaiclientandroid.api_models.all_sites.PropsObject;
+import com.example.development.sakaiclientandroid.api_models.all_sites.SiteCollectionObject;
+import com.example.development.sakaiclientandroid.api_models.all_sites.SitePageObject;
 
 import java.util.ArrayList;
 
@@ -15,17 +15,17 @@ public class SiteCollection {
     private ArrayList<SitePage> sitePages;
 
 
-    public SiteCollection(SiteCollectionAPI siteCollectionAPI) {
+    public SiteCollection(SiteCollectionObject siteCollectionObject) {
 
-        this.title = siteCollectionAPI.getTitle();
-        this.description = siteCollectionAPI.getDescription();
-        this.id = siteCollectionAPI.getId();
+        this.title = siteCollectionObject.getTitle();
+        this.description = siteCollectionObject.getDescription();
+        this.id = siteCollectionObject.getId();
 
-        PropsAPI propsApi = siteCollectionAPI.getPropsAPI();
-        this.term = new Term(propsApi.getTermEid());
+        PropsObject propsObject = siteCollectionObject.getPropsObject();
+        this.term = new Term(propsObject.getTermEid());
 
         ArrayList<SitePage> sitePages = new ArrayList<>();
-        for(SitePageAPI page : siteCollectionAPI.getSitePageAPIS()) {
+        for(SitePageObject page : siteCollectionObject.getSitePageObjects()) {
             sitePages.add(new SitePage(page));
         }
 

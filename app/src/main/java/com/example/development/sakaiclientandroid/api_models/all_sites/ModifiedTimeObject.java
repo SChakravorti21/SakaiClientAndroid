@@ -6,7 +6,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-public class CreatedTimeAPI implements Serializable
+public class ModifiedTimeObject implements Serializable
 {
 
     @SerializedName("display")
@@ -15,7 +15,7 @@ public class CreatedTimeAPI implements Serializable
     @SerializedName("time")
     @Expose
     private Long time;
-    private final static long serialVersionUID = 5498651416981472923L;
+    private final static long serialVersionUID = 7282929703156223305L;
 
     public String getDisplay() {
         return display;

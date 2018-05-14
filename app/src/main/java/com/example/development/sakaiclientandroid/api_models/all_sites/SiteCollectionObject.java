@@ -8,7 +8,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-public class SiteCollectionAPI implements Serializable
+public class SiteCollectionObject implements Serializable
 {
 
     @SerializedName("contactEmail")
@@ -20,9 +20,9 @@ public class SiteCollectionAPI implements Serializable
     @SerializedName("createdDate")
     @Expose
     private Long createdDate;
-    @SerializedName("createdTimeAPI")
+    @SerializedName("createdTimeObject")
     @Expose
-    private CreatedTimeAPI createdTimeAPI;
+    private CreatedTimeObject createdTimeObject;
     @SerializedName("description")
     @Expose
     private String description;
@@ -59,15 +59,15 @@ public class SiteCollectionAPI implements Serializable
     @SerializedName("modifiedDate")
     @Expose
     private Long modifiedDate;
-    @SerializedName("modifiedTimeAPI")
+    @SerializedName("modifiedTimeObject")
     @Expose
-    private ModifiedTimeAPI modifiedTimeAPI;
+    private ModifiedTimeObject modifiedTimeObject;
     @SerializedName("owner")
     @Expose
     private String owner;
-    @SerializedName("propsAPI")
+    @SerializedName("propsObject")
     @Expose
-    private PropsAPI propsAPI;
+    private PropsObject propsObject;
     @SerializedName("providerGroupId")
     @Expose
     private String providerGroupId;
@@ -80,12 +80,12 @@ public class SiteCollectionAPI implements Serializable
     @SerializedName("siteGroups")
     @Expose
     private Object siteGroups;
-    @SerializedName("siteOwnerAPI")
+    @SerializedName("siteOwnerObject")
     @Expose
-    private SiteOwnerAPI siteOwnerAPI;
-    @SerializedName("sitePageAPIS")
+    private SiteOwnerObject siteOwnerObject;
+    @SerializedName("sitePageObjects")
     @Expose
-    private List<SitePageAPI> sitePageAPIS = new ArrayList<SitePageAPI>();
+    private List<SitePageObject> sitePageObjects = new ArrayList<SitePageObject>();
     @SerializedName("skin")
     @Expose
     private Object skin;
@@ -160,12 +160,12 @@ public class SiteCollectionAPI implements Serializable
         this.createdDate = createdDate;
     }
 
-    public CreatedTimeAPI getCreatedTimeAPI() {
-        return createdTimeAPI;
+    public CreatedTimeObject getCreatedTimeObject() {
+        return createdTimeObject;
     }
 
-    public void setCreatedTimeAPI(CreatedTimeAPI createdTimeAPI) {
-        this.createdTimeAPI = createdTimeAPI;
+    public void setCreatedTimeObject(CreatedTimeObject createdTimeObject) {
+        this.createdTimeObject = createdTimeObject;
     }
 
     public String getDescription() {
@@ -264,12 +264,12 @@ public class SiteCollectionAPI implements Serializable
         this.modifiedDate = modifiedDate;
     }
 
-    public ModifiedTimeAPI getModifiedTimeAPI() {
-        return modifiedTimeAPI;
+    public ModifiedTimeObject getModifiedTimeObject() {
+        return modifiedTimeObject;
     }
 
-    public void setModifiedTimeAPI(ModifiedTimeAPI modifiedTimeAPI) {
-        this.modifiedTimeAPI = modifiedTimeAPI;
+    public void setModifiedTimeObject(ModifiedTimeObject modifiedTimeObject) {
+        this.modifiedTimeObject = modifiedTimeObject;
     }
 
     public String getOwner() {
@@ -280,12 +280,12 @@ public class SiteCollectionAPI implements Serializable
         this.owner = owner;
     }
 
-    public PropsAPI getPropsAPI() {
-        return propsAPI;
+    public PropsObject getPropsObject() {
+        return propsObject;
     }
 
-    public void setPropsAPI(PropsAPI propsAPI) {
-        this.propsAPI = propsAPI;
+    public void setPropsObject(PropsObject propsObject) {
+        this.propsObject = propsObject;
     }
 
     public String getProviderGroupId() {
@@ -320,20 +320,20 @@ public class SiteCollectionAPI implements Serializable
         this.siteGroups = siteGroups;
     }
 
-    public SiteOwnerAPI getSiteOwnerAPI() {
-        return siteOwnerAPI;
+    public SiteOwnerObject getSiteOwnerObject() {
+        return siteOwnerObject;
     }
 
-    public void setSiteOwnerAPI(SiteOwnerAPI siteOwnerAPI) {
-        this.siteOwnerAPI = siteOwnerAPI;
+    public void setSiteOwnerObject(SiteOwnerObject siteOwnerObject) {
+        this.siteOwnerObject = siteOwnerObject;
     }
 
-    public List<SitePageAPI> getSitePageAPIS() {
-        return sitePageAPIS;
+    public List<SitePageObject> getSitePageObjects() {
+        return sitePageObjects;
     }
 
-    public void setSitePageAPIS(List<SitePageAPI> sitePageAPIS) {
-        this.sitePageAPIS = sitePageAPIS;
+    public void setSitePageObjects(List<SitePageObject> sitePageObjects) {
+        this.sitePageObjects = sitePageObjects;
     }
 
     public Object getSkin() {
@@ -466,7 +466,7 @@ public class SiteCollectionAPI implements Serializable
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("contactEmail", contactEmail).append("contactName", contactName).append("createdDate", createdDate).append("createdTimeAPI", createdTimeAPI).append("description", description).append("htmlDescription", htmlDescription).append("htmlShortDescription", htmlShortDescription).append("iconUrl", iconUrl).append("iconUrlFull", iconUrlFull).append("id", id).append("infoUrl", infoUrl).append("infoUrlFull", infoUrlFull).append("joinerRole", joinerRole).append("lastModified", lastModified).append("maintainRole", maintainRole).append("modifiedDate", modifiedDate).append("modifiedTimeAPI", modifiedTimeAPI).append("owner", owner).append("propsAPI", propsAPI).append("providerGroupId", providerGroupId).append("reference", reference).append("shortDescription", shortDescription).append("siteGroups", siteGroups).append("siteOwnerAPI", siteOwnerAPI).append("sitePageAPIS", sitePageAPIS).append("skin", skin).append("softlyDeletedDate", softlyDeletedDate).append("title", title).append("type", type).append("userRoles", userRoles).append("activeEdit", activeEdit).append("customPageOrdered", customPageOrdered).append("empty", empty).append("joinable", joinable).append("pubView", pubView).append("published", published).append("softlyDeleted", softlyDeleted).append("entityReference", entityReference).append("entityURL", entityURL).append("entityId", entityId).append("entityTitle", entityTitle).toString();
+        return new ToStringBuilder(this).append("contactEmail", contactEmail).append("contactName", contactName).append("createdDate", createdDate).append("createdTimeObject", createdTimeObject).append("description", description).append("htmlDescription", htmlDescription).append("htmlShortDescription", htmlShortDescription).append("iconUrl", iconUrl).append("iconUrlFull", iconUrlFull).append("id", id).append("infoUrl", infoUrl).append("infoUrlFull", infoUrlFull).append("joinerRole", joinerRole).append("lastModified", lastModified).append("maintainRole", maintainRole).append("modifiedDate", modifiedDate).append("modifiedTimeObject", modifiedTimeObject).append("owner", owner).append("propsObject", propsObject).append("providerGroupId", providerGroupId).append("reference", reference).append("shortDescription", shortDescription).append("siteGroups", siteGroups).append("siteOwnerObject", siteOwnerObject).append("sitePageObjects", sitePageObjects).append("skin", skin).append("softlyDeletedDate", softlyDeletedDate).append("title", title).append("type", type).append("userRoles", userRoles).append("activeEdit", activeEdit).append("customPageOrdered", customPageOrdered).append("empty", empty).append("joinable", joinable).append("pubView", pubView).append("published", published).append("softlyDeleted", softlyDeleted).append("entityReference", entityReference).append("entityURL", entityURL).append("entityId", entityId).append("entityTitle", entityTitle).toString();
     }
 
 }

@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.example.development.sakaiclientandroid.api_models.all_sites.AllSites;
-import com.example.development.sakaiclientandroid.api_models.all_sites.SiteCollectionAPI;
+import com.example.development.sakaiclientandroid.api_models.all_sites.SiteCollectionObject;
 import com.example.development.sakaiclientandroid.services.SakaiService;
 import com.example.development.sakaiclientandroid.utils.HeaderInterceptor;
 
@@ -56,11 +56,11 @@ public class MainActivity extends AppCompatActivity {
 
                 AllSites allSites = response.body();
 
-                if(allSites.getSiteCollectionAPI().size() == 0) {
+                if(allSites.getSiteCollectionObject().size() == 0) {
                     Log.i("List size", "no sites");
                 } else {
-                    for(SiteCollectionAPI site : allSites.getSiteCollectionAPI()) {
-                        Log.i("SiteCollectionAPI", site.toString());
+                    for(SiteCollectionObject site : allSites.getSiteCollectionObject()) {
+                        Log.i("SiteCollectionObject", site.toString());
                     }
                 }
             }
