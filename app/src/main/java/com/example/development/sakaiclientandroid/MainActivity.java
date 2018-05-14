@@ -4,10 +4,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.example.development.sakaiclientandroid.api_models.all_sites.AllSites;
+import com.example.development.sakaiclientandroid.api_models.all_sites.AllSitesAPI;
 import com.example.development.sakaiclientandroid.api_models.all_sites.SiteCollectionAPI;
+import com.example.development.sakaiclientandroid.models.SiteCollection;
 import com.example.development.sakaiclientandroid.services.SakaiService;
 import com.example.development.sakaiclientandroid.utils.HeaderInterceptor;
+
+import java.util.ArrayList;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
@@ -47,26 +50,31 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         SakaiService sakaiService = retrofit.create(SakaiService.class);
-        Call<AllSites> fetchSitesCall = sakaiService.getAllSites();
-        fetchSitesCall.enqueue(new Callback<AllSites>() {
+        Call<AllSitesAPI> fetchSitesCall = sakaiService.getAllSites();
+        fetchSitesCall.enqueue(new Callback<AllSitesAPI>() {
             @Override
-            public void onResponse(Call<AllSites> call, Response<AllSites> response) {
+            public void onResponse(Call<AllSitesAPI> call, Response<AllSitesAPI> response) {
                 Log.i("Response", "SUCCESS!");
                 Log.i("Status Code", "" + response.code());
 
-                AllSites allSites = response.body();
+                AllSitesAPI allSitesAPI = response.body();
 
-                if(allSites.getSiteCollectionAPI().size() == 0) {
+                if(allSitesAPI.getSiteCollectionAPI().size() == 0) {
                     Log.i("List size", "no sites");
                 } else {
-                    for(SiteCollectionAPI site : allSites.getSiteCollectionAPI()) {
+                    for(SiteCollectionAPI site : allSitesAPI.getSiteCollectionAPI()) {
                         Log.i("SiteCollectionAPI", site.toString());
                     }
                 }
+
+
+                ArrayList<SiteCollection> siteCollections = SiteCollection.convertApiToSiteCollection(allSitesAPI.getSiteCollectionAPI());
+
+
             }
 
             @Override
-            public void onFailure(Call<AllSites> call, Throwable t) {
+            public void onFailure(Call<AllSitesAPI> call, Throwable t) {
                 Log.i("Response", "failure");
             }
         });

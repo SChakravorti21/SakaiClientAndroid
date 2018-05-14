@@ -2,9 +2,11 @@ package com.example.development.sakaiclientandroid.models;
 
 import com.example.development.sakaiclientandroid.api_models.all_sites.PropsAPI;
 import com.example.development.sakaiclientandroid.api_models.all_sites.SiteCollectionAPI;
+import com.example.development.sakaiclientandroid.api_models.all_sites.SiteOwnerAPI;
 import com.example.development.sakaiclientandroid.api_models.all_sites.SitePageAPI;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SiteCollection {
 
@@ -13,6 +15,7 @@ public class SiteCollection {
     private String description;
     private Term term;
     private ArrayList<SitePage> sitePages;
+    private String siteOwner;
 
 
     public SiteCollection(SiteCollectionAPI siteCollectionAPI) {
@@ -24,6 +27,12 @@ public class SiteCollection {
         PropsAPI propsApi = siteCollectionAPI.getPropsAPI();
         this.term = new Term(propsApi.getTermEid());
 
+
+        SiteOwnerAPI siteOwnerAPI = siteCollectionAPI.getSiteOwnerAPI();
+        this.siteOwner = siteOwnerAPI.getUserDisplayName();
+
+        //converts each sitePageAPI object into a SitePage object by getting rid of
+        //useless information
         ArrayList<SitePage> sitePages = new ArrayList<>();
         for(SitePageAPI page : siteCollectionAPI.getSitePageAPIS()) {
             sitePages.add(new SitePage(page));
@@ -31,8 +40,20 @@ public class SiteCollection {
 
         this.sitePages = sitePages;
 
+    }
+
+
+    public static ArrayList<SiteCollection> convertApiToSiteCollection(List<SiteCollectionAPI> siteCollectionAPIS) {
+
+        ArrayList<SiteCollection> siteCollections = new ArrayList<>();
+        for(SiteCollectionAPI siteAPI : siteCollectionAPIS) {
+            siteCollections.add(new SiteCollection(siteAPI));
+        }
+
+        return siteCollections;
 
     }
+
 
     public String getId() {
         return id;

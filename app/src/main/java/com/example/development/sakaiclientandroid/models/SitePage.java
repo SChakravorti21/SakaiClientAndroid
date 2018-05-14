@@ -13,4 +13,16 @@ public class SitePage {
         this.title = sitePageAPI.getTitle();
         this.siteId = sitePageAPI.getSiteId();
     }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getSiteId() {
+        return siteId;
+    }
 }
