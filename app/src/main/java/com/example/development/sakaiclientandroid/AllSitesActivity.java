@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.development.sakaiclientandroid.models.SiteCollection;
 import com.example.development.sakaiclientandroid.models.SitePage;
@@ -59,13 +60,31 @@ public class AllSitesActivity extends AppCompatActivity {
         this.listAdapter = new myExpandableListAdapter(this, headersList, childsMap);
         this.expListView.setAdapter(this.listAdapter);
 
+        this.expListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+
+            @Override
+            public boolean onChildClick(ExpandableListView parent, View v, int groupPos, int childPos, long id) {
+                String txt = headersList.get(groupPos) + " : " + childsMap.get(headersList.get(groupPos)).get(childPos);
+                Toast.makeText(getApplicationContext(), txt, Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        });
 
     }
 
+    /**
+     * Organizes the SiteCollection objects by term. Makes a seperate ArrayList for sites collections
+     * in the same term, and terms are sorted chronologically.
+     *
+     * @param siteCollections List of SiteCollection objects
+     * @return arraylist sorted and organized by term.
+     */
     private ArrayList<ArrayList<SiteCollection>> organizeByTerm(ArrayList<SiteCollection> siteCollections) {
 
 
-        Collections.sort(siteCollections, (o1, o2) -> o1.getTerm().compareTo(o2.getTerm()));
+        //term objects extends comparator
+        Collections.sort(siteCollections, (x, y) -> x.getTerm().compareTo(y.getTerm()));
+
 
         ArrayList<ArrayList<SiteCollection>> sorted = new ArrayList<ArrayList<SiteCollection>>();
 
@@ -95,6 +114,13 @@ public class AllSitesActivity extends AppCompatActivity {
         return sorted;
     }
 
+    /**
+     * takes an ArrayList of SiteCollections already organized and sorted by term
+     * puts that data into the headersList and child hashmap to be displayed in the
+     * expandable list view in the current activity
+     *
+     * @param sorted ArrayList of ArrayList of SiteCollection Objects
+     */
     private void fillListData(ArrayList<ArrayList<SiteCollection>> sorted) {
 
         this.headersList = new ArrayList<>();
