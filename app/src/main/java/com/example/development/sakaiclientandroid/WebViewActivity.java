@@ -22,6 +22,8 @@ public class WebViewActivity extends AppCompatActivity {
         // to it for keeping track of cookies and login completion
         final WebView loginWebView = findViewById(R.id.login_web_view);
 
+        // Create a custom WebView client that will listen for when
+        // authentication is complete and the main activity can be started
         CASWebViewClient webViewClient = new CASWebViewClient(
                 getString(R.string.COOKIE_URL_2),
                 new CASWebViewClient.SakaiLoadedListener() {

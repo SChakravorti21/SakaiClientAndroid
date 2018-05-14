@@ -28,7 +28,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Get the base url for the Sakai API
         baseUrl = getString(R.string.BASE_URL);
+        // Get the url which has the relevant cookies for Sakai
         cookieUrl = getString(R.string.COOKIE_URL_1);
 
         // Create the custom OkHttpClient with the interceptor to inject
@@ -46,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
                 .client(httpClient)
                 .build();
 
+        // Making a test request using a retrofit client
+        // and the getAllSites endpoint (which fetches "site.json")
         SakaiService sakaiService = retrofit.create(SakaiService.class);
         Call<AllSites> fetchSitesCall = sakaiService.getAllSites();
         fetchSitesCall.enqueue(new Callback<AllSites>() {
@@ -59,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
                 if(allSites.getSiteCollectionObject().size() == 0) {
                     Log.i("List size", "no sites");
                 } else {
+                    // Log each site that was fetched
                     for(SiteCollectionObject site : allSites.getSiteCollectionObject()) {
                         Log.i("SiteCollectionObject", site.toString());
                     }
@@ -67,7 +72,9 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<AllSites> call, Throwable t) {
+                //TODO: Handle errors give proper error message
                 Log.i("Response", "failure");
+                Log.e("Response error", t.getMessage());
             }
         });
     }

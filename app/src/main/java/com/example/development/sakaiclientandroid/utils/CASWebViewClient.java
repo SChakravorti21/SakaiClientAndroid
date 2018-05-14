@@ -22,12 +22,21 @@ public class CASWebViewClient extends WebViewClient {
         void onSakaiMainPageLoaded(Headers headers);
     }
 
+    // This listener let's our WebViewActivity know that
+    // login was successful, and a new activity can be started
+    private SakaiLoadedListener sakaiLoadedListener;
+
+    // CookieManager automatically saves all cookies from requests,
+    // we just need to set the acceptance policy
+    private CookieManager cookieManager;
+    // The url which is associated with the relevant Sakai cookies
     private final String cookieUrl;
 
-    private SakaiLoadedListener sakaiLoadedListener;
-    private CookieManager cookieManager;
-    private Headers savedHeaders;
+    // This client is used to intercept a WebView request to
+    // Sakai
     private OkHttpClient httpClient;
+    // Keeping track of relevant headers
+    private Headers savedHeaders;
     private boolean gotHeaders;
 
     public CASWebViewClient(String url, SakaiLoadedListener loadedListener) {
@@ -40,6 +49,7 @@ public class CASWebViewClient extends WebViewClient {
         httpClient = new OkHttpClient();
         gotHeaders = false;
 
+        // Make sure that the CookieManager accepts all cookies
         cookieManager = CookieManager.getInstance();
         cookieManager.setAcceptCookie(true);
         cookieManager.removeSessionCookie();
@@ -47,6 +57,7 @@ public class CASWebViewClient extends WebViewClient {
 
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
+        // Let our WebView handle page loading
         view.loadUrl(url);
 
         //return true indicates that the has handled the request
@@ -56,6 +67,8 @@ public class CASWebViewClient extends WebViewClient {
 
     @Override
     public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+        // We only need to intercept once authentication is complete, as the
+        // the cookies do not change afterwards
         if(url.startsWith("https://sakai.rutgers.edu/portal") && !gotHeaders) {
             return handleRequest(url);
         }
@@ -65,15 +78,19 @@ public class CASWebViewClient extends WebViewClient {
 
     private WebResourceResponse handleRequest(String url) {
         try {
-            // On Android API >= 21 you can get request method and headers
-            // As I said, we need to only display "simple" page with resources
-            // So it's GET without special headers
+            // After intercepting the request, we need to handle it
+            // ourselves. This is done by creating an OkHttp3 Call,
+            // which we add the Sakai cookies to. Without the cookies,
+            // Sakai does not acknowledge the request.
             final Call call = httpClient.newCall(new Request.Builder()
                     .url(url)
                     .addHeader("Cookie", cookieManager.getCookie(cookieUrl))
                     .build()
             );
 
+            // After getting the response from Sakai, we can get the
+            // headers if it has what we want. Specifically, we need
+            // the X-Sakai-Session cookie.
             final Response response = call.execute();
             Headers temp = response.headers();
             if(temp.get("x-sakai-session") != null && !gotHeaders) {
@@ -82,19 +99,26 @@ public class CASWebViewClient extends WebViewClient {
                 gotHeaders = true;
             }
 
-            return new WebResourceResponse(
-                    null, // You can set something other as default content-type
-                    null,  // Again, you can set another encoding as default
+            // We need to return a WebResourceResponse, otherwise the
+            // WebView will think that the request is hanging. The WebView
+            // renders this response.
+            // We do not need to modify the mimeType or encoding of the response.
+            return new WebResourceResponse(null, null,
                     response.body().byteStream()
             );
         } catch (Exception e) {
             Log.e("Exception", e.getMessage());
-            return null; // return response for bad request
+            // TODO: Handle bad request/response
+            // Perhaps by creating a separate method in the listener
+            return null;
         }
     }
 
     @Override
     public void onPageFinished(WebView view, String url) {
+        // Once the main Sakai page loads ("/portal"), we can
+        // fire the listener that will let the WebViewActivity
+        // know to fire up a new intent and start the main activity
         if(url.equals(cookieUrl) && gotHeaders
                 && sakaiLoadedListener != null ) {
             sakaiLoadedListener.onSakaiMainPageLoaded(savedHeaders);
