@@ -1,6 +1,7 @@
 package com.example.development.sakaiclientandroid.api_models.all_sites;
 
 import java.io.Serializable;
+import java.lang.Long;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -13,8 +14,8 @@ public class CreatedTime implements Serializable
     private String display;
     @SerializedName("time")
     @Expose
-    private Integer time;
-    private final static long serialVersionUID = -1932295273693241013L;
+    private Long time;
+    private final static long serialVersionUID = 5498651416981472923L;
 
     public String getDisplay() {
         return display;
@@ -24,11 +25,11 @@ public class CreatedTime implements Serializable
         this.display = display;
     }
 
-    public Integer getTime() {
+    public Long getTime() {
         return time;
     }
 
-    public void setTime(Integer time) {
+    public void setTime(Long time) {
         this.time = time;
     }
 

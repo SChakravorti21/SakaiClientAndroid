@@ -1,6 +1,7 @@
 package com.example.development.sakaiclientandroid.api_models.all_sites;
 
 import java.io.Serializable;
+import java.lang.Long;
 import java.util.ArrayList;
 import java.util.List;
 import com.google.gson.annotations.Expose;
@@ -18,7 +19,7 @@ public class SiteCollection implements Serializable
     private Object contactName;
     @SerializedName("createdDate")
     @Expose
-    private Integer createdDate;
+    private Long createdDate;
     @SerializedName("createdTime")
     @Expose
     private CreatedTime createdTime;
@@ -51,13 +52,13 @@ public class SiteCollection implements Serializable
     private Object joinerRole;
     @SerializedName("lastModified")
     @Expose
-    private Integer lastModified;
+    private Long lastModified;
     @SerializedName("maintainRole")
     @Expose
     private String maintainRole;
     @SerializedName("modifiedDate")
     @Expose
-    private Integer modifiedDate;
+    private Long modifiedDate;
     @SerializedName("modifiedTime")
     @Expose
     private ModifiedTime modifiedTime;
@@ -133,7 +134,7 @@ public class SiteCollection implements Serializable
     @SerializedName("entityTitle")
     @Expose
     private String entityTitle;
-    private final static long serialVersionUID = 3471661027470674144L;
+    private final static long serialVersionUID = 3346237831791672351L;
 
     public Object getContactEmail() {
         return contactEmail;
@@ -151,11 +152,11 @@ public class SiteCollection implements Serializable
         this.contactName = contactName;
     }
 
-    public Integer getCreatedDate() {
+    public Long getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(Integer createdDate) {
+    public void setCreatedDate(Long createdDate) {
         this.createdDate = createdDate;
     }
 
@@ -239,11 +240,11 @@ public class SiteCollection implements Serializable
         this.joinerRole = joinerRole;
     }
 
-    public Integer getLastModified() {
+    public Long getLastModified() {
         return lastModified;
     }
 
-    public void setLastModified(Integer lastModified) {
+    public void setLastModified(Long lastModified) {
         this.lastModified = lastModified;
     }
 
@@ -255,11 +256,11 @@ public class SiteCollection implements Serializable
         this.maintainRole = maintainRole;
     }
 
-    public Integer getModifiedDate() {
+    public Long getModifiedDate() {
         return modifiedDate;
     }
 
-    public void setModifiedDate(Integer modifiedDate) {
+    public void setModifiedDate(Long modifiedDate) {
         this.modifiedDate = modifiedDate;
     }
 

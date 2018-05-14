@@ -1,16 +1,14 @@
 package com.example.development.sakaiclientandroid;
 
-import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.test.suitebuilder.annotation.Suppress;
 import android.util.Log;
-import android.webkit.CookieManager;
 
 import com.example.development.sakaiclientandroid.api_models.all_sites.AllSites;
 import com.example.development.sakaiclientandroid.api_models.all_sites.SiteCollection;
 import com.example.development.sakaiclientandroid.services.SakaiService;
 import com.example.development.sakaiclientandroid.utils.HeaderInterceptor;
-import com.google.gson.Gson;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
@@ -19,14 +17,10 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-
 public class MainActivity extends AppCompatActivity {
 
-    private String BASE_URL;
-    private String COOKIE_URL_1;
-    private String COOKIE_URL_2;
-    private String COOKIE_URL_3;
-
+    private String baseUrl;
+    private String cookieUrl;
 
     OkHttpClient httpClient;
 
@@ -35,15 +29,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        BASE_URL = getString(R.string.BASE_URL);
-        COOKIE_URL_1 = getString(R.string.COOKIE_URL_1);
-        COOKIE_URL_2 = getString(R.string.COOKIE_URL_2);
-        COOKIE_URL_3 = getString(R.string.COOKIE_URL_3);
+        baseUrl = getString(R.string.BASE_URL);
+        cookieUrl = getString(R.string.COOKIE_URL_1);
 
         // Create the custom OkHttpClient with the interceptor to inject
         // cookies into every request
-        HeaderInterceptor interceptor = new HeaderInterceptor(COOKIE_URL_1,
-                COOKIE_URL_2, COOKIE_URL_3);
+        HeaderInterceptor interceptor = new HeaderInterceptor(this, cookieUrl);
         httpClient = new OkHttpClient.Builder()
                 .addInterceptor(interceptor)
                 .build();
@@ -51,13 +42,13 @@ public class MainActivity extends AppCompatActivity {
         // The Retrofit instance allows us to construct our own services
         // that will make network requests
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
+                .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(httpClient)
                 .build();
 
         SakaiService sakaiService = retrofit.create(SakaiService.class);
-        Call<AllSites> fetchSitesCall = sakaiService.getAllSites(interceptor.getAndParseCookies());
+        Call<AllSites> fetchSitesCall = sakaiService.getAllSites();
         fetchSitesCall.enqueue(new Callback<AllSites>() {
             @Override
             public void onResponse(Call<AllSites> call, Response<AllSites> response) {

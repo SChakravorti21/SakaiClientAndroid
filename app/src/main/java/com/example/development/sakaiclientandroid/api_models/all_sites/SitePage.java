@@ -1,6 +1,7 @@
 package com.example.development.sakaiclientandroid.api_models.all_sites;
 
 import java.io.Serializable;
+import java.lang.Long;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -13,13 +14,13 @@ public class SitePage implements Serializable
     private String id;
     @SerializedName("layout")
     @Expose
-    private Integer layout;
+    private Long layout;
     @SerializedName("layoutTitle")
     @Expose
     private String layoutTitle;
     @SerializedName("position")
     @Expose
-    private Integer position;
+    private Long position;
     @SerializedName("props")
     @Expose
     private Object props;
@@ -50,7 +51,7 @@ public class SitePage implements Serializable
     @SerializedName("popUp")
     @Expose
     private Boolean popUp;
-    private final static long serialVersionUID = 5404109374332507050L;
+    private final static long serialVersionUID = 4988978713324185542L;
 
     public String getId() {
         return id;
@@ -60,11 +61,11 @@ public class SitePage implements Serializable
         this.id = id;
     }
 
-    public Integer getLayout() {
+    public Long getLayout() {
         return layout;
     }
 
-    public void setLayout(Integer layout) {
+    public void setLayout(Long layout) {
         this.layout = layout;
     }
 
@@ -76,11 +77,11 @@ public class SitePage implements Serializable
         this.layoutTitle = layoutTitle;
     }
 
-    public Integer getPosition() {
+    public Long getPosition() {
         return position;
     }
 
-    public void setPosition(Integer position) {
+    public void setPosition(Long position) {
         this.position = position;
     }
 

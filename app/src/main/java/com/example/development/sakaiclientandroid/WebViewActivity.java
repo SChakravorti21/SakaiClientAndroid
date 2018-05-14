@@ -1,11 +1,9 @@
 package com.example.development.sakaiclientandroid;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
@@ -16,11 +14,8 @@ import com.example.development.sakaiclientandroid.utils.CASWebViewClient;
 import com.example.development.sakaiclientandroid.utils.HeaderInterceptor;
 import com.example.development.sakaiclientandroid.utils.SharedPrefsUtil;
 
-import java.util.HashMap;
-
 import okhttp3.Headers;
 import okhttp3.OkHttpClient;
-import okhttp3.internal.http2.Header;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -34,8 +29,6 @@ public class WebViewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web_view);
 
-        SharedPrefsUtil.setContext(getApplicationContext());
-
         // Get the WebView from the main view and attach the custom client
         // to it for keeping track of cookies and login completion
         final WebView loginWebView = findViewById(R.id.login_web_view);
@@ -46,58 +39,13 @@ public class WebViewActivity extends AppCompatActivity {
                     @Override
                     public void onSakaiMainPageLoaded(Headers savedHeaders) {
                         // Once the main page loads, we should have all the cookies and
-                        // headers necessary to make requests, in addition to all headers
-                        SharedPrefsUtil.saveHeaders("Headers", savedHeaders);
+                        // headers necessary to make requests. These headers just
+                        // need to be saved for the custom OkHttpClients to be able to access.
+                        SharedPrefsUtil.saveHeaders(getApplicationContext(),
+                                "Headers", savedHeaders);
 
-
-                        // MAKING A TEST REQUEST
-                        HeaderInterceptor interceptor = new HeaderInterceptor(
-                                getString(R.string.COOKIE_URL_1),
-                                getString(R.string.COOKIE_URL_2),
-                                getString(R.string.COOKIE_URL_3));
-
-                        OkHttpClient httpClient = new OkHttpClient.Builder()
-                                .addInterceptor(interceptor)
-                                .build();
-
-                        // The Retrofit instance allows us to construct our own services
-                        // that will make network requests
-                        String BASE_URL = getString(R.string.BASE_URL);
-                        Retrofit retrofit = new Retrofit.Builder()
-                                .baseUrl(BASE_URL)
-                                .addConverterFactory(GsonConverterFactory.create())
-                                //.client(httpClient)
-                                .build();
-
-                        // Make a test request: Get the list of sites associated with a student
-                        SakaiService sakaiService = retrofit.create(SakaiService.class);
-                        Call<AllSites> fetchSitesCall = sakaiService.getAllSites(interceptor.getAndParseCookies());
-                        fetchSitesCall.enqueue(new Callback<AllSites>() {
-                            @Override
-                            public void onResponse(Call<AllSites> call, Response<AllSites> response) {
-                                Log.i("Response", "SUCCESS!");
-                                Log.i("Status Code", "" + response.code());
-
-                                AllSites allSites = response.body();
-                                Log.i("Sites", allSites.toString());
-                                if (allSites.getSiteCollection().size() == 0) {
-                                    Log.i("List size", "no sites");
-                                } else {
-                                    for (SiteCollection site : allSites.getSiteCollection()) {
-                                        Log.i("Site", site.toString());
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(Call<AllSites> call, Throwable t) {
-                                Log.i("Response", "failure");
-                                Log.e("Traceback", t.getMessage());
-                            }
-                        });
-
-                        // Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                        // startActivity(intent);
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        startActivity(intent);
                     }
                 }
         );

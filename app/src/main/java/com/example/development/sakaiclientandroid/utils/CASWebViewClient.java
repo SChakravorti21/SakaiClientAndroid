@@ -6,15 +6,11 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import okhttp3.Call;
 import okhttp3.Headers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import retrofit2.http.HEAD;
 
 /**
  * Created by Development on 4/26/18.
@@ -23,10 +19,10 @@ import retrofit2.http.HEAD;
 public class CASWebViewClient extends WebViewClient {
 
     public interface SakaiLoadedListener {
-        public void onSakaiMainPageLoaded(Headers headers);
+        void onSakaiMainPageLoaded(Headers headers);
     }
 
-    private final String COOKIE_URL;
+    private final String cookieUrl;
 
     private SakaiLoadedListener sakaiLoadedListener;
     private CookieManager cookieManager;
@@ -37,7 +33,7 @@ public class CASWebViewClient extends WebViewClient {
     public CASWebViewClient(String url, SakaiLoadedListener loadedListener) {
         super();
 
-        COOKIE_URL = url;
+        cookieUrl = url;
         sakaiLoadedListener = loadedListener;
         savedHeaders = null;
 
@@ -51,9 +47,8 @@ public class CASWebViewClient extends WebViewClient {
 
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
-        Log.i("URL", url);
-
         view.loadUrl(url);
+
         //return true indicates that the has handled the request
         return true;
     }
@@ -75,7 +70,7 @@ public class CASWebViewClient extends WebViewClient {
             // So it's GET without special headers
             final Call call = httpClient.newCall(new Request.Builder()
                     .url(url)
-                    .addHeader("Cookie", cookieManager.getCookie(COOKIE_URL))
+                    .addHeader("Cookie", cookieManager.getCookie(cookieUrl))
                     .build()
             );
 
@@ -100,7 +95,7 @@ public class CASWebViewClient extends WebViewClient {
 
     @Override
     public void onPageFinished(WebView view, String url) {
-        if(url.equals(COOKIE_URL) && gotHeaders
+        if(url.equals(cookieUrl) && gotHeaders
                 && sakaiLoadedListener != null ) {
             sakaiLoadedListener.onSakaiMainPageLoaded(savedHeaders);
         }
