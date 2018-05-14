@@ -1,22 +1,16 @@
 package com.example.development.sakaiclientandroid.models;
 
+import android.content.res.Resources;
 import android.util.Log;
+
+import com.example.development.sakaiclientandroid.R;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.security.AccessController.getContext;
+
 public class Term implements Comparable<Term>{
-
-    private static final Map<Integer, String> intToTerm = new HashMap<Integer, String>() {{
-
-        put(0, "None");
-
-        put(1, "Spring");
-        put(6, "Summer");
-        put(7, "Arresty");
-        put(9, "Fall");
-        put(12, "Winter");
-    }};
 
     private int year;
     private int termInt;
@@ -27,8 +21,30 @@ public class Term implements Comparable<Term>{
         String[] splitTerm = term_eid.split(":");
         this.year = Integer.parseInt(splitTerm[0]);
         this.termInt = Integer.parseInt(splitTerm[1]);
-        this.termString = intToTerm.get(this.termInt);
+
+        this.termString = intToTerm(this.termInt);
     }
+
+
+    private static String intToTerm(int termInt) {
+
+        if(termInt == 0) {
+            return Resources.getSystem().getString(R.string.none);
+        }
+        else if(termInt >= 12) {
+            return Resources.getSystem().getString(R.string.winter);
+        }
+        else if(termInt >= 9) {
+            return Resources.getSystem().getString(R.string.fall);
+        }
+        else if(termInt >= 6) {
+            return Resources.getSystem().getString(R.string.summer);
+        }
+        else {
+            return Resources.getSystem().getString(R.string.spring);
+        }
+    }
+
 
     @Override
     public int compareTo(Term other) {
@@ -59,7 +75,7 @@ public class Term implements Comparable<Term>{
         return this.year;
     }
 
-    public int getTerm() {
+    public int getTermInt() {
         return termInt;
     }
 

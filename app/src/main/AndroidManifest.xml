@@ -25,7 +25,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".MainActivity" />
-        <activity android:name=".AllSitesActivity"></activity>
+        <activity android:name=".AllSitesActivity" />
+        <activity android:name=".SiteCollectionActivity"></activity>
     </application>
 
 </manifest>

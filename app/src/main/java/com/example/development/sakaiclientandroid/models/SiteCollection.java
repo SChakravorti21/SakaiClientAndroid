@@ -20,6 +20,7 @@ public class SiteCollection {
     private String siteOwner;
 
 
+
     public SiteCollection(SiteCollectionObject siteCollectionObject) {
 
         this.title = siteCollectionObject.getTitle();
