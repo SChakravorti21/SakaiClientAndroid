@@ -1,6 +1,6 @@
 package com.example.development.sakaiclientandroid.models;
 
-import com.example.development.sakaiclientandroid.api_models.all_sites.SitePageAPI;
+import com.example.development.sakaiclientandroid.api_models.all_sites.SitePageObject;
 
 public class SitePage {
 
@@ -8,10 +8,10 @@ public class SitePage {
     private String title;
     private String siteId;
 
-    public SitePage(SitePageAPI sitePageAPI) {
-        this.id = sitePageAPI.getId();
-        this.title = sitePageAPI.getTitle();
-        this.siteId = sitePageAPI.getSiteId();
+    public SitePage(SitePageObject sitePageObject) {
+        this.id = sitePageObject.getId();
+        this.title = sitePageObject.getTitle();
+        this.siteId = sitePageObject.getSiteId();
     }
 
     public String getId() {

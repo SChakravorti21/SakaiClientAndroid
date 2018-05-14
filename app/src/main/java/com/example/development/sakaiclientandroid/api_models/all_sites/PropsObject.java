@@ -5,7 +5,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-public class PropsAPI implements Serializable
+public class PropsObject implements Serializable
 {
 
     @SerializedName("sections_externally_maintained")

@@ -15,7 +15,7 @@ public class AllSitesAPI implements Serializable
     private String entityPrefix;
     @SerializedName("site_collection")
     @Expose
-    private List<SiteCollectionAPI> siteCollectionAPI = new ArrayList<SiteCollectionAPI>();
+    private List<SiteCollectionObject> siteCollectionObject = new ArrayList<SiteCollectionObject>();
     private final static long serialVersionUID = 6697315883558393879L;
 
     public String getEntityPrefix() {
@@ -26,17 +26,17 @@ public class AllSitesAPI implements Serializable
         this.entityPrefix = entityPrefix;
     }
 
-    public List<SiteCollectionAPI> getSiteCollectionAPI() {
-        return siteCollectionAPI;
+    public List<SiteCollectionObject> getSiteCollectionObject() {
+        return siteCollectionObject;
     }
 
-    public void setSiteCollectionAPI(List<SiteCollectionAPI> siteCollectionAPI) {
-        this.siteCollectionAPI = siteCollectionAPI;
+    public void setSiteCollectionObject(List<SiteCollectionObject> siteCollectionObject) {
+        this.siteCollectionObject = siteCollectionObject;
     }
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("entityPrefix", entityPrefix).append("siteCollectionAPI", siteCollectionAPI).toString();
+        return new ToStringBuilder(this).append("entityPrefix", entityPrefix).append("siteCollectionObject", siteCollectionObject).toString();
     }
 
 }
