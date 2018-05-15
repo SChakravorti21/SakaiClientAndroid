@@ -29,19 +29,21 @@ public class Term implements Comparable<Term>{
     private static String intToTerm(int termInt) {
 
         if(termInt == 0) {
-            return Resources.getSystem().getString(R.string.none);
+//            return Resources.getSystem().getString(R.string.none_string);
+                return "None";
         }
+
         else if(termInt >= 12) {
-            return Resources.getSystem().getString(R.string.winter);
+            return "winter";
         }
         else if(termInt >= 9) {
-            return Resources.getSystem().getString(R.string.fall);
+            return "fall";
         }
         else if(termInt >= 6) {
-            return Resources.getSystem().getString(R.string.summer);
+            return "spring";
         }
         else {
-            return Resources.getSystem().getString(R.string.spring);
+            return "summer";
         }
     }
 
