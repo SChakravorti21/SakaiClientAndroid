@@ -23,21 +23,20 @@ public class SitePagesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_site_collection);
 
+        //gets the site collection that was sent to it
         Intent intent = getIntent();
         String serialized = intent.getStringExtra(getString(R.string.AllSitesActivity));
 
-        Log.d("seri", serialized);
-
-//        Type type = new TypeToken<SiteCollection>(){}.getType();
         Gson gS = new Gson();
         SiteCollection siteCollection = gS.fromJson(serialized, SiteCollection.class);
 
-        Log.d("obj", siteCollection.getSitePages().size() + "");
+
 
         this.sitePagesListView = findViewById(R.id.site_page_list_view);
 
         String[] listItems = new String[siteCollection.getSitePages().size()];
 
+        //gives the title of each site to the adapter
         for(int i = 0; i < listItems.length; i++) {
             listItems[i] = siteCollection.getSitePages().get(i).getTitle();
         }

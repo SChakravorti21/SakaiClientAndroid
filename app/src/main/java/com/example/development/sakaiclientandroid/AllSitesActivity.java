@@ -98,23 +98,7 @@ public class AllSitesActivity extends AppCompatActivity {
                     Gson gson = new Gson();
                     AllSitesAPI api = gson.fromJson(body, AllSitesAPI.class);
 
-
-
-                    Type type = new TypeToken<ArrayList<SitePageObject>>(){}.getType();
-
-                    JSONObject obj = new JSONObject(body);
-                    JSONArray colls = obj.getJSONArray("site_collection");
-
-                    for(int i = 0; i < colls.length(); i++) {
-                        JSONObject collection = colls.getJSONObject(i);
-                        JSONArray sitePages = collection.getJSONArray("sitePages");
-                        String stringSitePages = sitePages.toString();
-
-                        ArrayList<SitePageObject> sites = gson.fromJson(stringSitePages, type);
-                        api.getSiteCollectionObject().get(i).setSitePageObjects(sites);
-                    }
-
-                    Log.d("yolo", api.getSiteCollectionObject().get(0).getSitePageObjects().size() +"");
+                    api.fillSitePages(body);
 
                     feedExpandableListData(api);
 
@@ -149,6 +133,7 @@ public class AllSitesActivity extends AppCompatActivity {
      * @param allSitesAPI API object that contains data received from retrofit.
      */
     private void feedExpandableListData(AllSitesAPI allSitesAPI) {
+
         siteCollections = SiteCollection.convertApiToSiteCollection(allSitesAPI.getSiteCollectionObject());
         expListView = findViewById(R.id.lvExp);
 
@@ -172,6 +157,7 @@ public class AllSitesActivity extends AppCompatActivity {
 
 
         //term objects extends comparator
+        //sorted chronologically (most recent at the top)
         Collections.sort(siteCollections, (x, y) -> -1 * x.getTerm().compareTo(y.getTerm()));
 
 
@@ -186,6 +172,8 @@ public class AllSitesActivity extends AppCompatActivity {
             if(siteCollection.getTerm().compareTo(currTerm) == 0) {
                 currSites.add(siteCollection);
             }
+            //otherwise finalize the current arraylist of terms and make a new arraylist
+            //to hold site collections of a different term
             else {
                 sorted.add(currSites);
 
@@ -215,10 +203,11 @@ public class AllSitesActivity extends AppCompatActivity {
         this.headersList = new ArrayList<>();
         this.childsMap = new HashMap<>();
 
-
+        //sets the Term as the headers for the expandable list view
+        //each child is the name of the site in that term
         for(ArrayList<SiteCollection> sitesPerTerm : sorted) {
-            Term currTerm = sitesPerTerm.get(0).getTerm();
 
+            Term currTerm = sitesPerTerm.get(0).getTerm();
 
             String termKey = currTerm.getTermString();
 
@@ -242,6 +231,7 @@ public class AllSitesActivity extends AppCompatActivity {
     }
 
 
+    //when click a child, serialize the site collection and then send it to the SitePageActivity class
     private class ExpandableListViewOnChildClickListener implements ExpandableListView.OnChildClickListener {
 
         @Override
