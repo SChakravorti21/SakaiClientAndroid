@@ -2,6 +2,7 @@ package com.example.development.sakaiclientandroid.services;
 
 import com.example.development.sakaiclientandroid.api_models.all_sites.AllSitesAPI;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
 
@@ -13,4 +14,7 @@ public interface SakaiService {
 
     @GET("site.json")
     Call<AllSitesAPI> getAllSites();
+
+    @GET("site.json")
+    Call<ResponseBody> getResponseBody();
 }

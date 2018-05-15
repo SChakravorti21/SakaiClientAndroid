@@ -24,7 +24,7 @@
     <string name="summer">Summer</string>
     <string name="winter">Winter</string>
     <string name="fall">Fall</string>
-    
+
     <string name="AllSitesActivity">AllSitesActivity</string>
 
     <string name="BASE_URL">https://sakai.rutgers.edu/direct/</string>
