@@ -23,6 +23,7 @@ public class SiteCollection {
 
     public SiteCollection(SiteCollectionObject siteCollectionObject) {
 
+
         this.title = siteCollectionObject.getTitle();
         this.description = siteCollectionObject.getDescription();
         this.id = siteCollectionObject.getId();
@@ -33,7 +34,7 @@ public class SiteCollection {
             this.term = new Term(propsObject.getTermEid());
         }
         else {
-            this.term = new Term("9999:0");
+            this.term = new Term("0000:0");
         }
 
 
@@ -44,6 +45,7 @@ public class SiteCollection {
         //converts each sitePageAPI object into a SitePage object by getting rid of
         //useless information
         ArrayList<SitePage> sitePages = new ArrayList<>();
+
         for(SitePageObject page : siteCollectionObject.getSitePageObjects()) {
             sitePages.add(new SitePage(page));
         }
@@ -61,6 +63,17 @@ public class SiteCollection {
         }
 
         return siteCollections;
+
+    }
+
+    @Override
+    public String toString() {
+        String ret = (this.title + " : " + this.term + "     Sites:   ");
+        for(SitePage s : this.sitePages) {
+            ret += s.toString() + ";  ";
+        }
+
+        return ret;
 
     }
 

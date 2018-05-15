@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ExpandableListView;
+import android.widget.Toast;
 
 import com.example.development.sakaiclientandroid.api_models.all_sites.AllSitesAPI;
 import com.example.development.sakaiclientandroid.api_models.all_sites.SiteCollectionObject;
@@ -13,6 +14,7 @@ import com.example.development.sakaiclientandroid.models.SiteCollection;
 import com.example.development.sakaiclientandroid.models.Term;
 import com.example.development.sakaiclientandroid.services.SakaiService;
 import com.example.development.sakaiclientandroid.utils.HeaderInterceptor;
+import com.example.development.sakaiclientandroid.utils.myExpandableListAdapter;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -85,6 +87,7 @@ public class AllSitesActivity extends AppCompatActivity {
 
                 if(allSitesAPI.getSiteCollectionObject().size() == 0) {
                     Log.i("List size", "no sites");
+                    Toast.makeText(getApplicationContext(), "Error: No sites", Toast.LENGTH_SHORT).show();
                 } else {
                     // Log each site that was fetched
                     for(SiteCollectionObject site : allSitesAPI.getSiteCollectionObject()) {
@@ -92,7 +95,8 @@ public class AllSitesActivity extends AppCompatActivity {
                     }
                 }
 
-
+                //on a success, we give the returned sites to the feedExpandableListData so that
+                //we can display the data correctly
                 feedExpandableListData(allSitesAPI);
             }
 
@@ -101,6 +105,8 @@ public class AllSitesActivity extends AppCompatActivity {
                 // TODO: Handle errors give proper error message
                 Log.i("Response", "failure");
                 Log.e("Response error", t.getMessage());
+
+                Toast.makeText(getApplicationContext(), "Authentication Error", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -109,6 +115,13 @@ public class AllSitesActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * API object from retrofit is converted into usable siteCollections object. This data is then
+     * organized in the fillListData method and then the organized data is given to the listAdapter
+     * which then displays the data.
+     *
+     * @param allSitesAPI API object that contains data received from retrofit.
+     */
     private void feedExpandableListData(AllSitesAPI allSitesAPI) {
         siteCollections = SiteCollection.convertApiToSiteCollection(allSitesAPI.getSiteCollectionObject());
         expListView = findViewById(R.id.lvExp);
@@ -124,7 +137,7 @@ public class AllSitesActivity extends AppCompatActivity {
 
     /**
      * Organizes the SiteCollection objects by term. Makes a seperate ArrayList for sites collections
-     * in the same term, and terms are sorted chronologically.
+     * in the same term; terms are sorted chronologically.
      *
      * @param siteCollections List of SiteCollection objects
      * @return arraylist sorted and organized by term.
@@ -133,7 +146,7 @@ public class AllSitesActivity extends AppCompatActivity {
 
 
         //term objects extends comparator
-        Collections.sort(siteCollections, (x, y) -> x.getTerm().compareTo(y.getTerm()));
+        Collections.sort(siteCollections, (x, y) -> -1 * x.getTerm().compareTo(y.getTerm()));
 
 
         ArrayList<ArrayList<SiteCollection>> sorted = new ArrayList<ArrayList<SiteCollection>>();
@@ -216,7 +229,7 @@ public class AllSitesActivity extends AppCompatActivity {
 
 
                     Gson gS = new Gson();
-                    Intent i = new Intent(AllSitesActivity.this, SiteCollectionActivity.class);
+                    Intent i = new Intent(AllSitesActivity.this, SitePagesActivity.class);
                     String serialized = gS.toJson(col);
 
                     i.putExtra(getString(R.string.AllSitesActivity), serialized);

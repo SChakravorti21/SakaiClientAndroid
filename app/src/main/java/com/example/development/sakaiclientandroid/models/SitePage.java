@@ -25,4 +25,9 @@ public class SitePage {
     public String getSiteId() {
         return siteId;
     }
+
+    @Override
+    public String toString() {
+        return (this.title + ", " + this.id);
+    }
 }

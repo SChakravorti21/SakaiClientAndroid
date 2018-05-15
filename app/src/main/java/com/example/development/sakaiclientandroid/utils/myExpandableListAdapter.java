@@ -1,4 +1,4 @@
-package com.example.development.sakaiclientandroid;
+package com.example.development.sakaiclientandroid.utils;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
+
+import com.example.development.sakaiclientandroid.R;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
