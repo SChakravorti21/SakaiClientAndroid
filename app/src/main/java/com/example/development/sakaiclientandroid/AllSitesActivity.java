@@ -60,13 +60,20 @@ public class AllSitesActivity extends AppCompatActivity {
         this.listAdapter = new myExpandableListAdapter(this, headersList, childsMap);
         this.expListView.setAdapter(this.listAdapter);
 
-        this.expListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+        expListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
 
             @Override
-            public boolean onChildClick(ExpandableListView parent, View v, int groupPos, int childPos, long id) {
-                String txt = headersList.get(groupPos) + " : " + childsMap.get(headersList.get(groupPos)).get(childPos);
-                Toast.makeText(getApplicationContext(), txt, Toast.LENGTH_SHORT).show();
-                return false;
+            public boolean onChildClick(ExpandableListView parent, View v,
+                                        int groupPosition, int childPosition, long id) {
+                Toast.makeText(
+                        getApplicationContext(),
+                        headersList.get(groupPosition)
+                                + " : "
+                                + childsMap.get(
+                                headersList.get(groupPosition)).get(
+                                childPosition), Toast.LENGTH_SHORT)
+                        .show();
+                return true;
             }
         });
 

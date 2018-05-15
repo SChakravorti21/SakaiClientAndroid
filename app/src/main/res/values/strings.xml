@@ -18,7 +18,7 @@
     <string name="announcements">Announcements</string>
     <string name="assignments">Assignments</string>
     <string name="gradebook">Gradebook</string>
-    <string name="none">None</string>
+    <string name="none_string">None</string>
 
     <string name="spring">Spring</string>
     <string name="summer">Summer</string>

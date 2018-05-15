@@ -9,6 +9,11 @@
         android:layout_height="wrap_content"
         android:paddingLeft="?android:attr/expandableListPreferredItemPaddingLeft"
         android:textSize="25dp"
-        android:textColor="#000066" />
+        android:textColor="#000066"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:clickable="false"
+        android:textIsSelectable="false"
+        />
 
 </android.support.constraint.ConstraintLayout>
