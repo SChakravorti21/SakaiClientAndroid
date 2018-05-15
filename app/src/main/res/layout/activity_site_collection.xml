@@ -4,6 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SiteCollectionActivity">
+    tools:context=".SitePagesActivity">
+
+    <ListView
+        android:id="@+id/site_page_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></ListView>
 
 </android.support.constraint.ConstraintLayout>
