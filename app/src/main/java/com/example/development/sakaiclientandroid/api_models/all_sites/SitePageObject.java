@@ -2,6 +2,8 @@ package com.example.development.sakaiclientandroid.api_models.all_sites;
 
 import java.io.Serializable;
 import java.lang.Long;
+
+import com.example.development.sakaiclientandroid.models.SitePage;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -23,7 +25,7 @@ public class SitePageObject implements Serializable
     private Long position;
     @SerializedName("props")
     @Expose
-    private Object props;
+    private SitePagePropsObject props;
     @SerializedName("reference")
     @Expose
     private String reference;
@@ -85,11 +87,11 @@ public class SitePageObject implements Serializable
         this.position = position;
     }
 
-    public Object getProps() {
+    public SitePagePropsObject getProps() {
         return props;
     }
 
-    public void setProps(Object props) {
+    public void setProps(SitePagePropsObject props) {
         this.props = props;
     }
 
