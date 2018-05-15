@@ -65,14 +65,23 @@ public class AllSitesActivity extends AppCompatActivity {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v,
                                         int groupPosition, int childPosition, long id) {
-                Toast.makeText(
-                        getApplicationContext(),
-                        headersList.get(groupPosition)
-                                + " : "
-                                + childsMap.get(
-                                headersList.get(groupPosition)).get(
-                                childPosition), Toast.LENGTH_SHORT)
-                        .show();
+
+                String classTitle =  childsMap.get(headersList.get(groupPosition)).get(childPosition);
+
+                for(SiteCollection col : siteCollections) {
+                    if(col.getTitle().equals(classTitle)) {
+
+
+                        Intent i = new Intent(AllSitesActivity.this, SiteCollectionActivity.class);
+                        String serialized = gS.toJson(col);
+
+                        i.putExtra(getString(R.string.AllSitesActivity), serialized);
+                        startActivity(i);
+                        break;
+
+                    }
+                }
+
                 return true;
             }
         });
