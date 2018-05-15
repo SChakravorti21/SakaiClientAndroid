@@ -40,10 +40,10 @@ public class Term implements Comparable<Term>{
             return "fall";
         }
         else if(termInt >= 6) {
-            return "spring";
+            return "summer";
         }
         else {
-            return "summer";
+            return "spring";
         }
     }
 
