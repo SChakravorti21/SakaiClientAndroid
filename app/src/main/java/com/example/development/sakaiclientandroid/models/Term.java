@@ -30,20 +30,20 @@ public class Term implements Comparable<Term>{
 
         if(termInt == 0) {
 //            return Resources.getSystem().getString(R.string.none_string);
-                return "None";
+                return "General";
         }
 
         else if(termInt >= 12) {
-            return "winter";
+            return "Winter";
         }
         else if(termInt >= 9) {
-            return "fall";
+            return "Fall";
         }
         else if(termInt >= 6) {
-            return "summer";
+            return "Summer";
         }
         else {
-            return "spring";
+            return "Spring";
         }
     }
 
