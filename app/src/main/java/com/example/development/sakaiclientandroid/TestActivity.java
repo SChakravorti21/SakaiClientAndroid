@@ -7,9 +7,20 @@ import android.widget.Toast;
 
 import com.example.development.sakaiclientandroid.api_models.all_sites.AllSitesAPI;
 import com.example.development.sakaiclientandroid.api_models.all_sites.SiteCollectionObject;
+import com.example.development.sakaiclientandroid.api_models.all_sites.SitePageObject;
 import com.example.development.sakaiclientandroid.services.SakaiService;
 import com.example.development.sakaiclientandroid.utils.HeaderInterceptor;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.lang.reflect.Array;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
@@ -63,11 +74,32 @@ public class TestActivity extends AppCompatActivity {
 
                 try {
 
+                    String body = response.body().string();
+
                     Gson gson = new Gson();
-                    AllSitesAPI api = gson.fromJson(response.body().string(), AllSitesAPI.class);
-                    Log.d("piano", api.getSiteCollectionObject().get(5).getSitePageObjects().size() + "");
+                    AllSitesAPI api = gson.fromJson(body, AllSitesAPI.class);
+
+
+
+                    Type type = new TypeToken<ArrayList<SitePageObject>>(){}.getType();
+
+                    JSONObject obj = new JSONObject(body);
+                    JSONArray colls = obj.getJSONArray("site_collection");
+
+                    for(int i = 0; i < colls.length(); i++) {
+                        JSONObject collection = colls.getJSONObject(i);
+                        JSONArray sitePages = collection.getJSONArray("sitePages");
+                        String stringSitePages = sitePages.toString();
+
+                        ArrayList<SitePageObject> sites = gson.fromJson(stringSitePages, type);
+                        api.getSiteCollectionObject().get(i).setSitePageObjects(sites);
+                    }
+
+                    Log.d("yolo", api.getSiteCollectionObject().get(0).getSitePageObjects().size() +"");
+
 
                 }
+
                 catch(Exception e) {
                     e.printStackTrace();
                 }

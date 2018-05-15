@@ -10,19 +10,26 @@ import android.widget.Toast;
 
 import com.example.development.sakaiclientandroid.api_models.all_sites.AllSitesAPI;
 import com.example.development.sakaiclientandroid.api_models.all_sites.SiteCollectionObject;
+import com.example.development.sakaiclientandroid.api_models.all_sites.SitePageObject;
 import com.example.development.sakaiclientandroid.models.SiteCollection;
 import com.example.development.sakaiclientandroid.models.Term;
 import com.example.development.sakaiclientandroid.services.SakaiService;
 import com.example.development.sakaiclientandroid.utils.HeaderInterceptor;
 import com.example.development.sakaiclientandroid.utils.myExpandableListAdapter;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
 import okhttp3.OkHttpClient;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -76,37 +83,56 @@ public class AllSitesActivity extends AppCompatActivity {
         // Making a test request using a retrofit client
         // and the getAllSites endpoint (which fetches "site.json")
         SakaiService sakaiService = retrofit.create(SakaiService.class);
-        Call<AllSitesAPI> fetchSitesCall = sakaiService.getAllSites();
-        fetchSitesCall.enqueue(new Callback<AllSitesAPI>() {
+        Call<ResponseBody> fetchSitesCall = sakaiService.getResponseBody();
+
+        fetchSitesCall.enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(Call<AllSitesAPI> call, Response<AllSitesAPI> response) {
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 Log.i("Response", "SUCCESS!");
                 Log.i("Status Code", "" + response.code());
 
-                AllSitesAPI allSitesAPI = response.body();
+                try {
 
-                if(allSitesAPI.getSiteCollectionObject().size() == 0) {
-                    Log.i("List size", "no sites");
-                    Toast.makeText(getApplicationContext(), "Error: No sites", Toast.LENGTH_SHORT).show();
-                } else {
-                    // Log each site that was fetched
-                    for(SiteCollectionObject site : allSitesAPI.getSiteCollectionObject()) {
-                        Log.i("SiteCollectionObject", site.toString());
+                    String body = response.body().string();
+
+                    Gson gson = new Gson();
+                    AllSitesAPI api = gson.fromJson(body, AllSitesAPI.class);
+
+
+
+                    Type type = new TypeToken<ArrayList<SitePageObject>>(){}.getType();
+
+                    JSONObject obj = new JSONObject(body);
+                    JSONArray colls = obj.getJSONArray("site_collection");
+
+                    for(int i = 0; i < colls.length(); i++) {
+                        JSONObject collection = colls.getJSONObject(i);
+                        JSONArray sitePages = collection.getJSONArray("sitePages");
+                        String stringSitePages = sitePages.toString();
+
+                        ArrayList<SitePageObject> sites = gson.fromJson(stringSitePages, type);
+                        api.getSiteCollectionObject().get(i).setSitePageObjects(sites);
                     }
+
+                    Log.d("yolo", api.getSiteCollectionObject().get(0).getSitePageObjects().size() +"");
+
+                    feedExpandableListData(api);
+
                 }
 
-                //on a success, we give the returned sites to the feedExpandableListData so that
-                //we can display the data correctly
-                feedExpandableListData(allSitesAPI);
+                catch(Exception e) {
+                    e.printStackTrace();
+                }
+
+
             }
 
             @Override
-            public void onFailure(Call<AllSitesAPI> call, Throwable t) {
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
                 // TODO: Handle errors give proper error message
                 Log.i("Response", "failure");
                 Log.e("Response error", t.getMessage());
 
-                Toast.makeText(getApplicationContext(), "Authentication Error", Toast.LENGTH_SHORT).show();
             }
         });
 

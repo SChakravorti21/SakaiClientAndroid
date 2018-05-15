@@ -36,7 +36,7 @@ public class WebViewActivity extends AppCompatActivity {
                         SharedPrefsUtil.saveHeaders(getApplicationContext(),
                                 "Headers", savedHeaders);
 
-                        Intent intent = new Intent(WebViewActivity.this, TestActivity.class);
+                        Intent intent = new Intent(WebViewActivity.this, AllSitesActivity.class);
                         startActivity(intent);
                     }
                 }
