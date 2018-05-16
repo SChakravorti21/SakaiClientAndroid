@@ -54,7 +54,7 @@ public class myExpandableListAdapter extends BaseExpandableListAdapter {
         return this.childTitles.get(this.headerTitles.get(groupPos)).get(childPos);
     }
 
-    public int getChildResId(int groupPos, int childPos) {
+    public int getChildSubjectCode(int groupPos, int childPos) {
         return this.subjectCodePerChild.get(this.headerTitles.get(groupPos)).get(childPos);
     }
 
@@ -104,13 +104,55 @@ public class myExpandableListAdapter extends BaseExpandableListAdapter {
         textListChild.setText(childText);
 
         ImageView imageView = convertView.findViewById(R.id.lblListItemImage);
-        imageView.setImageResource(R.drawable.ic_computer);
 
-//        final int resId = getChildResId(groupPos, childPos);
-//        imageView.setImageResource(resId);
+
+        int subjectCode = getChildSubjectCode(groupPos, childPos);
+        setSiteIcon(imageView, subjectCode);
+
 
 
         return convertView;
+    }
+
+
+    public void setSiteIcon(ImageView imageView, int subjectCode) {
+
+        switch(subjectCode) {
+            case 13:
+                imageView.setImageResource(R.drawable.ic_language);
+                break;
+            case 80:
+                imageView.setImageResource(R.drawable.ic_art);
+                break;
+            case 81:
+                imageView.setImageResource(R.drawable.ic_art);
+                break;
+            case 160:
+                imageView.setImageResource(R.drawable.ic_chemistry);
+                break;
+            case 198:
+                imageView.setImageResource(R.drawable.ic_computer);
+                break;
+            case 220:
+                imageView.setImageResource(R.drawable.ic_economics);
+                break;
+            case 420:
+                imageView.setImageResource(R.drawable.ic_language);
+                break;
+            case 447:
+                imageView.setImageResource(R.drawable.ic_genetics);
+                break;
+            case 640:
+                imageView.setImageResource(R.drawable.ic_math);
+                break;
+            case 700:
+                imageView.setImageResource(R.drawable.ic_music);
+                break;
+            case 750:
+                imageView.setImageResource(R.drawable.ic_physics);
+                break;
+
+        }
     }
 
     @Override

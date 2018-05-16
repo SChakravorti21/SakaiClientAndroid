@@ -12,7 +12,6 @@ import android.widget.ExpandableListView;
 import com.example.development.sakaiclientandroid.api_models.all_sites.AllSitesAPI;
 import com.example.development.sakaiclientandroid.models.SiteCollection;
 import com.example.development.sakaiclientandroid.models.Term;
-import com.example.development.sakaiclientandroid.utils.RutgersSubjectCodes;
 import com.example.development.sakaiclientandroid.utils.myExpandableListAdapter;
 import com.google.gson.Gson;
 
@@ -179,11 +178,11 @@ public class HomeFragment extends Fragment {
 
                 tempChildList.add(collection.getTitle());
 
-                //adds the resource ID of that subject code to the hashmap
+                //adds subject code to hashmap
                 int subjectCode = collection.getSubjectCode();
-                int resId = RutgersSubjectCodes.getResourceIdFromSubjectCode(subjectCode, getActivity().getPackageName());
-
-                tempSubjectCodeList.add(resId);
+                tempSubjectCodeList.add(subjectCode);
+//                int resId = RutgersSubjectCodes.getResourceIdFromSubjectCode(subjectCode, getActivity().getPackageName(), getContext());
+//                tempSubjectCodeList.add(resId);
             }
 
             this.childImgResId.put(termKey, tempSubjectCodeList);
