@@ -18,6 +18,7 @@ public class SiteCollection {
     private Term term;
     private ArrayList<SitePage> sitePages;
     private String siteOwner;
+    private int subjectCode;
 
 
 
@@ -51,6 +52,22 @@ public class SiteCollection {
         }
 
         this.sitePages = sitePages;
+
+
+        String providerGroupId = siteCollectionObject.getProviderGroupId();
+        if(providerGroupId != null) {
+
+            providerGroupId = providerGroupId.replace("+", "_delim_");
+
+            try {
+                String courseCode = providerGroupId.split("_delim_")[0];
+                String subjectCode = courseCode.split(":")[3];
+                this.subjectCode = Integer.parseInt(subjectCode);
+            } catch (Exception e) {
+                e.printStackTrace();
+                this.subjectCode = -1;
+            }
+        }
 
     }
 
@@ -96,6 +113,14 @@ public class SiteCollection {
 
     public ArrayList<SitePage> getSitePages() {
         return sitePages;
+    }
+
+    public String getSiteOwner() {
+        return siteOwner;
+    }
+
+    public int getSubjectCode() {
+        return subjectCode;
     }
 
 

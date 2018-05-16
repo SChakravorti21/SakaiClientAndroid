@@ -1,6 +1,7 @@
 package com.example.development.sakaiclientandroid.services;
 
 import com.example.development.sakaiclientandroid.api_models.all_sites.AllSitesAPI;
+import com.example.development.sakaiclientandroid.api_models.gradebook.AllGradesObject;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -17,4 +18,7 @@ public interface SakaiService {
 
     @GET("site.json")
     Call<ResponseBody> getResponseBody();
+
+    @GET("gradebook/my.json")
+    Call<AllGradesObject> getAllGrades();
 }

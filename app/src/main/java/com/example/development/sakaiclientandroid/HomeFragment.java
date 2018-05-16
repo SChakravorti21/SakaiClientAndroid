@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +12,7 @@ import android.widget.ExpandableListView;
 import com.example.development.sakaiclientandroid.api_models.all_sites.AllSitesAPI;
 import com.example.development.sakaiclientandroid.models.SiteCollection;
 import com.example.development.sakaiclientandroid.models.Term;
+import com.example.development.sakaiclientandroid.utils.RutgersSubjectCodes;
 import com.example.development.sakaiclientandroid.utils.myExpandableListAdapter;
 import com.google.gson.Gson;
 
@@ -29,6 +29,7 @@ public class HomeFragment extends Fragment {
     private ExpandableListView expListView;
     private List<String> headersList;
     private HashMap<String, List<String>> childsMap;
+    private HashMap<String, List<Integer>> childImgResId;
 
 
 
@@ -52,7 +53,18 @@ public class HomeFragment extends Fragment {
 
             api.fillSitePages(body);
 
-            feedExpandableListData(api, view.findViewById(R.id.lvExp));
+
+            ExpandableListView sitesListView = view.findViewById(R.id.lvExp);
+
+            feedExpandableListData(api, sitesListView);
+
+
+            //expand the list view by default
+            for(int i = 0; i < this.headersList.size(); i++) {
+                sitesListView.expandGroup(i);
+            }
+
+
         }
 
         return view;
@@ -75,7 +87,7 @@ public class HomeFragment extends Fragment {
 
         fillListData(organizeByTerm(siteCollections));
 
-        listAdapter = new myExpandableListAdapter(getActivity(), headersList, childsMap);
+        listAdapter = new myExpandableListAdapter(getActivity(), headersList, childsMap, childImgResId);
         expListView.setAdapter(listAdapter);
 
         expListView.setOnChildClickListener(new ExpandableListViewOnChildClickListener());
@@ -97,7 +109,7 @@ public class HomeFragment extends Fragment {
         Collections.sort(siteCollections, (x, y) -> -1 * x.getTerm().compareTo(y.getTerm()));
 
 
-        ArrayList<ArrayList<SiteCollection>> sorted = new ArrayList<ArrayList<SiteCollection>>();
+        ArrayList<ArrayList<SiteCollection>> sorted = new ArrayList<>();
 
         Term currTerm = siteCollections.get(0).getTerm();
         ArrayList<SiteCollection> currSites = new ArrayList<>();
@@ -138,15 +150,19 @@ public class HomeFragment extends Fragment {
 
         this.headersList = new ArrayList<>();
         this.childsMap = new HashMap<>();
+        this.childImgResId = new HashMap<>();
 
         //sets the Term as the headers for the expandable list view
         //each child is the name of the site in that term
         for(ArrayList<SiteCollection> sitesPerTerm : sorted) {
 
+            //we can just look at the first site's term, since all the terms
+            //should be the same, since we already sorted
             Term currTerm = sitesPerTerm.get(0).getTerm();
 
             String termKey = currTerm.getTermString();
 
+            //don't put the year if the header is just General
             if(!termKey.equals("General")) {
                 termKey += (" " + currTerm.getYear());
             }
@@ -155,12 +171,22 @@ public class HomeFragment extends Fragment {
 
 
             List<String> tempChildList = new ArrayList<>();
+            List<Integer> tempSubjectCodeList = new ArrayList<>();
 
+            //places the title of each site and its corresponding ImgResId into 2 lists
+            //which are then added to the hashmap under the current term header
             for(SiteCollection collection : sitesPerTerm) {
+
                 tempChildList.add(collection.getTitle());
+
+                //adds the resource ID of that subject code to the hashmap
+                int subjectCode = collection.getSubjectCode();
+                int resId = RutgersSubjectCodes.getResourceIdFromSubjectCode(subjectCode, getActivity().getPackageName());
+
+                tempSubjectCodeList.add(resId);
             }
 
-
+            this.childImgResId.put(termKey, tempSubjectCodeList);
             this.childsMap.put(termKey, tempChildList);
         }
 

@@ -4,7 +4,7 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/lblListItem"
+        android:id="@+id/lblListItemText"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textSize="20dip"
@@ -16,6 +16,12 @@
         android:clickable="false"
         android:textIsSelectable="false"
         />
+
+    <ImageView
+        android:paddingTop="8dp"
+        android:id="@+id/lblListItemImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 
 </android.support.constraint.ConstraintLayout>

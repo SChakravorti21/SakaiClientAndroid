@@ -2,19 +2,16 @@ package com.example.development.sakaiclientandroid.utils;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
 import com.example.development.sakaiclientandroid.R;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -24,12 +21,14 @@ public class myExpandableListAdapter extends BaseExpandableListAdapter {
     private Context context;
     private List<String> headerTitles;
     private HashMap<String, List<String>> childTitles;
+    private HashMap<String, List<Integer>> subjectCodePerChild;
 
-    public myExpandableListAdapter(Context c, List<String> headerTitles, HashMap<String, List<String>> childTitles) {
+    public myExpandableListAdapter(Context c, List<String> headerTitles, HashMap<String, List<String>> childTitles, HashMap<String, List<Integer>> subjectCodePerChild) {
+
         this.context = c;
         this.headerTitles = headerTitles;
         this.childTitles = childTitles;
-
+        this.subjectCodePerChild = subjectCodePerChild;
     }
 
 
@@ -53,6 +52,10 @@ public class myExpandableListAdapter extends BaseExpandableListAdapter {
     @Override
     public Object getChild(int groupPos, int childPos) {
         return this.childTitles.get(this.headerTitles.get(groupPos)).get(childPos);
+    }
+
+    public int getChildResId(int groupPos, int childPos) {
+        return this.subjectCodePerChild.get(this.headerTitles.get(groupPos)).get(childPos);
     }
 
     @Override
@@ -97,8 +100,16 @@ public class myExpandableListAdapter extends BaseExpandableListAdapter {
             convertView = inflater.inflate(R.layout.list_item, null);
         }
 
-        TextView textListChild = (TextView) convertView.findViewById(R.id.lblListItem);
+        TextView textListChild = convertView.findViewById(R.id.lblListItemText);
         textListChild.setText(childText);
+
+        ImageView imageView = convertView.findViewById(R.id.lblListItemImage);
+        imageView.setImageResource(R.drawable.ic_computer);
+
+//        final int resId = getChildResId(groupPos, childPos);
+//        imageView.setImageResource(resId);
+
+
         return convertView;
     }
 
