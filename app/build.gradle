@@ -9,6 +9,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {
@@ -16,7 +17,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    buildToolsVersion '26.0.2'
+    buildToolsVersion '27.0.3'
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -28,18 +29,19 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support:design:26.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+    implementation 'com.android.support:support-vector-drawable:26.1.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    compile 'com.squareup.retrofit2:retrofit:2.3.0'
-    compile 'com.squareup.retrofit2:converter-gson:2.3.0'
+    api 'com.squareup.retrofit2:retrofit:2.3.0'
+    api 'com.squareup.retrofit2:converter-gson:2.3.0'
     //Retrofit is used for network requests
-    compile 'com.squareup.retrofit2:retrofit:2.4.0'
+    api 'com.squareup.retrofit2:retrofit:2.4.0'
     //OkHttp allows us to create interceptors for the requests
-    compile 'com.squareup.okhttp3:okhttp:3.10.0'
+    api 'com.squareup.okhttp3:okhttp:3.10.0'
     //Using the GSON converter factory to convert JSON to POJOs
-    compile 'com.google.code.gson:gson:2.8.4'
-    compile 'com.squareup.retrofit2:converter-gson:2.3.0'
+    api 'com.google.code.gson:gson:2.8.4'
+    api 'com.squareup.retrofit2:converter-gson:2.3.0'
     //Common-Lang3 is used for toString of POJOs
-    compile 'org.apache.commons:commons-lang3:3.6'
+    api 'org.apache.commons:commons-lang3:3.6'
 }

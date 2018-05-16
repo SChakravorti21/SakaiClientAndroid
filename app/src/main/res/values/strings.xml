@@ -32,4 +32,11 @@
     <string name="COOKIE_URL_1">https://sakai.rutgers.edu/sakai-login-tool/container</string>
     <string name="COOKIE_URL_2">https://sakai.rutgers.edu/portal</string>
     <string name="COOKIE_URL_3">https://cas.rutgers.edu/login</string>
+    <string name="title_activity_nav">NavActivity</string>
+
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="title_assignments">Assignments</string>
+    <string name="title_gradebook">Gradebook</string>
 </resources>
