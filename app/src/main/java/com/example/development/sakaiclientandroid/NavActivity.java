@@ -7,19 +7,9 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.ExpandableListView;
-import android.widget.TextView;
 
-import com.example.development.sakaiclientandroid.api_models.all_sites.AllSitesAPI;
-import com.example.development.sakaiclientandroid.models.SiteCollection;
 import com.example.development.sakaiclientandroid.services.SakaiService;
 import com.example.development.sakaiclientandroid.utils.HeaderInterceptor;
-import com.example.development.sakaiclientandroid.utils.myExpandableListAdapter;
-import com.google.gson.Gson;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
@@ -37,6 +27,8 @@ public class NavActivity extends AppCompatActivity
     private String cookieUrl;
 
     OkHttpClient httpClient;
+
+    private String responseBody;
 
 
     @Override
@@ -81,11 +73,11 @@ public class NavActivity extends AppCompatActivity
 
                 try {
 
-                    String body = response.body().string();
+                    responseBody = response.body().string();
 
 
                     Bundle bundle = new Bundle();
-                    bundle.putString(getString(R.string.title_activity_nav), body);
+                    bundle.putString(getString(R.string.title_activity_nav), responseBody);
 
                     HomeFragment fragment = new HomeFragment();
                     fragment.setArguments(bundle);
@@ -139,11 +131,31 @@ public class NavActivity extends AppCompatActivity
         switch(item.getItemId()) {
 
             case R.id.navigation_home:
+
+                Bundle bundle = new Bundle();
+                bundle.putString(getString(R.string.title_activity_nav), responseBody);
+
                 fragment = new HomeFragment();
+                fragment.setArguments(bundle);
                 break;
-            case R.id.navigation_notifications:
+
+
+            case R.id.navigation_announcements:
                 fragment = new AnnouncementsFragment();
                 break;
+
+            case R.id.navigation_assignments:
+
+                break;
+
+            case R.id.navigation_gradebook:
+
+                break;
+
+            case R.id.navigation_settings:
+
+                break;
+
         }
 
         return this.loadFragment(fragment);

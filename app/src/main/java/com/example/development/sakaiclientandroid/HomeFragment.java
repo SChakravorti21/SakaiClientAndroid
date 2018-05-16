@@ -34,8 +34,16 @@ public class HomeFragment extends Fragment {
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(getArguments() != null) {
 
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        View view = inflater.inflate(R.layout.fragment_home, null);
+
+        if(getArguments() != null) {
 
             String body = getArguments().getString(getString(R.string.title_activity_nav));
 
@@ -44,15 +52,12 @@ public class HomeFragment extends Fragment {
 
             api.fillSitePages(body);
 
-            feedExpandableListData(api);
+            feedExpandableListData(api, view.findViewById(R.id.lvExp));
         }
-    }
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return view;
 
-        return inflater.inflate(R.layout.fragment_home, null);
+
     }
 
 
@@ -64,10 +69,9 @@ public class HomeFragment extends Fragment {
      *
      * @param allSitesAPI API object that contains data received from retrofit.
      */
-    private void feedExpandableListData(AllSitesAPI allSitesAPI) {
+    private void feedExpandableListData(AllSitesAPI allSitesAPI, ExpandableListView expListView) {
 
         siteCollections = SiteCollection.convertApiToSiteCollection(allSitesAPI.getSiteCollectionObject());
-        expListView = getActivity().findViewById(R.id.lvExp);
 
         fillListData(organizeByTerm(siteCollections));
 

@@ -6,12 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".HomeFragment">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="hello"
-        android:textSize="30dp"/>
-
 
     <ExpandableListView
         android:id="@+id/lvExp"
