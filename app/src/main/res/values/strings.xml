@@ -39,4 +39,5 @@
     <string name="title_notifications">Notifications</string>
     <string name="title_assignments">Assignments</string>
     <string name="title_gradebook">Gradebook</string>
+    <string name="title_settings">Settings</string>
 </resources>

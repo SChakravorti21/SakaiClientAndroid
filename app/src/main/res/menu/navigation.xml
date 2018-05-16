@@ -21,4 +21,9 @@
         android:icon="@drawable/ic_book"
         android:title="@string/title_gradebook"/>
 
+    <item
+        android:id="@+id/navigation_settings"
+        android:icon="@drawable/ic_gear"
+        android:title="@string/title_settings"/>
+
 </menu>
