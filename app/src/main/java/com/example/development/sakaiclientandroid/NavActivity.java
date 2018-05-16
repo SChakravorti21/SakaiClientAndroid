@@ -19,6 +19,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+
+
 public class NavActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener{
 
@@ -101,11 +103,14 @@ public class NavActivity extends AppCompatActivity
             }
         });
 
-
-        loadFragment(new HomeFragment());
     }
 
 
+    /**
+     * Loads a given fragment into the fragment container in the NavActivity layout
+     * @param fragment
+     * @return boolean whether the fragment was successfully loaded
+     */
     private boolean loadFragment(Fragment fragment) {
 
         if(fragment != null) {
@@ -122,6 +127,15 @@ public class NavActivity extends AppCompatActivity
     }
 
 
+    /**
+     * When an item on the navigation bar is selected, creates the respective fragment
+     * and then loads the fragment into the Frame Layout. For the HomeFragment, we have to
+     * put the responseBody of the request into the bundle and give it to the fragment, so that
+     * the fragment has data to display all the site collections.
+     *
+     * @param item
+     * @return whether the fragment was successfully loaded.
+     */
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 

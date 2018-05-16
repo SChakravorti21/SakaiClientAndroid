@@ -25,7 +25,6 @@ public class HomeFragment extends Fragment {
     private ArrayList<SiteCollection> siteCollections;
 
     private myExpandableListAdapter listAdapter;
-    private ExpandableListView expListView;
     private List<String> headersList;
     private HashMap<String, List<String>> childsMap;
     private HashMap<String, List<Integer>> childImgResId;
@@ -37,6 +36,16 @@ public class HomeFragment extends Fragment {
 
     }
 
+
+    /**
+     * When the fragment view is created, we want to get the responseBody from the bundle so
+     * it can be displayed. This raw data is parsed, sorted, and then given to the
+     * expandable list viewer for display.
+     * @param inflater used to inflate our layout
+     * @param container .
+     * @param savedInstanceState used to get the arguments that were passed to this fragment
+     * @return  created view
+     */
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -55,6 +64,8 @@ public class HomeFragment extends Fragment {
 
             ExpandableListView sitesListView = view.findViewById(R.id.lvExp);
 
+            //give the reference of the expandable list view to this method, so it can be
+            //filled
             feedExpandableListData(api, sitesListView);
 
 
@@ -67,7 +78,6 @@ public class HomeFragment extends Fragment {
         }
 
         return view;
-
 
     }
 
@@ -138,9 +148,11 @@ public class HomeFragment extends Fragment {
         return sorted;
     }
 
+
+
     /**
      * takes an ArrayList of SiteCollections already organized and sorted by term
-     * puts that data into the headersList and child hashmap to be displayed in the
+     * puts that data into the headersList and child HashMap to be displayed in the
      * expandable list view in the current activity
      *
      * @param sorted ArrayList of ArrayList of SiteCollection Objects
@@ -178,6 +190,7 @@ public class HomeFragment extends Fragment {
 
                 tempChildList.add(collection.getTitle());
 
+                //TODO figure out a way to add the resource Id values directly, for more abstraction
                 //adds subject code to hashmap
                 int subjectCode = collection.getSubjectCode();
                 tempSubjectCodeList.add(subjectCode);
@@ -193,7 +206,10 @@ public class HomeFragment extends Fragment {
     }
 
 
-    //when click a child, serialize the site collection and then send it to the SitePageActivity class
+    /**
+     * when click a child, serialize the site collection and then send it to the SitePageActivity class
+     */
+    //TODO also make this a fragment.
     private class ExpandableListViewOnChildClickListener implements ExpandableListView.OnChildClickListener {
 
         @Override
@@ -204,7 +220,6 @@ public class HomeFragment extends Fragment {
 
             for(SiteCollection col : siteCollections) {
                 if(col.getTitle().equals(classTitle)) {
-
 
                     Gson gS = new Gson();
                     Intent i = new Intent(getActivity().getApplicationContext(), SitePagesActivity.class);
