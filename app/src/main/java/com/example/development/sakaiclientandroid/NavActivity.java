@@ -145,15 +145,15 @@ public class NavActivity extends AppCompatActivity
                 break;
 
             case R.id.navigation_assignments:
-
+                fragment = new AssignmentsFragment();
                 break;
 
             case R.id.navigation_gradebook:
-
+                fragment = new GradebookFragment();
                 break;
 
             case R.id.navigation_settings:
-
+                fragment = new SettingsFragment();
                 break;
 
         }
