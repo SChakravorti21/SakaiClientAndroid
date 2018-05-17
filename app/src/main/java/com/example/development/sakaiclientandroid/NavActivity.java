@@ -8,6 +8,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 
+import com.example.development.sakaiclientandroid.fragments.AnnouncementsFragment;
+import com.example.development.sakaiclientandroid.fragments.AssignmentsFragment;
+import com.example.development.sakaiclientandroid.fragments.GradebookFragment;
+import com.example.development.sakaiclientandroid.fragments.HomeFragment;
+import com.example.development.sakaiclientandroid.fragments.SettingsFragment;
 import com.example.development.sakaiclientandroid.services.SakaiService;
 import com.example.development.sakaiclientandroid.utils.HeaderInterceptor;
 

@@ -25,7 +25,7 @@ public class SitePageObject implements Serializable
     private Long position;
     @SerializedName("props")
     @Expose
-    private SitePagePropsObject props;
+    private Object props;
     @SerializedName("reference")
     @Expose
     private String reference;
@@ -87,11 +87,11 @@ public class SitePageObject implements Serializable
         this.position = position;
     }
 
-    public SitePagePropsObject getProps() {
+    public Object getProps() {
         return props;
     }
 
-    public void setProps(SitePagePropsObject props) {
+    public void setProps(Object props) {
         this.props = props;
     }
 
@@ -169,7 +169,7 @@ public class SitePageObject implements Serializable
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("id", id).append("layout", layout).append("layoutTitle", layoutTitle).append("position", position).append("props", props).append("reference", reference).append("siteId", siteId).append("skin", skin).append("title", title).append("titleCustom", titleCustom).append("url", url).append("activeEdit", activeEdit).append("homePage", homePage).append("popUp", popUp).toString();
+        return new ToStringBuilder(this).append("id", id).append("layout", layout).append("layoutTitle", layoutTitle).append("position", position).append("reference", reference).append("siteId", siteId).append("skin", skin).append("title", title).append("titleCustom", titleCustom).append("url", url).append("activeEdit", activeEdit).append("homePage", homePage).append("popUp", popUp).toString();
     }
 
 }

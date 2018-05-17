@@ -1,4 +1,4 @@
-package com.example.development.sakaiclientandroid;
+package com.example.development.sakaiclientandroid.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 
+import com.example.development.sakaiclientandroid.R;
+import com.example.development.sakaiclientandroid.SitePagesActivity;
 import com.example.development.sakaiclientandroid.api_models.all_sites.AllSitesAPI;
 import com.example.development.sakaiclientandroid.models.SiteCollection;
 import com.example.development.sakaiclientandroid.models.Term;
