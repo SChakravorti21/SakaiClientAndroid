@@ -15,7 +15,7 @@ import com.example.development.sakaiclientandroid.R;
 import java.util.HashMap;
 import java.util.List;
 
-public class myExpandableListAdapter extends BaseExpandableListAdapter {
+public class SiteCollectionsExpandableListAdapter extends BaseExpandableListAdapter {
 
 
     private Context context;
@@ -30,7 +30,7 @@ public class myExpandableListAdapter extends BaseExpandableListAdapter {
      * @param childTitles = HashMap mapping header titles to a list of class titles
      * @param subjectCodePerChild = HashMap mapping header titles to a list of subject codes, which corresponds to the child titles list
      */
-    public myExpandableListAdapter(Context c, List<String> headerTitles, HashMap<String, List<String>> childTitles, HashMap<String, List<Integer>> subjectCodePerChild) {
+    public SiteCollectionsExpandableListAdapter(Context c, List<String> headerTitles, HashMap<String, List<String>> childTitles, HashMap<String, List<Integer>> subjectCodePerChild) {
 
         this.context = c;
         this.headerTitles = headerTitles;

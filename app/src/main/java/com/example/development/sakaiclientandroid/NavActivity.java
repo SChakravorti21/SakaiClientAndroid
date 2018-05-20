@@ -82,7 +82,6 @@ public class NavActivity extends AppCompatActivity
 
                     responseBody = response.body().string();
 
-
                     Bundle bundle = new Bundle();
                     bundle.putString(getString(R.string.title_activity_nav), responseBody);
 
@@ -138,7 +137,7 @@ public class NavActivity extends AppCompatActivity
      * put the responseBody of the request into the bundle and give it to the fragment, so that
      * the fragment has data to display all the site collections.
      *
-     * @param item
+     * @param item = selected item on nav bar
      * @return whether the fragment was successfully loaded.
      */
     @Override

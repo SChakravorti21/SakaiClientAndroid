@@ -14,11 +14,12 @@ import com.example.development.sakaiclientandroid.SitePagesActivity;
 import com.example.development.sakaiclientandroid.api_models.all_sites.AllSitesAPI;
 import com.example.development.sakaiclientandroid.models.SiteCollection;
 import com.example.development.sakaiclientandroid.models.Term;
-import com.example.development.sakaiclientandroid.utils.myExpandableListAdapter;
+import com.example.development.sakaiclientandroid.utils.SiteCollectionsExpandableListAdapter;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class HomeFragment extends Fragment {
 
     private ArrayList<SiteCollection> siteCollections;
 
-    private myExpandableListAdapter listAdapter;
+    private SiteCollectionsExpandableListAdapter listAdapter;
     private List<String> headersList;
     private HashMap<String, List<String>> childsMap;
     private HashMap<String, List<Integer>> childImgResId;
@@ -37,6 +38,7 @@ public class HomeFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
     }
+
 
 
     /**
@@ -76,7 +78,6 @@ public class HomeFragment extends Fragment {
                 sitesListView.expandGroup(i);
             }
 
-
         }
 
         return view;
@@ -98,7 +99,7 @@ public class HomeFragment extends Fragment {
 
         fillListData(organizeByTerm(siteCollections));
 
-        listAdapter = new myExpandableListAdapter(getActivity(), headersList, childsMap, childImgResId);
+        listAdapter = new SiteCollectionsExpandableListAdapter(getActivity(), headersList, childsMap, childImgResId);
         expListView.setAdapter(listAdapter);
 
         expListView.setOnChildClickListener(new ExpandableListViewOnChildClickListener());
@@ -117,7 +118,14 @@ public class HomeFragment extends Fragment {
 
         //term objects extends comparator
         //sorted chronologically (most recent at the top)
-        Collections.sort(siteCollections, (x, y) -> -1 * x.getTerm().compareTo(y.getTerm()));
+        Collections.sort(siteCollections, new Comparator<SiteCollection>() {
+            @Override
+            public int compare(SiteCollection o1, SiteCollection o2) {
+                return -1 * o1.getTerm().compareTo(o2.getTerm());
+            }
+        });
+
+//        Collections.sort(siteCollections, (x, y) -> -1 * x.getTerm().compareTo(y.getTerm()));
 
 
         ArrayList<ArrayList<SiteCollection>> sorted = new ArrayList<>();
