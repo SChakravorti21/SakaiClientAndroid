@@ -45,6 +45,7 @@ public class RequestManager {
         sakaiService = retrofit.create(SakaiService.class);
     }
 
+
     public static void fetchAllSites(Callback<ResponseBody> responseCallback) {
         Call<ResponseBody> fetchSitesCall = sakaiService.getResponseBody();
         fetchSitesCall.enqueue(responseCallback);

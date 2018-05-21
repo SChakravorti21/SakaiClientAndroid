@@ -13,7 +13,11 @@ import com.example.development.sakaiclientandroid.fragments.AssignmentsFragment;
 import com.example.development.sakaiclientandroid.fragments.GradebookFragment;
 import com.example.development.sakaiclientandroid.fragments.HomeFragment;
 import com.example.development.sakaiclientandroid.fragments.SettingsFragment;
+import com.example.development.sakaiclientandroid.models.Course;
+import com.example.development.sakaiclientandroid.utils.DataHandler;
 import com.example.development.sakaiclientandroid.utils.RequestManager;
+
+import java.util.ArrayList;
 
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
@@ -56,12 +60,15 @@ public class NavActivity extends AppCompatActivity
 
                     responseBody = response.body().string();
 
-                    Bundle bundle = new Bundle();
-                    bundle.putString(getString(R.string.title_activity_nav), responseBody);
+                    ArrayList<Course> test = DataHandler.jsonToCourseObj(responseBody);
+                    Log.d("hihi", test.toString());
 
-                    HomeFragment fragment = new HomeFragment();
-                    fragment.setArguments(bundle);
-                    loadFragment(fragment);
+//                    Bundle bundle = new Bundle();
+//                    bundle.putString(getString(R.string.title_activity_nav), responseBody);
+//
+//                    HomeFragment fragment = new HomeFragment();
+//                    fragment.setArguments(bundle);
+//                    loadFragment(fragment);
 
                 }
 

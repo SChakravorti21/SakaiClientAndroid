@@ -1,21 +1,28 @@
 package com.example.development.sakaiclientandroid.models;
 
-import com.example.development.sakaiclientandroid.api_models.all_sites.SitePageObject;
+import org.json.JSONObject;
 
 public class SitePage {
 
-    private String id;
+    private String url;
     private String title;
     private String siteId;
 
-    public SitePage(SitePageObject sitePageObject) {
-        this.id = sitePageObject.getId();
-        this.title = sitePageObject.getTitle();
-        this.siteId = sitePageObject.getSiteId();
+    public SitePage(JSONObject jsonObj) {
+
+        try {
+            this.siteId = jsonObj.getString("id");
+            this.title = jsonObj.getString("title");
+            this.url = jsonObj.getString("url");
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     public String getId() {
-        return id;
+        return siteId;
     }
 
     public String getTitle() {
@@ -28,6 +35,6 @@ public class SitePage {
 
     @Override
     public String toString() {
-        return (this.title + ", " + this.id);
+        return (this.title + ", " + this.siteId);
     }
 }

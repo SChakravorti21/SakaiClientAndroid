@@ -11,7 +11,6 @@ import android.widget.ExpandableListView;
 
 import com.example.development.sakaiclientandroid.R;
 import com.example.development.sakaiclientandroid.SitePagesActivity;
-import com.example.development.sakaiclientandroid.api_models.all_sites.AllSitesAPI;
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.models.Term;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
@@ -61,19 +60,19 @@ public class HomeFragment extends Fragment {
 
         if(getArguments() != null) {
 
-            String body = getArguments().getString(getString(R.string.title_activity_nav));
+            //TODO change all thiss stuff
+            DataHandler.getCoursesSortedByTerm();
 
-            Gson gson = new Gson();
-            AllSitesAPI api = gson.fromJson(body, AllSitesAPI.class);
 
-            api.fillSitePages(body);
+//            AllSitesAPI api = gson.fromJson(body, AllSitesAPI.class);
+//            api.fillSitePages(body);
 
 
             ExpandableListView sitesListView = view.findViewById(R.id.lvExp);
 
             //give the reference of the expandable list view to this method, so it can be
             //filled
-            feedExpandableListData(api, sitesListView);
+//            feedExpandableListData(api, sitesListView);
 
 
             //expand the list view by default
@@ -98,7 +97,7 @@ public class HomeFragment extends Fragment {
      */
     private void feedExpandableListData(AllSitesAPI allSitesAPI, ExpandableListView expListView) {
 
-        courses = Course.convertApiToSiteCollection(allSitesAPI.getSiteCollectionObject());
+//        courses = Course.convertApiToSiteCollection(allSitesAPI.getSiteCollectionObject());
 
         fillListData(DataHandler.getCoursesSortedByTerm());
 

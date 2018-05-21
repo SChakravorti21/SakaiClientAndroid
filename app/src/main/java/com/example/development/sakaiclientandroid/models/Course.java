@@ -1,14 +1,12 @@
 package com.example.development.sakaiclientandroid.models;
 
-import com.example.development.sakaiclientandroid.api_models.all_sites.PropsObject;
-import com.example.development.sakaiclientandroid.api_models.all_sites.SiteCollectionObject;
-import com.example.development.sakaiclientandroid.api_models.all_sites.SiteOwnerObject;
-import com.example.development.sakaiclientandroid.api_models.all_sites.SitePageObject;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class Course {
+
 
     private String id;
     private String title;
@@ -20,70 +18,63 @@ public class Course {
 
 
 
-    public Course(SiteCollectionObject siteCollectionObject) {
+    public Course(JSONObject jsonObject) {
+
+        try {
+
+            String id = jsonObject.getString("id");
+            this.setId(id);
+
+            String desc = jsonObject.getString("description");
+            this.setDescription(desc);
+
+            String title = jsonObject.getString("title");
+            this.setTitle(title);
+
+            JSONObject props = jsonObject.getJSONObject("props");
+            String term_eid = props.getString("term_eid");
+            Term courseTerm = new Term(term_eid);
+            this.setTerm(courseTerm);
+
+            JSONObject siteOwner = jsonObject.getJSONObject("siteOwner");
+            String ownerName = siteOwner.getString("userDisplayName");
+            this.setSiteOwner(ownerName);
 
 
-        this.title = siteCollectionObject.getTitle();
-        this.description = siteCollectionObject.getDescription();
-        this.id = siteCollectionObject.getId();
+            String providerGroupId = jsonObject.getString("providerGroupId");
+            if (providerGroupId != null) {
 
-        PropsObject propsObject = siteCollectionObject.getPropsObject();
+                providerGroupId = providerGroupId.replace("+", "_delim_");
 
-        if(propsObject != null && propsObject.getTermEid() != null) {
-            this.term = new Term(propsObject.getTermEid());
-        }
-        else {
-            this.term = new Term("0000:0");
-        }
-
-
-
-        SiteOwnerObject siteOwnerAPI = siteCollectionObject.getSiteOwnerObject();
-        this.siteOwner = (siteOwnerAPI != null) ? siteOwnerAPI.getUserDisplayName() : "None";
-
-        //converts each sitePageAPI object into a SitePage object by getting rid of
-        //useless information
-        ArrayList<SitePage> sitePages = new ArrayList<>();
-
-        for(SitePageObject page : siteCollectionObject.getSitePageObjects()) {
-            sitePages.add(new SitePage(page));
-        }
-
-        this.sitePages = sitePages;
-
-
-        String providerGroupId = siteCollectionObject.getProviderGroupId();
-        if(providerGroupId != null) {
-
-            providerGroupId = providerGroupId.replace("+", "_delim_");
-
-            try {
                 String courseCode = providerGroupId.split("_delim_")[0];
                 String subjectCode = courseCode.split(":")[3];
-                this.subjectCode = Integer.parseInt(subjectCode);
-            } catch (Exception e) {
-                e.printStackTrace();
-                this.subjectCode = -1;
+                this.setSubjectCode(Integer.parseInt(subjectCode));
+
             }
+
+
+            ArrayList<SitePage> sitePages = new ArrayList<>();
+
+            JSONArray sitePagesObj = jsonObject.getJSONArray("sitePages");
+            for (int j = 0; j < sitePagesObj.length(); j++) {
+                JSONObject pageObj = sitePagesObj.getJSONObject(j);
+                SitePage sitePage = new SitePage(pageObj);
+                sitePages.add(sitePage);
+            }
+            this.sitePages = sitePages;
+
+        }
+        catch(Exception e) {
+            e.printStackTrace();
         }
 
     }
 
 
-    public static ArrayList<Course> convertApiToSiteCollection(List<SiteCollectionObject> siteCollectionAPIS) {
-
-        ArrayList<Course> courses = new ArrayList<>();
-        for(SiteCollectionObject siteAPI : siteCollectionAPIS) {
-            courses.add(new Course(siteAPI));
-        }
-
-        return courses;
-
-    }
 
     @Override
     public String toString() {
-        String ret = (this.title + " : " + this.term + "     Sites:   ");
+        String ret = (this.title + " : " + this.term.toString() + "     Sites:   ");
         for(SitePage s : this.sitePages) {
             ret += s.toString() + ";  ";
         }
@@ -119,6 +110,34 @@ public class Course {
 
     public int getSubjectCode() {
         return subjectCode;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setTerm(Term term) {
+        this.term = term;
+    }
+
+    public void setSitePages(ArrayList<SitePage> sitePages) {
+        this.sitePages = sitePages;
+    }
+
+    public void setSiteOwner(String siteOwner) {
+        this.siteOwner = siteOwner;
+    }
+
+    public void setSubjectCode(int subjectCode) {
+        this.subjectCode = subjectCode;
     }
 
 

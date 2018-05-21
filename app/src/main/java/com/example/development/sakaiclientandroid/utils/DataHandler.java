@@ -3,6 +3,9 @@ package com.example.development.sakaiclientandroid.utils;
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.models.Term;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -25,6 +28,31 @@ public class DataHandler {
     //get all grades sorted by term, and then by time.
 
     // **repeat for assignments, announcements**
+
+    public static ArrayList<Course> jsonToCourseObj(String responseBody) {
+
+
+        ArrayList<Course> coursesList = new ArrayList<>();
+
+
+        try {
+            JSONObject obj = new JSONObject(responseBody);
+            JSONArray courses = obj.getJSONArray("site_collection");
+
+            for (int i = 0; i < courses.length(); i++) {
+
+                JSONObject currCourse = courses.getJSONObject(i);
+                Course c = new Course(currCourse);
+                coursesList.add(c);
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+
+
+        return coursesList;
+    }
 
 
     public static Course getCourseFromId(String siteId) {

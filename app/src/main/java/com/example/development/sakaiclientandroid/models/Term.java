@@ -85,5 +85,10 @@ public class Term implements Comparable<Term>{
         return termString;
     }
 
+    @Override
+    public String toString() {
+        return this.termString + "  " + this.termInt;
+    }
+
 
 }
