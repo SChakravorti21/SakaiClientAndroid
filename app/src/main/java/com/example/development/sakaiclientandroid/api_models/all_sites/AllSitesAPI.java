@@ -49,7 +49,7 @@ public class AllSitesAPI implements Serializable
 
     /**
      * Takes the json string of the response from sakai and uses the JSONObject library to
-     * get the json list of SitePages for each SiteCollection, and then uses Gson to convert this
+     * get the json list of SitePages for each Course, and then uses Gson to convert this
      * json into an ArrayList of SitePageObject objects. This List is then added to the sitePageObject field
      * of the AllSitesApi class
      *

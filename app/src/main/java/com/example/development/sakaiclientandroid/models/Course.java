@@ -1,7 +1,5 @@
 package com.example.development.sakaiclientandroid.models;
 
-import android.util.Log;
-
 import com.example.development.sakaiclientandroid.api_models.all_sites.PropsObject;
 import com.example.development.sakaiclientandroid.api_models.all_sites.SiteCollectionObject;
 import com.example.development.sakaiclientandroid.api_models.all_sites.SiteOwnerObject;
@@ -10,7 +8,7 @@ import com.example.development.sakaiclientandroid.api_models.all_sites.SitePageO
 import java.util.ArrayList;
 import java.util.List;
 
-public class SiteCollection {
+public class Course {
 
     private String id;
     private String title;
@@ -22,7 +20,7 @@ public class SiteCollection {
 
 
 
-    public SiteCollection(SiteCollectionObject siteCollectionObject) {
+    public Course(SiteCollectionObject siteCollectionObject) {
 
 
         this.title = siteCollectionObject.getTitle();
@@ -72,14 +70,14 @@ public class SiteCollection {
     }
 
 
-    public static ArrayList<SiteCollection> convertApiToSiteCollection(List<SiteCollectionObject> siteCollectionAPIS) {
+    public static ArrayList<Course> convertApiToSiteCollection(List<SiteCollectionObject> siteCollectionAPIS) {
 
-        ArrayList<SiteCollection> siteCollections = new ArrayList<>();
+        ArrayList<Course> courses = new ArrayList<>();
         for(SiteCollectionObject siteAPI : siteCollectionAPIS) {
-            siteCollections.add(new SiteCollection(siteAPI));
+            courses.add(new Course(siteAPI));
         }
 
-        return siteCollections;
+        return courses;
 
     }
 

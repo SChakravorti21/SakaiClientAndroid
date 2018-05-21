@@ -12,25 +12,28 @@ import android.widget.ExpandableListView;
 import com.example.development.sakaiclientandroid.R;
 import com.example.development.sakaiclientandroid.SitePagesActivity;
 import com.example.development.sakaiclientandroid.api_models.all_sites.AllSitesAPI;
-import com.example.development.sakaiclientandroid.models.SiteCollection;
+import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.models.Term;
+import com.example.development.sakaiclientandroid.utils.DataHandler;
 import com.example.development.sakaiclientandroid.utils.SiteCollectionsExpandableListAdapter;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
 
-    private ArrayList<SiteCollection> siteCollections;
+    private ArrayList<Course> courses;
 
     private SiteCollectionsExpandableListAdapter listAdapter;
+
     private List<String> headersList;
-    private HashMap<String, List<String>> childsMap;
-    private HashMap<String, List<Integer>> childImgResId;
+    private HashMap<String, List<String>> headerToClassTitle;
+    private HashMap<String, List<String>> headerToClassSiteId;
+
+    private HashMap<String, List<Integer>> headerToClassSubjectCode;
+
 
 
 
@@ -87,7 +90,7 @@ public class HomeFragment extends Fragment {
 
 
     /**
-     * API object from retrofit is converted into usable siteCollections object. This data is then
+     * API object from retrofit is converted into usable courses object. This data is then
      * organized in the fillListData method and then the organized data is given to the listAdapter
      * which then displays the data.
      *
@@ -95,68 +98,18 @@ public class HomeFragment extends Fragment {
      */
     private void feedExpandableListData(AllSitesAPI allSitesAPI, ExpandableListView expListView) {
 
-        siteCollections = SiteCollection.convertApiToSiteCollection(allSitesAPI.getSiteCollectionObject());
+        courses = Course.convertApiToSiteCollection(allSitesAPI.getSiteCollectionObject());
 
-        fillListData(organizeByTerm(siteCollections));
+        fillListData(DataHandler.getCoursesSortedByTerm());
 
-        listAdapter = new SiteCollectionsExpandableListAdapter(getActivity(), headersList, childsMap, childImgResId);
+        listAdapter = new SiteCollectionsExpandableListAdapter(getActivity(), headersList, headerToClassTitle, headerToClassSubjectCode);
         expListView.setAdapter(listAdapter);
 
         expListView.setOnChildClickListener(new ExpandableListViewOnChildClickListener());
     }
 
 
-    /**
-     * Organizes the SiteCollection objects by term. Makes a seperate ArrayList for sites collections
-     * in the same term; terms are sorted chronologically.
-     *
-     * @param siteCollections List of SiteCollection objects
-     * @return arraylist sorted and organized by term.
-     */
-    private ArrayList<ArrayList<SiteCollection>> organizeByTerm(ArrayList<SiteCollection> siteCollections) {
 
-
-        //term objects extends comparator
-        //sorted chronologically (most recent at the top)
-        Collections.sort(siteCollections, new Comparator<SiteCollection>() {
-            @Override
-            public int compare(SiteCollection o1, SiteCollection o2) {
-                return -1 * o1.getTerm().compareTo(o2.getTerm());
-            }
-        });
-
-//        Collections.sort(siteCollections, (x, y) -> -1 * x.getTerm().compareTo(y.getTerm()));
-
-
-        ArrayList<ArrayList<SiteCollection>> sorted = new ArrayList<>();
-
-        Term currTerm = siteCollections.get(0).getTerm();
-        ArrayList<SiteCollection> currSites = new ArrayList<>();
-
-        for(SiteCollection siteCollection : siteCollections) {
-
-            //if terms are the same, just add to current array list
-            if(siteCollection.getTerm().compareTo(currTerm) == 0) {
-                currSites.add(siteCollection);
-            }
-            //otherwise finalize the current arraylist of terms and make a new arraylist
-            //to hold site collections of a different term
-            else {
-                sorted.add(currSites);
-
-                currSites = new ArrayList<SiteCollection>();
-                currSites.add(siteCollection);
-
-                currTerm = siteCollection.getTerm();
-            }
-
-        }
-
-        //add the final current sites
-        sorted.add(currSites);
-
-        return sorted;
-    }
 
 
 
@@ -165,17 +118,17 @@ public class HomeFragment extends Fragment {
      * puts that data into the headersList and child HashMap to be displayed in the
      * expandable list view in the current activity
      *
-     * @param sorted ArrayList of ArrayList of SiteCollection Objects
+     * @param sorted ArrayList of ArrayList of Course Objects
      */
-    private void fillListData(ArrayList<ArrayList<SiteCollection>> sorted) {
+    private void fillListData(ArrayList<ArrayList<Course>> sorted) {
 
         this.headersList = new ArrayList<>();
-        this.childsMap = new HashMap<>();
-        this.childImgResId = new HashMap<>();
+        this.headerToClassTitle = new HashMap<>();
+        this.headerToClassSubjectCode = new HashMap<>();
 
         //sets the Term as the headers for the expandable list view
         //each child is the name of the site in that term
-        for(ArrayList<SiteCollection> sitesPerTerm : sorted) {
+        for(ArrayList<Course> sitesPerTerm : sorted) {
 
             //we can just look at the first site's term, since all the terms
             //should be the same, since we already sorted
@@ -196,7 +149,7 @@ public class HomeFragment extends Fragment {
 
             //places the title of each site and its corresponding ImgResId into 2 lists
             //which are then added to the hashmap under the current term header
-            for(SiteCollection collection : sitesPerTerm) {
+            for(Course collection : sitesPerTerm) {
 
                 tempChildList.add(collection.getTitle());
 
@@ -208,8 +161,8 @@ public class HomeFragment extends Fragment {
 //                tempSubjectCodeList.add(resId);
             }
 
-            this.childImgResId.put(termKey, tempSubjectCodeList);
-            this.childsMap.put(termKey, tempChildList);
+            this.headerToClassSubjectCode.put(termKey, tempSubjectCodeList);
+            this.headerToClassTitle.put(termKey, tempChildList);
         }
 
 
@@ -226,10 +179,10 @@ public class HomeFragment extends Fragment {
         public boolean onChildClick(ExpandableListView parent, View v,
                                     int groupPosition, int childPosition, long id) {
 
-            String classTitle =  childsMap.get(headersList.get(groupPosition)).get(childPosition);
+            String classSiteId =  headerToClassSiteId.get(headersList.get(groupPosition)).get(childPosition);
 
-            for(SiteCollection col : siteCollections) {
-                if(col.getTitle().equals(classTitle)) {
+            for(Course col : courses) {
+                if(col.getId().equals(classSiteId)) {
 
                     Gson gS = new Gson();
                     Intent i = new Intent(getActivity().getApplicationContext(), SitePagesActivity.class);
