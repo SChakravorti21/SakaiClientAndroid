@@ -7,17 +7,35 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import okhttp3.Request;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class DataHandler {
 
 
     private static ArrayList<ArrayList<Course>> coursesSortedByTerm;
 
-
-
     public static ArrayList<ArrayList<Course>> getCoursesSortedByTerm() {
         return coursesSortedByTerm;
     }
 
+
+    public static void getAllSites(final RequestCallback UICallback) {
+        RequestManager.fetchAllSites(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                UICallback.onGradesSuccess(response);
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable throwable) {
+                UICallback.onGradesFailure(throwable);
+            }
+        });
+    }
 
 
     //get sorted time grades for one class
@@ -31,7 +49,7 @@ public class DataHandler {
 
         for(ArrayList<Course> courses : coursesSortedByTerm) {
             for(Course c : courses) {
-                if(c.getId() == siteId) {
+                if(c.getId().equals(siteId)) {
                     return c;
                 }
             }

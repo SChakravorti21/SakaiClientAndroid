@@ -18,6 +18,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RequestManager {
 
+    private static OkHttpClient httpClient;
     private static SakaiService sakaiService;
 
     public static void createRetrofitInstance(Context context) {
@@ -29,7 +30,7 @@ public class RequestManager {
         // Create the custom OkHttpClient with the interceptor to inject
         // cookies into every request
         HeaderInterceptor interceptor = new HeaderInterceptor(context, cookieUrl);
-        OkHttpClient httpClient = new OkHttpClient.Builder()
+        httpClient = new OkHttpClient.Builder()
                 .addInterceptor(interceptor)
                 .build();
 
@@ -45,7 +46,18 @@ public class RequestManager {
         sakaiService = retrofit.create(SakaiService.class);
     }
 
+    /**
+     * Cancels all ongoing requests. This is called whenever a new request needs to be made.
+     * If a new request needs to be made, it means that the UI elements that needed data from
+     * past requests are no longer active, making requests for those UI elements obsolete.
+     */
+    private static void purgeRequestQueue() {
+        httpClient.dispatcher().cancelAll();
+    }
+
     public static void fetchAllSites(Callback<ResponseBody> responseCallback) {
+        purgeRequestQueue();
+
         Call<ResponseBody> fetchSitesCall = sakaiService.getResponseBody();
         fetchSitesCall.enqueue(responseCallback);
     }
