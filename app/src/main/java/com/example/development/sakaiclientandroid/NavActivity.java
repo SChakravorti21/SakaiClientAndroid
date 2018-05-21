@@ -13,22 +13,25 @@ import com.example.development.sakaiclientandroid.fragments.AssignmentsFragment;
 import com.example.development.sakaiclientandroid.fragments.GradebookFragment;
 import com.example.development.sakaiclientandroid.fragments.HomeFragment;
 import com.example.development.sakaiclientandroid.fragments.SettingsFragment;
-import com.example.development.sakaiclientandroid.services.SakaiService;
-import com.example.development.sakaiclientandroid.utils.HeaderInterceptor;
+import com.example.development.sakaiclientandroid.utils.RequestManager;
 
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-
 
 
 public class NavActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener{
 
+
+    private String baseUrl;
+    private String cookieUrl;
+
+    OkHttpClient httpClient;
+
+    private String responseBody;
 
 
     @Override
@@ -39,8 +42,44 @@ public class NavActivity extends AppCompatActivity
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(this);
 
+        // Create RequestManager's Retrofit instance
+        RequestManager.createRetrofitInstance(this);
+
+        // Request all site pages for the Home Fragment
+        RequestManager.fetchAllSites(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Log.i("Response", "SUCCESS!");
+                Log.i("Status Code", "" + response.code());
+
+                try {
+
+                    responseBody = response.body().string();
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString(getString(R.string.title_activity_nav), responseBody);
+
+                    HomeFragment fragment = new HomeFragment();
+                    fragment.setArguments(bundle);
+                    loadFragment(fragment);
+
+                }
+
+                catch(Exception e) {
+                    e.printStackTrace();
+                }
 
 
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                // TODO: Handle errors give proper error message
+                Log.i("Response", "failure");
+                Log.e("Response error", t.getMessage());
+
+            }
+        });
 
     }
 
