@@ -20,7 +20,7 @@ public class SitePagesActivity extends AppCompatActivity {
 
         //gets the site collection that was sent to it
         Intent intent = getIntent();
-        String serialized = intent.getStringExtra(getString(R.string.AllSitesActivity));
+        String serialized = intent.getStringExtra(getString(R.string.home_fragment));
 
         Gson gS = new Gson();
         Course course = gS.fromJson(serialized, Course.class);

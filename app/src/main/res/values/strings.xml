@@ -25,7 +25,7 @@
     <string name="winter">Winter</string>
     <string name="fall">Fall</string>
 
-    <string name="AllSitesActivity">AllSitesActivity</string>
+    <string name="home_fragment">HomeFragment</string>
 
     <string name="BASE_URL">https://sakai.rutgers.edu/direct/</string>
     <string name="CAS_BASE_URL">https://cas.rutgers.edu/login?service=https%3A%2F%2Fsakai.rutgers.edu%2Fsakai-login-tool%2Fcontainer</string>

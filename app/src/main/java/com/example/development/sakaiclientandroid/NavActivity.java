@@ -49,20 +49,13 @@ public class NavActivity extends AppCompatActivity
         // Request all site pages for the Home Fragment
         DataHandler.getAllSites(new RequestCallback() {
             @Override
-            public void onGradesSuccess(Response<ResponseBody> response) {
+            public void onCoursesSuccess(Response<ResponseBody> response) {
                 Log.i("Response", "SUCCESS!");
                 Log.i("Status Code", "" + response.code());
 
                 try {
 
-                    responseBody = response.body().string();
-                    Log.i("Response body string", responseBody);
-
-                    Bundle bundle = new Bundle();
-                    bundle.putString(getString(R.string.title_activity_nav), responseBody);
-
                     HomeFragment fragment = new HomeFragment();
-                    fragment.setArguments(bundle);
                     loadFragment(fragment);
 
                 }
@@ -73,7 +66,7 @@ public class NavActivity extends AppCompatActivity
             }
 
             @Override
-            public void onGradesFailure(Throwable throwable) {
+            public void onCoursesFailure(Throwable throwable) {
                 // TODO: Handle errors give proper error message
                 Log.i("Response", "failure");
                 Log.e("Response error", throwable.getMessage());
@@ -122,11 +115,7 @@ public class NavActivity extends AppCompatActivity
 
             case R.id.navigation_home:
 
-                Bundle bundle = new Bundle();
-                bundle.putString(getString(R.string.title_activity_nav), responseBody);
-
                 fragment = new HomeFragment();
-                fragment.setArguments(bundle);
                 break;
 
 

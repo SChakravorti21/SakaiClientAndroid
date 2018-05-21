@@ -23,7 +23,6 @@ import java.util.List;
 
 public class HomeFragment extends Fragment {
 
-    private ArrayList<Course> courses;
 
     private SiteCollectionsExpandableListAdapter listAdapter;
 
@@ -58,48 +57,32 @@ public class HomeFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_home, null);
 
-        if(getArguments() != null) {
+        ArrayList<ArrayList<Course>> sortedCourses = DataHandler.getCoursesSortedByTerm();
+        ExpandableListView sitesListView = view.findViewById(R.id.lvExp);
 
-            //TODO change all thiss stuff
-            DataHandler.getCoursesSortedByTerm();
-
-
-//            AllSitesAPI api = gson.fromJson(body, AllSitesAPI.class);
-//            api.fillSitePages(body);
+        feedExpandableListData(sortedCourses, sitesListView);
 
 
-            ExpandableListView sitesListView = view.findViewById(R.id.lvExp);
-
-            //give the reference of the expandable list view to this method, so it can be
-            //filled
-//            feedExpandableListData(api, sitesListView);
-
-
-            //expand the list view by default
-            for(int i = 0; i < this.headersList.size(); i++) {
-                sitesListView.expandGroup(i);
-            }
-
+        //expand the list view by default
+        for(int i = 0; i < this.headersList.size(); i++) {
+            sitesListView.expandGroup(i);
         }
+
 
         return view;
 
     }
 
 
-
     /**
-     * API object from retrofit is converted into usable courses object. This data is then
-     * organized in the fillListData method and then the organized data is given to the listAdapter
-     * which then displays the data.
-     *
-     * @param allSitesAPI API object that contains data received from retrofit.
+     * List of courses sorted and organized by term is fed into the expandable list view for display
+     * @param sortedCourses = sorted and organized courses from DataHandler
+     * @param expListView = List view to feed data into
      */
-    private void feedExpandableListData(AllSitesAPI allSitesAPI, ExpandableListView expListView) {
+    private void feedExpandableListData(ArrayList<ArrayList<Course>> sortedCourses, ExpandableListView expListView) {
 
-//        courses = Course.convertApiToSiteCollection(allSitesAPI.getSiteCollectionObject());
 
-        fillListData(DataHandler.getCoursesSortedByTerm());
+        prepareHeadersAndChildren(sortedCourses);
 
         listAdapter = new SiteCollectionsExpandableListAdapter(getActivity(), headersList, headerToClassTitle, headerToClassSubjectCode);
         expListView.setAdapter(listAdapter);
@@ -119,19 +102,20 @@ public class HomeFragment extends Fragment {
      *
      * @param sorted ArrayList of ArrayList of Course Objects
      */
-    private void fillListData(ArrayList<ArrayList<Course>> sorted) {
+    private void prepareHeadersAndChildren(ArrayList<ArrayList<Course>> sorted) {
 
         this.headersList = new ArrayList<>();
         this.headerToClassTitle = new HashMap<>();
         this.headerToClassSubjectCode = new HashMap<>();
+        this.headerToClassSiteId = new HashMap<>();
 
         //sets the Term as the headers for the expandable list view
         //each child is the name of the site in that term
-        for(ArrayList<Course> sitesPerTerm : sorted) {
+        for(ArrayList<Course> coursesPerTerm : sorted) {
 
             //we can just look at the first site's term, since all the terms
             //should be the same, since we already sorted
-            Term currTerm = sitesPerTerm.get(0).getTerm();
+            Term currTerm = coursesPerTerm.get(0).getTerm();
 
             String termKey = currTerm.getTermString();
 
@@ -145,21 +129,24 @@ public class HomeFragment extends Fragment {
 
             List<String> tempChildList = new ArrayList<>();
             List<Integer> tempSubjectCodeList = new ArrayList<>();
+            List<String> tempSiteIdList = new ArrayList<>();
 
             //places the title of each site and its corresponding ImgResId into 2 lists
             //which are then added to the hashmap under the current term header
-            for(Course collection : sitesPerTerm) {
+            for(Course currCourse : coursesPerTerm) {
 
-                tempChildList.add(collection.getTitle());
+                tempChildList.add(currCourse.getTitle());
+                tempSiteIdList.add(currCourse.getId());
 
                 //TODO figure out a way to add the resource Id values directly, for more abstraction
                 //adds subject code to hashmap
-                int subjectCode = collection.getSubjectCode();
+                int subjectCode = currCourse.getSubjectCode();
                 tempSubjectCodeList.add(subjectCode);
 //                int resId = RutgersSubjectCodes.getResourceIdFromSubjectCode(subjectCode, getActivity().getPackageName(), getContext());
 //                tempSubjectCodeList.add(resId);
             }
 
+            this.headerToClassSiteId.put(termKey, tempSiteIdList);
             this.headerToClassSubjectCode.put(termKey, tempSubjectCodeList);
             this.headerToClassTitle.put(termKey, tempChildList);
         }
@@ -178,21 +165,16 @@ public class HomeFragment extends Fragment {
         public boolean onChildClick(ExpandableListView parent, View v,
                                     int groupPosition, int childPosition, long id) {
 
-            String classSiteId =  headerToClassSiteId.get(headersList.get(groupPosition)).get(childPosition);
+            String courseSiteId =  headerToClassSiteId.get(headersList.get(groupPosition)).get(childPosition);
 
-            for(Course col : courses) {
-                if(col.getId().equals(classSiteId)) {
+            Course clickedCourse = DataHandler.getCourseFromId(courseSiteId);
 
-                    Gson gS = new Gson();
-                    Intent i = new Intent(getActivity().getApplicationContext(), SitePagesActivity.class);
-                    String serialized = gS.toJson(col);
+            Gson gS = new Gson();
+            Intent i = new Intent(getActivity().getApplicationContext(), SitePagesActivity.class);
+            String serialized = gS.toJson(clickedCourse);
 
-                    i.putExtra(getString(R.string.AllSitesActivity), serialized);
-                    startActivity(i);
-                    break;
-
-                }
-            }
+            i.putExtra(getString(R.string.home_fragment), serialized);
+            startActivity(i);
 
             return true;
         }

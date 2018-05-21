@@ -13,9 +13,6 @@ import retrofit2.http.GET;
 public interface SakaiService {
 
     @GET("site.json")
-    Call<AllSitesAPI> getAllSites();
-
-    @GET("site.json")
     Call<ResponseBody> getResponseBody();
 
     @GET("gradebook/my.json")

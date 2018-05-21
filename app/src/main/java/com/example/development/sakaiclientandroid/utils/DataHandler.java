@@ -1,5 +1,7 @@
 package com.example.development.sakaiclientandroid.utils;
 
+import android.util.Log;
+
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.models.Term;
 
@@ -10,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import okhttp3.Request;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -30,12 +31,25 @@ public class DataHandler {
         RequestManager.fetchAllSites(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                UICallback.onGradesSuccess(response);
+
+                try {
+                    String responseBody = response.body().string();
+
+                    ArrayList<Course> allCourses = jsonToCourseObj(responseBody);
+                    organizeByTerm(allCourses);
+                }
+                catch(Exception e) {
+                    e.printStackTrace();
+                }
+
+                UICallback.onCoursesSuccess(response);
+
+
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable throwable) {
-                UICallback.onGradesFailure(throwable);
+                UICallback.onCoursesFailure(throwable);
             }
         });
     }
@@ -47,7 +61,7 @@ public class DataHandler {
 
     // **repeat for assignments, announcements**
 
-    public static ArrayList<Course> jsonToCourseObj(String responseBody) {
+    private static ArrayList<Course> jsonToCourseObj(String responseBody) {
 
 
         ArrayList<Course> coursesList = new ArrayList<>();

@@ -1,6 +1,7 @@
 package com.example.development.sakaiclientandroid.models;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -32,9 +33,15 @@ public class Course {
             this.setTitle(title);
 
             JSONObject props = jsonObject.getJSONObject("props");
-            String term_eid = props.getString("term_eid");
-            Term courseTerm = new Term(term_eid);
-            this.setTerm(courseTerm);
+            try {
+                String term_eid = props.getString("term_eid");
+                Term courseTerm = new Term(term_eid);
+                this.setTerm(courseTerm);
+            }
+            catch(JSONException e) {
+                Term courseTerm = new Term("0000:0");
+                this.setTerm(courseTerm);
+            }
 
             JSONObject siteOwner = jsonObject.getJSONObject("siteOwner");
             String ownerName = siteOwner.getString("userDisplayName");
@@ -42,7 +49,7 @@ public class Course {
 
 
             String providerGroupId = jsonObject.getString("providerGroupId");
-            if (providerGroupId != null) {
+            if (!providerGroupId.equals("null")) {
 
                 providerGroupId = providerGroupId.replace("+", "_delim_");
 
