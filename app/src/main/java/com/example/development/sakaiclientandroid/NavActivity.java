@@ -13,11 +13,9 @@ import com.example.development.sakaiclientandroid.fragments.AssignmentsFragment;
 import com.example.development.sakaiclientandroid.fragments.GradebookFragment;
 import com.example.development.sakaiclientandroid.fragments.HomeFragment;
 import com.example.development.sakaiclientandroid.fragments.SettingsFragment;
-import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
+import com.example.development.sakaiclientandroid.utils.RequestCallback;
 import com.example.development.sakaiclientandroid.utils.RequestManager;
-
-import java.util.ArrayList;
 
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
@@ -48,46 +46,39 @@ public class NavActivity extends AppCompatActivity
 
         // Create RequestManager's Retrofit instance
         RequestManager.createRetrofitInstance(this);
-
         // Request all site pages for the Home Fragment
-        RequestManager.fetchAllSites(new Callback<ResponseBody>() {
+        DataHandler.getAllSites(new RequestCallback() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+            public void onGradesSuccess(Response<ResponseBody> response) {
                 Log.i("Response", "SUCCESS!");
                 Log.i("Status Code", "" + response.code());
 
                 try {
 
                     responseBody = response.body().string();
+                    Log.i("Response body string", responseBody);
 
-                    ArrayList<Course> test = DataHandler.jsonToCourseObj(responseBody);
-                    Log.d("hihi", test.toString());
+                    Bundle bundle = new Bundle();
+                    bundle.putString(getString(R.string.title_activity_nav), responseBody);
 
-//                    Bundle bundle = new Bundle();
-//                    bundle.putString(getString(R.string.title_activity_nav), responseBody);
-//
-//                    HomeFragment fragment = new HomeFragment();
-//                    fragment.setArguments(bundle);
-//                    loadFragment(fragment);
+                    HomeFragment fragment = new HomeFragment();
+                    fragment.setArguments(bundle);
+                    loadFragment(fragment);
 
                 }
 
                 catch(Exception e) {
                     e.printStackTrace();
                 }
-
-
             }
 
             @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
+            public void onGradesFailure(Throwable throwable) {
                 // TODO: Handle errors give proper error message
                 Log.i("Response", "failure");
-                Log.e("Response error", t.getMessage());
-
+                Log.e("Response error", throwable.getMessage());
             }
         });
-
     }
 
 
