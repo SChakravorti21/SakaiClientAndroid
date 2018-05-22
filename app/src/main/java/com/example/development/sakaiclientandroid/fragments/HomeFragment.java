@@ -61,10 +61,8 @@ public class HomeFragment extends Fragment {
         feedExpandableListData(sortedCourses, sitesListView);
 
 
-        //expand the list view by default
-        for(int i = 0; i < this.headersList.size(); i++) {
-            sitesListView.expandGroup(i);
-        }
+        //expands latest semester's list view by default
+        sitesListView.expandGroup(0);
 
 
         return view;

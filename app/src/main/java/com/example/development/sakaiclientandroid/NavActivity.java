@@ -129,4 +129,6 @@ public class NavActivity extends AppCompatActivity
         return this.loadFragment(fragment);
 
     }
+
+
 }
