@@ -1,21 +1,19 @@
 package com.example.development.sakaiclientandroid.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 
 import com.example.development.sakaiclientandroid.R;
-import com.example.development.sakaiclientandroid.SitePagesActivity;
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.models.Term;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
 import com.example.development.sakaiclientandroid.utils.SiteCollectionsExpandableListAdapter;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -167,14 +165,19 @@ public class HomeFragment extends Fragment {
 
             String courseSiteId =  headerToClassSiteId.get(headersList.get(groupPosition)).get(childPosition);
 
-            Course clickedCourse = DataHandler.getCourseFromId(courseSiteId);
 
-            Gson gS = new Gson();
-            Intent i = new Intent(getActivity().getApplicationContext(), SitePagesActivity.class);
-            String serialized = gS.toJson(clickedCourse);
+            Bundle bun = new Bundle();
+            bun.putString("courseSiteId", courseSiteId);
 
-            i.putExtra(getString(R.string.home_fragment), serialized);
-            startActivity(i);
+            CourseFragment courseFragment = new CourseFragment();
+            courseFragment.setArguments(bun);
+
+            //replaces current Fragment with CourseFragment
+            FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+            ft.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
+                    .replace(R.id.fragment_container, courseFragment, null)
+                    .addToBackStack(null)
+                    .commit();
 
             return true;
         }

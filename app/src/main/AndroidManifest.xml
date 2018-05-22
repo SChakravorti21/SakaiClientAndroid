@@ -24,7 +24,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SitePagesActivity" />
         <activity
             android:name=".NavActivity"
             android:label="@string/app_name">

@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -21,9 +22,21 @@ public class DataHandler {
 
 
     private static ArrayList<ArrayList<Course>> coursesSortedByTerm;
+    private static HashMap<String, Term> mapSiteIdToTerm;
+    private static HashMap<String, String> mapSiteIdToTitle;
+
+
 
     public static ArrayList<ArrayList<Course>> getCoursesSortedByTerm() {
         return coursesSortedByTerm;
+    }
+
+    public static Term getTermFromId(String id) {
+        return mapSiteIdToTerm.get(id);
+    }
+
+    public static String getTitleFromId(String id) {
+        return mapSiteIdToTitle.get(id);
     }
 
 
@@ -65,6 +78,8 @@ public class DataHandler {
 
 
         ArrayList<Course> coursesList = new ArrayList<>();
+        mapSiteIdToTitle = new HashMap<>();
+        mapSiteIdToTerm = new HashMap<>();
 
 
         try {
@@ -76,6 +91,9 @@ public class DataHandler {
                 JSONObject currCourse = courses.getJSONObject(i);
                 Course c = new Course(currCourse);
                 coursesList.add(c);
+
+                mapSiteIdToTerm.put(c.getId(), c.getTerm());
+                mapSiteIdToTitle.put(c.getId(), c.getTitle());
             }
         }
         catch(Exception e){
