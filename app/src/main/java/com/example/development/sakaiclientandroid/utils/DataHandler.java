@@ -42,7 +42,7 @@ public class DataHandler {
                     e.printStackTrace();
                 }
 
-                UICallback.onCoursesSuccess(response);
+                UICallback.onCoursesSuccess();
 
 
             }

@@ -49,20 +49,9 @@ public class NavActivity extends AppCompatActivity
         // Request all site pages for the Home Fragment
         DataHandler.getAllSites(new RequestCallback() {
             @Override
-            public void onCoursesSuccess(Response<ResponseBody> response) {
-                Log.i("Response", "SUCCESS!");
-                Log.i("Status Code", "" + response.code());
-
-                try {
-
-                    HomeFragment fragment = new HomeFragment();
-                    loadFragment(fragment);
-
-                }
-
-                catch(Exception e) {
-                    e.printStackTrace();
-                }
+            public void onCoursesSuccess() {
+                HomeFragment fragment = new HomeFragment();
+                loadFragment(fragment);
             }
 
             @Override
