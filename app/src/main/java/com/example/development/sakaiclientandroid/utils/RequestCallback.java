@@ -9,7 +9,7 @@ import retrofit2.Response;
 
 public class RequestCallback {
 
-    public void onCoursesSuccess(Response<ResponseBody> response) {
+    public void onCoursesSuccess() {
 
     }
 

@@ -28,6 +28,13 @@ public class NavActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener{
 
 
+    private String baseUrl;
+    private String cookieUrl;
+
+    OkHttpClient httpClient;
+
+    private String responseBody;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,16 +49,9 @@ public class NavActivity extends AppCompatActivity
         // Request all site pages for the Home Fragment
         DataHandler.getAllSites(new RequestCallback() {
             @Override
-            public void onCoursesSuccess(Response<ResponseBody> response) {
-                try {
-
-                    HomeFragment fragment = new HomeFragment();
-                    loadFragment(fragment);
-                }
-
-                catch(Exception e) {
-                    e.printStackTrace();
-                }
+            public void onCoursesSuccess() {
+                HomeFragment fragment = new HomeFragment();
+                loadFragment(fragment);
             }
 
             @Override
