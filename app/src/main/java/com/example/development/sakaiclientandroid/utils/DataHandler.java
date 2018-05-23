@@ -39,6 +39,19 @@ public class DataHandler {
         return getCourseFromId(siteId).getAssignmentObjectList();
     }
 
+    public static boolean gradesRequestedForSite(String siteId) {
+        return getCourseFromId(siteId).getAssignmentObjectList() != null;
+    }
+
+    public static boolean gradesRequestedForAllSites() {
+
+        for(Course c : mapSiteIdToCourse.values()) {
+            if(c.getAssignmentObjectList() == null)
+                return false;
+        }
+
+        return true;
+    }
 
 
 

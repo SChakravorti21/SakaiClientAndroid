@@ -55,40 +55,54 @@ public class SiteGradesFragment extends Fragment {
         this.spinner = view.findViewById(R.id.site_grades_progressbar);
         this.spinner.setVisibility(View.VISIBLE);
 
+        //if the grades are already in storage, don't need to make request
+        if(DataHandler.gradesRequestedForSite(siteId)) {
+            fillGrades(siteId, view);
+        }
+        //otherwise, we must request
+        else {
+            DataHandler.requestGradesForSite(siteId, new RequestCallback() {
 
-        DataHandler.requestGradesForSite(siteId, new RequestCallback() {
-
-            @Override
-            public void onSiteGradesSuccess() {
-
-
-                //makes request for grades for this site and gets them
-                List<AssignmentObject> gradesList = DataHandler.getGradesForCourse(siteId);
-
-                //makes spinner invisible
-                spinner.setVisibility(View.GONE);
-
-                if(gradesList != null) {
-
-                    //puts grades into custom adapter
-                    GradeItemAdapter adapter = new GradeItemAdapter(getActivity(), gradesList);
-                    siteGradesListView.setAdapter(adapter);
-                }
-                else {
-                    TextView noGradesTxt = view.findViewById(R.id.txt_no_grades);
-                    noGradesTxt.setVisibility(View.VISIBLE);
+                @Override
+                public void onSiteGradesSuccess() {
+                    fillGrades(siteId, view);
                 }
 
-            }
-
-            @Override
-            public void onSiteGradesFailure(Throwable t) {
-                Log.d("fail", "fail");
-            }
-        });
+                @Override
+                public void onSiteGradesFailure(Throwable t) {
+                    //TODO proper failure
+                    Log.d("fail", "fail");
+                }
+            });
+        }
 
         return view;
 
+    }
+
+    /**
+     * Does miscellaneous things such as disable the spinner, and put the grades into the list view
+     * or show a No Grades Found textview
+     * @param siteId = SiteId of the course to show the grades of
+     * @param view = view that was inflated.
+     */
+    private void fillGrades(String siteId, View view) {
+        //makes request for grades for this site and gets them
+        List<AssignmentObject> gradesList = DataHandler.getGradesForCourse(siteId);
+
+        //makes spinner invisible
+        spinner.setVisibility(View.GONE);
+
+        if(gradesList != null) {
+
+            //puts grades into custom adapter
+            GradeItemAdapter adapter = new GradeItemAdapter(getActivity(), gradesList);
+            siteGradesListView.setAdapter(adapter);
+        }
+        else {
+            TextView noGradesTxt = view.findViewById(R.id.txt_no_grades);
+            noGradesTxt.setVisibility(View.VISIBLE);
+        }
     }
 
 
