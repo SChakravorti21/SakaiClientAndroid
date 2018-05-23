@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
+import android.widget.ProgressBar;
 
 import com.example.development.sakaiclientandroid.NavActivity;
 import com.example.development.sakaiclientandroid.R;
@@ -56,6 +57,7 @@ public class HomeFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_home, null);
 
+        //gets courses from data handler and feeds to list view
         ArrayList<ArrayList<Course>> sortedCourses = DataHandler.getCoursesSortedByTerm();
         ExpandableListView sitesListView = view.findViewById(R.id.lvExp);
 

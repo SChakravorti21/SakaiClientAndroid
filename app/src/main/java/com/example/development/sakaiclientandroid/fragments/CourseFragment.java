@@ -66,40 +66,27 @@ public class CourseFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int pos, long id) {
 
                 String siteName = (String) sitePagesListView.getItemAtPosition(pos);
+
+
+
+
                 if(siteName.equals(getString(R.string.gradebook))) {
 
-
                     final String siteId = courseToView.getId();
+                    //puts the siteId into the bundle
+                    Bundle bun = new Bundle();
+                    bun.putString(getString(R.string.site_id), siteId);
 
-                    DataHandler.getGradesForSite(siteId, new RequestCallback() {
-
-                        @Override
-                        public void onSiteGradesSuccess() {
-
-                            //puts the siteId into the bundle
-                            Bundle bun = new Bundle();
-                            bun.putString(getString(R.string.site_id), siteId);
-
-                            SiteGradesFragment frag = new SiteGradesFragment();
-                            frag.setArguments(bun);
+                    SiteGradesFragment frag = new SiteGradesFragment();
+                    frag.setArguments(bun);
 
 
-                            //start the siteGrades fragment
-                            getActivity().getSupportFragmentManager().beginTransaction()
-                                    .setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
-                                    .replace(R.id.fragment_container, frag, null)
-                                    .addToBackStack(null)
-                                    .commit();
-                        }
-
-                        @Override
-                        public void onSiteGradesFailure() {
-                            Log.d("fail", "fail");
-                        }
-                    });
-
-
-
+                    //start the siteGrades fragment
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
+                            .replace(R.id.fragment_container, frag, null)
+                            .addToBackStack(null)
+                            .commit();
 
                 }
             }

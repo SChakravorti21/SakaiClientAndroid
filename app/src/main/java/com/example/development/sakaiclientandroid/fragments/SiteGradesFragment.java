@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import com.example.development.sakaiclientandroid.NavActivity;
 import com.example.development.sakaiclientandroid.R;
@@ -23,6 +24,7 @@ import java.util.List;
 public class SiteGradesFragment extends Fragment {
 
     private ListView siteGradesListView;
+    private ProgressBar spinner;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -33,30 +35,53 @@ public class SiteGradesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_site_grades, null);
 
-        this.siteGradesListView = view.findViewById(R.id.site_grades_list_view);
-
-        //gets site Id from arguments
+        //gets side Id from bundle
         Bundle bun = this.getArguments();
         String siteId = bun.getString(getString(R.string.site_id));
-        Course currCourse = DataHandler.getCourseFromId(siteId);
+
 
         //changes app title
+        Course currCourse = DataHandler.getCourseFromId(siteId);
         ((NavActivity)getActivity()).setActionBarTitle("Gradebook: " + currCourse.getTitle()
         );
 
 
-        //makes request for grades for this site and gets them
-        List<AssignmentObject> gradesList = DataHandler.getTempGradesPerSite();
+        //inflates the view
+        View view = inflater.inflate(R.layout.fragment_site_grades, null);
+        this.siteGradesListView = view.findViewById(R.id.site_grades_list_view);
 
-        //puts grades into custom adapter
-        GradeItemAdapter adapter = new GradeItemAdapter(getActivity(), gradesList);
-        this.siteGradesListView.setAdapter(adapter);
+        //starts spinning a spinner
+        this.spinner = view.findViewById(R.id.site_grades_progressbar);
+        this.spinner.setVisibility(View.VISIBLE);
 
 
+        DataHandler.getGradesForSite(siteId, new RequestCallback() {
+
+            @Override
+            public void onSiteGradesSuccess() {
+
+
+                //makes request for grades for this site and gets them
+                List<AssignmentObject> gradesList = DataHandler.getTempGradesPerSite();
+
+                //makes spinner invisible
+                spinner.setVisibility(View.GONE);
+
+                //puts grades into custom adapter
+                GradeItemAdapter adapter = new GradeItemAdapter(getActivity(), gradesList);
+                siteGradesListView.setAdapter(adapter);
+
+            }
+
+            @Override
+            public void onSiteGradesFailure() {
+                Log.d("fail", "fail");
+            }
+        });
 
         return view;
+
     }
 
 

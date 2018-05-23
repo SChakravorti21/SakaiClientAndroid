@@ -26,8 +26,7 @@ public class DataHandler {
 
 
     private static ArrayList<ArrayList<Course>> coursesSortedByTerm;
-    private static HashMap<String, Term> mapSiteIdToTerm;
-    private static HashMap<String, String> mapSiteIdToTitle;
+    private static HashMap<String, Course> mapSiteIdToCourse;
 
     private static List<AssignmentObject> tempGradesPerSite;
 
@@ -45,11 +44,11 @@ public class DataHandler {
 
 
     public static Term getTermFromId(String id) {
-        return mapSiteIdToTerm.get(id);
+        return mapSiteIdToCourse.get(id).getTerm();
     }
 
     public static String getTitleFromId(String id) {
-        return mapSiteIdToTitle.get(id);
+        return mapSiteIdToCourse.get(id).getTitle();
     }
 
 
@@ -113,8 +112,7 @@ public class DataHandler {
 
 
         ArrayList<Course> coursesList = new ArrayList<>();
-        mapSiteIdToTitle = new HashMap<>();
-        mapSiteIdToTerm = new HashMap<>();
+        mapSiteIdToCourse = new HashMap<>();
 
 
         try {
@@ -127,8 +125,7 @@ public class DataHandler {
                 Course c = new Course(currCourse);
                 coursesList.add(c);
 
-                mapSiteIdToTerm.put(c.getId(), c.getTerm());
-                mapSiteIdToTitle.put(c.getId(), c.getTitle());
+                mapSiteIdToCourse.put(c.getId(), c);
             }
         }
         catch(Exception e){

@@ -7,6 +7,8 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import com.example.development.sakaiclientandroid.fragments.AnnouncementsFragment;
 import com.example.development.sakaiclientandroid.fragments.AssignmentsFragment;
@@ -24,18 +26,18 @@ public class NavActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener{
 
 
-    private String baseUrl;
-    private String cookieUrl;
-
-    OkHttpClient httpClient;
-
-    private String responseBody;
+    private ProgressBar spinner;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nav);
+
+
+        //starts spinner
+        this.spinner = findViewById(R.id.nav_activity_progressbar);
+        this.spinner.setVisibility(View.VISIBLE);
 
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(this);
@@ -46,6 +48,8 @@ public class NavActivity extends AppCompatActivity
         DataHandler.getAllSites(new RequestCallback() {
             @Override
             public void onCoursesSuccess() {
+
+                spinner.setVisibility(View.GONE);
                 HomeFragment fragment = new HomeFragment();
                 loadFragment(fragment);
             }
