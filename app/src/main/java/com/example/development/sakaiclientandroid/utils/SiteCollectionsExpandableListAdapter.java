@@ -110,7 +110,7 @@ public class SiteCollectionsExpandableListAdapter extends BaseExpandableListAdap
 
         if(convertView == null) {
             LayoutInflater inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.list_group, null);
+            convertView = inflater.inflate(R.layout.course_list_group, null);
         }
 
         TextView labelHeader = convertView.findViewById(R.id.lblListHeader);
@@ -145,7 +145,7 @@ public class SiteCollectionsExpandableListAdapter extends BaseExpandableListAdap
 
         if(convertView == null) {
             LayoutInflater inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.list_item, null);
+            convertView = inflater.inflate(R.layout.course_list_item, null);
         }
 
         TextView textListChild = convertView.findViewById(R.id.lblListItemText);

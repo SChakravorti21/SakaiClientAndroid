@@ -10,7 +10,7 @@ import android.view.MenuItem;
 
 import com.example.development.sakaiclientandroid.fragments.AnnouncementsFragment;
 import com.example.development.sakaiclientandroid.fragments.AssignmentsFragment;
-import com.example.development.sakaiclientandroid.fragments.GradebookFragment;
+import com.example.development.sakaiclientandroid.fragments.AllGradesFragment;
 import com.example.development.sakaiclientandroid.fragments.HomeFragment;
 import com.example.development.sakaiclientandroid.fragments.SettingsFragment;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
@@ -18,10 +18,6 @@ import com.example.development.sakaiclientandroid.utils.RequestCallback;
 import com.example.development.sakaiclientandroid.utils.RequestManager;
 
 import okhttp3.OkHttpClient;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 
 public class NavActivity extends AppCompatActivity
@@ -117,7 +113,7 @@ public class NavActivity extends AppCompatActivity
                 break;
 
             case R.id.navigation_gradebook:
-                fragment = new GradebookFragment();
+                fragment = new AllGradesFragment();
                 break;
 
             case R.id.navigation_settings:
@@ -128,6 +124,11 @@ public class NavActivity extends AppCompatActivity
 
         return this.loadFragment(fragment);
 
+    }
+
+
+    public void setActionBarTitle(String title) {
+        getSupportActionBar().setTitle(title);
     }
 
 

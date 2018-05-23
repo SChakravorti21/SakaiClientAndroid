@@ -9,11 +9,11 @@ import retrofit2.Response;
 
 public class RequestCallback {
 
-    public void onCoursesSuccess() {
+    public void onCoursesSuccess() { }
 
-    }
+    public void onCoursesFailure(Throwable throwable) { }
 
-    public void onCoursesFailure(Throwable throwable) {
+    public void onSiteGradesSuccess() { }
 
-    }
+    public void onSiteGradesFailure() { }
 }

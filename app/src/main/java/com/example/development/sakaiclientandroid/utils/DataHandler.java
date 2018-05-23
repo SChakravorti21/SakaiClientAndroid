@@ -1,7 +1,10 @@
 package com.example.development.sakaiclientandroid.utils;
 
 import android.util.Log;
+import android.widget.ArrayAdapter;
 
+import com.example.development.sakaiclientandroid.api_models.gradebook.AssignmentObject;
+import com.example.development.sakaiclientandroid.api_models.gradebook.GradebookCollectionObject;
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.models.Term;
 
@@ -12,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -25,11 +29,20 @@ public class DataHandler {
     private static HashMap<String, Term> mapSiteIdToTerm;
     private static HashMap<String, String> mapSiteIdToTitle;
 
+    private static List<AssignmentObject> tempGradesPerSite;
+
 
 
     public static ArrayList<ArrayList<Course>> getCoursesSortedByTerm() {
         return coursesSortedByTerm;
     }
+
+    public static List<AssignmentObject> getTempGradesPerSite() {
+        return tempGradesPerSite;
+    }
+
+
+
 
     public static Term getTermFromId(String id) {
         return mapSiteIdToTerm.get(id);
@@ -37,6 +50,28 @@ public class DataHandler {
 
     public static String getTitleFromId(String id) {
         return mapSiteIdToTitle.get(id);
+    }
+
+
+    public static void getGradesForSite(String siteId, final RequestCallback UICallback) {
+
+        //pass in site id and callback
+        RequestManager.fetchGradesForSite(siteId, new Callback<GradebookCollectionObject>() {
+            @Override
+            public void onResponse(Call<GradebookCollectionObject> call, Response<GradebookCollectionObject> response) {
+
+                GradebookCollectionObject gradebookCollectionObject = response.body();
+
+                tempGradesPerSite = gradebookCollectionObject.getAssignments();
+
+                UICallback.onSiteGradesSuccess();
+            }
+
+            @Override
+            public void onFailure(Call<GradebookCollectionObject> call, Throwable t) {
+                UICallback.onSiteGradesFailure();
+            }
+        });
     }
 
 

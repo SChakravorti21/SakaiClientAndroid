@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 
+import com.example.development.sakaiclientandroid.NavActivity;
 import com.example.development.sakaiclientandroid.R;
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.models.Term;
@@ -63,6 +64,9 @@ public class HomeFragment extends Fragment {
 
         //expands latest semester's list view by default
         sitesListView.expandGroup(0);
+
+        //reset header
+        ((NavActivity)getActivity()).setActionBarTitle(getString(R.string.app_name));
 
 
         return view;
