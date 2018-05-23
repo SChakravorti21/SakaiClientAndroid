@@ -30,7 +30,7 @@ public class Course {
             this.setDescription(desc);
 
             String title = jsonObject.getString("title");
-            this.setTitle(title);
+            this.setTitle(capitalizeEveryWord(title));
 
             JSONObject props = jsonObject.getJSONObject("props");
             try {
@@ -77,6 +77,24 @@ public class Course {
 
     }
 
+
+    public String capitalizeEveryWord(String org) {
+        org = org.toLowerCase();
+        String[] words = org.split(" ");
+
+        StringBuilder builder = new StringBuilder(org.length());
+        for(int i = 0; i < words.length; i++) {
+            builder.append(words[i].substring(0, 1).toUpperCase() + words[i].substring(1));
+
+
+            if(i != words.length - 1)
+                builder.append(" ");
+
+        }
+
+        return builder.toString();
+
+    }
 
 
     @Override

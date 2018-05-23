@@ -43,7 +43,8 @@ public class SiteGradesFragment extends Fragment {
         Course currCourse = DataHandler.getCourseFromId(siteId);
 
         //changes app title
-        ((NavActivity)getActivity()).setActionBarTitle("Site Gradebook");
+        ((NavActivity)getActivity()).setActionBarTitle("Gradebook: " + currCourse.getTitle()
+        );
 
 
         //makes request for grades for this site and gets them
