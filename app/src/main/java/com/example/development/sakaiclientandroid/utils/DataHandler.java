@@ -3,6 +3,7 @@ package com.example.development.sakaiclientandroid.utils;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 
+import com.example.development.sakaiclientandroid.api_models.gradebook.AllGradesObject;
 import com.example.development.sakaiclientandroid.api_models.gradebook.AssignmentObject;
 import com.example.development.sakaiclientandroid.api_models.gradebook.GradebookCollectionObject;
 import com.example.development.sakaiclientandroid.models.Course;
@@ -28,16 +29,14 @@ public class DataHandler {
     private static ArrayList<ArrayList<Course>> coursesSortedByTerm;
     private static HashMap<String, Course> mapSiteIdToCourse;
 
-    private static List<AssignmentObject> tempGradesPerSite;
-
 
 
     public static ArrayList<ArrayList<Course>> getCoursesSortedByTerm() {
         return coursesSortedByTerm;
     }
 
-    public static List<AssignmentObject> getTempGradesPerSite() {
-        return tempGradesPerSite;
+    public static List<AssignmentObject> getGradesForCourse(String siteId) {
+        return getCourseFromId(siteId).getAssignmentObjectList();
     }
 
 
@@ -52,7 +51,36 @@ public class DataHandler {
     }
 
 
-    public static void getGradesForSite(String siteId, final RequestCallback UICallback) {
+    public static void requestAllGrades(final RequestCallback UICallback) {
+
+        RequestManager.fetchAllGrades(new Callback<AllGradesObject>() {
+            @Override
+            public void onResponse(Call<AllGradesObject> call, Response<AllGradesObject> response) {
+
+                AllGradesObject allGradesObject = response.body();
+
+                //for each course's gradebook
+                for(GradebookCollectionObject gradebook : allGradesObject.getGradebookCollection()) {
+
+                    //set the gradebook's list of assignments to the course's list of assignments
+                    List<AssignmentObject> assignments = gradebook.getAssignments();
+                    String courseId = gradebook.getSiteId();
+
+                    getCourseFromId(courseId).setAssignmentObjectList(assignments);
+
+                    UICallback.onAllGradesSuccess();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AllGradesObject> call, Throwable t) {
+                UICallback.onAllGradesFailure(t);
+            }
+        });
+    }
+
+
+    public static void requestGradesForSite(final String siteId, final RequestCallback UICallback) {
 
         //pass in site id and callback
         RequestManager.fetchGradesForSite(siteId, new Callback<GradebookCollectionObject>() {
@@ -61,20 +89,24 @@ public class DataHandler {
 
                 GradebookCollectionObject gradebookCollectionObject = response.body();
 
-                tempGradesPerSite = gradebookCollectionObject.getAssignments();
+                if(gradebookCollectionObject != null) {
+                    Course currCourse = DataHandler.getCourseFromId(siteId);
+                    currCourse.setAssignmentObjectList(gradebookCollectionObject.getAssignments());
+                }
 
                 UICallback.onSiteGradesSuccess();
             }
 
+
             @Override
             public void onFailure(Call<GradebookCollectionObject> call, Throwable t) {
-                UICallback.onSiteGradesFailure();
+                UICallback.onSiteGradesFailure(t);
             }
         });
     }
 
 
-    public static void getAllSites(final RequestCallback UICallback) {
+    public static void requestAllSites(final RequestCallback UICallback) {
         RequestManager.fetchAllSites(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {

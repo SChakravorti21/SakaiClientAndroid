@@ -8,36 +8,35 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
-import android.widget.ProgressBar;
 
 import com.example.development.sakaiclientandroid.NavActivity;
 import com.example.development.sakaiclientandroid.R;
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.models.Term;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
-import com.example.development.sakaiclientandroid.utils.SiteCollectionsExpandableListAdapter;
+import com.example.development.sakaiclientandroid.utils.HomeFragmentExpandableListAdapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class HomeFragment extends Fragment {
+public class AllCoursesFragment extends Fragment {
 
 
-    private SiteCollectionsExpandableListAdapter listAdapter;
+    private HomeFragmentExpandableListAdapter listAdapter;
 
     private List<String> headersList;
     private HashMap<String, List<String>> headerToClassTitle;
     private HashMap<String, List<String>> headerToClassSiteId;
 
     private HashMap<String, List<Integer>> headerToClassSubjectCode;
+    private String showHomeOrGrades;
 
 
 
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
 
@@ -55,7 +54,13 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_home, null);
+
+        Bundle bun = this.getArguments();
+        this.showHomeOrGrades = bun.getString("showHomeOrGrades");
+
+
+
+        View view = inflater.inflate(R.layout.fragment_all_courses, null);
 
         //gets courses from data handler and feeds to list view
         ArrayList<ArrayList<Course>> sortedCourses = DataHandler.getCoursesSortedByTerm();
@@ -86,7 +91,7 @@ public class HomeFragment extends Fragment {
 
         prepareHeadersAndChildren(sortedCourses);
 
-        listAdapter = new SiteCollectionsExpandableListAdapter(getActivity(), headersList, headerToClassTitle, headerToClassSubjectCode);
+        listAdapter = new HomeFragmentExpandableListAdapter(getActivity(), headersList, headerToClassTitle, headerToClassSubjectCode);
         expListView.setAdapter(listAdapter);
 
         expListView.setOnChildClickListener(new ExpandableListViewOnChildClickListener());
@@ -171,15 +176,25 @@ public class HomeFragment extends Fragment {
 
 
             Bundle bun = new Bundle();
-            bun.putString("courseSiteId", courseSiteId);
+            bun.putString(getString(R.string.site_id), courseSiteId);
+            Fragment fragment = null;
 
-            CourseFragment courseFragment = new CourseFragment();
-            courseFragment.setArguments(bun);
+            if(showHomeOrGrades.equals("Home")) {
+
+                fragment = new CourseFragment();
+                fragment.setArguments(bun);
+
+            }
+
+            else if (showHomeOrGrades.equals("Grades")) {
+                fragment = new SiteGradesFragment();
+                fragment.setArguments(bun);
+            }
 
             //replaces current Fragment with CourseFragment
             FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
             ft.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
-                    .replace(R.id.fragment_container, courseFragment, null)
+                    .replace(R.id.fragment_container, fragment, null)
                     .addToBackStack(null)
                     .commit();
 

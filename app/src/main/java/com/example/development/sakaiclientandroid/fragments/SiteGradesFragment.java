@@ -7,9 +7,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.example.development.sakaiclientandroid.NavActivity;
 import com.example.development.sakaiclientandroid.R;
@@ -38,7 +38,7 @@ public class SiteGradesFragment extends Fragment {
 
         //gets side Id from bundle
         Bundle bun = this.getArguments();
-        String siteId = bun.getString(getString(R.string.site_id));
+        final String siteId = bun.getString(getString(R.string.site_id));
 
 
         //changes app title
@@ -48,7 +48,7 @@ public class SiteGradesFragment extends Fragment {
 
 
         //inflates the view
-        View view = inflater.inflate(R.layout.fragment_site_grades, null);
+        final View view = inflater.inflate(R.layout.fragment_site_grades, null);
         this.siteGradesListView = view.findViewById(R.id.site_grades_list_view);
 
         //starts spinning a spinner
@@ -56,26 +56,33 @@ public class SiteGradesFragment extends Fragment {
         this.spinner.setVisibility(View.VISIBLE);
 
 
-        DataHandler.getGradesForSite(siteId, new RequestCallback() {
+        DataHandler.requestGradesForSite(siteId, new RequestCallback() {
 
             @Override
             public void onSiteGradesSuccess() {
 
 
                 //makes request for grades for this site and gets them
-                List<AssignmentObject> gradesList = DataHandler.getTempGradesPerSite();
+                List<AssignmentObject> gradesList = DataHandler.getGradesForCourse(siteId);
 
                 //makes spinner invisible
                 spinner.setVisibility(View.GONE);
 
-                //puts grades into custom adapter
-                GradeItemAdapter adapter = new GradeItemAdapter(getActivity(), gradesList);
-                siteGradesListView.setAdapter(adapter);
+                if(gradesList != null) {
+
+                    //puts grades into custom adapter
+                    GradeItemAdapter adapter = new GradeItemAdapter(getActivity(), gradesList);
+                    siteGradesListView.setAdapter(adapter);
+                }
+                else {
+                    TextView noGradesTxt = view.findViewById(R.id.txt_no_grades);
+                    noGradesTxt.setVisibility(View.VISIBLE);
+                }
 
             }
 
             @Override
-            public void onSiteGradesFailure() {
+            public void onSiteGradesFailure(Throwable t) {
                 Log.d("fail", "fail");
             }
         });

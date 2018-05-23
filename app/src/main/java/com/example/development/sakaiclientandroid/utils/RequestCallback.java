@@ -15,5 +15,9 @@ public class RequestCallback {
 
     public void onSiteGradesSuccess() { }
 
-    public void onSiteGradesFailure() { }
+    public void onSiteGradesFailure(Throwable throwable) { }
+
+    public void onAllGradesSuccess() { }
+
+    public void onAllGradesFailure(Throwable throwable) { }
 }

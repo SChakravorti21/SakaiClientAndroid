@@ -1,10 +1,13 @@
 package com.example.development.sakaiclientandroid.models;
 
+import com.example.development.sakaiclientandroid.api_models.gradebook.AssignmentObject;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Course {
 
@@ -16,7 +19,7 @@ public class Course {
     private ArrayList<SitePage> sitePages;
     private String siteOwner;
     private int subjectCode;
-
+    private List<AssignmentObject> assignmentObjectList;
 
 
     public Course(JSONObject jsonObject) {
@@ -69,6 +72,9 @@ public class Course {
                 sitePages.add(sitePage);
             }
             this.sitePages = sitePages;
+
+
+            this.assignmentObjectList = null;
 
         }
         catch(Exception e) {
@@ -163,6 +169,14 @@ public class Course {
 
     public void setSubjectCode(int subjectCode) {
         this.subjectCode = subjectCode;
+    }
+
+    public List<AssignmentObject> getAssignmentObjectList() {
+        return assignmentObjectList;
+    }
+
+    public void setAssignmentObjectList(List<AssignmentObject> assignmentObjectList) {
+        this.assignmentObjectList = assignmentObjectList;
     }
 
 

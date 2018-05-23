@@ -10,16 +10,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.example.development.sakaiclientandroid.fragments.AllCoursesFragment;
 import com.example.development.sakaiclientandroid.fragments.AnnouncementsFragment;
 import com.example.development.sakaiclientandroid.fragments.AssignmentsFragment;
-import com.example.development.sakaiclientandroid.fragments.AllGradesFragment;
-import com.example.development.sakaiclientandroid.fragments.HomeFragment;
 import com.example.development.sakaiclientandroid.fragments.SettingsFragment;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
 import com.example.development.sakaiclientandroid.utils.RequestCallback;
 import com.example.development.sakaiclientandroid.utils.RequestManager;
-
-import okhttp3.OkHttpClient;
 
 
 public class NavActivity extends AppCompatActivity
@@ -45,12 +42,17 @@ public class NavActivity extends AppCompatActivity
         // Create RequestManager's Retrofit instance
         RequestManager.createRetrofitInstance(this);
         // Request all site pages for the Home Fragment
-        DataHandler.getAllSites(new RequestCallback() {
+        DataHandler.requestAllSites(new RequestCallback() {
             @Override
             public void onCoursesSuccess() {
 
                 spinner.setVisibility(View.GONE);
-                HomeFragment fragment = new HomeFragment();
+
+                Bundle bun = new Bundle();
+                bun.putString("showHomeOrGrades", "Home");
+
+                AllCoursesFragment fragment = new AllCoursesFragment();
+                fragment.setArguments(bun);
                 loadFragment(fragment);
             }
 
@@ -87,7 +89,7 @@ public class NavActivity extends AppCompatActivity
 
     /**
      * When an item on the navigation bar is selected, creates the respective fragment
-     * and then loads the fragment into the Frame Layout. For the HomeFragment, we have to
+     * and then loads the fragment into the Frame Layout. For the AllCoursesFragment, we have to
      * put the responseBody of the request into the bundle and give it to the fragment, so that
      * the fragment has data to display all the site collections.
      *
@@ -99,12 +101,14 @@ public class NavActivity extends AppCompatActivity
 
 
         Fragment fragment = null;
+        Bundle bun = new Bundle();
 
         switch(item.getItemId()) {
 
             case R.id.navigation_home:
-
-                fragment = new HomeFragment();
+                bun.putString("showHomeOrGrades", "Home");
+                fragment = new AllCoursesFragment();
+                fragment.setArguments(bun);
                 break;
 
 
@@ -117,7 +121,9 @@ public class NavActivity extends AppCompatActivity
                 break;
 
             case R.id.navigation_gradebook:
-                fragment = new AllGradesFragment();
+                bun.putString("showHomeOrGrades", "Grades");
+                fragment = new AllCoursesFragment();
+                fragment.setArguments(bun);
                 break;
 
             case R.id.navigation_settings:

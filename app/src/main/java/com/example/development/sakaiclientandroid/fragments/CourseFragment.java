@@ -45,7 +45,7 @@ public class CourseFragment extends Fragment {
         }
 
 
-        String courseId = bundle.getString("courseSiteId");
+        String courseId = bundle.getString(getString(R.string.site_id));
         this.courseToView = DataHandler.getCourseFromId(courseId);
         final String[] siteTitles = new String[this.courseToView.getSitePages().size()];
         for(int i = 0; i < siteTitles.length; i++) {
