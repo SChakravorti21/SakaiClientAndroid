@@ -102,7 +102,7 @@ public class AllCoursesFragment extends BaseFragment{
         this.headerToClassSubjectCode = new HashMap<>();
         this.headerToClassSiteId = new HashMap<>();
 
-        DataHandler.prepareHeadersAndChildren(
+        DataHandler.prepareHeadersAndChildrenAll(
                 this.termHeaders,
                 this.headerToClassTitle,
                 this.headerToClassSubjectCode,

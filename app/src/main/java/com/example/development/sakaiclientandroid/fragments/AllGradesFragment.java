@@ -11,8 +11,6 @@ import android.widget.ProgressBar;
 
 import com.example.development.sakaiclientandroid.NavActivity;
 import com.example.development.sakaiclientandroid.R;
-import com.example.development.sakaiclientandroid.models.Course;
-import com.example.development.sakaiclientandroid.models.Term;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
 import com.example.development.sakaiclientandroid.utils.custom.GradebookTermsExpListAdapter;
 import com.example.development.sakaiclientandroid.utils.requests.RequestCallback;
@@ -50,14 +48,6 @@ public class AllGradesFragment extends BaseFragment {
         this.termToCourseSubjectCodes = new HashMap<>();
         this.termToCourseIds = new HashMap<>();
 
-        //we can prepare the headers before the request is successful because the grades
-        //don't need to be in there for us to sort it.
-        DataHandler.prepareHeadersAndChildren(
-                this.termHeaders,
-                this.termToCourseTitles,
-                this.termToCourseSubjectCodes,
-                this.termToCourseIds
-        );
 
         final ExpandableListView expandableListView = view.findViewById(R.id.all_grades_listview);
         final ProgressBar spinner = getActivity().findViewById(R.id.nav_activity_progressbar);
@@ -65,6 +55,14 @@ public class AllGradesFragment extends BaseFragment {
 
         //if we already have grades for all sites cached, then no need to make another request
         if(DataHandler.gradesRequestedForAllSites()) {
+
+            //prepare the headers and children
+            DataHandler.prepareHeadersAndChildrenWithGrades(
+                    this.termHeaders,
+                    this.termToCourseTitles,
+                    this.termToCourseSubjectCodes,
+                    this.termToCourseIds
+            );
 
             spinner.setVisibility(View.GONE);
             GradebookTermsExpListAdapter adapter = new GradebookTermsExpListAdapter(mContext, termHeaders, termToCourseTitles, termToCourseIds, termToCourseSubjectCodes);
@@ -80,6 +78,14 @@ public class AllGradesFragment extends BaseFragment {
 
                 @Override
                 public void onAllGradesSuccess() {
+
+                    //now prepare headers and children
+                    DataHandler.prepareHeadersAndChildrenWithGrades(
+                            termHeaders,
+                            termToCourseTitles,
+                            termToCourseSubjectCodes,
+                            termToCourseIds
+                    );
 
                     GradebookTermsExpListAdapter adapter = new GradebookTermsExpListAdapter(mContext, termHeaders, termToCourseTitles, termToCourseIds, termToCourseSubjectCodes);
 
@@ -97,6 +103,7 @@ public class AllGradesFragment extends BaseFragment {
 
             });
         }
+
 
 
         this.swipeRefreshLayout = view.findViewById(R.id.swiperefresh);
