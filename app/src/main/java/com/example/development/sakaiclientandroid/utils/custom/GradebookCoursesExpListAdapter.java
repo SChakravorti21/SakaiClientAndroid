@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.development.sakaiclientandroid.R;
 import com.example.development.sakaiclientandroid.api_models.gradebook.AssignmentObject;
@@ -149,17 +150,15 @@ public class GradebookCoursesExpListAdapter extends BaseExpandableListAdapter {
         final String grade;
         final AssignmentObject child = (AssignmentObject) getChild(groupPos, childPos);
 
-        //TODO toast if no grades
-        //if the course has no grades, just display "No grades to display"
+        //just in case
         if(child == null) {
-            assignmentName = "     " +this.context.getString(R.string.no_grades);
+            assignmentName = "";
             grade = "";
         }
         else {
             assignmentName = child.getItemName();
 
-
-            if(child.getGrade().equals("null")) {
+            if(child.getGrade() == null) {
                 grade = "?";
             } else {
                 grade = child.getGrade() + "/" + child.getPoints();

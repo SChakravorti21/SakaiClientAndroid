@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
+import android.widget.ProgressBar;
 
 import com.example.development.sakaiclientandroid.NavActivity;
 import com.example.development.sakaiclientandroid.R;
@@ -57,11 +58,13 @@ public class AllGradesFragment extends BaseFragment {
         );
 
         final ExpandableListView expandableListView = view.findViewById(R.id.all_grades_listview);
+        final ProgressBar spinner = view.findViewById(R.id.all_grades_spinner);
 
 
         //if we already have grades for all sites cached, then no need to make another request
         if(DataHandler.gradesRequestedForAllSites()) {
 
+            spinner.setVisibility(View.GONE);
             GradebookTermsExpListAdapter adapter = new GradebookTermsExpListAdapter(mContext, termHeaders, termToCourseTitles, termToCourseIds, termToCourseSubjectCodes);
             expandableListView.setAdapter(adapter);
         }
@@ -73,6 +76,8 @@ public class AllGradesFragment extends BaseFragment {
                 public void onAllGradesSuccess() {
 
                     GradebookTermsExpListAdapter adapter = new GradebookTermsExpListAdapter(mContext, termHeaders, termToCourseTitles, termToCourseIds, termToCourseSubjectCodes);
+
+                    spinner.setVisibility(View.GONE);
                     expandableListView.setAdapter(adapter);
                 }
 

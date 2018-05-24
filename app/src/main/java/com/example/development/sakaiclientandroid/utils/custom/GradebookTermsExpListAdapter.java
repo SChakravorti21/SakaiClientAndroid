@@ -5,7 +5,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ExpandableListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.development.sakaiclientandroid.R;
 import com.example.development.sakaiclientandroid.api_models.gradebook.AssignmentObject;
@@ -161,9 +163,29 @@ public class GradebookTermsExpListAdapter extends BaseExpandableListAdapter {
      * @return child view
      */
     @Override
-    public View getChildView(int groupPos, int childPos, boolean isLastChild, View convertView, ViewGroup parent) {
+    public View getChildView(final int groupPos, int childPos, boolean isLastChild, View convertView, ViewGroup parent) {
 
         final CustomParentListView parentListView = new CustomParentListView(this.context);
+        parentListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
+
+            @Override
+            public boolean onGroupClick(ExpandableListView parent, View v,
+                                        int coursePos, long id) {
+
+                String termString = (String)getGroup(groupPos);
+
+                String courseId = mapTermToCourseIds.get(termString).get(coursePos);
+                Course c = DataHandler.getCourseFromId(courseId);
+                if(c.getAssignmentObjectList() == null) {
+                    Toast.makeText(context, context.getString(R.string.no_grades), Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+                else
+                    return false;
+
+
+            }
+        });
         String termName = (String) getGroup(groupPos);
 
         List<String> courseTitles = mapTermToCourseTitles.get(termName);
