@@ -23,14 +23,11 @@ import java.util.List;
 public class AllCoursesFragment extends Fragment {
 
 
-    private HomeFragmentExpandableListAdapter listAdapter;
-
     private List<String> headersList;
     private HashMap<String, List<String>> headerToClassTitle;
     private HashMap<String, List<String>> headerToClassSiteId;
 
     private HashMap<String, List<Integer>> headerToClassSubjectCode;
-    private String showHomeOrGrades;
 
 
 
@@ -53,11 +50,6 @@ public class AllCoursesFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
-
-        Bundle bun = this.getArguments();
-        this.showHomeOrGrades = bun.getString("showHomeOrGrades");
-
 
 
         View view = inflater.inflate(R.layout.fragment_all_courses, null);
@@ -91,7 +83,7 @@ public class AllCoursesFragment extends Fragment {
 
         prepareHeadersAndChildren(sortedCourses);
 
-        listAdapter = new HomeFragmentExpandableListAdapter(getActivity(), headersList, headerToClassTitle, headerToClassSubjectCode);
+        HomeFragmentExpandableListAdapter listAdapter = new HomeFragmentExpandableListAdapter(getActivity(), headersList, headerToClassTitle, headerToClassSubjectCode);
         expListView.setAdapter(listAdapter);
 
         expListView.setOnChildClickListener(new ExpandableListViewOnChildClickListener());
@@ -172,24 +164,15 @@ public class AllCoursesFragment extends Fragment {
         public boolean onChildClick(ExpandableListView parent, View v,
                                     int groupPosition, int childPosition, long id) {
 
+
             String courseSiteId =  headerToClassSiteId.get(headersList.get(groupPosition)).get(childPosition);
 
 
             Bundle bun = new Bundle();
             bun.putString(getString(R.string.site_id), courseSiteId);
-            Fragment fragment = null;
+            CourseFragment fragment = new CourseFragment();
+            fragment.setArguments(bun);
 
-            if(showHomeOrGrades.equals("Home")) {
-
-                fragment = new CourseFragment();
-                fragment.setArguments(bun);
-
-            }
-
-            else if (showHomeOrGrades.equals("Grades")) {
-                fragment = new SiteGradesFragment();
-                fragment.setArguments(bun);
-            }
 
             //replaces current Fragment with CourseFragment
             FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();

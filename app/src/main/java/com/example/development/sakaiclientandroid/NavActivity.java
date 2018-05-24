@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import com.example.development.sakaiclientandroid.fragments.AllCoursesFragment;
+import com.example.development.sakaiclientandroid.fragments.AllGradesFragment;
 import com.example.development.sakaiclientandroid.fragments.AnnouncementsFragment;
 import com.example.development.sakaiclientandroid.fragments.AssignmentsFragment;
 import com.example.development.sakaiclientandroid.fragments.SettingsFragment;
@@ -101,14 +102,11 @@ public class NavActivity extends AppCompatActivity
 
 
         Fragment fragment = null;
-        Bundle bun = new Bundle();
 
         switch(item.getItemId()) {
 
             case R.id.navigation_home:
-                bun.putString("showHomeOrGrades", "Home");
                 fragment = new AllCoursesFragment();
-                fragment.setArguments(bun);
                 break;
 
 
@@ -121,9 +119,7 @@ public class NavActivity extends AppCompatActivity
                 break;
 
             case R.id.navigation_gradebook:
-                bun.putString("showHomeOrGrades", "Grades");
-                fragment = new AllCoursesFragment();
-                fragment.setArguments(bun);
+                fragment = new AllGradesFragment();
                 break;
 
             case R.id.navigation_settings:

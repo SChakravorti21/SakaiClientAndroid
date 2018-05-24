@@ -2,7 +2,9 @@ package com.example.development.sakaiclientandroid.utils;
 
 import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 
+import com.example.development.sakaiclientandroid.R;
 import com.example.development.sakaiclientandroid.api_models.gradebook.AllGradesObject;
 import com.example.development.sakaiclientandroid.api_models.gradebook.AssignmentObject;
 import com.example.development.sakaiclientandroid.api_models.gradebook.GradebookCollectionObject;
@@ -29,6 +31,10 @@ public class DataHandler {
     private static ArrayList<ArrayList<Course>> coursesSortedByTerm;
     private static HashMap<String, Course> mapSiteIdToCourse;
 
+    //needed so that we don't have to make an unnecessary request if all grades
+    //have already been requested
+    private static boolean hasRequestedAllGrades = false;
+
 
 
     public static ArrayList<ArrayList<Course>> getCoursesSortedByTerm() {
@@ -45,12 +51,7 @@ public class DataHandler {
 
     public static boolean gradesRequestedForAllSites() {
 
-        for(Course c : mapSiteIdToCourse.values()) {
-            if(c.getAssignmentObjectList() == null)
-                return false;
-        }
-
-        return true;
+        return hasRequestedAllGrades;
     }
 
 
@@ -72,17 +73,25 @@ public class DataHandler {
 
                 AllGradesObject allGradesObject = response.body();
 
-                //for each course's gradebook
-                for(GradebookCollectionObject gradebook : allGradesObject.getGradebookCollection()) {
+                if(allGradesObject != null) {
+                    //for each course's gradebook
+                    for (GradebookCollectionObject gradebook : allGradesObject.getGradebookCollection()) {
 
-                    //set the gradebook's list of assignments to the course's list of assignments
-                    List<AssignmentObject> assignments = gradebook.getAssignments();
-                    String courseId = gradebook.getSiteId();
+                        //set the gradebook's list of assignments to the course's list of assignments
+                        List<AssignmentObject> assignments = gradebook.getAssignments();
+                        String courseId = gradebook.getSiteId();
 
-                    getCourseFromId(courseId).setAssignmentObjectList(assignments);
+                        Course c = getCourseFromId(courseId);
+                        if (c != null)
+                            c.setAssignmentObjectList(assignments);
+                        int x=2;
+                    }
 
-                    UICallback.onAllGradesSuccess();
                 }
+
+                hasRequestedAllGrades = true;
+                UICallback.onAllGradesSuccess();
+
             }
 
             @Override
@@ -242,6 +251,56 @@ public class DataHandler {
         sorted.add(currSites);
 
         coursesSortedByTerm = sorted;
+    }
+
+
+
+
+    /**
+     * Sets the image resource of an image view depending on the rutgers university
+     * subject code that is given. These icons are there to make the app more lively.
+     *
+     * @param imageView = imageView to set the resource of
+     * @param subjectCode = subject code of the class, so that the correct icon can be chosen
+     */
+    public static void setSiteIcon(ImageView imageView, int subjectCode) {
+
+        switch(subjectCode) {
+            case 13:
+                imageView.setImageResource(R.drawable.ic_language);
+                break;
+            case 80:
+                imageView.setImageResource(R.drawable.ic_art);
+                break;
+            case 81:
+                imageView.setImageResource(R.drawable.ic_art);
+                break;
+            case 160:
+                imageView.setImageResource(R.drawable.ic_chemistry);
+                break;
+            case 198:
+                imageView.setImageResource(R.drawable.ic_computer);
+                break;
+            case 220:
+                imageView.setImageResource(R.drawable.ic_economics);
+                break;
+            case 420:
+                imageView.setImageResource(R.drawable.ic_language);
+                break;
+            case 447:
+                imageView.setImageResource(R.drawable.ic_genetics);
+                break;
+            case 640:
+                imageView.setImageResource(R.drawable.ic_math);
+                break;
+            case 700:
+                imageView.setImageResource(R.drawable.ic_music);
+                break;
+            case 750:
+                imageView.setImageResource(R.drawable.ic_physics);
+                break;
+
+        }
     }
 
 }

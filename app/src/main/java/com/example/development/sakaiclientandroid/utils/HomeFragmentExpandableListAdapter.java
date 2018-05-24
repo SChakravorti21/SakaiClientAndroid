@@ -155,58 +155,12 @@ public class HomeFragmentExpandableListAdapter extends BaseExpandableListAdapter
 
 
         int subjectCode = getChildSubjectCode(groupPos, childPos);
-        setSiteIcon(imageView, subjectCode);
+        DataHandler.setSiteIcon(imageView, subjectCode);
 
         return convertView;
     }
 
 
-    /**
-     * Sets the image resource of an image view depending on the rutgers university
-     * subject code that is given. These icons are there to make the app more lively.
-     *
-     * @param imageView = imageView to set the resource of
-     * @param subjectCode = subject code of the class, so that the correct icon can be chosen
-     */
-    public void setSiteIcon(ImageView imageView, int subjectCode) {
-
-        switch(subjectCode) {
-            case 13:
-                imageView.setImageResource(R.drawable.ic_language);
-                break;
-            case 80:
-                imageView.setImageResource(R.drawable.ic_art);
-                break;
-            case 81:
-                imageView.setImageResource(R.drawable.ic_art);
-                break;
-            case 160:
-                imageView.setImageResource(R.drawable.ic_chemistry);
-                break;
-            case 198:
-                imageView.setImageResource(R.drawable.ic_computer);
-                break;
-            case 220:
-                imageView.setImageResource(R.drawable.ic_economics);
-                break;
-            case 420:
-                imageView.setImageResource(R.drawable.ic_language);
-                break;
-            case 447:
-                imageView.setImageResource(R.drawable.ic_genetics);
-                break;
-            case 640:
-                imageView.setImageResource(R.drawable.ic_math);
-                break;
-            case 700:
-                imageView.setImageResource(R.drawable.ic_music);
-                break;
-            case 750:
-                imageView.setImageResource(R.drawable.ic_physics);
-                break;
-
-        }
-    }
 
     @Override
     public boolean isChildSelectable(int groupPos, int childPos) {

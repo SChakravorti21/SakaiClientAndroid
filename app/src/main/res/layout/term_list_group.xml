@@ -8,13 +8,12 @@
         android:id="@+id/term_header_group"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="?android:attr/expandableListPreferredItemPaddingLeft"
-        android:textSize="25dp"
-        android:textColor="#000066"
+        android:clickable="false"
         android:focusable="false"
         android:focusableInTouchMode="false"
-        android:clickable="false"
+        android:paddingLeft="?android:attr/expandableListPreferredItemPaddingLeft"
+        android:textColor="#000066"
         android:textIsSelectable="false"
-        />
+        android:textSize="30dp" />
 
 </LinearLayout>

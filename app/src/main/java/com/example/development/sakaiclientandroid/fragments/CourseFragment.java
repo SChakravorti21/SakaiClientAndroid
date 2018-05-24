@@ -37,7 +37,6 @@ public class CourseFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_course, null);
 
 
-
         Bundle bundle = this.getArguments();
         if(bundle == null) {
             //TODO error message even though we shouldn't get an error here
@@ -66,8 +65,6 @@ public class CourseFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int pos, long id) {
 
                 String siteName = (String) sitePagesListView.getItemAtPosition(pos);
-
-
 
 
                 if(siteName.equals(getString(R.string.gradebook))) {
