@@ -8,10 +8,10 @@
 
     <TextView
         android:id="@+id/txt_assignment_name"
-        android:layout_width="260dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="48dp"
-        android:layout_marginStart="48dp"
+        android:layout_width="252dp"
+        android:layout_height="21dp"
+        android:layout_marginLeft="36dp"
+        android:layout_marginStart="36dp"
         android:layout_marginTop="4dp"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -19,16 +19,14 @@
 
     <TextView
         android:id="@+id/txt_grade"
-        android:layout_width="100dp"
+        android:layout_width="86dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="4dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginRight="4dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.936"
         app:layout_constraintStart_toEndOf="@+id/txt_assignment_name"
         app:layout_constraintTop_toTopOf="parent" />
 

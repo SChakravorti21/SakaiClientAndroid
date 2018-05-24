@@ -1,4 +1,4 @@
-package com.example.development.sakaiclientandroid.utils;
+package com.example.development.sakaiclientandroid.utils.requests;
 
 import java.io.IOException;
 

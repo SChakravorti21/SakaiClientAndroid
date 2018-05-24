@@ -1,7 +1,5 @@
 package com.example.development.sakaiclientandroid.utils;
 
-import android.util.Log;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
 import com.example.development.sakaiclientandroid.R;
@@ -10,6 +8,8 @@ import com.example.development.sakaiclientandroid.api_models.gradebook.Assignmen
 import com.example.development.sakaiclientandroid.api_models.gradebook.GradebookCollectionObject;
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.models.Term;
+import com.example.development.sakaiclientandroid.utils.requests.RequestCallback;
+import com.example.development.sakaiclientandroid.utils.requests.RequestManager;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -301,6 +301,72 @@ public class DataHandler {
                 break;
 
         }
+    }
+
+
+
+
+
+
+    /**
+     * uses the courses that are already sorted by term and puts that data into the headers list
+     * and the hashmaps so that it can be displays in the expandable list view
+     *
+     * Used in the home tab and in all grades tab
+     *
+     * @param termHeaders list of term headers
+     * @param termToCourseTitles hashmap mapping term to a list of courses
+     * @param termToCourseSubjectCodes hashmap mapping term to a list of course subj codes
+     * @param termToCourseIds hashmap mapping term to course Ids
+     */
+    public static void prepareHeadersAndChildren(List<String> termHeaders,
+                                           HashMap<String, List<String>> termToCourseTitles,
+                                           HashMap<String, List<Integer>> termToCourseSubjectCodes,
+                                           HashMap<String, List<String>> termToCourseIds) {
+
+        //sets the Term as the headers for the expandable list view
+        //each child is the name of the site in that term
+        for(ArrayList<Course> coursesPerTerm : coursesSortedByTerm) {
+
+            //we can just look at the first site's term, since all the terms
+            //should be the same, since we already sorted
+            Term currTerm = coursesPerTerm.get(0).getTerm();
+
+            String termKey = currTerm.getTermString();
+
+            //don't put the year if the header is just General
+            if(!termKey.equals("General")) {
+                termKey += (" " + currTerm.getYear());
+            }
+
+            termHeaders.add(termKey);
+
+
+            List<String> tempChildList = new ArrayList<>();
+            List<Integer> tempSubjectCodeList = new ArrayList<>();
+            List<String> tempSiteIdList = new ArrayList<>();
+
+            //places the title of each site and its corresponding ImgResId into 2 lists
+            //which are then added to the hashmap under the current term header
+            for(Course currCourse : coursesPerTerm) {
+
+                tempChildList.add(currCourse.getTitle());
+                tempSiteIdList.add(currCourse.getId());
+
+                //TODO figure out a way to add the resource Id values directly, for more abstraction
+                //adds subject code to hashmap
+                int subjectCode = currCourse.getSubjectCode();
+                tempSubjectCodeList.add(subjectCode);
+//                int resId = RutgersSubjectCodes.getResourceIdFromSubjectCode(subjectCode, getActivity().getPackageName(), getContext());
+//                tempSubjectCodeList.add(resId);
+            }
+
+            termToCourseIds.put(termKey, tempSiteIdList);
+            termToCourseSubjectCodes.put(termKey, tempSubjectCodeList);
+            termToCourseTitles.put(termKey, tempChildList);
+        }
+
+
     }
 
 }

@@ -3,22 +3,19 @@ package com.example.development.sakaiclientandroid.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.example.development.sakaiclientandroid.NavActivity;
 import com.example.development.sakaiclientandroid.R;
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
-import com.example.development.sakaiclientandroid.utils.RequestCallback;
 
-public class CourseFragment extends Fragment {
+public class CourseFragment extends BaseFragment {
 
     private ListView sitePagesListView;
     private Course courseToView;

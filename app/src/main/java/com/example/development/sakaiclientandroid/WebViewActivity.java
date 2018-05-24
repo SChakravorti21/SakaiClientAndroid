@@ -6,8 +6,8 @@ import android.os.Bundle;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
-import com.example.development.sakaiclientandroid.utils.CASWebViewClient;
-import com.example.development.sakaiclientandroid.utils.SharedPrefsUtil;
+import com.example.development.sakaiclientandroid.utils.requests.CASWebViewClient;
+import com.example.development.sakaiclientandroid.utils.requests.SharedPrefsUtil;
 
 import okhttp3.Headers;
 

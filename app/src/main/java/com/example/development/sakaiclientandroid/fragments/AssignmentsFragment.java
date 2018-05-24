@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 
 import com.example.development.sakaiclientandroid.R;
 
-public class AssignmentsFragment extends Fragment {
+public class AssignmentsFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

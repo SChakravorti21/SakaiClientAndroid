@@ -1,4 +1,4 @@
-package com.example.development.sakaiclientandroid.utils;
+package com.example.development.sakaiclientandroid.utils.custom;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.example.development.sakaiclientandroid.R;
 import com.example.development.sakaiclientandroid.api_models.gradebook.AssignmentObject;
 import com.example.development.sakaiclientandroid.models.Course;
+import com.example.development.sakaiclientandroid.utils.DataHandler;
 
 import java.util.HashMap;
 import java.util.List;
@@ -63,6 +64,13 @@ public class GradebookCoursesExpListAdapter extends BaseExpandableListAdapter {
         return this.courseTitles.get(i);
     }
 
+    /**
+     * Gets a grade item inside a group
+     *
+     * @param groupPos group position
+     * @param childPos position of item inside group
+     * @return AssignmentObject which represents a grade item
+     */
     @Override
     public Object getChild(int groupPos, int childPos) {
 
@@ -91,11 +99,20 @@ public class GradebookCoursesExpListAdapter extends BaseExpandableListAdapter {
     }
 
 
+    /**
+     * Gets the view for the group
+     * @param groupPos position of group
+     * @param isExpandable whether or not group is expandable
+     * @param convertView old view to reuse if possible
+     * @param parent view that this view will be attached to
+     * @return group view
+     */
     @Override
     public View getGroupView(int groupPos, boolean isExpandable, View convertView, ViewGroup parent) {
 
         final String groupText = (String) getGroup(groupPos);
 
+        //if we can't reuse the view, must make a new one
         if(convertView == null) {
             LayoutInflater inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.course_list_item_gradebook, parent, false);
@@ -116,6 +133,15 @@ public class GradebookCoursesExpListAdapter extends BaseExpandableListAdapter {
 
     }
 
+    /**
+     * Gets the view for the child items, which are the grade items
+     * @param groupPos .
+     * @param childPos .
+     * @param isLastChild .
+     * @param convertView .
+     * @param parent .
+     * @return child view
+     */
     @Override
     public View getChildView(int groupPos, int childPos, boolean isLastChild, View convertView, ViewGroup parent) {
 
@@ -123,13 +149,22 @@ public class GradebookCoursesExpListAdapter extends BaseExpandableListAdapter {
         final String grade;
         final AssignmentObject child = (AssignmentObject) getChild(groupPos, childPos);
 
+        //TODO toast if no grades
+        //if the course has no grades, just display "No grades to display"
         if(child == null) {
-            assignmentName = "No grades";
+            assignmentName = "     " +this.context.getString(R.string.no_grades);
             grade = "";
         }
         else {
             assignmentName = child.getItemName();
-            grade = child.getGrade();
+
+
+            if(child.getGrade().equals("null")) {
+                grade = "?";
+            } else {
+                grade = child.getGrade() + "/" + child.getPoints();
+            }
+
         }
 
 
@@ -141,8 +176,11 @@ public class GradebookCoursesExpListAdapter extends BaseExpandableListAdapter {
         TextView assignmentText = convertView.findViewById(R.id.txt_assignment_name);
         assignmentText.setText(assignmentName);
 
+
         TextView gradeText = convertView.findViewById(R.id.txt_grade);
         gradeText.setText(grade);
+
+
         return convertView;
 
     }

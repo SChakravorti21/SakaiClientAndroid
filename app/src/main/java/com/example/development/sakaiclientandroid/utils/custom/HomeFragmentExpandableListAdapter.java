@@ -1,4 +1,4 @@
-package com.example.development.sakaiclientandroid.utils;
+package com.example.development.sakaiclientandroid.utils.custom;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 
 import com.example.development.sakaiclientandroid.R;
+import com.example.development.sakaiclientandroid.utils.DataHandler;
 
 import java.util.HashMap;
 import java.util.List;

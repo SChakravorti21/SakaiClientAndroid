@@ -16,8 +16,8 @@ import com.example.development.sakaiclientandroid.fragments.AnnouncementsFragmen
 import com.example.development.sakaiclientandroid.fragments.AssignmentsFragment;
 import com.example.development.sakaiclientandroid.fragments.SettingsFragment;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
-import com.example.development.sakaiclientandroid.utils.RequestCallback;
-import com.example.development.sakaiclientandroid.utils.RequestManager;
+import com.example.development.sakaiclientandroid.utils.requests.RequestCallback;
+import com.example.development.sakaiclientandroid.utils.requests.RequestManager;
 
 
 public class NavActivity extends AppCompatActivity

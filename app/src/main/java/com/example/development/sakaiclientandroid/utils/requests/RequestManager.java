@@ -1,4 +1,4 @@
-package com.example.development.sakaiclientandroid.utils;
+package com.example.development.sakaiclientandroid.utils.requests;
 
 import android.content.Context;
 
@@ -6,6 +6,7 @@ import com.example.development.sakaiclientandroid.R;
 import com.example.development.sakaiclientandroid.api_models.gradebook.AllGradesObject;
 import com.example.development.sakaiclientandroid.api_models.gradebook.GradebookCollectionObject;
 import com.example.development.sakaiclientandroid.services.SakaiService;
+import com.example.development.sakaiclientandroid.utils.requests.HeaderInterceptor;
 
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;

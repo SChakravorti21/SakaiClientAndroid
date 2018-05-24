@@ -16,12 +16,12 @@ import com.example.development.sakaiclientandroid.R;
 import com.example.development.sakaiclientandroid.api_models.gradebook.AssignmentObject;
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
-import com.example.development.sakaiclientandroid.utils.GradeItemAdapter;
-import com.example.development.sakaiclientandroid.utils.RequestCallback;
+import com.example.development.sakaiclientandroid.utils.custom.GradeItemAdapter;
+import com.example.development.sakaiclientandroid.utils.requests.RequestCallback;
 
 import java.util.List;
 
-public class SiteGradesFragment extends Fragment {
+public class SiteGradesFragment extends BaseFragment {
 
     private ListView siteGradesListView;
     private ProgressBar spinner;

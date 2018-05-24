@@ -1,4 +1,4 @@
-package com.example.development.sakaiclientandroid.utils;
+package com.example.development.sakaiclientandroid.utils.custom;
 
 import android.content.Context;
 import android.support.annotation.NonNull;

@@ -1,4 +1,4 @@
-package com.example.development.sakaiclientandroid.utils;
+package com.example.development.sakaiclientandroid.utils.custom;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,12 +10,11 @@ import android.widget.TextView;
 import com.example.development.sakaiclientandroid.R;
 import com.example.development.sakaiclientandroid.api_models.gradebook.AssignmentObject;
 import com.example.development.sakaiclientandroid.models.Course;
+import com.example.development.sakaiclientandroid.utils.DataHandler;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class GradebookTermsExpListAdapter extends BaseExpandableListAdapter {
 
@@ -33,7 +32,7 @@ public class GradebookTermsExpListAdapter extends BaseExpandableListAdapter {
 
 
 
-//    //by now, all courses should have their grades
+    //by now, all courses should have their grades
     public GradebookTermsExpListAdapter(Context context,
                                         List<String> termHeaders,
                                         HashMap<String, List<String>> mapTermToCourseTitles,
@@ -53,9 +52,18 @@ public class GradebookTermsExpListAdapter extends BaseExpandableListAdapter {
     }
 
 
-    //for each term, get its courses, and create a hashmap mapping course to grades for each course
+    /**
+     * For each term, get it's courses and create a HashMap mapping each course
+     * to its list of grades. These HashMaps are put into a List, where each element
+     * represents the HashMap for a term..
+     * This is done so that if a person retakes the same course in different terms,
+     * the grades don't conflict and mess up.
+     *
+     * This is used in displaying the grades for each course
+     */
     private void mapCoursesToGradesList() {
 
+        //For each term
         for(String termString : this.termHeaders) {
 
             HashMap<String, List<AssignmentObject>> tempMapCourseToGrades = new HashMap<>();
@@ -63,13 +71,16 @@ public class GradebookTermsExpListAdapter extends BaseExpandableListAdapter {
 
             List<String> courseIds = this.mapTermToCourseIds.get(termString);
 
+            //For each course in the term
             for(String id : courseIds) {
                 Course c = DataHandler.getCourseFromId(id);
 
                 List<AssignmentObject> assignments = c.getAssignmentObjectList();
+                //put the list of assignments for this course in this term
                 tempMapCourseToGrades.put(c.getTitle(), assignments);
             }
 
+            //make a list of these hashmaps
             this.mapCourseToGrades.add(tempMapCourseToGrades);
 
         }

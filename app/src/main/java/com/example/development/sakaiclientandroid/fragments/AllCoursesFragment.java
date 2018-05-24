@@ -12,18 +12,17 @@ import android.widget.ExpandableListView;
 import com.example.development.sakaiclientandroid.NavActivity;
 import com.example.development.sakaiclientandroid.R;
 import com.example.development.sakaiclientandroid.models.Course;
-import com.example.development.sakaiclientandroid.models.Term;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
-import com.example.development.sakaiclientandroid.utils.HomeFragmentExpandableListAdapter;
+import com.example.development.sakaiclientandroid.utils.custom.HomeFragmentExpandableListAdapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class AllCoursesFragment extends Fragment {
+public class AllCoursesFragment extends BaseFragment {
 
 
-    private List<String> headersList;
+    private List<String> termHeaders;
     private HashMap<String, List<String>> headerToClassTitle;
     private HashMap<String, List<String>> headerToClassSiteId;
 
@@ -55,10 +54,8 @@ public class AllCoursesFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_all_courses, null);
 
         //gets courses from data handler and feeds to list view
-        ArrayList<ArrayList<Course>> sortedCourses = DataHandler.getCoursesSortedByTerm();
         ExpandableListView sitesListView = view.findViewById(R.id.lvExp);
-
-        feedExpandableListData(sortedCourses, sitesListView);
+        feedExpandableListData(sitesListView);
 
 
         //expands latest semester's list view by default
@@ -75,83 +72,29 @@ public class AllCoursesFragment extends Fragment {
 
     /**
      * List of courses sorted and organized by term is fed into the expandable list view for display
-     * @param sortedCourses = sorted and organized courses from DataHandler
      * @param expListView = List view to feed data into
      */
-    private void feedExpandableListData(ArrayList<ArrayList<Course>> sortedCourses, ExpandableListView expListView) {
+    private void feedExpandableListData(ExpandableListView expListView) {
 
+        this.termHeaders = new ArrayList<>();
+        this.headerToClassTitle = new HashMap<>();
+        this.headerToClassSubjectCode = new HashMap<>();
+        this.headerToClassSiteId = new HashMap<>();
 
-        prepareHeadersAndChildren(sortedCourses);
+        DataHandler.prepareHeadersAndChildren(
+                this.termHeaders,
+                this.headerToClassTitle,
+                this.headerToClassSubjectCode,
+                this.headerToClassSiteId
+        );
 
-        HomeFragmentExpandableListAdapter listAdapter = new HomeFragmentExpandableListAdapter(getActivity(), headersList, headerToClassTitle, headerToClassSubjectCode);
+        HomeFragmentExpandableListAdapter listAdapter = new HomeFragmentExpandableListAdapter(getActivity(), termHeaders, headerToClassTitle, headerToClassSubjectCode);
         expListView.setAdapter(listAdapter);
 
         expListView.setOnChildClickListener(new ExpandableListViewOnChildClickListener());
     }
 
 
-
-
-
-
-    /**
-     * takes an ArrayList of SiteCollections already organized and sorted by term
-     * puts that data into the headersList and child HashMap to be displayed in the
-     * expandable list view in the current activity
-     *
-     * @param sorted ArrayList of ArrayList of Course Objects
-     */
-    private void prepareHeadersAndChildren(ArrayList<ArrayList<Course>> sorted) {
-
-        this.headersList = new ArrayList<>();
-        this.headerToClassTitle = new HashMap<>();
-        this.headerToClassSubjectCode = new HashMap<>();
-        this.headerToClassSiteId = new HashMap<>();
-
-        //sets the Term as the headers for the expandable list view
-        //each child is the name of the site in that term
-        for(ArrayList<Course> coursesPerTerm : sorted) {
-
-            //we can just look at the first site's term, since all the terms
-            //should be the same, since we already sorted
-            Term currTerm = coursesPerTerm.get(0).getTerm();
-
-            String termKey = currTerm.getTermString();
-
-            //don't put the year if the header is just General
-            if(!termKey.equals("General")) {
-                termKey += (" " + currTerm.getYear());
-            }
-
-            this.headersList.add(termKey);
-
-
-            List<String> tempChildList = new ArrayList<>();
-            List<Integer> tempSubjectCodeList = new ArrayList<>();
-            List<String> tempSiteIdList = new ArrayList<>();
-
-            //places the title of each site and its corresponding ImgResId into 2 lists
-            //which are then added to the hashmap under the current term header
-            for(Course currCourse : coursesPerTerm) {
-
-                tempChildList.add(currCourse.getTitle());
-                tempSiteIdList.add(currCourse.getId());
-
-                //TODO figure out a way to add the resource Id values directly, for more abstraction
-                //adds subject code to hashmap
-                int subjectCode = currCourse.getSubjectCode();
-                tempSubjectCodeList.add(subjectCode);
-//                int resId = RutgersSubjectCodes.getResourceIdFromSubjectCode(subjectCode, getActivity().getPackageName(), getContext());
-//                tempSubjectCodeList.add(resId);
-            }
-
-            this.headerToClassSiteId.put(termKey, tempSiteIdList);
-            this.headerToClassSubjectCode.put(termKey, tempSubjectCodeList);
-            this.headerToClassTitle.put(termKey, tempChildList);
-        }
-
-
-    }
 
 
     /**
@@ -165,7 +108,7 @@ public class AllCoursesFragment extends Fragment {
                                     int groupPosition, int childPosition, long id) {
 
 
-            String courseSiteId =  headerToClassSiteId.get(headersList.get(groupPosition)).get(childPosition);
+            String courseSiteId =  headerToClassSiteId.get(termHeaders.get(groupPosition)).get(childPosition);
 
 
             Bundle bun = new Bundle();
