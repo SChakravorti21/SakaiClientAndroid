@@ -110,10 +110,10 @@ public class HomeFragmentExpandableListAdapter extends BaseExpandableListAdapter
 
         if(convertView == null) {
             LayoutInflater inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.course_list_group, null);
+            convertView = inflater.inflate(R.layout.term_list_group, null);
         }
 
-        TextView labelHeader = convertView.findViewById(R.id.lblListHeader);
+        TextView labelHeader = convertView.findViewById(R.id.term_header_group);
         labelHeader.setTypeface(null, Typeface.BOLD);
         labelHeader.setText(headerTitle);
 
@@ -145,13 +145,13 @@ public class HomeFragmentExpandableListAdapter extends BaseExpandableListAdapter
 
         if(convertView == null) {
             LayoutInflater inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.course_list_item, null);
+            convertView = inflater.inflate(R.layout.course_list_item_home, null);
         }
 
-        TextView textListChild = convertView.findViewById(R.id.lblListItemText);
+        TextView textListChild = convertView.findViewById(R.id.course_name_text);
         textListChild.setText(childText);
 
-        ImageView imageView = convertView.findViewById(R.id.lblListItemImage);
+        ImageView imageView = convertView.findViewById(R.id.course_icon);
 
 
         int subjectCode = getChildSubjectCode(groupPos, childPos);

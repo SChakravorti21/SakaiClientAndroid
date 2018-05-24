@@ -12,7 +12,6 @@ import android.widget.TextView;
 import com.example.development.sakaiclientandroid.R;
 import com.example.development.sakaiclientandroid.api_models.gradebook.AssignmentObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class GradeItemAdapter extends ArrayAdapter {
@@ -21,7 +20,7 @@ public class GradeItemAdapter extends ArrayAdapter {
     private final List<AssignmentObject> assignmentsList;
 
     public GradeItemAdapter(Context context, List<AssignmentObject> assignmentsList) {
-        super(context, R.layout.grade_list_item, assignmentsList);
+        super(context, R.layout.grade_list_item_site, assignmentsList);
 
         this.context = context;
         this.assignmentsList = assignmentsList;
@@ -35,7 +34,7 @@ public class GradeItemAdapter extends ArrayAdapter {
         LayoutInflater inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         //inflate the row
-        View itemView = inflater.inflate(R.layout.grade_list_item, parent, false);
+        View itemView = inflater.inflate(R.layout.grade_list_item_site, parent, false);
 
         //get name and grade textviews
         TextView nameTextView = itemView.findViewById(R.id.txt_assignment_name);
