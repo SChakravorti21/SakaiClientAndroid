@@ -2,8 +2,8 @@ package com.example.development.sakaiclientandroid.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,15 +11,15 @@ import android.widget.ExpandableListView;
 
 import com.example.development.sakaiclientandroid.NavActivity;
 import com.example.development.sakaiclientandroid.R;
-import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
 import com.example.development.sakaiclientandroid.utils.custom.HomeFragmentExpandableListAdapter;
+import com.example.development.sakaiclientandroid.utils.requests.RequestCallback;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class AllCoursesFragment extends BaseFragment {
+public class AllCoursesFragment extends BaseFragment{
 
 
     private List<String> termHeaders;
@@ -28,13 +28,12 @@ public class AllCoursesFragment extends BaseFragment {
 
     private HashMap<String, List<Integer>> headerToClassSubjectCode;
 
-
+    private SwipeRefreshLayout swipeRefreshLayout;
 
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
-
 
 
     /**
@@ -53,8 +52,9 @@ public class AllCoursesFragment extends BaseFragment {
 
         View view = inflater.inflate(R.layout.fragment_all_courses, null);
 
+
         //gets courses from data handler and feeds to list view
-        ExpandableListView sitesListView = view.findViewById(R.id.lvExp);
+        ExpandableListView sitesListView = view.findViewById(R.id.all_courses_explistview);
         feedExpandableListData(sitesListView);
 
 
@@ -63,6 +63,27 @@ public class AllCoursesFragment extends BaseFragment {
 
         //reset header
         ((NavActivity)getActivity()).setActionBarTitle(getString(R.string.app_name));
+
+
+        this.swipeRefreshLayout = view.findViewById(R.id.swiperefresh);
+        this.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+                DataHandler.requestAllSites(new RequestCallback() {
+
+                    @Override
+                    public void onCoursesSuccess() {
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+
+                    @Override
+                    public void onCoursesFailure(Throwable throwable) {
+                        //TODO failure
+                    }
+                });
+            }
+        });
 
 
         return view;

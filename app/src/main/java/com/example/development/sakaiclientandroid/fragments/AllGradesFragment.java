@@ -2,6 +2,7 @@ package com.example.development.sakaiclientandroid.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +27,7 @@ public class AllGradesFragment extends BaseFragment {
     private HashMap<String, List<String>> termToCourseTitles;
     private HashMap<String, List<Integer>> termToCourseSubjectCodes;
     private HashMap<String, List<String>> termToCourseIds;
+    SwipeRefreshLayout swipeRefreshLayout;
 
 
 
@@ -58,7 +60,7 @@ public class AllGradesFragment extends BaseFragment {
         );
 
         final ExpandableListView expandableListView = view.findViewById(R.id.all_grades_listview);
-        final ProgressBar spinner = view.findViewById(R.id.all_grades_spinner);
+        final ProgressBar spinner = getActivity().findViewById(R.id.nav_activity_progressbar);
 
 
         //if we already have grades for all sites cached, then no need to make another request
@@ -70,6 +72,10 @@ public class AllGradesFragment extends BaseFragment {
         }
         //if we have not, then must make request
         else {
+
+            //start spinner
+            spinner.setVisibility(View.VISIBLE);
+
             DataHandler.requestAllGrades(new RequestCallback() {
 
                 @Override
@@ -91,6 +97,27 @@ public class AllGradesFragment extends BaseFragment {
 
             });
         }
+
+
+        this.swipeRefreshLayout = view.findViewById(R.id.swiperefresh);
+        this.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+                DataHandler.requestAllGrades(new RequestCallback() {
+
+                    @Override
+                    public void onAllGradesSuccess() {
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+
+                    @Override
+                    public void onAllGradesFailure(Throwable throwable) {
+                        //TODO error
+                    }
+                });
+            }
+        });
 
         return view;
     }

@@ -3,6 +3,7 @@ package com.example.development.sakaiclientandroid.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +26,7 @@ public class SiteGradesFragment extends BaseFragment {
 
     private ListView siteGradesListView;
     private ProgressBar spinner;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -75,6 +77,27 @@ public class SiteGradesFragment extends BaseFragment {
                 }
             });
         }
+
+
+        this.swipeRefreshLayout = view.findViewById(R.id.swiperefresh);
+        this.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                DataHandler.requestGradesForSite(siteId, new RequestCallback() {
+
+                    @Override
+                    public void onSiteGradesSuccess() {
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+
+                    @Override
+                    public void onSiteGradesFailure(Throwable throwable) {
+                        //TODO error
+                    }
+                });
+            }
+        });
+
 
         return view;
 
