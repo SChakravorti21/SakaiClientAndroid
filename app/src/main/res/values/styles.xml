@@ -8,4 +8,9 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="FontawesomeText" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:fontFamily">@font/fontawesome</item>
+        <item name="android:paddingTop">4dp</item>
+    </style>
+
 </resources>
