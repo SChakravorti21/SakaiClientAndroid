@@ -3,70 +3,47 @@ package com.example.development.sakaiclientandroid.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
-import com.example.development.sakaiclientandroid.R;
-import com.example.development.sakaiclientandroid.api_models.assignments.AllAssignments;
 import com.example.development.sakaiclientandroid.api_models.assignments.AssignmentObject;
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.models.Term;
-import com.example.development.sakaiclientandroid.utils.DataHandler;
 import com.example.development.sakaiclientandroid.utils.custom.TreeViewItemClickListener;
 import com.example.development.sakaiclientandroid.utils.holders.AssignmentNodeViewHolder;
 import com.example.development.sakaiclientandroid.utils.holders.CourseHeaderViewHolder;
 import com.example.development.sakaiclientandroid.utils.holders.TermHeaderViewHolder;
-import com.example.development.sakaiclientandroid.utils.interfaces.OnViewCreatedListener;
-import com.example.development.sakaiclientandroid.utils.requests.RequestCallback;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
-
 import java.util.ArrayList;
+
+import static com.example.development.sakaiclientandroid.NavActivity.COURSES_TAG;
 
 public class AssignmentsFragment extends BaseFragment {
     private AndroidTreeView treeView;
-    private OnViewCreatedListener viewCreatedListener;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        DataHandler.requestAllAssignments(new RequestCallback() {
-            @Override
-            public void onAllAssignmentsSuccess(ArrayList<ArrayList<Course>> response) {
-                Log.i("Assignments", response.toString());
-
-                createTreeView(response);
-
-                if(viewCreatedListener != null) {
-                    viewCreatedListener.onViewCreated(treeView.getView());
-                }
-            }
-
-            @Override
-            public void onAllAssignmentsFailure(Throwable throwable) {
-                Log.i("Assignments failed", throwable.getMessage());
-            }
-        });
+        // Using the bundle arguments, construct the tree to be displayed
+        Bundle arguments = getArguments();
+        try {
+            ArrayList<ArrayList<Course>> courses =
+                    (ArrayList<ArrayList<Course>>) arguments.getSerializable(COURSES_TAG);
+            createTreeView(courses);
+        } catch (ClassCastException exception) {
+            // Unable to create the tree, create a dummy tree
+            //TODO: Needs better error handling
+            treeView = new AndroidTreeView(getActivity(), TreeNode.root());
+        }
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_assignments, null);
-    }
-
-    public static AssignmentsFragment newInstance(OnViewCreatedListener viewCreatedListener) {
-        AssignmentsFragment fragment = new AssignmentsFragment();
-        fragment.setOnViewCreatedListener(viewCreatedListener);
-        return fragment;
-    }
-
-    public void setOnViewCreatedListener(OnViewCreatedListener viewCreatedListener) {
-        this.viewCreatedListener = viewCreatedListener;
+        return treeView.getView();
     }
 
     private void createTreeView(ArrayList<ArrayList<Course>> courses) {
