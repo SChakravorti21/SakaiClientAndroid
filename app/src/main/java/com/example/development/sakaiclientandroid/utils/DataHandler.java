@@ -4,8 +4,9 @@ import android.widget.ImageView;
 
 import com.example.development.sakaiclientandroid.R;
 import com.example.development.sakaiclientandroid.api_models.assignments.AllAssignments;
+import com.example.development.sakaiclientandroid.api_models.assignments.AssignmentObject;
 import com.example.development.sakaiclientandroid.api_models.gradebook.AllGradesObject;
-import com.example.development.sakaiclientandroid.api_models.gradebook.AssignmentObject;
+import com.example.development.sakaiclientandroid.api_models.gradebook.GradebookObject;
 import com.example.development.sakaiclientandroid.api_models.gradebook.GradebookCollectionObject;
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.models.Term;
@@ -42,12 +43,12 @@ public class DataHandler {
         return coursesSortedByTerm;
     }
 
-    public static List<AssignmentObject> getGradesForCourse(String siteId) {
-        return getCourseFromId(siteId).getAssignmentObjectList();
+    public static List<GradebookObject> getGradesForCourse(String siteId) {
+        return getCourseFromId(siteId).getGradebookObjectList();
     }
 
     public static boolean gradesRequestedForSite(String siteId) {
-        return getCourseFromId(siteId).getAssignmentObjectList() != null;
+        return getCourseFromId(siteId).getGradebookObjectList() != null;
     }
 
     public static boolean gradesRequestedForAllSites() {
@@ -71,7 +72,17 @@ public class DataHandler {
             public void onResponse(Call<AllAssignments> call, Response<AllAssignments> response) {
                 AllAssignments allAssignments = response.body();
 
-                UICallback.onAllAssignmentsSuccess(allAssignments);
+                if(allAssignments == null) {
+                    UICallback.onAllAssignmentsFailure(new Throwable("Assignments is empty!"));
+                    return;
+                }
+
+                for(AssignmentObject assignment : allAssignments.getAssignmentObject()) {
+                    Course course = mapSiteIdToCourse.get(assignment.getContext());
+                    course.addAssignment(assignment);
+                }
+
+                UICallback.onAllAssignmentsSuccess(coursesSortedByTerm);
             }
 
             @Override
@@ -94,12 +105,12 @@ public class DataHandler {
                     for (GradebookCollectionObject gradebook : allGradesObject.getGradebookCollection()) {
 
                         //set the gradebook's list of assignments to the course's list of assignments
-                        List<AssignmentObject> assignments = gradebook.getAssignments();
+                        List<GradebookObject> assignments = gradebook.getAssignments();
                         String courseId = gradebook.getSiteId();
 
                         Course c = getCourseFromId(courseId);
                         if (c != null)
-                            c.setAssignmentObjectList(assignments);
+                            c.setGradebookObjectList(assignments);
                         int x=2;
                     }
 
@@ -129,7 +140,7 @@ public class DataHandler {
 
                 if(gradebookCollectionObject != null) {
                     Course currCourse = DataHandler.getCourseFromId(siteId);
-                    currCourse.setAssignmentObjectList(gradebookCollectionObject.getAssignments());
+                    currCourse.setGradebookObjectList(gradebookCollectionObject.getAssignments());
                 }
 
                 UICallback.onSiteGradesSuccess();
@@ -217,7 +228,7 @@ public class DataHandler {
             }
         }
 
-        return null;
+        return mapSiteIdToCourse.get(siteId);
     }
 
 
@@ -438,7 +449,7 @@ public class DataHandler {
             for(Course currCourse : coursesPerTerm) {
 
                 //if no grades, just don't put in hashmap
-                if(currCourse.getAssignmentObjectList() == null)
+                if(currCourse.getGradebookObjectList() == null)
                     continue;
 
 

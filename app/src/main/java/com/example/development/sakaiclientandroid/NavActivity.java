@@ -4,10 +4,12 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
 import com.example.development.sakaiclientandroid.fragments.AllCoursesFragment;
@@ -16,13 +18,13 @@ import com.example.development.sakaiclientandroid.fragments.AnnouncementsFragmen
 import com.example.development.sakaiclientandroid.fragments.AssignmentsFragment;
 import com.example.development.sakaiclientandroid.fragments.SettingsFragment;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
+import com.example.development.sakaiclientandroid.utils.interfaces.OnViewCreatedListener;
 import com.example.development.sakaiclientandroid.utils.requests.RequestCallback;
 import com.example.development.sakaiclientandroid.utils.requests.RequestManager;
 
 
 public class NavActivity extends AppCompatActivity
-        implements BottomNavigationView.OnNavigationItemSelectedListener{
-
+        implements BottomNavigationView.OnNavigationItemSelectedListener, OnViewCreatedListener {
 
     private ProgressBar spinner;
 
@@ -115,7 +117,7 @@ public class NavActivity extends AppCompatActivity
                 break;
 
             case R.id.navigation_assignments:
-                fragment = new AssignmentsFragment();
+                fragment = AssignmentsFragment.newInstance(this);
                 break;
 
             case R.id.navigation_gradebook:
@@ -138,4 +140,10 @@ public class NavActivity extends AppCompatActivity
     }
 
 
+    @Override
+    public void onViewCreated(View view) {
+        FrameLayout fragmentContainer = findViewById(R.id.fragment_container);
+        fragmentContainer.removeAllViews();
+        fragmentContainer.addView(view);
+    }
 }

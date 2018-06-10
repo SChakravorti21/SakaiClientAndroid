@@ -2,7 +2,6 @@ package com.example.development.sakaiclientandroid.api_models.gradebook;
 
 import java.util.List;
 
-import com.example.development.sakaiclientandroid.api_models.gradebook.AssignmentObject;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -12,7 +11,7 @@ public class GradebookCollectionObject {
 
     @SerializedName("assignments")
     @Expose
-    private List<AssignmentObject> assignments = null;
+    private List<GradebookObject> assignments = null;
     @SerializedName("siteId")
     @Expose
     private String siteId;
@@ -26,11 +25,11 @@ public class GradebookCollectionObject {
     @Expose
     private String entityURL;
 
-    public List<AssignmentObject> getAssignments() {
+    public List<GradebookObject> getAssignments() {
         return assignments;
     }
 
-    public void setAssignments(List<AssignmentObject> assignments) {
+    public void setAssignments(List<GradebookObject> assignments) {
         this.assignments = assignments;
     }
 

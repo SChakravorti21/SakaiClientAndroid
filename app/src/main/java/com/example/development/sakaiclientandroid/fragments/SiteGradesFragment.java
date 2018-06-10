@@ -2,7 +2,6 @@ package com.example.development.sakaiclientandroid.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,7 +13,7 @@ import android.widget.TextView;
 
 import com.example.development.sakaiclientandroid.NavActivity;
 import com.example.development.sakaiclientandroid.R;
-import com.example.development.sakaiclientandroid.api_models.gradebook.AssignmentObject;
+import com.example.development.sakaiclientandroid.api_models.gradebook.GradebookObject;
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
 import com.example.development.sakaiclientandroid.utils.custom.GradeItemAdapter;
@@ -111,7 +110,7 @@ public class SiteGradesFragment extends BaseFragment {
      */
     private void fillGrades(String siteId, View view) {
         //makes request for grades for this site and gets them
-        List<AssignmentObject> gradesList = DataHandler.getGradesForCourse(siteId);
+        List<GradebookObject> gradesList = DataHandler.getGradesForCourse(siteId);
 
         //makes spinner invisible
         spinner.setVisibility(View.GONE);
