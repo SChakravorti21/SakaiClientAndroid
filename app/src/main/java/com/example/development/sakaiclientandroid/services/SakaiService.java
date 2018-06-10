@@ -1,5 +1,6 @@
 package com.example.development.sakaiclientandroid.services;
 
+import com.example.development.sakaiclientandroid.api_models.assignments.AllAssignments;
 import com.example.development.sakaiclientandroid.api_models.gradebook.AllGradesObject;
 import com.example.development.sakaiclientandroid.api_models.gradebook.GradebookCollectionObject;
 
@@ -23,4 +24,7 @@ public interface SakaiService {
 
     @GET("gradebook/site/{site_id}.json")
     Call<GradebookCollectionObject> getGradeForSite(@Path(value = "site_id", encoded =  true) String siteId);
+
+    @GET("assignment/my.json")
+    Call<AllAssignments> getAllAssignments();
 }
