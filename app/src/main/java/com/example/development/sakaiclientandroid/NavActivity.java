@@ -17,15 +17,20 @@ import com.example.development.sakaiclientandroid.fragments.AllGradesFragment;
 import com.example.development.sakaiclientandroid.fragments.AnnouncementsFragment;
 import com.example.development.sakaiclientandroid.fragments.AssignmentsFragment;
 import com.example.development.sakaiclientandroid.fragments.SettingsFragment;
+import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
-import com.example.development.sakaiclientandroid.utils.interfaces.OnViewCreatedListener;
 import com.example.development.sakaiclientandroid.utils.requests.RequestCallback;
 import com.example.development.sakaiclientandroid.utils.requests.RequestManager;
 
+import java.util.ArrayList;
+
 
 public class NavActivity extends AppCompatActivity
-        implements BottomNavigationView.OnNavigationItemSelectedListener, OnViewCreatedListener {
+        implements BottomNavigationView.OnNavigationItemSelectedListener {
 
+    public static final String COURSES_TAG = "COURSES";
+
+    private FrameLayout container;
     private ProgressBar spinner;
 
 
@@ -34,6 +39,8 @@ public class NavActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nav);
 
+        // Get reference to the container
+        container = findViewById(R.id.fragment_container);
 
         //starts spinner
         this.spinner = findViewById(R.id.nav_activity_progressbar);
@@ -77,6 +84,7 @@ public class NavActivity extends AppCompatActivity
     private boolean loadFragment(Fragment fragment) {
 
         if(fragment != null) {
+            container.removeAllViews();
 
             getSupportFragmentManager()
                     .beginTransaction()
@@ -117,8 +125,8 @@ public class NavActivity extends AppCompatActivity
                 break;
 
             case R.id.navigation_assignments:
-                fragment = AssignmentsFragment.newInstance(this);
-                break;
+                loadAssignmentsFragment();
+                return true;
 
             case R.id.navigation_gradebook:
                 fragment = new AllGradesFragment();
@@ -134,16 +142,36 @@ public class NavActivity extends AppCompatActivity
 
     }
 
+    public void loadAssignmentsFragment() {
+        this.container.setVisibility(View.GONE);
+        this.spinner.setVisibility(View.VISIBLE);
+
+        DataHandler.requestAllAssignments(new RequestCallback() {
+            @Override
+            public void onAllAssignmentsSuccess(ArrayList<ArrayList<Course>> response) {
+                super.onAllAssignmentsSuccess(response);
+                spinner.setVisibility(View.GONE);
+
+                Bundle bundle = new Bundle();
+                bundle.putSerializable(COURSES_TAG, response);
+
+                AssignmentsFragment fragment = new AssignmentsFragment();
+                fragment.setArguments(bundle);
+                loadFragment(fragment);
+
+                container.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAllAssignmentsFailure(Throwable throwable) {
+                // TODO: Handle errors give proper error message
+                Log.i("Response", "failure");
+                Log.e("Response error", throwable.getMessage());
+            }
+        });
+    }
 
     public void setActionBarTitle(String title) {
         getSupportActionBar().setTitle(title);
-    }
-
-
-    @Override
-    public void onViewCreated(View view) {
-        FrameLayout fragmentContainer = findViewById(R.id.fragment_container);
-        fragmentContainer.removeAllViews();
-        fragmentContainer.addView(view);
     }
 }
