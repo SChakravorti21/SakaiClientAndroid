@@ -45,4 +45,6 @@ dependencies {
     api 'com.squareup.retrofit2:converter-gson:2.3.0'
     //Common-Lang3 is used for toString of POJOs
     api 'org.apache.commons:commons-lang3:3.6'
+    //Android TreeView library for generating tree-like structures
+    api 'com.github.bmelnychuk:atv:1.2.+'
 }
