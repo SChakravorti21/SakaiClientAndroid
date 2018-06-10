@@ -1,5 +1,6 @@
 package com.example.development.sakaiclientandroid.utils;
 
+import android.support.annotation.NonNull;
 import android.widget.ImageView;
 
 import com.example.development.sakaiclientandroid.R;
@@ -36,6 +37,7 @@ public class DataHandler {
     //needed so that we don't have to make an unnecessary request if all grades
     //have already been requested
     private static boolean hasRequestedAllGrades = false;
+    private static boolean hasRequestedAllAssignments = false;
 
 
 
@@ -67,12 +69,18 @@ public class DataHandler {
     }
 
     public static void requestAllAssignments(final RequestCallback UICallback) {
+        if(hasRequestedAllAssignments) {
+            UICallback.onAllAssignmentsSuccess(coursesSortedByTerm);
+            return;
+        }
+
         RequestManager.fetchAllAssignments(new Callback<AllAssignments>() {
             @Override
-            public void onResponse(Call<AllAssignments> call, Response<AllAssignments> response) {
+            public void onResponse(@NonNull Call<AllAssignments> call,
+                                   @NonNull  Response<AllAssignments> response) {
                 AllAssignments allAssignments = response.body();
 
-                if(allAssignments == null) {
+                if(allAssignments == null || allAssignments.getAssignmentObject().size() == 0) {
                     UICallback.onAllAssignmentsFailure(new Throwable("Assignments is empty!"));
                     return;
                 }
@@ -82,6 +90,7 @@ public class DataHandler {
                     course.addAssignment(assignment);
                 }
 
+                hasRequestedAllAssignments = true;
                 UICallback.onAllAssignmentsSuccess(coursesSortedByTerm);
             }
 

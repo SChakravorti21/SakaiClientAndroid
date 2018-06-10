@@ -33,6 +33,20 @@ public class TermHeaderViewHolder extends
         TextView tvValue = view.findViewById(R.id.term_name);
         tvValue.setText(value.text);
 
+        Resources r = inflater.getContext().getResources();
+        int widthPx = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                r.getDisplayMetrics().widthPixels,
+                r.getDisplayMetrics()
+        );
+
+        LinearLayoutCompat.LayoutParams params =  new LinearLayoutCompat.LayoutParams(
+            widthPx,
+            LinearLayoutCompat.LayoutParams.WRAP_CONTENT
+        );
+
+        view.setLayoutParams(params);
+
         return view;
     }
 
