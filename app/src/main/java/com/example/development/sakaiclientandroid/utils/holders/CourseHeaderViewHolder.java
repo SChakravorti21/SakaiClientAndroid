@@ -16,6 +16,12 @@ import com.unnamed.b.atv.model.TreeNode;
  */
 
 public class CourseHeaderViewHolder extends TreeNode.BaseNodeViewHolder<CourseHeaderViewHolder.CourseHeaderItem> {
+
+    private static final String CHEVRON_DOWN = "\uF078";
+    private static final String CHEVRON_RIGHT = "\uF054";
+
+    private TextView arrowView;
+
     public CourseHeaderViewHolder(Context context) {
         super(context);
     }
@@ -27,6 +33,15 @@ public class CourseHeaderViewHolder extends TreeNode.BaseNodeViewHolder<CourseHe
 
         TextView tvValue = view.findViewById(R.id.course_name);
         tvValue.setText(value.text);
+
+        // Initialize the arrow view for toggling the list
+        arrowView = view.findViewById(R.id.arrow_image);
+        if(node.getLevel() < 4) {
+            arrowView.setText(CHEVRON_RIGHT);
+        } else {
+            arrowView.setVisibility(View.GONE);
+            arrowView = null;
+        }
 
         Resources r = inflater.getContext().getResources();
         int widthPx = (int) TypedValue.applyDimension(
@@ -43,6 +58,12 @@ public class CourseHeaderViewHolder extends TreeNode.BaseNodeViewHolder<CourseHe
         view.setLayoutParams(params);
 
         return view;
+    }
+
+    @Override
+    public void toggle(boolean active) {
+        if(arrowView != null)
+            arrowView.setText(active ? CHEVRON_DOWN : CHEVRON_RIGHT);
     }
 
     public static class CourseHeaderItem {
