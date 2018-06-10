@@ -15,6 +15,7 @@ import com.example.development.sakaiclientandroid.api_models.assignments.Assignm
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.models.Term;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
+import com.example.development.sakaiclientandroid.utils.custom.TreeViewItemClickListener;
 import com.example.development.sakaiclientandroid.utils.holders.AssignmentNodeViewHolder;
 import com.example.development.sakaiclientandroid.utils.holders.CourseHeaderViewHolder;
 import com.example.development.sakaiclientandroid.utils.holders.TermHeaderViewHolder;
@@ -133,5 +134,6 @@ public class AssignmentsFragment extends BaseFragment {
 
         treeView = new AndroidTreeView(currContext, root);
         treeView.setDefaultAnimation(true);
+        treeView.setDefaultNodeClickListener(new TreeViewItemClickListener(treeView, root));
     }
 }

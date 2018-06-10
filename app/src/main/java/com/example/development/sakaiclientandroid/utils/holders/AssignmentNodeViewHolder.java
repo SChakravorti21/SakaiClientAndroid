@@ -30,6 +30,20 @@ public class AssignmentNodeViewHolder extends
         TextView tvValue = view.findViewById(R.id.assignment_name);
             tvValue.setText(value.text);
 
+        Resources r = inflater.getContext().getResources();
+        int widthPx = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                r.getDisplayMetrics().widthPixels,
+                r.getDisplayMetrics()
+        );
+
+        LinearLayoutCompat.LayoutParams params =  new LinearLayoutCompat.LayoutParams(
+                widthPx,
+                LinearLayoutCompat.LayoutParams.WRAP_CONTENT
+        );
+
+        view.setLayoutParams(params);
+
         return view;
     }
 
