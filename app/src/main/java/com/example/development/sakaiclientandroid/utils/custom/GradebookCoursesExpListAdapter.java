@@ -7,29 +7,26 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.development.sakaiclientandroid.R;
-import com.example.development.sakaiclientandroid.api_models.gradebook.AssignmentObject;
-import com.example.development.sakaiclientandroid.models.Course;
+import com.example.development.sakaiclientandroid.api_models.gradebook.GradebookObject;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class GradebookCoursesExpListAdapter extends BaseExpandableListAdapter {
 
     private final Context context;
     private final List<String> courseTitles;
     private final List<Integer> courseSubjectCodes;
-    private final HashMap<String, List<AssignmentObject>> mapCourseToGrades;
+    private final HashMap<String, List<GradebookObject>> mapCourseToGrades;
 
 
     public GradebookCoursesExpListAdapter(Context c,
                                           List<String> courseTitles,
                                           List<Integer> courseSubjectCodes,
-                                          HashMap<String, List<AssignmentObject>> mapCourseToGrades) {
+                                          HashMap<String, List<GradebookObject>> mapCourseToGrades) {
 
         this.context = c;
         this.courseTitles = courseTitles;
@@ -70,7 +67,7 @@ public class GradebookCoursesExpListAdapter extends BaseExpandableListAdapter {
      *
      * @param groupPos group position
      * @param childPos position of item inside group
-     * @return AssignmentObject which represents a grade item
+     * @return GradebookObject which represents a grade item
      */
     @Override
     public Object getChild(int groupPos, int childPos) {
@@ -148,7 +145,7 @@ public class GradebookCoursesExpListAdapter extends BaseExpandableListAdapter {
 
         final String assignmentName;
         final String grade;
-        final AssignmentObject child = (AssignmentObject) getChild(groupPos, childPos);
+        final GradebookObject child = (GradebookObject) getChild(groupPos, childPos);
 
         //just in case
         if(child == null) {

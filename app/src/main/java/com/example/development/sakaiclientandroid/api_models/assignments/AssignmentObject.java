@@ -8,7 +8,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-public class AssignmentCollection implements Serializable
+public class AssignmentObject implements Serializable
 {
 
     @SerializedName("access")

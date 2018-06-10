@@ -1,6 +1,7 @@
 package com.example.development.sakaiclientandroid.models;
 
-import com.example.development.sakaiclientandroid.api_models.gradebook.AssignmentObject;
+import com.example.development.sakaiclientandroid.api_models.assignments.AssignmentObject;
+import com.example.development.sakaiclientandroid.api_models.gradebook.GradebookObject;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,10 +20,12 @@ public class Course {
     private ArrayList<SitePage> sitePages;
     private String siteOwner;
     private int subjectCode;
+    private List<GradebookObject> gradebookObjectList;
     private List<AssignmentObject> assignmentObjectList;
 
 
     public Course(JSONObject jsonObject) {
+        this.assignmentObjectList = new ArrayList<AssignmentObject>();
 
         try {
 
@@ -74,7 +77,7 @@ public class Course {
             this.sitePages = sitePages;
 
 
-            this.assignmentObjectList = null;
+            this.gradebookObjectList = null;
 
         }
         catch(Exception e) {
@@ -171,13 +174,20 @@ public class Course {
         this.subjectCode = subjectCode;
     }
 
+    public List<GradebookObject> getGradebookObjectList() {
+        return gradebookObjectList;
+    }
+
+    public void setGradebookObjectList(List<GradebookObject> gradebookObjectList) {
+        this.gradebookObjectList = gradebookObjectList;
+    }
+
     public List<AssignmentObject> getAssignmentObjectList() {
-        return assignmentObjectList;
+        return this.assignmentObjectList;
     }
 
-    public void setAssignmentObjectList(List<AssignmentObject> assignmentObjectList) {
-        this.assignmentObjectList = assignmentObjectList;
+    public void addAssignment(AssignmentObject assignmentObject) {
+        assignmentObjectList.add(assignmentObject);
     }
-
 
 }

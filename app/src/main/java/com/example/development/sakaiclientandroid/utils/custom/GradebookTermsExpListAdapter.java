@@ -10,7 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.development.sakaiclientandroid.R;
-import com.example.development.sakaiclientandroid.api_models.gradebook.AssignmentObject;
+import com.example.development.sakaiclientandroid.api_models.gradebook.GradebookObject;
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
 
@@ -30,7 +30,7 @@ public class GradebookTermsExpListAdapter extends BaseExpandableListAdapter {
 
     //each item in the list represents a hashmap for each term, mapping the course to its grades
     //this is necessary because people can retake the same course in different terms.
-    private final List<HashMap<String, List<AssignmentObject>>> mapCourseToGrades;
+    private final List<HashMap<String, List<GradebookObject>>> mapCourseToGrades;
 
 
 
@@ -68,7 +68,7 @@ public class GradebookTermsExpListAdapter extends BaseExpandableListAdapter {
         //For each term
         for(String termString : this.termHeaders) {
 
-            HashMap<String, List<AssignmentObject>> tempMapCourseToGrades = new HashMap<>();
+            HashMap<String, List<GradebookObject>> tempMapCourseToGrades = new HashMap<>();
 
 
             List<String> courseIds = this.mapTermToCourseIds.get(termString);
@@ -77,7 +77,7 @@ public class GradebookTermsExpListAdapter extends BaseExpandableListAdapter {
             for(String id : courseIds) {
                 Course c = DataHandler.getCourseFromId(id);
 
-                List<AssignmentObject> assignments = c.getAssignmentObjectList();
+                List<GradebookObject> assignments = c.getGradebookObjectList();
                 //put the list of assignments for this course in this term
                 tempMapCourseToGrades.put(c.getTitle(), assignments);
             }
@@ -176,7 +176,7 @@ public class GradebookTermsExpListAdapter extends BaseExpandableListAdapter {
 
                 String courseId = mapTermToCourseIds.get(termString).get(coursePos);
                 Course c = DataHandler.getCourseFromId(courseId);
-                if(c.getAssignmentObjectList() == null) {
+                if(c.getGradebookObjectList() == null) {
                     Toast.makeText(context, context.getString(R.string.no_grades), Toast.LENGTH_SHORT).show();
                     return true;
                 }
