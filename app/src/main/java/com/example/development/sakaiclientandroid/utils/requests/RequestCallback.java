@@ -1,5 +1,7 @@
 package com.example.development.sakaiclientandroid.utils.requests;
 
+import com.example.development.sakaiclientandroid.api_models.assignments.AllAssignments;
+
 import okhttp3.ResponseBody;
 import retrofit2.Response;
 
@@ -20,4 +22,8 @@ public class RequestCallback {
     public void onAllGradesSuccess() { }
 
     public void onAllGradesFailure(Throwable throwable) { }
+
+    public void onAllAssignmentsSuccess(AllAssignments response) { }
+
+    public void onAllAssignmentsFailure(Throwable throwable) { }
 }
