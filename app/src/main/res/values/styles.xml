@@ -14,4 +14,18 @@
         <item name="android:paddingTop">4dp</item>
     </style>
 
+    <style name="FontawesomeText.Term" parent="FontawesomeText">
+        <item name="android:textColor">@color/sakai_medium_silver</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingRight">12dp</item>
+    </style>
+
+    <style name="FontawesomeText.Course" parent="FontawesomeText">
+        <item name="android:textColor">@color/sakai_light_black</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingRight">24dp</item>
+    </style>
+
 </resources>

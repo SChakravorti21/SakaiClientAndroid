@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/leaf_background"
+        android:foreground="?android:attr/selectableItemBackground"
         android:textColor="@color/sakai_light_black"
         tools:text="Assignment 2018"
         android:textSize="16sp"

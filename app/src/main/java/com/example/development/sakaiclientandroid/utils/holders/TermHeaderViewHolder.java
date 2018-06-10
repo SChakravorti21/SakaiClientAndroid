@@ -21,6 +21,8 @@ public class TermHeaderViewHolder extends
     private static final String CHEVRON_DOWN = "\uF078";
     private static final String CHEVRON_RIGHT = "\uF054";
 
+    private TextView arrowView;
+
     public TermHeaderViewHolder(Context context) {
         super(context);
     }
@@ -30,9 +32,20 @@ public class TermHeaderViewHolder extends
         final LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.term_header_layout, null, false);
 
+        // Set the term text
         TextView tvValue = view.findViewById(R.id.term_name);
         tvValue.setText(value.text);
 
+        // Initialize the arrow view for toggling the list
+        arrowView = view.findViewById(R.id.arrow_image);
+        if(node.getLevel() < 4) {
+            arrowView.setText(CHEVRON_RIGHT);
+        } else {
+            arrowView.setVisibility(View.GONE);
+            arrowView = null;
+        }
+
+        // Set the header size to the screen width for a full-bleed effect
         Resources r = inflater.getContext().getResources();
         int widthPx = (int) TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
@@ -40,14 +53,20 @@ public class TermHeaderViewHolder extends
                 r.getDisplayMetrics()
         );
 
+        // Apply the layout parameters
         LinearLayoutCompat.LayoutParams params =  new LinearLayoutCompat.LayoutParams(
             widthPx,
             LinearLayoutCompat.LayoutParams.WRAP_CONTENT
         );
-
         view.setLayoutParams(params);
 
         return view;
+    }
+
+    @Override
+    public void toggle(boolean active) {
+        if(arrowView != null)
+            arrowView.setText(active ? CHEVRON_DOWN : CHEVRON_RIGHT);
     }
 
     public static class TermHeaderItem {

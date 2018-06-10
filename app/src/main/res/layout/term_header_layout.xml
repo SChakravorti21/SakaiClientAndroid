@@ -3,17 +3,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@color/sakai_medium_red"
+    android:foreground="?android:attr/selectableItemBackground" >
 
     <TextView
         android:id="@+id/term_name"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/sakai_medium_red"
-        android:textColor="@color/sakai_medium_silver"
         tools:text="Spring 2018"
         android:textStyle="bold"
-        android:textSize="24sp"
-        android:padding="8dp"/>
+        android:padding="8dp"
+        android:paddingLeft="16dp"
+        android:layout_weight="1"
+        android:textColor="@color/sakai_medium_silver"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/arrow_image"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        style="@style/FontawesomeText.Term" />
 
 </LinearLayout>
