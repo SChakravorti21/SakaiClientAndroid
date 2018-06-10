@@ -3,6 +3,7 @@ package com.example.development.sakaiclientandroid.utils;
 import android.widget.ImageView;
 
 import com.example.development.sakaiclientandroid.R;
+import com.example.development.sakaiclientandroid.api_models.assignments.AllAssignments;
 import com.example.development.sakaiclientandroid.api_models.gradebook.AllGradesObject;
 import com.example.development.sakaiclientandroid.api_models.gradebook.AssignmentObject;
 import com.example.development.sakaiclientandroid.api_models.gradebook.GradebookCollectionObject;
@@ -64,6 +65,21 @@ public class DataHandler {
         return mapSiteIdToCourse.get(id).getTitle();
     }
 
+    public static void requestAllAssignments(final RequestCallback UICallback) {
+        RequestManager.fetchAllAssignments(new Callback<AllAssignments>() {
+            @Override
+            public void onResponse(Call<AllAssignments> call, Response<AllAssignments> response) {
+                AllAssignments allAssignments = response.body();
+
+                UICallback.onAllAssignmentsSuccess(allAssignments);
+            }
+
+            @Override
+            public void onFailure(Call<AllAssignments> call, Throwable t) {
+                UICallback.onAllAssignmentsFailure(t);
+            }
+        });
+    }
 
     public static void requestAllGrades(final RequestCallback UICallback) {
 
