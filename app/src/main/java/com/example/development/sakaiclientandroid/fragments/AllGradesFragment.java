@@ -14,6 +14,7 @@ import com.example.development.sakaiclientandroid.R;
 import com.example.development.sakaiclientandroid.api_models.gradebook.GradebookObject;
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
+import com.example.development.sakaiclientandroid.utils.custom.TreeViewItemClickListener;
 import com.example.development.sakaiclientandroid.utils.holders.CourseHeaderViewHolder;
 import com.example.development.sakaiclientandroid.utils.holders.GradeNodeViewHolder;
 import com.example.development.sakaiclientandroid.utils.holders.TermHeaderViewHolder;
@@ -149,6 +150,9 @@ public class AllGradesFragment extends BaseFragment {
     {
         TreeNode root = TreeNode.root();
 
+        // The courses as returned by the DataHandler are already sorted by term,
+        // so we just need to loop through them to create the terms with all
+        // courses and their grades
         for(String termString : termHeaders)
         {
 
@@ -156,26 +160,29 @@ public class AllGradesFragment extends BaseFragment {
             //if the term has no grades, we do not add this term to the tree
             boolean termHasAnyGrades = false;
 
+            //make a term header item, and make a treenode using it
             TermHeaderViewHolder.TermHeaderItem termNodeItem = new TermHeaderViewHolder.TermHeaderItem(termString);
             TreeNode termNode = new TreeNode(termNodeItem).setViewHolder(new TermHeaderViewHolder(mContext));
 
+            //for each course, get its grades
             for(Course currCourse : this.termToCourses.get(termString))
             {
-
+                //create a course header item and make a treenode using it
                 //TODO give correct img to the course header
                 CourseHeaderViewHolder.CourseHeaderItem courseNodeItem = new CourseHeaderViewHolder.CourseHeaderItem(
                         currCourse.getTitle()
                 );
 
+                //set the custom view holder
                 TreeNode courseNode = new TreeNode(courseNodeItem).setViewHolder(new CourseHeaderViewHolder(mContext));
 
                 List<GradebookObject> gradebookObjectList = currCourse.getGradebookObjectList();
-
                 //only continue if the course has grades
                 if (gradebookObjectList != null)
                 {
                     termHasAnyGrades = true;
 
+                    //for each grade item in the current course, create a node
                     for (GradebookObject gradebookObject : gradebookObjectList)
                     {
                         GradeNodeViewHolder.GradeTreeItem gradeNodeItem = new GradeNodeViewHolder.GradeTreeItem(
@@ -183,6 +190,7 @@ public class AllGradesFragment extends BaseFragment {
                                 gradebookObject.getGrade() + "/" + gradebookObject.getPoints()
                         );
 
+                        //set the custom view holder
                         TreeNode gradeNode = new TreeNode(gradeNodeItem).setViewHolder(new GradeNodeViewHolder(mContext));
 
                         courseNode.addChild(gradeNode);
@@ -202,6 +210,7 @@ public class AllGradesFragment extends BaseFragment {
 
         treeView = new AndroidTreeView(getActivity(), root);
         treeView.setDefaultAnimation(true);
+        treeView.setDefaultNodeClickListener(new TreeViewItemClickListener(treeView, root));
     }
 
 
