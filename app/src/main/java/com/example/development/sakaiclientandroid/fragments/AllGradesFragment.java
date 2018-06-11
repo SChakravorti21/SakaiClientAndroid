@@ -6,14 +6,20 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ExpandableListView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.example.development.sakaiclientandroid.NavActivity;
 import com.example.development.sakaiclientandroid.R;
+import com.example.development.sakaiclientandroid.api_models.gradebook.GradebookObject;
+import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
-import com.example.development.sakaiclientandroid.utils.custom.GradebookTermsExpListAdapter;
+import com.example.development.sakaiclientandroid.utils.holders.CourseHeaderViewHolder;
+import com.example.development.sakaiclientandroid.utils.holders.GradeNodeViewHolder;
+import com.example.development.sakaiclientandroid.utils.holders.TermHeaderViewHolder;
 import com.example.development.sakaiclientandroid.utils.requests.RequestCallback;
+import com.unnamed.b.atv.model.TreeNode;
+import com.unnamed.b.atv.view.AndroidTreeView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,12 +28,10 @@ import java.util.List;
 public class AllGradesFragment extends BaseFragment {
 
     private List<String> termHeaders;
-    private HashMap<String, List<String>> termToCourseTitles;
-    private HashMap<String, List<Integer>> termToCourseSubjectCodes;
-    private HashMap<String, List<String>> termToCourseIds;
+    private HashMap<String, List<Course>> termToCourses;
     SwipeRefreshLayout swipeRefreshLayout;
 
-
+    private AndroidTreeView treeView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,17 +43,16 @@ public class AllGradesFragment extends BaseFragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_all_grades, null);
+        final ViewGroup containerView = view.findViewById(R.id.swiperefresh);
+
 
         this.termHeaders = new ArrayList<>();
-        this.termToCourseTitles = new HashMap<>();
-        this.termToCourseSubjectCodes = new HashMap<>();
-        this.termToCourseIds = new HashMap<>();
+        this.termToCourses = new HashMap<>();
 
 
-        final ExpandableListView expandableListView = view.findViewById(R.id.all_grades_listview);
         final ProgressBar spinner = getActivity().findViewById(R.id.nav_activity_progressbar);
 
 
@@ -57,16 +60,14 @@ public class AllGradesFragment extends BaseFragment {
         if(DataHandler.gradesRequestedForAllSites()) {
 
             //prepare the headers and children
-            DataHandler.prepareHeadersAndChildrenWithGrades(
+            DataHandler.prepareTermHeadersToCourses(
                     this.termHeaders,
-                    this.termToCourseTitles,
-                    this.termToCourseSubjectCodes,
-                    this.termToCourseIds
+                    this.termToCourses
             );
 
             spinner.setVisibility(View.GONE);
-            GradebookTermsExpListAdapter adapter = new GradebookTermsExpListAdapter(mContext, termHeaders, termToCourseTitles, termToCourseIds, termToCourseSubjectCodes);
-            expandableListView.setAdapter(adapter);
+            createTreeView();
+            containerView.addView(treeView.getView());
         }
         //if we have not, then must make request
         else {
@@ -80,17 +81,17 @@ public class AllGradesFragment extends BaseFragment {
                 public void onAllGradesSuccess() {
 
                     //now prepare headers and children
-                    DataHandler.prepareHeadersAndChildrenWithGrades(
+                    DataHandler.prepareTermHeadersToCourses(
                             termHeaders,
-                            termToCourseTitles,
-                            termToCourseSubjectCodes,
-                            termToCourseIds
+                            termToCourses
                     );
 
-                    GradebookTermsExpListAdapter adapter = new GradebookTermsExpListAdapter(mContext, termHeaders, termToCourseTitles, termToCourseIds, termToCourseSubjectCodes);
-
                     spinner.setVisibility(View.GONE);
-                    expandableListView.setAdapter(adapter);
+
+                    //create tree view
+                    createTreeView();
+                    containerView.addView(treeView.getView());
+
                 }
 
 
@@ -115,7 +116,16 @@ public class AllGradesFragment extends BaseFragment {
 
                     @Override
                     public void onAllGradesSuccess() {
+
                         swipeRefreshLayout.setRefreshing(false);
+                        createTreeView();
+
+                        //add the newly created tree to the viewgroup
+                        containerView.addView(treeView.getView());
+
+
+                        Toast.makeText(mContext, getString(R.string.fetched_grades), Toast.LENGTH_SHORT).show();
+
                     }
 
                     @Override
@@ -126,9 +136,73 @@ public class AllGradesFragment extends BaseFragment {
             }
         });
 
+
         return view;
     }
 
+
+    /**
+     * Creates a treeview structure using a list of terms, and a hashmap mapping
+     * term to list of courses for that term, which is gotten from DataHandler
+     */
+    public void createTreeView()
+    {
+        TreeNode root = TreeNode.root();
+
+        for(String termString : termHeaders)
+        {
+
+            //used to determine  if this term has any grades,
+            //if the term has no grades, we do not add this term to the tree
+            boolean termHasAnyGrades = false;
+
+            TermHeaderViewHolder.TermHeaderItem termNodeItem = new TermHeaderViewHolder.TermHeaderItem(termString);
+            TreeNode termNode = new TreeNode(termNodeItem).setViewHolder(new TermHeaderViewHolder(mContext));
+
+            for(Course currCourse : this.termToCourses.get(termString))
+            {
+
+                //TODO give correct img to the course header
+                CourseHeaderViewHolder.CourseHeaderItem courseNodeItem = new CourseHeaderViewHolder.CourseHeaderItem(
+                        currCourse.getTitle()
+                );
+
+                TreeNode courseNode = new TreeNode(courseNodeItem).setViewHolder(new CourseHeaderViewHolder(mContext));
+
+                List<GradebookObject> gradebookObjectList = currCourse.getGradebookObjectList();
+
+                //only continue if the course has grades
+                if (gradebookObjectList != null)
+                {
+                    termHasAnyGrades = true;
+
+                    for (GradebookObject gradebookObject : gradebookObjectList)
+                    {
+                        GradeNodeViewHolder.GradeTreeItem gradeNodeItem = new GradeNodeViewHolder.GradeTreeItem(
+                                gradebookObject.getItemName(),
+                                gradebookObject.getGrade() + "/" + gradebookObject.getPoints()
+                        );
+
+                        TreeNode gradeNode = new TreeNode(gradeNodeItem).setViewHolder(new GradeNodeViewHolder(mContext));
+
+                        courseNode.addChild(gradeNode);
+                    }
+
+                    termNode.addChild(courseNode);
+
+                }
+
+            }
+
+            //only add the term to the tree only if at least one course has one grade item
+            if(termHasAnyGrades)
+                root.addChild(termNode);
+        }
+
+
+        treeView = new AndroidTreeView(getActivity(), root);
+        treeView.setDefaultAnimation(true);
+    }
 
 
 

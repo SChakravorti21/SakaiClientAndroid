@@ -120,7 +120,7 @@ public class DataHandler {
                         Course c = getCourseFromId(courseId);
                         if (c != null)
                             c.setGradebookObjectList(assignments);
-                        int x=2;
+
                     }
 
                 }
@@ -342,28 +342,8 @@ public class DataHandler {
 
 
 
-
-
-    /**
-     * uses the courses that are already sorted by term and puts that data into the headers list
-     * and the hashmaps so that it can be displays in the expandable list view
-     *
-<<<<<<< HEAD
-     * Used in the home tab and in all grades tab
-=======
-     * Used in the home tab
->>>>>>> Added spinner when making requests, gradebook only shows courses/terms with grades
-     *
-     * @param termHeaders list of term headers
-     * @param termToCourseTitles hashmap mapping term to a list of courses
-     * @param termToCourseSubjectCodes hashmap mapping term to a list of course subj codes
-     * @param termToCourseIds hashmap mapping term to course Ids
-     */
-
-    public static void prepareHeadersAndChildrenAll(List<String> termHeaders,
-                                                    HashMap<String, List<String>> termToCourseTitles,
-                                                    HashMap<String, List<Integer>> termToCourseSubjectCodes,
-                                                    HashMap<String, List<String>> termToCourseIds) {
+    public static void prepareTermHeadersToCourses(List<String> termHeaders,
+                                                   HashMap<String, List<Course>> termToCourses) {
 
         //sets the Term as the headers for the expandable list view
         //each child is the name of the site in that term
@@ -383,28 +363,7 @@ public class DataHandler {
             termHeaders.add(termKey);
 
 
-            List<String> tempChildList = new ArrayList<>();
-            List<Integer> tempSubjectCodeList = new ArrayList<>();
-            List<String> tempSiteIdList = new ArrayList<>();
-
-            //places the title of each site and its corresponding ImgResId into 2 lists
-            //which are then added to the hashmap under the current term header
-            for(Course currCourse : coursesPerTerm) {
-
-                tempChildList.add(currCourse.getTitle());
-                tempSiteIdList.add(currCourse.getId());
-
-                //TODO figure out a way to add the resource Id values directly, for more abstraction
-                //adds subject code to hashmap
-                int subjectCode = currCourse.getSubjectCode();
-                tempSubjectCodeList.add(subjectCode);
-//                int resId = RutgersSubjectCodes.getResourceIdFromSubjectCode(subjectCode, getActivity().getPackageName(), getContext());
-//                tempSubjectCodeList.add(resId);
-            }
-
-            termToCourseIds.put(termKey, tempSiteIdList);
-            termToCourseSubjectCodes.put(termKey, tempSubjectCodeList);
-            termToCourseTitles.put(termKey, tempChildList);
+            termToCourses.put(termKey, coursesPerTerm);
         }
 
 
@@ -413,80 +372,6 @@ public class DataHandler {
 
 
 
-    /**
-     * uses the courses that are already sorted by term and puts that data into the headers list
-     * and the hashmaps so that it can be displays in the expandable list view
-     *
-     * Used in the all grades tab
-     *
-     * @param termHeaders list of term headers
-     * @param termToCourseTitles hashmap mapping term to a list of courses
-     * @param termToCourseSubjectCodes hashmap mapping term to a list of course subj codes
-     * @param termToCourseIds hashmap mapping term to course Ids
-     */
-    public static void prepareHeadersAndChildrenWithGrades(List<String> termHeaders,
-                                                    HashMap<String, List<String>> termToCourseTitles,
-                                                    HashMap<String, List<Integer>> termToCourseSubjectCodes,
-                                                    HashMap<String, List<String>> termToCourseIds) {
-
-        //sets the Term as the headers for the expandable list view
-        //each child is the name of the site in that term
-        for(ArrayList<Course> coursesPerTerm : coursesSortedByTerm) {
-
-            //we can just look at the first site's term, since all the terms
-            //should be the same, since we already sorted
-            Term currTerm = coursesPerTerm.get(0).getTerm();
-
-            String termKey = currTerm.getTermString();
-
-            //don't put the year if the header is just General
-            if(!termKey.equals("General")) {
-                termKey += (" " + currTerm.getYear());
-            }
-
-
-
-            List<String> tempChildList = new ArrayList<>();
-            List<Integer> tempSubjectCodeList = new ArrayList<>();
-            List<String> tempSiteIdList = new ArrayList<>();
-
-
-            boolean termHasGrades = false;
-
-            //places the title of each site and its corresponding ImgResId into 2 lists
-            //which are then added to the hashmap under the current term header
-            for(Course currCourse : coursesPerTerm) {
-
-                //if no grades, just don't put in hashmap
-                if(currCourse.getGradebookObjectList() == null)
-                    continue;
-
-
-                termHasGrades = true;
-                tempChildList.add(currCourse.getTitle());
-                tempSiteIdList.add(currCourse.getId());
-
-                //TODO figure out a way to add the resource Id values directly, for more abstraction
-                //adds subject code to hashmap
-                int subjectCode = currCourse.getSubjectCode();
-                tempSubjectCodeList.add(subjectCode);
-//                int resId = RutgersSubjectCodes.getResourceIdFromSubjectCode(subjectCode, getActivity().getPackageName(), getContext());
-//                tempSubjectCodeList.add(resId);
-            }
-
-
-            //if the term has no grades, we shouldn't show that term either
-            if(termHasGrades) {
-
-                termHeaders.add(termKey);
-                termToCourseIds.put(termKey, tempSiteIdList);
-                termToCourseSubjectCodes.put(termKey, tempSubjectCodeList);
-                termToCourseTitles.put(termKey, tempChildList);
-            }
-        }
-
-
-    }
 
 
 }

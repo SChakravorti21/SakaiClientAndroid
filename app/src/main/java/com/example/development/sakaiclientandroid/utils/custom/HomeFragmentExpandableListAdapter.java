@@ -11,8 +11,10 @@ import android.widget.TextView;
 
 
 import com.example.development.sakaiclientandroid.R;
+import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -28,15 +30,28 @@ public class HomeFragmentExpandableListAdapter extends BaseExpandableListAdapter
      * Constructor for the custom expandable list adapter. Pretty self explanatory...
      * @param c = activity context
      * @param headerTitles = List of header titles (in this case Terms)
-     * @param childTitles = HashMap mapping header titles to a list of class titles
-     * @param subjectCodePerChild = HashMap mapping header titles to a list of subject codes, which corresponds to the child titles list
      */
-    public HomeFragmentExpandableListAdapter(Context c, List<String> headerTitles, HashMap<String, List<String>> childTitles, HashMap<String, List<Integer>> subjectCodePerChild) {
+    public HomeFragmentExpandableListAdapter(Context c, List<String> headerTitles, HashMap<String, List<Course>> childObjects) {
 
         this.context = c;
         this.headerTitles = headerTitles;
-        this.childTitles = childTitles;
-        this.subjectCodePerChild = subjectCodePerChild;
+        this.childTitles = new HashMap<>();
+        this.subjectCodePerChild = new HashMap<>();
+
+        for(String title : headerTitles)
+        {
+            List<Course> courses = childObjects.get(title);
+            List<String> temp1 = new ArrayList<>();
+            List<Integer> temp2 = new ArrayList<>();
+            for(Course course : courses) {
+                temp1.add(course.getTitle());
+                temp2.add(course.getSubjectCode());
+            }
+
+            this.childTitles.put(title, temp1);
+            this.subjectCodePerChild.put(title, temp2);
+        }
+
     }
 
 
