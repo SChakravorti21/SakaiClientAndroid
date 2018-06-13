@@ -23,7 +23,7 @@ public class RequestCallback {
 
     public void onSiteGradesFailure(Throwable throwable) { }
 
-    public void onAllGradesSuccess() { }
+    public void onAllGradesSuccess(ArrayList<ArrayList<Course>> response) { }
 
     public void onAllGradesFailure(Throwable throwable) { }
 
