@@ -7,10 +7,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Course {
+public class Course implements Serializable {
 
 
     private String id;
@@ -84,6 +86,17 @@ public class Course {
             e.printStackTrace();
         }
 
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+        out.writeObject(this);
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+        Course course = (Course) in.readObject();
+        this.assignmentObjectList = course.assignmentObjectList;
+        this.title = course.title;
+        this.term = course.term;
     }
 
 
