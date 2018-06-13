@@ -22,13 +22,14 @@ import com.example.development.sakaiclientandroid.utils.DataHandler;
 import com.example.development.sakaiclientandroid.utils.requests.RequestCallback;
 import com.example.development.sakaiclientandroid.utils.requests.RequestManager;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 
 public class NavActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener {
 
-    public static final String COURSES_TAG = "COURSES";
+    public static final String COURSES_TAG = "COURSES", ALL_GRADES_TAG = "GRADES";
 
     private FrameLayout container;
     private ProgressBar spinner;
@@ -129,8 +130,8 @@ public class NavActivity extends AppCompatActivity
                 return true;
 
             case R.id.navigation_gradebook:
-                fragment = new AllGradesFragment();
-                break;
+                loadAllGradesFragment();
+                return true;
 
             case R.id.navigation_settings:
                 fragment = new SettingsFragment();
@@ -141,6 +142,42 @@ public class NavActivity extends AppCompatActivity
         return this.loadFragment(fragment);
 
     }
+
+
+    public void loadAllGradesFragment()
+    {
+        this.container.setVisibility(View.GONE);
+        this.spinner.setVisibility(View.VISIBLE);
+
+        DataHandler.requestAllGrades(new RequestCallback()
+        {
+
+            @Override
+            public void onAllGradesSuccess(ArrayList<ArrayList<Course>> response)
+            {
+                spinner.setVisibility(View.GONE);
+
+                Bundle b = new Bundle();
+                b.putSerializable(ALL_GRADES_TAG, response);
+
+                AllGradesFragment frag = new AllGradesFragment();
+                frag.setArguments(b);
+                loadFragment(frag);
+
+                container.setVisibility(View.VISIBLE);
+
+                setActionBarTitle(getString(R.string.app_name));
+            }
+
+            @Override
+            public void onAllGradesFailure(Throwable t)
+            {
+                //TODO deal with error
+                Log.e("ERROR: ", t.getMessage());
+            }
+        });
+    }
+
 
     public void loadAssignmentsFragment() {
         this.container.setVisibility(View.GONE);

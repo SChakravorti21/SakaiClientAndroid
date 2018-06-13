@@ -126,7 +126,7 @@ public class DataHandler {
                 }
 
                 hasRequestedAllGrades = true;
-                UICallback.onAllGradesSuccess();
+                UICallback.onAllGradesSuccess(coursesSortedByTerm);
 
             }
 

@@ -26,11 +26,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.example.development.sakaiclientandroid.NavActivity.ALL_GRADES_TAG;
+import static com.example.development.sakaiclientandroid.NavActivity.COURSES_TAG;
+
 public class AllGradesFragment extends BaseFragment {
+
+    SwipeRefreshLayout swipeRefreshLayout;
 
     private List<String> termHeaders;
     private HashMap<String, List<Course>> termToCourses;
-    SwipeRefreshLayout swipeRefreshLayout;
 
     private AndroidTreeView treeView;
 
@@ -38,8 +42,33 @@ public class AllGradesFragment extends BaseFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //reset header
-        ((NavActivity)getActivity()).setActionBarTitle(getString(R.string.app_name));
+
+
+        this.termHeaders = new ArrayList<>();
+        this.termToCourses = new HashMap<>();
+
+
+
+        Bundle bun = getArguments();
+        try
+        {
+//            ArrayList<ArrayList<Course>> courses = (ArrayList<ArrayList<Course>>) bun.getSerializable(ALL_GRADES_TAG);
+
+            DataHandler.prepareTermHeadersToCourses(
+                    termHeaders,
+                    termToCourses
+            );
+
+            createTreeView(termHeaders, termToCourses);
+
+        }
+        catch (ClassCastException exception) {
+            // Unable to create the tree, create a dummy tree
+            //TODO: Needs better error handling
+            treeView = new AndroidTreeView(getActivity(), TreeNode.root());
+        }
+
+
     }
 
     @Nullable
@@ -49,63 +78,7 @@ public class AllGradesFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_all_grades, null);
         final ViewGroup containerView = view.findViewById(R.id.swiperefresh);
 
-
-        this.termHeaders = new ArrayList<>();
-        this.termToCourses = new HashMap<>();
-
-
-        final ProgressBar spinner = getActivity().findViewById(R.id.nav_activity_progressbar);
-
-
-        //if we already have grades for all sites cached, then no need to make another request
-        if(DataHandler.gradesRequestedForAllSites()) {
-
-            //prepare the headers and children
-            DataHandler.prepareTermHeadersToCourses(
-                    this.termHeaders,
-                    this.termToCourses
-            );
-
-            spinner.setVisibility(View.GONE);
-            createTreeView();
-            containerView.addView(treeView.getView());
-        }
-        //if we have not, then must make request
-        else {
-
-            //start spinner
-            spinner.setVisibility(View.VISIBLE);
-
-            DataHandler.requestAllGrades(new RequestCallback() {
-
-                @Override
-                public void onAllGradesSuccess() {
-
-                    //now prepare headers and children
-                    DataHandler.prepareTermHeadersToCourses(
-                            termHeaders,
-                            termToCourses
-                    );
-
-                    spinner.setVisibility(View.GONE);
-
-                    //create tree view
-                    createTreeView();
-                    containerView.addView(treeView.getView());
-
-                }
-
-
-                @Override
-                public void onAllGradesFailure(Throwable throwable) {
-
-                    //TODO failure message
-
-                }
-
-            });
-        }
-
+        containerView.addView(treeView.getView());
 
 
         this.swipeRefreshLayout = view.findViewById(R.id.swiperefresh);
@@ -116,10 +89,10 @@ public class AllGradesFragment extends BaseFragment {
                 DataHandler.requestAllGrades(new RequestCallback() {
 
                     @Override
-                    public void onAllGradesSuccess() {
+                    public void onAllGradesSuccess(ArrayList<ArrayList<Course>> response) {
 
                         swipeRefreshLayout.setRefreshing(false);
-                        createTreeView();
+                        createTreeView(termHeaders, termToCourses);
 
                         //add the newly created tree to the viewgroup
                         containerView.addView(treeView.getView());
@@ -146,7 +119,7 @@ public class AllGradesFragment extends BaseFragment {
      * Creates a treeview structure using a list of terms, and a hashmap mapping
      * term to list of courses for that term, which is gotten from DataHandler
      */
-    public void createTreeView()
+    public void createTreeView(List<String> termHeaders, HashMap<String, List<Course>> termToCourses)
     {
         TreeNode root = TreeNode.root();
 
@@ -165,7 +138,7 @@ public class AllGradesFragment extends BaseFragment {
             TreeNode termNode = new TreeNode(termNodeItem).setViewHolder(new TermHeaderViewHolder(mContext));
 
             //for each course, get its grades
-            for(Course currCourse : this.termToCourses.get(termString))
+            for(Course currCourse : termToCourses.get(termString))
             {
                 //create a course header item and make a treenode using it
                 //TODO give correct img to the course header
