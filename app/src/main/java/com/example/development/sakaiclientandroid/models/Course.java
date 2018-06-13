@@ -14,6 +14,7 @@ import java.util.List;
 
 public class Course implements Serializable {
 
+
     private String id;
     private String title;
     private String description;
@@ -98,9 +99,6 @@ public class Course implements Serializable {
         this.term = course.term;
     }
 
-    private void readObjectNoData() {
-
-    }
 
     public String capitalizeEveryWord(String org) {
         org = org.toLowerCase();
