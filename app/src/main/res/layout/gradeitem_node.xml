@@ -24,7 +24,10 @@
     <View
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:background="@color/leaf_background"
+        android:foreground="?android:attr/selectableItemBackground"
+        />
 
     <TextView
         android:textSize= "16sp"
@@ -32,6 +35,8 @@
         android:foreground="?android:attr/selectableItemBackground"
         android:textColor="@color/sakai_light_black"
         android:id="@+id/txt_grade"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:gravity="right"
