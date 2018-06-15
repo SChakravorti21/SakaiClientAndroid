@@ -68,6 +68,7 @@ public class DataHandler {
         return mapSiteIdToCourse.get(id).getTitle();
     }
 
+
     public static void requestAllAssignments(final RequestCallback UICallback) {
         if(hasRequestedAllAssignments) {
             UICallback.onAllAssignmentsSuccess(coursesSortedByTerm);
@@ -179,7 +180,7 @@ public class DataHandler {
                     e.printStackTrace();
                 }
 
-                UICallback.onCoursesSuccess();
+                UICallback.onCoursesSuccess(coursesSortedByTerm);
 
 
             }
