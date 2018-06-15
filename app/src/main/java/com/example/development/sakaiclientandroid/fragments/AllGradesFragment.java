@@ -3,7 +3,10 @@ package com.example.development.sakaiclientandroid.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,30 +30,21 @@ import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import static com.example.development.sakaiclientandroid.NavActivity.ALL_GRADES_TAG;
-import static com.example.development.sakaiclientandroid.NavActivity.COURSES_TAG;
+
 
 public class AllGradesFragment extends BaseFragment {
 
     SwipeRefreshLayout swipeRefreshLayout;
 
-    private List<String> termHeaders;
-    private HashMap<String, List<Course>> termToCourses;
-
     private AndroidTreeView treeView;
+    private View viewTree;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
-
-        this.termHeaders = new ArrayList<>();
-        this.termToCourses = new HashMap<>();
-
 
 
         Bundle bun = getArguments();
@@ -59,7 +53,6 @@ public class AllGradesFragment extends BaseFragment {
             ArrayList<ArrayList<Course>> courses = (ArrayList<ArrayList<Course>>) bun.getSerializable(ALL_GRADES_TAG);
 
             createTreeView(courses);
-
         }
         catch (ClassCastException exception) {
             // Unable to create the tree, create a dummy tree
@@ -75,37 +68,27 @@ public class AllGradesFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_all_grades, null);
-        final ViewGroup containerView = view.findViewById(R.id.swiperefresh);
-
-        containerView.addView(treeView.getView());
-
-
         this.swipeRefreshLayout = view.findViewById(R.id.swiperefresh);
+
+
+        swipeRefreshLayout.addView(viewTree);
+
+
+
+
         this.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
 
-                DataHandler.requestAllGrades(new RequestCallback() {
+                FragmentActivity parentActivity = getActivity();
 
-                    @Override
-                    public void onAllGradesSuccess(ArrayList<ArrayList<Course>> response) {
+                //checking if instance to prevent casting errors
+                if(parentActivity instanceof NavActivity)
+                {
+                    //reloads the current fragment, (which also remakes the request for grades)
+                    ((NavActivity) parentActivity).loadAllGradesFragment();
+                }
 
-                        swipeRefreshLayout.setRefreshing(false);
-                        createTreeView(response);
-
-                        //add the newly created tree to the viewgroup
-                        containerView.addView(treeView.getView());
-
-
-                        Toast.makeText(mContext, getString(R.string.fetched_grades), Toast.LENGTH_SHORT).show();
-
-                    }
-
-                    @Override
-                    public void onAllGradesFailure(Throwable throwable) {
-                        //TODO error
-                    }
-                });
             }
         });
 
@@ -196,6 +179,7 @@ public class AllGradesFragment extends BaseFragment {
         treeView = new AndroidTreeView(getActivity(), root);
         treeView.setDefaultAnimation(true);
         treeView.setDefaultNodeClickListener(new TreeViewItemClickListener(treeView, root));
+        viewTree = treeView.getView();
     }
 
 
