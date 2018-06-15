@@ -69,9 +69,11 @@ public class CourseHeaderViewHolder extends TreeNode.BaseNodeViewHolder<CourseHe
     public static class CourseHeaderItem {
         public String text;
         public String icon;
+        public String siteId;
 
-        public CourseHeaderItem(String text) {
+        public CourseHeaderItem(String text, String siteId) {
             this.text = text;
+            this.siteId = siteId;
         }
     }
 }

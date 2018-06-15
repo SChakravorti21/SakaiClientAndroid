@@ -79,7 +79,7 @@ public class AssignmentsFragment extends BaseFragment {
 
                 // Create a course header item, and make a tree node using it
                 CourseHeaderViewHolder.CourseHeaderItem courseHeaderItem =
-                        new CourseHeaderViewHolder.CourseHeaderItem(courseName);
+                        new CourseHeaderViewHolder.CourseHeaderItem(courseName, course.getId());
                 TreeNode courseNode = new TreeNode(courseHeaderItem);
                 // Set the course header view holder to inflate the appropriate view
                 courseNode.setViewHolder(new CourseHeaderViewHolder(currContext));

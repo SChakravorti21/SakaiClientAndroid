@@ -15,7 +15,7 @@ import retrofit2.Response;
 
 public class RequestCallback {
 
-    public void onCoursesSuccess() { }
+    public void onCoursesSuccess(ArrayList<ArrayList<Course>> response) { }
 
     public void onCoursesFailure(Throwable throwable) { }
 

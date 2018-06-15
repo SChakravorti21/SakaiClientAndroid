@@ -29,7 +29,9 @@ import java.util.ArrayList;
 public class NavActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener {
 
-    public static final String COURSES_TAG = "COURSES", ALL_GRADES_TAG = "GRADES";
+    public static final String COURSES_TAG = "COURSES";
+    public static final String ALL_GRADES_TAG = "GRADES";
+    public static final String ASSIGNMENTS_TAG = "ASSIGNMENTS";
 
     private FrameLayout container;
     private ProgressBar spinner;
@@ -52,28 +54,10 @@ public class NavActivity extends AppCompatActivity
 
         // Create RequestManager's Retrofit instance
         RequestManager.createRetrofitInstance(this);
-        // Request all site pages for the Home Fragment
-        DataHandler.requestAllSites(new RequestCallback() {
-            @Override
-            public void onCoursesSuccess() {
 
-                spinner.setVisibility(View.GONE);
+        // Request all site pages for the Home Fragment and then loads the fragment
+        loadAllCoursesFragment();
 
-                Bundle bun = new Bundle();
-                bun.putString("showHomeOrGrades", "Home");
-
-                AllCoursesFragment fragment = new AllCoursesFragment();
-                fragment.setArguments(bun);
-                loadFragment(fragment);
-            }
-
-            @Override
-            public void onCoursesFailure(Throwable throwable) {
-                // TODO: Handle errors give proper error message
-                Log.i("Response", "failure");
-                Log.e("Response error", throwable.getMessage());
-            }
-        });
     }
 
 
@@ -117,9 +101,8 @@ public class NavActivity extends AppCompatActivity
         switch(item.getItemId()) {
 
             case R.id.navigation_home:
-                fragment = new AllCoursesFragment();
-                break;
-
+                loadAllCoursesFragment();
+                return true;
 
             case R.id.navigation_announcements:
                 fragment = new AnnouncementsFragment();
@@ -141,6 +124,41 @@ public class NavActivity extends AppCompatActivity
 
         return this.loadFragment(fragment);
 
+    }
+
+
+    public void loadAllCoursesFragment()
+    {
+        this.container.setVisibility(View.GONE);
+        this.spinner.setVisibility(View.VISIBLE);
+
+        DataHandler.requestAllSites(new RequestCallback()
+        {
+
+            @Override
+            public void onCoursesSuccess(ArrayList<ArrayList<Course>> response)
+            {
+                spinner.setVisibility(View.GONE);
+
+                Bundle b = new Bundle();
+                b.putSerializable(COURSES_TAG, response);
+
+                AllCoursesFragment frag = new AllCoursesFragment();
+                frag.setArguments(b);
+                loadFragment(frag);
+
+                container.setVisibility(View.VISIBLE);
+
+                setActionBarTitle(getString(R.string.app_name));
+            }
+
+            @Override
+            public void onAllGradesFailure(Throwable t)
+            {
+                //TODO deal with error
+                Log.e("ERROR: ", t.getMessage());
+            }
+        });
     }
 
 
@@ -190,7 +208,7 @@ public class NavActivity extends AppCompatActivity
                 spinner.setVisibility(View.GONE);
 
                 Bundle bundle = new Bundle();
-                bundle.putSerializable(COURSES_TAG, response);
+                bundle.putSerializable(ASSIGNMENTS_TAG, response);
 
                 AssignmentsFragment fragment = new AssignmentsFragment();
                 fragment.setArguments(bundle);

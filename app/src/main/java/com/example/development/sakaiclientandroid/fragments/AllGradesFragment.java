@@ -40,7 +40,6 @@ public class AllGradesFragment extends BaseFragment {
     SwipeRefreshLayout swipeRefreshLayout;
 
     private AndroidTreeView treeView;
-    private View viewTree;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -71,7 +70,7 @@ public class AllGradesFragment extends BaseFragment {
         this.swipeRefreshLayout = view.findViewById(R.id.swiperefresh);
 
 
-        swipeRefreshLayout.addView(viewTree);
+        swipeRefreshLayout.addView(treeView.getView());
 
 
 
@@ -127,7 +126,8 @@ public class AllGradesFragment extends BaseFragment {
                 //create a course header item and make a treenode using it
                 //TODO give correct img to the course header
                 CourseHeaderViewHolder.CourseHeaderItem courseNodeItem = new CourseHeaderViewHolder.CourseHeaderItem(
-                        currCourse.getTitle()
+                        currCourse.getTitle(),
+                        currCourse.getId()
                 );
 
                 //set the custom view holder
@@ -179,7 +179,6 @@ public class AllGradesFragment extends BaseFragment {
         treeView = new AndroidTreeView(getActivity(), root);
         treeView.setDefaultAnimation(true);
         treeView.setDefaultNodeClickListener(new TreeViewItemClickListener(treeView, root));
-        viewTree = treeView.getView();
     }
 
 

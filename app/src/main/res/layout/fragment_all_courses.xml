@@ -4,9 +4,5 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ExpandableListView
-        android:id="@+id/all_courses_explistview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
 
 </android.support.v4.widget.SwipeRefreshLayout>
