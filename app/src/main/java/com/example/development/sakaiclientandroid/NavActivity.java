@@ -29,7 +29,8 @@ import java.util.ArrayList;
 public class NavActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener {
 
-    public static final String COURSES_TAG = "COURSES", ALL_GRADES_TAG = "GRADES";
+    public static final String ASSIGNMENTS_TAG = "COURSES";
+    public static final String ALL_GRADES_TAG = "GRADES";
 
     private FrameLayout container;
     private ProgressBar spinner;
@@ -190,7 +191,7 @@ public class NavActivity extends AppCompatActivity
                 spinner.setVisibility(View.GONE);
 
                 Bundle bundle = new Bundle();
-                bundle.putSerializable(COURSES_TAG, response);
+                bundle.putSerializable(ASSIGNMENTS_TAG, response);
 
                 AssignmentsFragment fragment = new AssignmentsFragment();
                 fragment.setArguments(bundle);
