@@ -58,6 +58,11 @@ public class DataHandler {
         return hasRequestedAllGrades;
     }
 
+    public static void clearCachedGrades()
+    {
+        hasRequestedAllGrades = false;
+    }
+
 
 
     public static Term getTermFromId(String id) {
@@ -103,6 +108,11 @@ public class DataHandler {
     }
 
     public static void requestAllGrades(final RequestCallback UICallback) {
+
+        if(hasRequestedAllGrades) {
+            UICallback.onAllGradesSuccess(coursesSortedByTerm);
+            return;
+        }
 
         RequestManager.fetchAllGrades(new Callback<AllGradesObject>() {
             @Override

@@ -84,6 +84,11 @@ public class AllGradesFragment extends BaseFragment {
                 //checking if instance to prevent casting errors
                 if(parentActivity instanceof NavActivity)
                 {
+
+                    //sets has requested all grades flag to false, so we
+                    //actually complete the request when loading the fragment
+                    DataHandler.clearCachedGrades();
+
                     //reloads the current fragment, (which also remakes the request for grades)
                     ((NavActivity) parentActivity).loadAllGradesFragment();
                 }
