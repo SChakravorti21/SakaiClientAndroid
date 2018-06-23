@@ -113,7 +113,8 @@ public class NavActivity extends AppCompatActivity
                 return true;
 
             case R.id.navigation_gradebook:
-                loadAllGradesFragment();
+                //set refresh to false since we want to display cached grades
+                loadAllGradesFragment(false);
                 return true;
 
             case R.id.navigation_settings:
@@ -162,12 +163,12 @@ public class NavActivity extends AppCompatActivity
     }
 
 
-    public void loadAllGradesFragment()
+    public void loadAllGradesFragment(boolean refreshGrades)
     {
         this.container.setVisibility(View.GONE);
         this.spinner.setVisibility(View.VISIBLE);
 
-        DataHandler.requestAllGrades(new RequestCallback()
+        DataHandler.requestAllGrades(refreshGrades, new RequestCallback()
         {
 
             @Override
