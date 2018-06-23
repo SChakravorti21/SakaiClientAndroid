@@ -84,8 +84,9 @@ public class AllGradesFragment extends BaseFragment {
                 //checking if instance to prevent casting errors
                 if(parentActivity instanceof NavActivity)
                 {
+                    //set refresh boolean to true so that the request is made again forcefully
                     //reloads the current fragment, (which also remakes the request for grades)
-                    ((NavActivity) parentActivity).loadAllGradesFragment();
+                    ((NavActivity) parentActivity).loadAllGradesFragment(true);
                 }
 
             }

@@ -53,12 +53,6 @@ public class DataHandler {
         return getCourseFromId(siteId).getGradebookObjectList() != null;
     }
 
-    public static boolean gradesRequestedForAllSites() {
-
-        return hasRequestedAllGrades;
-    }
-
-
 
     public static Term getTermFromId(String id) {
         return mapSiteIdToCourse.get(id).getTerm();
@@ -102,7 +96,12 @@ public class DataHandler {
         });
     }
 
-    public static void requestAllGrades(final RequestCallback UICallback) {
+    public static void requestAllGrades(boolean refreshGrades, final RequestCallback UICallback) {
+
+        if(hasRequestedAllGrades && !refreshGrades) {
+            UICallback.onAllGradesSuccess(coursesSortedByTerm);
+            return;
+        }
 
         RequestManager.fetchAllGrades(new Callback<AllGradesObject>() {
             @Override
