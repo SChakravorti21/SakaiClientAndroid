@@ -10,16 +10,16 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.example.development.sakaiclientandroid.R;
-import com.example.development.sakaiclientandroid.api_models.gradebook.AssignmentObject;
+import com.example.development.sakaiclientandroid.api_models.gradebook.GradebookObject;
 
 import java.util.List;
 
 public class GradeItemAdapter extends ArrayAdapter {
 
     private final Context context;
-    private final List<AssignmentObject> assignmentsList;
+    private final List<GradebookObject> assignmentsList;
 
-    public GradeItemAdapter(Context context, List<AssignmentObject> assignmentsList) {
+    public GradeItemAdapter(Context context, List<GradebookObject> assignmentsList) {
         super(context, R.layout.grade_list_item_site, assignmentsList);
 
         this.context = context;

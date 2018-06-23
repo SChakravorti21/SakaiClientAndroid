@@ -11,6 +11,7 @@ import android.widget.ExpandableListView;
 
 import com.example.development.sakaiclientandroid.NavActivity;
 import com.example.development.sakaiclientandroid.R;
+import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
 import com.example.development.sakaiclientandroid.utils.custom.HomeFragmentExpandableListAdapter;
 import com.example.development.sakaiclientandroid.utils.requests.RequestCallback;
@@ -23,10 +24,7 @@ public class AllCoursesFragment extends BaseFragment{
 
 
     private List<String> termHeaders;
-    private HashMap<String, List<String>> headerToClassTitle;
-    private HashMap<String, List<String>> headerToClassSiteId;
-
-    private HashMap<String, List<Integer>> headerToClassSubjectCode;
+    private HashMap<String, List<Course>> headerToCourses;
 
     private SwipeRefreshLayout swipeRefreshLayout;
 
@@ -88,6 +86,7 @@ public class AllCoursesFragment extends BaseFragment{
 
         return view;
 
+
     }
 
 
@@ -98,18 +97,14 @@ public class AllCoursesFragment extends BaseFragment{
     private void feedExpandableListData(ExpandableListView expListView) {
 
         this.termHeaders = new ArrayList<>();
-        this.headerToClassTitle = new HashMap<>();
-        this.headerToClassSubjectCode = new HashMap<>();
-        this.headerToClassSiteId = new HashMap<>();
+        this.headerToCourses = new HashMap<>();
 
-        DataHandler.prepareHeadersAndChildrenAll(
+        DataHandler.prepareTermHeadersToCourses(
                 this.termHeaders,
-                this.headerToClassTitle,
-                this.headerToClassSubjectCode,
-                this.headerToClassSiteId
+                this.headerToCourses
         );
 
-        HomeFragmentExpandableListAdapter listAdapter = new HomeFragmentExpandableListAdapter(getActivity(), termHeaders, headerToClassTitle, headerToClassSubjectCode);
+        HomeFragmentExpandableListAdapter listAdapter = new HomeFragmentExpandableListAdapter(getActivity(), termHeaders, headerToCourses);
         expListView.setAdapter(listAdapter);
 
         expListView.setOnChildClickListener(new ExpandableListViewOnChildClickListener());
@@ -129,7 +124,7 @@ public class AllCoursesFragment extends BaseFragment{
                                     int groupPosition, int childPosition, long id) {
 
 
-            String courseSiteId =  headerToClassSiteId.get(termHeaders.get(groupPosition)).get(childPosition);
+            String courseSiteId =  headerToCourses.get(termHeaders.get(groupPosition)).get(childPosition).getId();
 
 
             Bundle bun = new Bundle();

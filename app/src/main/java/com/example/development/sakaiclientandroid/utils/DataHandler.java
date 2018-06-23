@@ -1,10 +1,13 @@
 package com.example.development.sakaiclientandroid.utils;
 
+import android.support.annotation.NonNull;
 import android.widget.ImageView;
 
 import com.example.development.sakaiclientandroid.R;
+import com.example.development.sakaiclientandroid.api_models.assignments.AllAssignments;
+import com.example.development.sakaiclientandroid.api_models.assignments.AssignmentObject;
 import com.example.development.sakaiclientandroid.api_models.gradebook.AllGradesObject;
-import com.example.development.sakaiclientandroid.api_models.gradebook.AssignmentObject;
+import com.example.development.sakaiclientandroid.api_models.gradebook.GradebookObject;
 import com.example.development.sakaiclientandroid.api_models.gradebook.GradebookCollectionObject;
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.models.Term;
@@ -34,6 +37,7 @@ public class DataHandler {
     //needed so that we don't have to make an unnecessary request if all grades
     //have already been requested
     private static boolean hasRequestedAllGrades = false;
+    private static boolean hasRequestedAllAssignments = false;
 
 
 
@@ -41,19 +45,13 @@ public class DataHandler {
         return coursesSortedByTerm;
     }
 
-    public static List<AssignmentObject> getGradesForCourse(String siteId) {
-        return getCourseFromId(siteId).getAssignmentObjectList();
+    public static List<GradebookObject> getGradesForCourse(String siteId) {
+        return getCourseFromId(siteId).getGradebookObjectList();
     }
 
     public static boolean gradesRequestedForSite(String siteId) {
-        return getCourseFromId(siteId).getAssignmentObjectList() != null;
+        return getCourseFromId(siteId).getGradebookObjectList() != null;
     }
-
-    public static boolean gradesRequestedForAllSites() {
-
-        return hasRequestedAllGrades;
-    }
-
 
 
     public static Term getTermFromId(String id) {
@@ -64,8 +62,45 @@ public class DataHandler {
         return mapSiteIdToCourse.get(id).getTitle();
     }
 
+    public static void requestAllAssignments(final RequestCallback UICallback) {
+        if(hasRequestedAllAssignments) {
+            UICallback.onAllAssignmentsSuccess(coursesSortedByTerm);
+            return;
+        }
 
-    public static void requestAllGrades(final RequestCallback UICallback) {
+        RequestManager.fetchAllAssignments(new Callback<AllAssignments>() {
+            @Override
+            public void onResponse(@NonNull Call<AllAssignments> call,
+                                   @NonNull  Response<AllAssignments> response) {
+                AllAssignments allAssignments = response.body();
+
+                if(allAssignments == null || allAssignments.getAssignmentObject().size() == 0) {
+                    UICallback.onAllAssignmentsFailure(new Throwable("Assignments is empty!"));
+                    return;
+                }
+
+                for(AssignmentObject assignment : allAssignments.getAssignmentObject()) {
+                    Course course = mapSiteIdToCourse.get(assignment.getContext());
+                    course.addAssignment(assignment);
+                }
+
+                hasRequestedAllAssignments = true;
+                UICallback.onAllAssignmentsSuccess(coursesSortedByTerm);
+            }
+
+            @Override
+            public void onFailure(Call<AllAssignments> call, Throwable t) {
+                UICallback.onAllAssignmentsFailure(t);
+            }
+        });
+    }
+
+    public static void requestAllGrades(boolean refreshGrades, final RequestCallback UICallback) {
+
+        if(hasRequestedAllGrades && !refreshGrades) {
+            UICallback.onAllGradesSuccess(coursesSortedByTerm);
+            return;
+        }
 
         RequestManager.fetchAllGrades(new Callback<AllGradesObject>() {
             @Override
@@ -78,19 +113,19 @@ public class DataHandler {
                     for (GradebookCollectionObject gradebook : allGradesObject.getGradebookCollection()) {
 
                         //set the gradebook's list of assignments to the course's list of assignments
-                        List<AssignmentObject> assignments = gradebook.getAssignments();
+                        List<GradebookObject> assignments = gradebook.getAssignments();
                         String courseId = gradebook.getSiteId();
 
                         Course c = getCourseFromId(courseId);
                         if (c != null)
-                            c.setAssignmentObjectList(assignments);
-                        int x=2;
+                            c.setGradebookObjectList(assignments);
+
                     }
 
                 }
 
                 hasRequestedAllGrades = true;
-                UICallback.onAllGradesSuccess();
+                UICallback.onAllGradesSuccess(coursesSortedByTerm);
 
             }
 
@@ -113,7 +148,7 @@ public class DataHandler {
 
                 if(gradebookCollectionObject != null) {
                     Course currCourse = DataHandler.getCourseFromId(siteId);
-                    currCourse.setAssignmentObjectList(gradebookCollectionObject.getAssignments());
+                    currCourse.setGradebookObjectList(gradebookCollectionObject.getAssignments());
                 }
 
                 UICallback.onSiteGradesSuccess();
@@ -201,7 +236,7 @@ public class DataHandler {
             }
         }
 
-        return null;
+        return mapSiteIdToCourse.get(siteId);
     }
 
 
@@ -306,28 +341,8 @@ public class DataHandler {
 
 
 
-
-
-    /**
-     * uses the courses that are already sorted by term and puts that data into the headers list
-     * and the hashmaps so that it can be displays in the expandable list view
-     *
-<<<<<<< HEAD
-     * Used in the home tab and in all grades tab
-=======
-     * Used in the home tab
->>>>>>> Added spinner when making requests, gradebook only shows courses/terms with grades
-     *
-     * @param termHeaders list of term headers
-     * @param termToCourseTitles hashmap mapping term to a list of courses
-     * @param termToCourseSubjectCodes hashmap mapping term to a list of course subj codes
-     * @param termToCourseIds hashmap mapping term to course Ids
-     */
-
-    public static void prepareHeadersAndChildrenAll(List<String> termHeaders,
-                                                    HashMap<String, List<String>> termToCourseTitles,
-                                                    HashMap<String, List<Integer>> termToCourseSubjectCodes,
-                                                    HashMap<String, List<String>> termToCourseIds) {
+    public static void prepareTermHeadersToCourses(List<String> termHeaders,
+                                                   HashMap<String, List<Course>> termToCourses) {
 
         //sets the Term as the headers for the expandable list view
         //each child is the name of the site in that term
@@ -347,28 +362,7 @@ public class DataHandler {
             termHeaders.add(termKey);
 
 
-            List<String> tempChildList = new ArrayList<>();
-            List<Integer> tempSubjectCodeList = new ArrayList<>();
-            List<String> tempSiteIdList = new ArrayList<>();
-
-            //places the title of each site and its corresponding ImgResId into 2 lists
-            //which are then added to the hashmap under the current term header
-            for(Course currCourse : coursesPerTerm) {
-
-                tempChildList.add(currCourse.getTitle());
-                tempSiteIdList.add(currCourse.getId());
-
-                //TODO figure out a way to add the resource Id values directly, for more abstraction
-                //adds subject code to hashmap
-                int subjectCode = currCourse.getSubjectCode();
-                tempSubjectCodeList.add(subjectCode);
-//                int resId = RutgersSubjectCodes.getResourceIdFromSubjectCode(subjectCode, getActivity().getPackageName(), getContext());
-//                tempSubjectCodeList.add(resId);
-            }
-
-            termToCourseIds.put(termKey, tempSiteIdList);
-            termToCourseSubjectCodes.put(termKey, tempSubjectCodeList);
-            termToCourseTitles.put(termKey, tempChildList);
+            termToCourses.put(termKey, coursesPerTerm);
         }
 
 
@@ -377,80 +371,6 @@ public class DataHandler {
 
 
 
-    /**
-     * uses the courses that are already sorted by term and puts that data into the headers list
-     * and the hashmaps so that it can be displays in the expandable list view
-     *
-     * Used in the all grades tab
-     *
-     * @param termHeaders list of term headers
-     * @param termToCourseTitles hashmap mapping term to a list of courses
-     * @param termToCourseSubjectCodes hashmap mapping term to a list of course subj codes
-     * @param termToCourseIds hashmap mapping term to course Ids
-     */
-    public static void prepareHeadersAndChildrenWithGrades(List<String> termHeaders,
-                                                    HashMap<String, List<String>> termToCourseTitles,
-                                                    HashMap<String, List<Integer>> termToCourseSubjectCodes,
-                                                    HashMap<String, List<String>> termToCourseIds) {
-
-        //sets the Term as the headers for the expandable list view
-        //each child is the name of the site in that term
-        for(ArrayList<Course> coursesPerTerm : coursesSortedByTerm) {
-
-            //we can just look at the first site's term, since all the terms
-            //should be the same, since we already sorted
-            Term currTerm = coursesPerTerm.get(0).getTerm();
-
-            String termKey = currTerm.getTermString();
-
-            //don't put the year if the header is just General
-            if(!termKey.equals("General")) {
-                termKey += (" " + currTerm.getYear());
-            }
-
-
-
-            List<String> tempChildList = new ArrayList<>();
-            List<Integer> tempSubjectCodeList = new ArrayList<>();
-            List<String> tempSiteIdList = new ArrayList<>();
-
-
-            boolean termHasGrades = false;
-
-            //places the title of each site and its corresponding ImgResId into 2 lists
-            //which are then added to the hashmap under the current term header
-            for(Course currCourse : coursesPerTerm) {
-
-                //if no grades, just don't put in hashmap
-                if(currCourse.getAssignmentObjectList() == null)
-                    continue;
-
-
-                termHasGrades = true;
-                tempChildList.add(currCourse.getTitle());
-                tempSiteIdList.add(currCourse.getId());
-
-                //TODO figure out a way to add the resource Id values directly, for more abstraction
-                //adds subject code to hashmap
-                int subjectCode = currCourse.getSubjectCode();
-                tempSubjectCodeList.add(subjectCode);
-//                int resId = RutgersSubjectCodes.getResourceIdFromSubjectCode(subjectCode, getActivity().getPackageName(), getContext());
-//                tempSubjectCodeList.add(resId);
-            }
-
-
-            //if the term has no grades, we shouldn't show that term either
-            if(termHasGrades) {
-
-                termHeaders.add(termKey);
-                termToCourseIds.put(termKey, tempSiteIdList);
-                termToCourseSubjectCodes.put(termKey, tempSubjectCodeList);
-                termToCourseTitles.put(termKey, tempChildList);
-            }
-        }
-
-
-    }
 
 
 }

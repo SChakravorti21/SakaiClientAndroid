@@ -1,15 +1,18 @@
 package com.example.development.sakaiclientandroid.models;
 
-import com.example.development.sakaiclientandroid.api_models.gradebook.AssignmentObject;
+import com.example.development.sakaiclientandroid.api_models.assignments.AssignmentObject;
+import com.example.development.sakaiclientandroid.api_models.gradebook.GradebookObject;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Course {
+public class Course implements Serializable {
 
 
     private String id;
@@ -19,10 +22,12 @@ public class Course {
     private ArrayList<SitePage> sitePages;
     private String siteOwner;
     private int subjectCode;
+    private List<GradebookObject> gradebookObjectList;
     private List<AssignmentObject> assignmentObjectList;
 
 
     public Course(JSONObject jsonObject) {
+        this.assignmentObjectList = new ArrayList<AssignmentObject>();
 
         try {
 
@@ -74,13 +79,24 @@ public class Course {
             this.sitePages = sitePages;
 
 
-            this.assignmentObjectList = null;
+            this.gradebookObjectList = null;
 
         }
         catch(Exception e) {
             e.printStackTrace();
         }
 
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+        out.writeObject(this);
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+        Course course = (Course) in.readObject();
+        this.assignmentObjectList = course.assignmentObjectList;
+        this.title = course.title;
+        this.term = course.term;
     }
 
 
@@ -171,13 +187,20 @@ public class Course {
         this.subjectCode = subjectCode;
     }
 
+    public List<GradebookObject> getGradebookObjectList() {
+        return gradebookObjectList;
+    }
+
+    public void setGradebookObjectList(List<GradebookObject> gradebookObjectList) {
+        this.gradebookObjectList = gradebookObjectList;
+    }
+
     public List<AssignmentObject> getAssignmentObjectList() {
-        return assignmentObjectList;
+        return this.assignmentObjectList;
     }
 
-    public void setAssignmentObjectList(List<AssignmentObject> assignmentObjectList) {
-        this.assignmentObjectList = assignmentObjectList;
+    public void addAssignment(AssignmentObject assignmentObject) {
+        assignmentObjectList.add(assignmentObject);
     }
-
 
 }
