@@ -36,6 +36,8 @@ public class AllCoursesFragment extends BaseFragment{
 
     private AndroidTreeView treeView;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private boolean newFrag = true;
+    ArrayList<ArrayList<Course>> courses;
 
 
     public void onCreate(Bundle savedInstanceState) {
@@ -45,7 +47,7 @@ public class AllCoursesFragment extends BaseFragment{
         try
         {
             ArrayList<ArrayList<Course>> courses = (ArrayList<ArrayList<Course>>) bun.getSerializable(COURSES_TAG);
-
+            this.courses = courses;
             createTreeView(courses);
         }
         catch (ClassCastException exception) {
@@ -73,7 +75,9 @@ public class AllCoursesFragment extends BaseFragment{
         View view = inflater.inflate(R.layout.fragment_all_courses, null);
         this.swipeRefreshLayout = view.findViewById(R.id.swiperefresh);
 
+
         //add the treeview to the layout
+        createTreeView(this.courses);
         this.swipeRefreshLayout.addView(treeView.getView());
 
         this.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
