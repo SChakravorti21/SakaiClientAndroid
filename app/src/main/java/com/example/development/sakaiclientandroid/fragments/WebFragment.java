@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.example.development.sakaiclientandroid.R;
@@ -46,6 +47,8 @@ public class WebFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_web, container, false);
 
         WebView webView = view.findViewById(R.id.data_webview);
+        WebSettings settings = webView.getSettings();
+        settings.setJavaScriptEnabled(true);
         webView.loadUrl(URL);
 
         return view;

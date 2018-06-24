@@ -18,12 +18,14 @@ import com.example.development.sakaiclientandroid.utils.holders.TermHeaderViewHo
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.example.development.sakaiclientandroid.NavActivity.ASSIGNMENTS_TAG;
 import static com.example.development.sakaiclientandroid.NavActivity.ALL_GRADES_TAG;
 
 public class AssignmentsFragment extends BaseFragment {
     private AndroidTreeView treeView;
+    private ArrayList<ArrayList<Course>> courses;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -32,9 +34,7 @@ public class AssignmentsFragment extends BaseFragment {
         // Using the bundle arguments, construct the tree to be displayed
         Bundle arguments = getArguments();
         try {
-            ArrayList<ArrayList<Course>> courses =
-                    (ArrayList<ArrayList<Course>>) arguments.getSerializable(ASSIGNMENTS_TAG);
-            createTreeView(courses);
+            courses = (ArrayList<ArrayList<Course>>) arguments.getSerializable(ASSIGNMENTS_TAG);
         } catch (ClassCastException exception) {
             // Unable to create the tree, create a dummy tree
             //TODO: Needs better error handling
@@ -45,6 +45,7 @@ public class AssignmentsFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        createTreeView(courses);
         return treeView.getView();
     }
 

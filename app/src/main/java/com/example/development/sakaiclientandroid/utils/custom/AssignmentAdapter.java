@@ -62,13 +62,6 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
     @Override
     public AssignmentAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
                                                    int viewType) {
-        if(!setFragmentManager) {
-            NavActivity context = (NavActivity) parent.getContext();
-            FragmentManager fragmentManager = context.getSupportFragmentManager();
-            CustomLinkMovementMethod.setFragmentManager(fragmentManager);
-            setFragmentManager = true;
-        }
-
         // create a new view
         CardView v = (CardView) LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.assignment_cell_layout, parent, false);
@@ -111,77 +104,4 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
         return assignments.size();
     }
 
-
-    private static class CustomLinkMovementMethod extends LinkMovementMethod {
-        private static FragmentManager fragmentManager;
-        private static CustomLinkMovementMethod mInstance;
-
-        public static MovementMethod getInstance() {
-            if (mInstance == null)
-                mInstance = new CustomLinkMovementMethod();
-
-            return mInstance;
-        }
-
-        public static void setFragmentManager(FragmentManager manager) {
-            fragmentManager = manager;
-        }
-
-        @Override
-        public boolean onTouchEvent(TextView widget, Spannable buffer, MotionEvent event) {
-            int action = event.getAction();
-
-            // Only open webview if something was clicked, instead of swiping left/right
-            if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_DOWN) {
-                // Get the location of the click
-                int x = (int) event.getX();
-                int y = (int) event.getY();
-
-                // Adjust location for padding and scroll distance
-                x -= widget.getTotalPaddingLeft();
-                y -= widget.getTotalPaddingTop();
-
-                x += widget.getScrollX();
-                y += widget.getScrollY();
-
-                // Get the line at the calculated area
-                Layout layout = widget.getLayout();
-                int line = layout.getLineForVertical(y);
-                int off = layout.getOffsetForHorizontal(line, x);
-
-                // Get the link(s) clicked based on the selection location
-                ClickableSpan[] links = buffer.getSpans(off, off, ClickableSpan.class);
-
-                if (links.length != 0) {
-                    if (action == MotionEvent.ACTION_UP) {
-                        //links[0].onClick(widget);
-
-                        if(links[0] instanceof URLSpan) {
-                            URLSpan clicked = (URLSpan) links[0];
-                            String link = clicked.getURL();
-                            Log.d("Clicked", link);
-
-                            if(fragmentManager != null) {
-                                WebFragment fragment = WebFragment.newInstance(link);
-
-                                fragmentManager.beginTransaction()
-                                        .add(R.id.fragment_container, fragment)
-                                        .commit();
-                            }
-                        }
-
-                    } else { // action == MotionEvent.ACTION_DOWN
-                        Selection.setSelection(buffer,
-                                buffer.getSpanStart(links[0]),
-                                buffer.getSpanEnd(links[0]));
-                    }
-                    return true;
-                } else {
-                    Selection.removeSelection(buffer);
-                }
-            }
-
-            return super.onTouchEvent(widget, buffer, event);
-        }
-    }
 }
