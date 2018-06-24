@@ -21,6 +21,7 @@ import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
 import com.example.development.sakaiclientandroid.utils.requests.RequestCallback;
 import com.example.development.sakaiclientandroid.utils.requests.RequestManager;
+import com.example.development.sakaiclientandroid.utils.requests.SharedPrefsUtil;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -54,6 +55,10 @@ public class NavActivity extends AppCompatActivity
 
         // Create RequestManager's Retrofit instance
         RequestManager.createRetrofitInstance(this);
+
+
+        //clear the saved tree states in saved preferences so some nodes aren't opened by default
+        SharedPrefsUtil.clearTreeStates(getApplicationContext());
 
         // Request all site pages for the Home Fragment and then loads the fragment
         loadAllCoursesFragment();
