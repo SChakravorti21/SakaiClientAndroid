@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.LinearLayoutCompat
+    android:background="@color/leaf_background"
+    android:foreground="?android:attr/selectableItemBackground"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:orientation="horizontal">
+
+    <TextView
+
+        android:textColor="@color/sakai_light_black"
+        android:id="@+id/txt_assignment_name"
+        android:layout_width="260dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:paddingBottom="8dp"
+        android:paddingLeft="40dp"
+        android:textSize="16sp"
+        android:paddingTop="8dp"/>
+    
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        />
+
+    <TextView
+        android:textSize= "16sp"
+        android:textColor="@color/sakai_light_black"
+        android:id="@+id/txt_grade"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="right"
+        android:layout_marginRight="8dp"
+        />
+
+</android.support.v7.widget.LinearLayoutCompat>
