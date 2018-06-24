@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import com.example.development.sakaiclientandroid.utils.holders.CourseHeaderView
 import com.example.development.sakaiclientandroid.utils.holders.GradeNodeViewHolder;
 import com.example.development.sakaiclientandroid.utils.holders.TermHeaderViewHolder;
 import com.example.development.sakaiclientandroid.utils.requests.RequestCallback;
+import com.example.development.sakaiclientandroid.utils.requests.SharedPrefsUtil;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
@@ -80,6 +82,10 @@ public class AllCoursesFragment extends BaseFragment{
         createTreeView(this.courses);
         this.swipeRefreshLayout.addView(treeView.getView());
 
+        //state must be restored after the view is added to the layout
+        String state = SharedPrefsUtil.getTreeState(mContext, SharedPrefsUtil.ALL_COURSES_TREE_TYPE);
+        treeView.restoreState(state);
+
         this.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -96,8 +102,18 @@ public class AllCoursesFragment extends BaseFragment{
         });
 
 
+
         return view;
 
+
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+        //here we should save tree state
+        SharedPrefsUtil.saveTreeState(mContext, treeView, SharedPrefsUtil.ALL_COURSES_TREE_TYPE);
 
     }
 
@@ -108,7 +124,6 @@ public class AllCoursesFragment extends BaseFragment{
     public void createTreeView(ArrayList<ArrayList<Course>> coursesSorted)
     {
         TreeNode root = TreeNode.root();
-
 
         for(ArrayList<Course> coursesInTerm : coursesSorted)
         {
@@ -153,6 +168,9 @@ public class AllCoursesFragment extends BaseFragment{
                             CourseFragment fragment = new CourseFragment();
                             fragment.setArguments(bun);
 
+
+                            //here we should save tree state
+                            SharedPrefsUtil.saveTreeState(mContext, treeView, SharedPrefsUtil.ALL_COURSES_TREE_TYPE);
 
                             //replaces current Fragment with CourseFragment
                             FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
