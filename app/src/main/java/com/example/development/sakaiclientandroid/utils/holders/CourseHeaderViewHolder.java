@@ -19,11 +19,13 @@ public class CourseHeaderViewHolder extends TreeNode.BaseNodeViewHolder<CourseHe
 
     private static final String CHEVRON_DOWN = "\uF078";
     private static final String CHEVRON_RIGHT = "\uF054";
+    private boolean isToggleable;
 
     private TextView arrowView;
 
-    public CourseHeaderViewHolder(Context context) {
+    public CourseHeaderViewHolder(Context context, boolean isToggleable) {
         super(context);
+        this.isToggleable = isToggleable;
     }
 
     @Override
@@ -62,7 +64,8 @@ public class CourseHeaderViewHolder extends TreeNode.BaseNodeViewHolder<CourseHe
 
     @Override
     public void toggle(boolean active) {
-        if(arrowView != null)
+        //if default arrow is null, keep default toggle behavior
+        if(arrowView != null && isToggleable)
             arrowView.setText(active ? CHEVRON_DOWN : CHEVRON_RIGHT);
     }
 

@@ -164,7 +164,14 @@ public class DataHandler {
     }
 
 
-    public static void requestAllSites(final RequestCallback UICallback) {
+    public static void requestAllSites(boolean refresh, final RequestCallback UICallback) {
+
+        //dont do anything if we aren't refreshing
+        if(!refresh) {
+            UICallback.onCoursesSuccess(coursesSortedByTerm);
+            return;
+        }
+
         RequestManager.fetchAllSites(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -179,6 +186,8 @@ public class DataHandler {
                     e.printStackTrace();
                 }
 
+                hasRequestedAllGrades = false;
+                hasRequestedAllAssignments = false;
                 UICallback.onCoursesSuccess(coursesSortedByTerm);
 
 

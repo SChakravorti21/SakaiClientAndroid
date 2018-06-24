@@ -38,7 +38,6 @@ public class AllCoursesFragment extends BaseFragment{
 
     private AndroidTreeView treeView;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private boolean newFrag = true;
     ArrayList<ArrayList<Course>> courses;
 
 
@@ -96,7 +95,7 @@ public class AllCoursesFragment extends BaseFragment{
                 if(parentActivity instanceof NavActivity)
                 {
                     //reloads the current fragment, (which also remakes the request for courses)
-                    ((NavActivity) parentActivity).loadAllCoursesFragment();
+                    ((NavActivity) parentActivity).loadAllCoursesFragment(true);
                 }
             }
         });
@@ -151,7 +150,7 @@ public class AllCoursesFragment extends BaseFragment{
                 );
 
                 //set the custom view holder
-                TreeNode courseNode = new TreeNode(courseNodeItem).setViewHolder(new CourseHeaderViewHolder(mContext));
+                TreeNode courseNode = new TreeNode(courseNodeItem).setViewHolder(new CourseHeaderViewHolder(mContext, false));
 
                 courseNode.setClickListener(new TreeNode.TreeNodeClickListener() {
 

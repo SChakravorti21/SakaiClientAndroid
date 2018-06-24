@@ -132,7 +132,7 @@ public class AllGradesFragment extends BaseFragment {
                 );
 
                 //set the custom view holder
-                TreeNode courseNode = new TreeNode(courseNodeItem).setViewHolder(new CourseHeaderViewHolder(mContext));
+                TreeNode courseNode = new TreeNode(courseNodeItem).setViewHolder(new CourseHeaderViewHolder(mContext, true));
 
 
                 List<GradebookObject> gradebookObjectList = currCourse.getGradebookObjectList();
