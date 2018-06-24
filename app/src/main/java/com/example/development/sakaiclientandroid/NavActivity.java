@@ -61,7 +61,8 @@ public class NavActivity extends AppCompatActivity
         SharedPrefsUtil.clearTreeStates(getApplicationContext());
 
         // Request all site pages for the Home Fragment and then loads the fragment
-        loadAllCoursesFragment();
+        //refresh since we are loading for the same time
+        loadAllCoursesFragment(true);
 
     }
 
@@ -106,7 +107,7 @@ public class NavActivity extends AppCompatActivity
         switch(item.getItemId()) {
 
             case R.id.navigation_home:
-                loadAllCoursesFragment();
+                loadAllCoursesFragment(false);
                 return true;
 
             case R.id.navigation_announcements:
@@ -133,12 +134,12 @@ public class NavActivity extends AppCompatActivity
     }
 
 
-    public void loadAllCoursesFragment()
+    public void loadAllCoursesFragment(boolean refresh)
     {
         this.container.setVisibility(View.GONE);
         this.spinner.setVisibility(View.VISIBLE);
 
-        DataHandler.requestAllSites(new RequestCallback()
+        DataHandler.requestAllSites(refresh, new RequestCallback()
         {
 
             @Override
