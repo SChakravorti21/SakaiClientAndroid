@@ -113,7 +113,6 @@ public class AllCoursesFragment extends BaseFragment{
 
         //here we should save tree state
         SharedPrefsUtil.saveTreeState(mContext, treeView, SharedPrefsUtil.ALL_COURSES_TREE_TYPE);
-
     }
 
     /**

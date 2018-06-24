@@ -26,6 +26,7 @@ import com.example.development.sakaiclientandroid.utils.holders.CourseHeaderView
 import com.example.development.sakaiclientandroid.utils.holders.GradeNodeViewHolder;
 import com.example.development.sakaiclientandroid.utils.holders.TermHeaderViewHolder;
 import com.example.development.sakaiclientandroid.utils.requests.RequestCallback;
+import com.example.development.sakaiclientandroid.utils.requests.SharedPrefsUtil;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
@@ -72,7 +73,9 @@ public class AllGradesFragment extends BaseFragment {
 
         swipeRefreshLayout.addView(treeView.getView());
 
-
+        //state must be restored after the view is added to the layout
+        String state = SharedPrefsUtil.getTreeState(mContext, SharedPrefsUtil.ALL_GRADES_TREE_TYPE);
+        treeView.restoreState(state);
 
 
         this.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -94,6 +97,15 @@ public class AllGradesFragment extends BaseFragment {
 
 
         return view;
+    }
+
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+        //here we should save tree state when user navigates away from fragment
+        SharedPrefsUtil.saveTreeState(mContext, treeView, SharedPrefsUtil.ALL_GRADES_TREE_TYPE);
     }
 
 
