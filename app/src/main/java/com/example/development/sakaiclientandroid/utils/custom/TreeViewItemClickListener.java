@@ -27,12 +27,8 @@ public class TreeViewItemClickListener implements TreeNode.TreeNodeClickListener
         for( TreeNode parent : root.getChildren()) {
             // If the parent was previously expanded and is not a parent
             // of the currently expanded node, then collapse it
-            if(parent.isExpanded() && parent == lastParent && parent != node) {
+            if(parent.isExpanded() && parent != node) {
                 // Collapse its children as well
-                // for (TreeNode child : parent.getChildren()) {
-                //    if(child.isExpanded())
-                //        treeView.collapseNode(child);
-                // }
                 treeView.collapseNode(parent);
             }
         }
