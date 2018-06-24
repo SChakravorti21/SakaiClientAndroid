@@ -46,4 +46,7 @@
     <string name="no_grades">No grades to display</string>
 
     <string name="fetched_grades">Fetched latest grades!</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

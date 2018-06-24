@@ -11,6 +11,7 @@ import com.example.development.sakaiclientandroid.api_models.assignments.Assignm
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.models.Term;
 import com.example.development.sakaiclientandroid.utils.custom.TreeViewItemClickListener;
+import com.example.development.sakaiclientandroid.utils.holders.AssignmentCourseViewHolder;
 import com.example.development.sakaiclientandroid.utils.holders.AssignmentNodeViewHolder;
 import com.example.development.sakaiclientandroid.utils.holders.CourseHeaderViewHolder;
 import com.example.development.sakaiclientandroid.utils.holders.TermHeaderViewHolder;
@@ -79,27 +80,12 @@ public class AssignmentsFragment extends BaseFragment {
                 String courseName = course.getTitle();
 
                 // Create a course header item, and make a tree node using it
-                CourseHeaderViewHolder.CourseHeaderItem courseHeaderItem =
-                        new CourseHeaderViewHolder.CourseHeaderItem(courseName);
+                AssignmentCourseViewHolder.CourseHeaderItem courseHeaderItem =
+                        new AssignmentCourseViewHolder.CourseHeaderItem(courseName,
+                                course.getAssignmentObjectList());
                 TreeNode courseNode = new TreeNode(courseHeaderItem);
                 // Set the course header view holder to inflate the appropriate view
-                courseNode.setViewHolder(new CourseHeaderViewHolder(currContext));
-
-                // For each assignment of the course, create a new node and
-                // add it as a child of the course
-                for(AssignmentObject assignment : course.getAssignmentObjectList()) {
-                    String assignmentName = assignment.getTitle();
-
-                    // Create an assignment header item, and make a tree node using it
-                    AssignmentNodeViewHolder.AssignmentItem assignmentItem =
-                            new AssignmentNodeViewHolder.AssignmentItem(assignmentName);
-                    TreeNode assignmentNode = new TreeNode(assignmentItem);
-                    // Set the course header view holder to inflate the appropriate view
-                    assignmentNode.setViewHolder(new AssignmentNodeViewHolder(currContext));
-
-                    // Add the assignment to the course
-                    courseNode.addChild(assignmentNode);
-                }
+                courseNode.setViewHolder(new AssignmentCourseViewHolder(currContext));
 
                 // Add the course to the term
                 termNode.addChild(courseNode);

@@ -178,6 +178,8 @@ public class DataHandler {
                     e.printStackTrace();
                 }
 
+                hasRequestedAllAssignments = false;
+
                 UICallback.onCoursesSuccess();
 
 
