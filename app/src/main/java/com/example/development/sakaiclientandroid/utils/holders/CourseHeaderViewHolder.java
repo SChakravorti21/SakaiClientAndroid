@@ -2,7 +2,6 @@ package com.example.development.sakaiclientandroid.utils.holders;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Typeface;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -41,8 +40,7 @@ public class CourseHeaderViewHolder extends TreeNode.BaseNodeViewHolder<CourseHe
 
 
         TextView iconTxt = view.findViewById(R.id.course_icon);
-        Typeface typeface = Typeface.createFromAsset(context.getAssets(), "dna.ttf");
-        iconTxt.setTypeface(typeface);
+        iconTxt.setText(value.icon);
 
 
         // Initialize the arrow view for toggling the list

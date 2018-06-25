@@ -1,7 +1,5 @@
 package com.example.development.sakaiclientandroid.utils;
 
-import android.content.Context;
-
 import java.util.HashMap;
 
 public class RutgersSubjectCodes {
@@ -102,20 +100,45 @@ public class RutgersSubjectCodes {
     988 Women's and Gender Studies
      */
 
-
     public static HashMap<Integer, String> mapCourseCodeToIcon = new HashMap<Integer, String>() {{
-        put(13, "\uF1AB");
-        put(80, "\uf53f");
-        put(81, "\uf53f");
-        put(160, "\uf0c3");
-        put(198, "\uf121");
-        put(220, "\uf155");
-        put(420, "\uf1ab");
-        put(447, "\uf471");
-        put(640, "\uf1ec");
-        put(700, "\uf001");
-        put(701, "\uf001");
-        put(730, "\uf075");
-        put(750, "\uf076");
+        put(506, "\uF100");
+        put(508, "\uF100");
+        put(510, "\uF100");
+        put(512, "\uF100");
+        put(513, "\uF100");
+        put(514, "\uF100");
+        put(750, "\uF101");
+        put(960, "\uF102");
+        put(160, "\uF103");
+        put(470, "\uF104");
+        put(489, "\uF105");
+        put(490, "\uF105");
+        put(690, "\uF106");
+        put(691, "\uF106");
+        put(840, "\uF107");
+        put(203, "\uF108");
+        put(206, "\uF108");
+        put(447, "\uF109");
+        put(220, "\uF10A");
+        put(450, "\uF10B");
+        put(420, "\uF10C");
+        put(119, "\uF10D");
+        put(146, "\uF10D");
+        put(115, "\uF10E");
+        put(694, "\uF10E");
+        put(700, "\uF10F");
+        put(701, "\uF10F");
+        put(165, "\uF110");
+        put(80, "\uF111");
+        put(81, "\uF111");
+        put(82, "\uF111");
+        put(105, "\uF112");
+        put(640, "\uF113");
+        put(198, "\uF114");
+        put(505, "\uF115");
+        put(965, "\uF116");
+        put(966, "\uF116");
+
+        put(730, "\uF118");
     }};
 }

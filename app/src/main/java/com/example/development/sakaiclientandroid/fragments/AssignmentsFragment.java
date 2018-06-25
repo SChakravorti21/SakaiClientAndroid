@@ -20,7 +20,6 @@ import com.unnamed.b.atv.view.AndroidTreeView;
 import java.util.ArrayList;
 
 import static com.example.development.sakaiclientandroid.NavActivity.ASSIGNMENTS_TAG;
-import static com.example.development.sakaiclientandroid.NavActivity.ALL_GRADES_TAG;
 
 public class AssignmentsFragment extends BaseFragment {
     private AndroidTreeView treeView;

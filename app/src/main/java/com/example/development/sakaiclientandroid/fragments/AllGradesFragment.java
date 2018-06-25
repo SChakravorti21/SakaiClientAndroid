@@ -1,32 +1,23 @@
 package com.example.development.sakaiclientandroid.fragments;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.example.development.sakaiclientandroid.NavActivity;
 import com.example.development.sakaiclientandroid.R;
-import com.example.development.sakaiclientandroid.api_models.assignments.AssignmentObject;
 import com.example.development.sakaiclientandroid.api_models.gradebook.GradebookObject;
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.models.Term;
-import com.example.development.sakaiclientandroid.utils.DataHandler;
 import com.example.development.sakaiclientandroid.utils.RutgersSubjectCodes;
 import com.example.development.sakaiclientandroid.utils.custom.TreeViewItemClickListener;
-import com.example.development.sakaiclientandroid.utils.holders.AssignmentNodeViewHolder;
 import com.example.development.sakaiclientandroid.utils.holders.CourseHeaderViewHolder;
 import com.example.development.sakaiclientandroid.utils.holders.GradeNodeViewHolder;
 import com.example.development.sakaiclientandroid.utils.holders.TermHeaderViewHolder;
-import com.example.development.sakaiclientandroid.utils.requests.RequestCallback;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 

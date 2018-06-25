@@ -1,9 +1,6 @@
 package com.example.development.sakaiclientandroid.utils;
 
 import android.support.annotation.NonNull;
-import android.widget.ImageView;
-
-import com.example.development.sakaiclientandroid.R;
 import com.example.development.sakaiclientandroid.api_models.assignments.AllAssignments;
 import com.example.development.sakaiclientandroid.api_models.assignments.AssignmentObject;
 import com.example.development.sakaiclientandroid.api_models.gradebook.AllGradesObject;
