@@ -1,14 +1,5 @@
 package com.example.development.sakaiclientandroid.models;
 
-import android.content.res.Resources;
-import android.util.Log;
-
-import com.example.development.sakaiclientandroid.R;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static java.security.AccessController.getContext;
 
 public class Term implements Comparable<Term>{
 
@@ -29,8 +20,7 @@ public class Term implements Comparable<Term>{
     private static String intToTerm(int termInt) {
 
         if(termInt == 0) {
-//            return Resources.getSystem().getString(R.string.none_string);
-                return "General";
+            return "General";
         }
 
         else if(termInt >= 12) {
