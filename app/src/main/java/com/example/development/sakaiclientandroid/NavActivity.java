@@ -58,7 +58,7 @@ public class NavActivity extends AppCompatActivity
 
 
         //clear the saved tree states in saved preferences so some nodes aren't opened by default
-        SharedPrefsUtil.clearTreeStates(getApplicationContext());
+        SharedPrefsUtil.clearTreeStates(this);
 
         // Request all site pages for the Home Fragment and then loads the fragment
         //refresh since we are loading for the same time

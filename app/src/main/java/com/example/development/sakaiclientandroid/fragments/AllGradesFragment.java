@@ -20,6 +20,7 @@ import com.example.development.sakaiclientandroid.api_models.gradebook.Gradebook
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.models.Term;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
+import com.example.development.sakaiclientandroid.utils.RutgersSubjectCodes;
 import com.example.development.sakaiclientandroid.utils.custom.TreeViewItemClickListener;
 import com.example.development.sakaiclientandroid.utils.holders.AssignmentNodeViewHolder;
 import com.example.development.sakaiclientandroid.utils.holders.CourseHeaderViewHolder;
@@ -137,10 +138,11 @@ public class AllGradesFragment extends BaseFragment {
             for(Course currCourse : coursesInTerm)
             {
                 //create a course header item and make a treenode using it
-                //TODO give correct img to the course header
+                String courseIconCode = RutgersSubjectCodes.mapCourseCodeToIcon.get(currCourse.getSubjectCode());
                 CourseHeaderViewHolder.CourseHeaderItem courseNodeItem = new CourseHeaderViewHolder.CourseHeaderItem(
                         currCourse.getTitle(),
-                        currCourse.getId()
+                        currCourse.getId(),
+                        courseIconCode
                 );
 
                 //set the custom view holder

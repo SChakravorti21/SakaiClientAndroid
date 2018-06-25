@@ -5,31 +5,23 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ExpandableListView;
 
 import com.example.development.sakaiclientandroid.NavActivity;
 import com.example.development.sakaiclientandroid.R;
-import com.example.development.sakaiclientandroid.api_models.gradebook.GradebookObject;
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.models.Term;
-import com.example.development.sakaiclientandroid.utils.DataHandler;
-import com.example.development.sakaiclientandroid.utils.custom.HomeFragmentExpandableListAdapter;
+import com.example.development.sakaiclientandroid.utils.RutgersSubjectCodes;
 import com.example.development.sakaiclientandroid.utils.custom.TreeViewItemClickListener;
 import com.example.development.sakaiclientandroid.utils.holders.CourseHeaderViewHolder;
-import com.example.development.sakaiclientandroid.utils.holders.GradeNodeViewHolder;
 import com.example.development.sakaiclientandroid.utils.holders.TermHeaderViewHolder;
-import com.example.development.sakaiclientandroid.utils.requests.RequestCallback;
 import com.example.development.sakaiclientandroid.utils.requests.SharedPrefsUtil;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 import static com.example.development.sakaiclientandroid.NavActivity.COURSES_TAG;
 
@@ -47,14 +39,19 @@ public class AllCoursesFragment extends BaseFragment{
         Bundle bun = getArguments();
         try
         {
-            ArrayList<ArrayList<Course>> courses = (ArrayList<ArrayList<Course>>) bun.getSerializable(COURSES_TAG);
-            this.courses = courses;
-            createTreeView(courses);
+            try {
+                this.courses = (ArrayList<ArrayList<Course>>) bun.getSerializable(COURSES_TAG);
+            }
+            catch (ClassCastException e)
+            {
+                //TODO better exception handling
+                this.courses = new ArrayList<ArrayList<Course>>();
+            }
         }
         catch (ClassCastException exception) {
             // Unable to create the tree, create a dummy tree
             //TODO: Needs better error handling
-            treeView = new AndroidTreeView(getActivity(), TreeNode.root());
+            this.courses = new ArrayList<ArrayList<Course>>();
         }
     }
 
@@ -81,9 +78,16 @@ public class AllCoursesFragment extends BaseFragment{
         createTreeView(this.courses);
         this.swipeRefreshLayout.addView(treeView.getView());
 
+        //temporarily disable animations so the animations don't play when the state
+        //is being restored
+        treeView.setDefaultAnimation(false);
+
         //state must be restored after the view is added to the layout
         String state = SharedPrefsUtil.getTreeState(mContext, SharedPrefsUtil.ALL_COURSES_TREE_TYPE);
         treeView.restoreState(state);
+
+        //re-enable animations
+        treeView.setDefaultAnimation(true);
 
         this.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -142,10 +146,12 @@ public class AllCoursesFragment extends BaseFragment{
             for(Course currCourse : coursesInTerm)
             {
                 //create a course header item and make a treenode using it
-                //TODO give correct img to the course header
+                String courseIconCode = RutgersSubjectCodes.mapCourseCodeToIcon.get(currCourse.getSubjectCode());
+                String x = RutgersSubjectCodes.mapCourseCodeToIcon.get(13);
                 CourseHeaderViewHolder.CourseHeaderItem courseNodeItem = new CourseHeaderViewHolder.CourseHeaderItem(
                         currCourse.getTitle(),
-                        currCourse.getId()
+                        currCourse.getId(),
+                        x
                 );
 
                 //set the custom view holder
