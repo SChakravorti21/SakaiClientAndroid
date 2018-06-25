@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
@@ -22,8 +21,6 @@ import com.example.development.sakaiclientandroid.utils.DataHandler;
 import com.example.development.sakaiclientandroid.utils.requests.RequestCallback;
 import com.example.development.sakaiclientandroid.utils.requests.RequestManager;
 import com.example.development.sakaiclientandroid.utils.requests.SharedPrefsUtil;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 
@@ -58,7 +55,7 @@ public class NavActivity extends AppCompatActivity
 
 
         //clear the saved tree states in saved preferences so some nodes aren't opened by default
-        SharedPrefsUtil.clearTreeStates(getApplicationContext());
+        SharedPrefsUtil.clearTreeStates(this);
 
         // Request all site pages for the Home Fragment and then loads the fragment
         //refresh since we are loading for the same time

@@ -20,11 +20,13 @@ public class CourseHeaderViewHolder extends TreeNode.BaseNodeViewHolder<CourseHe
     private static final String CHEVRON_DOWN = "\uF078";
     private static final String CHEVRON_RIGHT = "\uF054";
     private boolean isToggleable;
+    private Context context;
 
     private TextView arrowView;
 
     public CourseHeaderViewHolder(Context context, boolean isToggleable) {
         super(context);
+        this.context = context;
         this.isToggleable = isToggleable;
     }
 
@@ -35,6 +37,11 @@ public class CourseHeaderViewHolder extends TreeNode.BaseNodeViewHolder<CourseHe
 
         TextView tvValue = view.findViewById(R.id.course_name);
         tvValue.setText(value.text);
+
+
+        TextView iconTxt = view.findViewById(R.id.course_icon);
+        iconTxt.setText(value.icon);
+
 
         // Initialize the arrow view for toggling the list
         arrowView = view.findViewById(R.id.arrow_image);
@@ -74,9 +81,11 @@ public class CourseHeaderViewHolder extends TreeNode.BaseNodeViewHolder<CourseHe
         public String icon;
         public String siteId;
 
-        public CourseHeaderItem(String text, String siteId) {
+        public CourseHeaderItem(String text, String siteId, String iconCode) {
             this.text = text;
             this.siteId = siteId;
+            this.icon = iconCode;
+
         }
     }
 }

@@ -2,7 +2,6 @@ package com.example.development.sakaiclientandroid.utils.requests;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import com.unnamed.b.atv.view.AndroidTreeView;
 

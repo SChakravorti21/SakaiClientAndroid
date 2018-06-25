@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import com.example.development.sakaiclientandroid.api_models.assignments.AssignmentObject;
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.models.Term;
+import com.example.development.sakaiclientandroid.utils.RutgersSubjectCodes;
 import com.example.development.sakaiclientandroid.utils.custom.TreeViewItemClickListener;
 import com.example.development.sakaiclientandroid.utils.holders.AssignmentNodeViewHolder;
 import com.example.development.sakaiclientandroid.utils.holders.CourseHeaderViewHolder;
@@ -19,7 +20,6 @@ import com.unnamed.b.atv.view.AndroidTreeView;
 import java.util.ArrayList;
 
 import static com.example.development.sakaiclientandroid.NavActivity.ASSIGNMENTS_TAG;
-import static com.example.development.sakaiclientandroid.NavActivity.ALL_GRADES_TAG;
 
 public class AssignmentsFragment extends BaseFragment {
     private AndroidTreeView treeView;
@@ -78,9 +78,12 @@ public class AssignmentsFragment extends BaseFragment {
                 // Get the course name for the view
                 String courseName = course.getTitle();
 
+                //get icon code
+                String courseIconCode = RutgersSubjectCodes.mapCourseCodeToIcon.get(course.getSubjectCode());
+
                 // Create a course header item, and make a tree node using it
                 CourseHeaderViewHolder.CourseHeaderItem courseHeaderItem =
-                        new CourseHeaderViewHolder.CourseHeaderItem(courseName, course.getId());
+                        new CourseHeaderViewHolder.CourseHeaderItem(courseName, course.getId(), courseIconCode);
                 TreeNode courseNode = new TreeNode(courseHeaderItem);
                 // Set the course header view holder to inflate the appropriate view
                 courseNode.setViewHolder(new CourseHeaderViewHolder(currContext, true));
