@@ -66,9 +66,15 @@ public class AllGradesFragment extends BaseFragment {
 
         swipeRefreshLayout.addView(treeView.getView());
 
+        //temporarily disable animations so the animations don't play when the state
+        //is being restored
+        treeView.setDefaultAnimation(false);
+
         //state must be restored after the view is added to the layout
         String state = SharedPrefsUtil.getTreeState(mContext, SharedPrefsUtil.ALL_GRADES_TREE_TYPE);
         treeView.restoreState(state);
+
+        treeView.setDefaultAnimation(true);
 
 
         this.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
