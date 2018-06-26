@@ -20,7 +20,7 @@ public class GradeItemAdapter extends ArrayAdapter {
     private final List<GradebookObject> assignmentsList;
 
     public GradeItemAdapter(Context context, List<GradebookObject> assignmentsList) {
-        super(context, R.layout.grade_list_item_site, assignmentsList);
+        super(context, R.layout.gradeitem_node, assignmentsList);
 
         this.context = context;
         this.assignmentsList = assignmentsList;
@@ -34,7 +34,7 @@ public class GradeItemAdapter extends ArrayAdapter {
         LayoutInflater inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         //inflate the row
-        View itemView = inflater.inflate(R.layout.grade_list_item_site, parent, false);
+        View itemView = inflater.inflate(R.layout.gradeitem_node, parent, false);
 
         //get name and grade textviews
         TextView nameTextView = itemView.findViewById(R.id.txt_assignment_name);
