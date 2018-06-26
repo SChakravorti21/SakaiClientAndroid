@@ -135,7 +135,15 @@ public class DataHandler {
     }
 
 
-    public static void requestGradesForSite(final String siteId, final RequestCallback UICallback) {
+    public static void requestGradesForSite(final String siteId, boolean refresh, final RequestCallback UICallback) {
+
+        //if we don't want to refresh, just use the already cached course
+        if(!refresh) {
+            Course course = mapSiteIdToCourse.get(siteId);
+            UICallback.onSiteGradesSuccess(course);
+            return;
+        }
+
 
         //pass in site id and callback
         RequestManager.fetchGradesForSite(siteId, new Callback<GradebookCollectionObject>() {
@@ -147,9 +155,12 @@ public class DataHandler {
                 if(gradebookCollectionObject != null) {
                     Course currCourse = DataHandler.getCourseFromId(siteId);
                     currCourse.setGradebookObjectList(gradebookCollectionObject.getAssignments());
+                    UICallback.onSiteGradesSuccess(currCourse);
                 }
-
-                UICallback.onSiteGradesSuccess();
+                else {
+                    //TODO better error handling
+                    UICallback.onSiteGradesSuccess(null);
+                }
             }
 
 
@@ -165,7 +176,7 @@ public class DataHandler {
 
         //dont do anything if we aren't refreshing
         if(!refresh) {
-            UICallback.onCoursesSuccess(coursesSortedByTerm);
+            UICallback.onAllCoursesSuccess(coursesSortedByTerm);
             return;
         }
 
@@ -185,14 +196,14 @@ public class DataHandler {
 
                 hasRequestedAllGrades = false;
                 hasRequestedAllAssignments = false;
-                UICallback.onCoursesSuccess(coursesSortedByTerm);
+                UICallback.onAllCoursesSuccess(coursesSortedByTerm);
 
 
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable throwable) {
-                UICallback.onCoursesFailure(throwable);
+                UICallback.onAllCoursesFailure(throwable);
             }
         });
     }

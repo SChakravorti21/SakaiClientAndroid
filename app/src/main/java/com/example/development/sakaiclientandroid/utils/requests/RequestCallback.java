@@ -10,11 +10,11 @@ import java.util.ArrayList;
 
 public class RequestCallback {
 
-    public void onCoursesSuccess(ArrayList<ArrayList<Course>> response) { }
+    public void onAllCoursesSuccess(ArrayList<ArrayList<Course>> response) { }
 
-    public void onCoursesFailure(Throwable throwable) { }
+    public void onAllCoursesFailure(Throwable throwable) { }
 
-    public void onSiteGradesSuccess() { }
+    public void onSiteGradesSuccess(Course course) { }
 
     public void onSiteGradesFailure(Throwable throwable) { }
 

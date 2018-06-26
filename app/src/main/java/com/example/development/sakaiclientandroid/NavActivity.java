@@ -4,18 +4,21 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.example.development.sakaiclientandroid.fragments.AllCoursesFragment;
 import com.example.development.sakaiclientandroid.fragments.AllGradesFragment;
 import com.example.development.sakaiclientandroid.fragments.AnnouncementsFragment;
 import com.example.development.sakaiclientandroid.fragments.AssignmentsFragment;
 import com.example.development.sakaiclientandroid.fragments.SettingsFragment;
+import com.example.development.sakaiclientandroid.fragments.SiteGradesFragment;
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
 import com.example.development.sakaiclientandroid.utils.requests.RequestCallback;
@@ -30,10 +33,16 @@ public class NavActivity extends AppCompatActivity
     public static final String COURSES_TAG = "COURSES";
     public static final String ALL_GRADES_TAG = "GRADES";
     public static final String ASSIGNMENTS_TAG = "ASSIGNMENTS";
+    public static final String SITE_GRADES_TAG = "SITEGRADES";
 
     private FrameLayout container;
     private ProgressBar spinner;
 
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,15 +78,19 @@ public class NavActivity extends AppCompatActivity
      * @param fragment
      * @return boolean whether the fragment was successfully loaded
      */
-    private boolean loadFragment(Fragment fragment) {
+    private boolean loadFragment(Fragment fragment, boolean showAnimations) {
 
         if(fragment != null) {
             container.removeAllViews();
 
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment_container, fragment)
-                    .commit();
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+            if(showAnimations)
+                transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
+                        .addToBackStack(null);
+
+
+            transaction.replace(R.id.fragment_container, fragment).commit();
 
             return true;
         }
@@ -126,7 +139,7 @@ public class NavActivity extends AppCompatActivity
 
         }
 
-        return this.loadFragment(fragment);
+        return this.loadFragment(fragment, false);
 
     }
 
@@ -140,7 +153,7 @@ public class NavActivity extends AppCompatActivity
         {
 
             @Override
-            public void onCoursesSuccess(ArrayList<ArrayList<Course>> response)
+            public void onAllCoursesSuccess(ArrayList<ArrayList<Course>> response)
             {
                 spinner.setVisibility(View.GONE);
 
@@ -149,7 +162,7 @@ public class NavActivity extends AppCompatActivity
 
                 AllCoursesFragment frag = new AllCoursesFragment();
                 frag.setArguments(b);
-                loadFragment(frag);
+                loadFragment(frag, false);
 
                 container.setVisibility(View.VISIBLE);
 
@@ -184,7 +197,7 @@ public class NavActivity extends AppCompatActivity
 
                 AllGradesFragment frag = new AllGradesFragment();
                 frag.setArguments(b);
-                loadFragment(frag);
+                loadFragment(frag, false);
 
                 container.setVisibility(View.VISIBLE);
 
@@ -193,6 +206,46 @@ public class NavActivity extends AppCompatActivity
 
             @Override
             public void onAllGradesFailure(Throwable t)
+            {
+                //TODO deal with error
+                Log.e("ERROR: ", t.getMessage());
+            }
+        });
+    }
+
+    public void loadSiteGradesFragment(boolean refreshGrades, String siteId)
+    {
+        this.container.setVisibility(View.GONE);
+        this.spinner.setVisibility(View.VISIBLE);
+
+        DataHandler.requestGradesForSite(siteId, refreshGrades, new RequestCallback()
+        {
+
+            @Override
+            public void onSiteGradesSuccess(Course course)
+            {
+                spinner.setVisibility(View.GONE);
+
+                if(course == null) {
+                    Toast.makeText(NavActivity.this, "Course has no grades", Toast.LENGTH_SHORT).show();
+                }
+                //course has grades
+                else {
+                    Bundle b = new Bundle();
+                    b.putSerializable(SITE_GRADES_TAG, course);
+
+                    SiteGradesFragment frag = new SiteGradesFragment();
+                    frag.setArguments(b);
+                    loadFragment(frag, true);
+
+                    container.setVisibility(View.VISIBLE);
+
+                    setActionBarTitle("Gradebook: " + course.getTitle());
+                }
+            }
+
+            @Override
+            public void onSiteGradesFailure(Throwable t)
             {
                 //TODO deal with error
                 Log.e("ERROR: ", t.getMessage());
@@ -216,7 +269,7 @@ public class NavActivity extends AppCompatActivity
 
                 AssignmentsFragment fragment = new AssignmentsFragment();
                 fragment.setArguments(bundle);
-                loadFragment(fragment);
+                loadFragment(fragment, false);
 
                 container.setVisibility(View.VISIBLE);
             }
@@ -233,4 +286,5 @@ public class NavActivity extends AppCompatActivity
     public void setActionBarTitle(String title) {
         getSupportActionBar().setTitle(title);
     }
+
 }

@@ -168,23 +168,13 @@ public class AllCoursesFragment extends BaseFragment{
                     public void onClick(TreeNode node, Object value)
                     {
                         if(value instanceof CourseHeaderViewHolder.CourseHeaderItem) {
-                            String courseSiteId = ((CourseHeaderViewHolder.CourseHeaderItem) value).siteId;
-
-                            Bundle bun = new Bundle();
-                            bun.putString(getString(R.string.site_id), courseSiteId);
-                            CourseFragment fragment = new CourseFragment();
-                            fragment.setArguments(bun);
-
 
                             //here we should save tree state
                             SharedPrefsUtil.saveTreeState(mContext, treeView, SharedPrefsUtil.ALL_COURSES_TREE_TYPE);
 
-                            //replaces current Fragment with CourseFragment
-                            FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-                            ft.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
-                                    .replace(R.id.fragment_container, fragment, null)
-                                    .addToBackStack(null)
-                                    .commit();
+                            String courseSiteId = ((CourseHeaderViewHolder.CourseHeaderItem) value).siteId;
+
+                            ((NavActivity) getActivity()).loadSiteGradesFragment(true, courseSiteId);
                         }
                     }
                 });
