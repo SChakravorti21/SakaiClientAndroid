@@ -40,8 +40,7 @@ public class CourseFragment extends BaseFragment {
         }
 
 
-        String courseId = bundle.getString(getString(R.string.site_id));
-        this.courseToView = DataHandler.getCourseFromId(courseId);
+        this.courseToView = (Course) bundle.getSerializable(NavActivity.COURSE_TAG);
         final String[] siteTitles = new String[this.courseToView.getSitePages().size()];
         for(int i = 0; i < siteTitles.length; i++) {
             siteTitles[i] = this.courseToView.getSitePages().get(i).getTitle();
@@ -74,12 +73,7 @@ public class CourseFragment extends BaseFragment {
                     frag.setArguments(bun);
 
 
-                    //start the siteGrades fragment
-                    getActivity().getSupportFragmentManager().beginTransaction()
-                            .setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
-                            .replace(R.id.fragment_container, frag, null)
-                            .addToBackStack(null)
-                            .commit();
+                    ((NavActivity) getActivity()).loadSiteGradesFragment(true, siteId);
 
                 }
             }
