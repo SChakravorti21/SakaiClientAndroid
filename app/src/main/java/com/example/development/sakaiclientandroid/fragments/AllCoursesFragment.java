@@ -141,7 +141,7 @@ public class AllCoursesFragment extends BaseFragment{
             //make a term header item, and make a treenode using it
             TermHeaderViewHolder.TermHeaderItem termNodeItem = new TermHeaderViewHolder.TermHeaderItem(termString);
             TreeNode termNode = new TreeNode(termNodeItem).setViewHolder(new TermHeaderViewHolder(mContext));
-            termNode.setClickListener(new TreeViewItemClickListener(treeView, root));
+            //termNode.setClickListener(new TreeViewItemClickListener(treeView, root));
 
             //for each course, get its grades
             for(Course currCourse : coursesInTerm)
@@ -199,6 +199,7 @@ public class AllCoursesFragment extends BaseFragment{
 
         treeView = new AndroidTreeView(getActivity(), root);
         treeView.setDefaultAnimation(true);
+        treeView.setDefaultNodeClickListener(new TreeViewItemClickListener(treeView, root));
     }
 
 }
