@@ -3,7 +3,6 @@ package com.example.development.sakaiclientandroid.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,7 +23,7 @@ import com.unnamed.b.atv.view.AndroidTreeView;
 
 import java.util.ArrayList;
 
-import static com.example.development.sakaiclientandroid.NavActivity.COURSES_TAG;
+import static com.example.development.sakaiclientandroid.NavActivity.ALL_COURSES_TAG;
 
 public class AllCoursesFragment extends BaseFragment{
 
@@ -41,7 +40,7 @@ public class AllCoursesFragment extends BaseFragment{
         try
         {
             try {
-                this.courses = (ArrayList<ArrayList<Course>>) bun.getSerializable(COURSES_TAG);
+                this.courses = (ArrayList<ArrayList<Course>>) bun.getSerializable(ALL_COURSES_TAG);
             }
             catch (ClassCastException e)
             {
@@ -174,7 +173,7 @@ public class AllCoursesFragment extends BaseFragment{
 
                             String courseSiteId = ((CourseHeaderViewHolder.CourseHeaderItem) value).siteId;
 
-                            ((NavActivity) getActivity()).loadSiteGradesFragment(true, courseSiteId);
+                            ((NavActivity) getActivity()).loadCourseFragment(courseSiteId);
                         }
                     }
                 });
