@@ -1,5 +1,7 @@
 package com.example.development.sakaiclientandroid.utils.custom;
 
+import android.util.Log;
+
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
@@ -22,6 +24,7 @@ public class TreeViewItemClickListener implements TreeNode.TreeNodeClickListener
     public void onClick(TreeNode node, Object value) {
         if(node.getLevel() > 1)
             return;
+
 
         // Get all parent nodes
         for( TreeNode parent : root.getChildren()) {
