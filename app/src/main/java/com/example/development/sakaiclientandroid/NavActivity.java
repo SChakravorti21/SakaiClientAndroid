@@ -214,7 +214,7 @@ public class NavActivity extends AppCompatActivity
         });
     }
 
-    public void loadSiteGradesFragment(boolean refreshGrades, String siteId)
+    public void loadSiteGradesFragment(final boolean refreshGrades, String siteId)
     {
         this.spinner.setVisibility(View.VISIBLE);
 
@@ -236,7 +236,11 @@ public class NavActivity extends AppCompatActivity
 
                     SiteGradesFragment frag = new SiteGradesFragment();
                     frag.setArguments(b);
-                    loadFragment(frag, true);
+
+                    //show animations if we aren't refreshing grades
+                    // i.e. we are coming from the course sites page
+                    //if we are refreshing (with swipe refresh) then don't show anims
+                    loadFragment(frag, !refreshGrades);
 
                     setActionBarTitle("Gradebook: " + course.getTitle());
                 }

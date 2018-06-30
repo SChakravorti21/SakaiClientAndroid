@@ -2,6 +2,7 @@ package com.example.development.sakaiclientandroid.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -39,8 +40,7 @@ public class SiteGradesFragment extends BaseFragment {
 
         //gets side Id from bundle
         Bundle bun = this.getArguments();
-        Course course = (Course) bun.getSerializable(NavActivity.SITE_GRADES_TAG);
-
+        final Course course = (Course) bun.getSerializable(NavActivity.SITE_GRADES_TAG);
 
 
         //inflates the view
@@ -56,6 +56,14 @@ public class SiteGradesFragment extends BaseFragment {
             @Override
             public void onRefresh() {
 
+                FragmentActivity parentActivity = getActivity();
+
+                //checking if instance to prevent casting errors
+                if(parentActivity instanceof NavActivity)
+                {
+                    //reloads the current fragment, (which also remakes the request for courses)
+                    ((NavActivity) parentActivity).loadSiteGradesFragment(true, course.getId());
+                }
             }
         });
 

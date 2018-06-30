@@ -7,6 +7,8 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
@@ -51,11 +53,11 @@ public class GradeItemAdapter extends ArrayAdapter {
         LayoutInflater inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         //inflate the row
-        View itemView = inflater.inflate(R.layout.gradeitem_node, parent, false);
+        View rowView = inflater.inflate(R.layout.gradeitem_node, parent, false);
 
         //get name and grade textviews
-        TextView nameTextView = itemView.findViewById(R.id.txt_assignment_name);
-        TextView gradeTextView = itemView.findViewById(R.id.txt_grade);
+        TextView nameTextView = rowView.findViewById(R.id.txt_assignment_name);
+        TextView gradeTextView = rowView.findViewById(R.id.txt_grade);
 
         //set the text
         nameTextView.setText(assignmentsList.get(position).getItemName());
@@ -67,6 +69,11 @@ public class GradeItemAdapter extends ArrayAdapter {
         int paddingVerticalPx = convertDpToPx(PADDING_VERTICAL_DP);
         nameTextView.setPadding(paddingLeftPx, paddingVerticalPx, 0, paddingVerticalPx);
 
-        return itemView;
+
+        Animation anim = AnimationUtils.loadAnimation(context, R.anim.listview_anim);
+        anim.setStartOffset(position * 100);
+        rowView.startAnimation(anim);
+
+        return rowView;
     }
 }
