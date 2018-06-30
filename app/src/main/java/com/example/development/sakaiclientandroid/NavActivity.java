@@ -17,7 +17,7 @@ import com.example.development.sakaiclientandroid.fragments.AllCoursesFragment;
 import com.example.development.sakaiclientandroid.fragments.AllGradesFragment;
 import com.example.development.sakaiclientandroid.fragments.AnnouncementsFragment;
 import com.example.development.sakaiclientandroid.fragments.AssignmentsFragment;
-import com.example.development.sakaiclientandroid.fragments.CourseFragment;
+import com.example.development.sakaiclientandroid.fragments.CourseSitesFragment;
 import com.example.development.sakaiclientandroid.fragments.SettingsFragment;
 import com.example.development.sakaiclientandroid.fragments.SiteGradesFragment;
 import com.example.development.sakaiclientandroid.models.Course;
@@ -83,7 +83,6 @@ public class NavActivity extends AppCompatActivity
     private boolean loadFragment(Fragment fragment, boolean showAnimations) {
 
         if(fragment != null) {
-            container.removeAllViews();
 
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
@@ -217,7 +216,6 @@ public class NavActivity extends AppCompatActivity
 
     public void loadSiteGradesFragment(boolean refreshGrades, String siteId)
     {
-        this.container.setVisibility(View.GONE);
         this.spinner.setVisibility(View.VISIBLE);
 
         DataHandler.requestGradesForSite(siteId, refreshGrades, new RequestCallback()
@@ -240,8 +238,6 @@ public class NavActivity extends AppCompatActivity
                     frag.setArguments(b);
                     loadFragment(frag, true);
 
-                    container.setVisibility(View.VISIBLE);
-
                     setActionBarTitle("Gradebook: " + course.getTitle());
                 }
             }
@@ -262,7 +258,7 @@ public class NavActivity extends AppCompatActivity
         Bundle b = new Bundle();
         b.putSerializable(COURSE_TAG, course);
 
-        CourseFragment frag = new CourseFragment();
+        CourseSitesFragment frag = new CourseSitesFragment();
         frag.setArguments(b);
         loadFragment(frag, true);
         setActionBarTitle(course.getTitle());

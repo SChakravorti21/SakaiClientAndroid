@@ -1,6 +1,7 @@
 package com.example.development.sakaiclientandroid.utils.holders;
 
 import android.content.Context;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -11,13 +12,17 @@ import com.unnamed.b.atv.model.TreeNode;
 public class GradeNodeViewHolder extends TreeNode.BaseNodeViewHolder<GradeNodeViewHolder.GradeTreeItem> {
 
 
-    public GradeNodeViewHolder(Context c) { super(c); }
+    public GradeNodeViewHolder(Context c) {
+        super(c);
+    }
+
 
     @Override
     public View createNodeView(TreeNode node, GradeTreeItem value) {
 
         final LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.gradeitem_node, null, false);
+
 
         TextView assignmentText = view.findViewById(R.id.txt_assignment_name);
         assignmentText.setText(value.assignment);
