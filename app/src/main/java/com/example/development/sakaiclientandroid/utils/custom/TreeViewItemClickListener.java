@@ -1,7 +1,5 @@
 package com.example.development.sakaiclientandroid.utils.custom;
 
-import android.util.Log;
-
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
@@ -31,7 +29,6 @@ public class TreeViewItemClickListener implements TreeNode.TreeNodeClickListener
             // If the parent was previously expanded and is not a parent
             // of the currently expanded node, then collapse it
             if(parent.isExpanded() && parent != node) {
-                // Collapse its children as well
                 treeView.collapseNode(parent);
             }
         }
