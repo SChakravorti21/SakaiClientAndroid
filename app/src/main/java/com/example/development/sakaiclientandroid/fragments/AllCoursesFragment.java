@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -118,7 +117,6 @@ public class AllCoursesFragment extends BaseFragment{
 
         //here we should save tree state
         SharedPrefsUtil.saveTreeState(mContext, treeView, SharedPrefsUtil.ALL_COURSES_TREE_TYPE);
-
     }
 
     /**
@@ -142,13 +140,12 @@ public class AllCoursesFragment extends BaseFragment{
             //make a term header item, and make a treenode using it
             TermHeaderViewHolder.TermHeaderItem termNodeItem = new TermHeaderViewHolder.TermHeaderItem(termString);
             TreeNode termNode = new TreeNode(termNodeItem).setViewHolder(new TermHeaderViewHolder(mContext));
-            termNode.setClickListener(new TreeViewItemClickListener(treeView, root));
+
 
             //for each course, get its grades
             for(Course currCourse : coursesInTerm)
             {
 
-                Log.d("piano", currCourse.getTitle() + ",  " + currCourse.getSubjectCode());
 
                 //create a course header item and make a treenode using it
                 String courseIconCode = RutgersSubjectCodes.mapCourseCodeToIcon.get(currCourse.getSubjectCode());
@@ -200,6 +197,7 @@ public class AllCoursesFragment extends BaseFragment{
 
         treeView = new AndroidTreeView(getActivity(), root);
         treeView.setDefaultAnimation(true);
+        treeView.setDefaultNodeClickListener(new TreeViewItemClickListener(treeView, root));
     }
 
 }
