@@ -10,12 +10,10 @@ import com.unnamed.b.atv.view.AndroidTreeView;
 public class TreeViewItemClickListener implements TreeNode.TreeNodeClickListener {
     private AndroidTreeView treeView;
     private TreeNode root;
-    private TreeNode lastParent;
 
     public TreeViewItemClickListener(AndroidTreeView treeView, TreeNode root) {
         this.treeView = treeView;
         this.root = root;
-        this.lastParent = null;
     }
 
     @Override
@@ -32,8 +30,5 @@ public class TreeViewItemClickListener implements TreeNode.TreeNodeClickListener
                 treeView.collapseNode(parent);
             }
         }
-
-        if(node.getLevel() == 1 && node != lastParent)
-            lastParent = node;
     }
 }
