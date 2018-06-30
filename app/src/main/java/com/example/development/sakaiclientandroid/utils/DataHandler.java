@@ -137,8 +137,9 @@ public class DataHandler {
 
     public static void requestGradesForSite(final String siteId, boolean refresh, final RequestCallback UICallback) {
 
-        //if we don't want to refresh, just use the already cached course
-        if(!refresh) {
+        //if we don't want to refresh and we have the grades
+        //just use the already cached course
+        if(!refresh && gradesRequestedForSite(siteId)) {
             Course course = mapSiteIdToCourse.get(siteId);
             UICallback.onSiteGradesSuccess(course);
             return;

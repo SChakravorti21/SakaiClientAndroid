@@ -161,7 +161,7 @@ public class AllCoursesFragment extends BaseFragment{
 
                 courseNode.setClickListener(new TreeNode.TreeNodeClickListener() {
 
-                    //when click a course Node, open the CourseFragment to show
+                    //when click a course Node, open the CourseSitesFragment to show
                     //course specific information
                     @Override
                     public void onClick(TreeNode node, Object value)

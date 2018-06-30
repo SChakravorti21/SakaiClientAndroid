@@ -14,7 +14,7 @@ import com.example.development.sakaiclientandroid.R;
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
 
-public class CourseFragment extends BaseFragment {
+public class CourseSitesFragment extends BaseFragment {
 
     private ListView sitePagesListView;
     private Course courseToView;
@@ -65,15 +65,8 @@ public class CourseFragment extends BaseFragment {
                 if(siteName.equals(getString(R.string.gradebook))) {
 
                     final String siteId = courseToView.getId();
-                    //puts the siteId into the bundle
-                    Bundle bun = new Bundle();
-                    bun.putString(getString(R.string.site_id), siteId);
 
-                    SiteGradesFragment frag = new SiteGradesFragment();
-                    frag.setArguments(bun);
-
-
-                    ((NavActivity) getActivity()).loadSiteGradesFragment(true, siteId);
+                    ((NavActivity) getActivity()).loadSiteGradesFragment(false, siteId);
 
                 }
             }
