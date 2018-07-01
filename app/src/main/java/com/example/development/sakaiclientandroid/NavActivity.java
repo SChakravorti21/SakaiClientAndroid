@@ -42,16 +42,6 @@ public class NavActivity extends AppCompatActivity
     public ProgressBar spinner;
 
 
-    @Override
-    public void onBackPressed() {
-
-        FrameLayout fl = findViewById(R.id.fragment_container);
-        fl.removeAllViews();
-
-        super.onBackPressed();
-
-
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,7 +146,10 @@ public class NavActivity extends AppCompatActivity
 
     }
 
-
+    /**
+     * Loads the all courses fragment (home page)
+     * @param refresh whether or not to refresh courses
+     */
     public void loadAllCoursesFragment(boolean refresh)
     {
         this.container.setVisibility(View.GONE);
@@ -192,6 +185,10 @@ public class NavActivity extends AppCompatActivity
     }
 
 
+    /**
+     * Loads the all grades tab
+     * @param refreshGrades whether or not to refresh grades
+     */
     public void loadAllGradesFragment(boolean refreshGrades)
     {
         this.container.setVisibility(View.GONE);
@@ -227,6 +224,12 @@ public class NavActivity extends AppCompatActivity
     }
 
 
+    /**
+     * Refreshes the site grades page by remaking the request for grades for that course
+     * @param siteId id of the course who's grades to refresh
+     * @param swipeRefreshLayout the swipe refresh layout from the site grades fragment
+     * @throws IllegalStateException if the current fragment isn't a site grade fragment, which shouldn't happen
+     */
     public void refreshSiteGrades(String siteId, final SwipeRefreshLayout swipeRefreshLayout) throws IllegalStateException
     {
         this.spinner.setVisibility(View.VISIBLE);
@@ -246,10 +249,13 @@ public class NavActivity extends AppCompatActivity
                 }
                 else
                 {
+                    //get the current visible fragment
                     Fragment currFrag = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
                     if(currFrag instanceof SiteGradesFragment)
                     {
-                        ((SiteGradesFragment)currFrag).refreshCourses();
+
+                        //refresh the grades in that fragment and stop the progress spinner
+                        ((SiteGradesFragment) currFrag).refreshGradesForSite();
                         container.setVisibility(View.VISIBLE);
                         swipeRefreshLayout.setRefreshing(false);
                     }
@@ -263,7 +269,11 @@ public class NavActivity extends AppCompatActivity
     }
 
 
-
+    /**
+     * Loads the site grade fragment
+     * @param refreshGrades whether or not to re-request the grades
+     * @param siteId site id of the course whose grades to display
+     */
     public void loadSiteGradesFragment(final boolean refreshGrades, String siteId)
     {
         this.spinner.setVisibility(View.VISIBLE);
@@ -305,6 +315,10 @@ public class NavActivity extends AppCompatActivity
         });
     }
 
+    /**
+     * Loads the fragment showing a course's sites
+     * @param siteId id of course to show
+     */
     public void loadCourseFragment(String siteId)
     {
 
@@ -320,6 +334,9 @@ public class NavActivity extends AppCompatActivity
     }
 
 
+    /**
+     * Loads all assignments tab
+     */
     public void loadAssignmentsFragment() {
         this.container.setVisibility(View.GONE);
         this.spinner.setVisibility(View.VISIBLE);

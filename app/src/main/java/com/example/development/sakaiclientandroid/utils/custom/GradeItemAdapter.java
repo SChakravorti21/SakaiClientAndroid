@@ -19,7 +19,7 @@ import java.util.List;
 
 public class GradeItemAdapter extends ArrayAdapter {
 
-    private static final float PADDING_LEFT_DP = 16f;
+    private static final float PADDING_LEFT_DP = 10f;
     private static final float PADDING_VERTICAL_DP = 8f;
 
 
@@ -34,6 +34,11 @@ public class GradeItemAdapter extends ArrayAdapter {
     }
 
 
+    /**
+     * Convert dp to pixel for the phone
+     * @param dp number of dp
+     * @return the dp in pixels
+     */
     private int convertDpToPx(float dp)
     {
         int paddingPx = (int) TypedValue.applyDimension(

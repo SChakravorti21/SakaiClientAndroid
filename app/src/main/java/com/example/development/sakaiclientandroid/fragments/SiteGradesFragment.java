@@ -4,13 +4,10 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.development.sakaiclientandroid.NavActivity;
@@ -19,7 +16,6 @@ import com.example.development.sakaiclientandroid.api_models.gradebook.Gradebook
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
 import com.example.development.sakaiclientandroid.utils.custom.GradeItemAdapter;
-import com.example.development.sakaiclientandroid.utils.requests.RequestCallback;
 
 import java.util.List;
 
@@ -54,7 +50,7 @@ public class SiteGradesFragment extends BaseFragment {
         this.siteID = course.getId();
 
 
-        refreshCourses();
+        refreshGradesForSite();
 
 
 
@@ -68,9 +64,7 @@ public class SiteGradesFragment extends BaseFragment {
                 //checking if instance to prevent casting errors
                 if(parentActivity instanceof NavActivity)
                 {
-                    refreshCourses();
                     ((NavActivity) parentActivity).refreshSiteGrades(siteID, swipeRefreshLayout);
-
                 }
             }
         });
@@ -80,7 +74,11 @@ public class SiteGradesFragment extends BaseFragment {
 
     }
 
-    public void refreshCourses()
+    /**
+     * Puts the grades of the current course into an adapter and adds the adapter to the
+     * list view
+     */
+    public void refreshGradesForSite()
     {
         List<GradebookObject> gradesList = DataHandler.getGradesForCourse(this.siteID);
 
