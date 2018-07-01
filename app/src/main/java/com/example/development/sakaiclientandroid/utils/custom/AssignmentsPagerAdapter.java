@@ -13,6 +13,7 @@ import com.example.development.sakaiclientandroid.fragments.assignments.SingleAs
 import java.util.List;
 
 import static com.example.development.sakaiclientandroid.NavActivity.ASSIGNMENTS_TAG;
+import static com.example.development.sakaiclientandroid.fragments.assignments.CourseAssignmentsFragment.ASSIGNMENT_NUMBER;
 
 /**
  * Created by Development on 6/30/18.

@@ -23,7 +23,10 @@ import static com.example.development.sakaiclientandroid.NavActivity.ASSIGNMENTS
  */
 public class CourseAssignmentsFragment extends Fragment {
 
+    public static String ASSIGNMENT_NUMBER = "ASSIGNMENT_NUMBER";
+
     private List<AssignmentObject> assignments;
+    private int initialPosition;
 
     public CourseAssignmentsFragment() {
         // Required empty public constructor
@@ -36,6 +39,7 @@ public class CourseAssignmentsFragment extends Fragment {
         Bundle arguments = getArguments();
         if(arguments != null) {
             assignments = (List<AssignmentObject>) arguments.getSerializable(ASSIGNMENTS_TAG);
+            initialPosition = arguments.getInt(ASSIGNMENT_NUMBER);
         }
     }
 
@@ -51,6 +55,7 @@ public class CourseAssignmentsFragment extends Fragment {
                 new AssignmentsPagerAdapter(getActivity().getSupportFragmentManager(),
                                             assignments);
         assignmentsPager.setAdapter(pagerAdapter);
+        assignmentsPager.setCurrentItem(initialPosition);
 
         return layout;
     }

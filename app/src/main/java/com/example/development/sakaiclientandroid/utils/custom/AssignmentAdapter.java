@@ -22,6 +22,9 @@ import com.example.development.sakaiclientandroid.fragments.assignments.CourseAs
 import java.io.Serializable;
 import java.util.List;
 
+import static com.example.development.sakaiclientandroid.NavActivity.ASSIGNMENTS_TAG;
+import static com.example.development.sakaiclientandroid.fragments.assignments.CourseAssignmentsFragment.ASSIGNMENT_NUMBER;
+
 /**
  * Created by Development on 6/23/18.
  */
@@ -29,45 +32,27 @@ import java.util.List;
 public class AssignmentAdapter extends RecyclerView.Adapter {
 
     private List<AssignmentObject> assignments;
-    private static boolean setFragmentManager;
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         TextView titleView;
         TextView descriptionView;
         TextView dueDateView;
+        int position;
 
         ViewHolder(CardView cardView) {
             super(cardView);
             this.titleView = cardView.findViewById(R.id.assignment_name);
             this.descriptionView = cardView.findViewById(R.id.assignment_description);
             this.dueDateView = cardView.findViewById(R.id.assignment_date);
-
-            // Set the click listener on the entire CardView
-            cardView.setOnClickListener(this);
         }
 
-        @Override
-        public void onClick(View v) {
-            NavActivity activity = (NavActivity) v.getContext();
-            Log.d("CardView", "has been clicked");
+        void setPosition(int position) {
+            this.position = position;
 
-            Bundle bundle = new Bundle();
-            bundle.putSerializable(NavActivity.ASSIGNMENTS_TAG, (Serializable) assignments);
-
-            CourseAssignmentsFragment fragment = new CourseAssignmentsFragment();
-            fragment.setArguments(bundle);
-
-            FragmentManager manager = activity.getSupportFragmentManager();
-            manager.beginTransaction()
-                    .setCustomAnimations(R.anim.enter,
-                            R.anim.exit,
-                            R.anim.pop_enter,
-                            R.anim.pop_exit)
-                    // Add instead of replacing so that the state of opened assignments
-                    // remains the same after returning
-                    .add(R.id.fragment_container, fragment)
-                    .addToBackStack(null)
-                    .commit();
+            // Set the click listener on the entire CardView
+            CardClickListener listener = new CardClickListener(position);
+            titleView.setOnClickListener(listener);
+            dueDateView.setOnClickListener(listener);
         }
     }
 
@@ -93,6 +78,9 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
         // - get element from your data set at this position
         // - replace the contents of the view with that element
         ViewHolder viewHolder = (ViewHolder) holder;
+        // Update the ViewHolder's position so that the click
+        // listener can dictate how to initialize the CourseAssignmentsFragment
+        viewHolder.setPosition(position);
 
         // Set the assignment title
         AssignmentObject assignment = assignments.get(position);
@@ -121,4 +109,49 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
         return assignments.size();
     }
 
+
+    private class CardClickListener implements View.OnClickListener {
+        private int position;
+
+        /**
+         * The constructor takes in an integer parameter to indicate what the
+         * position of the assignment is. This allows it to automatically go to
+         * that assignment in the full views when it is clicked.
+         * @param position
+         */
+        CardClickListener(int position) {
+            this.position = position;
+        }
+
+        /**
+         * Creates and adds a new fragment to the view stack which represents
+         * all of the class's assignments. The initial assignment is set to
+         * the one that was clicked.
+         * @param v
+         */
+        @Override
+        public void onClick(View v) {
+            NavActivity activity = (NavActivity) v.getContext();
+            Log.d("CardView", "has been clicked");
+
+            Bundle bundle = new Bundle();
+            bundle.putSerializable(ASSIGNMENTS_TAG, (Serializable) assignments);
+            bundle.putInt(ASSIGNMENT_NUMBER, position);
+
+            CourseAssignmentsFragment fragment = new CourseAssignmentsFragment();
+            fragment.setArguments(bundle);
+
+            FragmentManager manager = activity.getSupportFragmentManager();
+            manager.beginTransaction()
+                    .setCustomAnimations(R.anim.enter,
+                            R.anim.exit,
+                            R.anim.pop_enter,
+                            R.anim.pop_exit)
+                    // Add instead of replacing so that the state of opened assignments
+                    // remains the same after returning
+                    .add(R.id.fragment_container, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        }
+    }
 }
