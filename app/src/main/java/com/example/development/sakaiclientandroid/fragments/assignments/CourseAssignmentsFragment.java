@@ -3,12 +3,14 @@ package com.example.development.sakaiclientandroid.fragments.assignments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 import com.example.development.sakaiclientandroid.R;
 import com.example.development.sakaiclientandroid.api_models.assignments.AssignmentObject;
@@ -47,7 +49,7 @@ public class CourseAssignmentsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        FrameLayout layout = (FrameLayout) inflater.inflate(R.layout.fragment_course_assignments,
+        ViewGroup layout = (ViewGroup) inflater.inflate(R.layout.fragment_course_assignments,
                                                             container, false);
 
         ViewPager assignmentsPager = layout.findViewById(R.id.assignment_viewpager);
@@ -56,6 +58,11 @@ public class CourseAssignmentsFragment extends Fragment {
                                             assignments);
         assignmentsPager.setAdapter(pagerAdapter);
         assignmentsPager.setCurrentItem(initialPosition);
+
+        // Set up the bottom indicators to show that there are multiple assignments
+        // that can be viewed
+        TabLayout indicators = layout.findViewById(R.id.view_pager_indicators);
+        indicators.setupWithViewPager(assignmentsPager, true);
 
         return layout;
     }

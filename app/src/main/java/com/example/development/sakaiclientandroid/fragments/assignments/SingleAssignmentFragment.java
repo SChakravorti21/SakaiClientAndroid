@@ -74,9 +74,9 @@ public class SingleAssignmentFragment extends Fragment {
         String instructions = assignment.getInstructions();
         Spanned description;
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            description = Html.fromHtml(instructions + instructions, Html.FROM_HTML_MODE_LEGACY);
+            description = Html.fromHtml(instructions, Html.FROM_HTML_MODE_LEGACY);
         } else {
-            description = Html.fromHtml(instructions + instructions);
+            description = Html.fromHtml(instructions);
         };
         descriptionView.setText(description);
         descriptionView.setMovementMethod(CustomLinkMovementMethod.getInstance());
