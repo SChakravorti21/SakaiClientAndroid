@@ -49,31 +49,36 @@ public class GradeItemAdapter extends ArrayAdapter {
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
-        //create inflater
-        LayoutInflater inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        //inflate the row
-        View rowView = inflater.inflate(R.layout.gradeitem_node, parent, false);
+        if(convertView == null) {
+            //create inflater
+            LayoutInflater inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        //get name and grade textviews
-        TextView nameTextView = rowView.findViewById(R.id.txt_assignment_name);
-        TextView gradeTextView = rowView.findViewById(R.id.txt_grade);
+            //inflate the row
+            convertView = inflater.inflate(R.layout.gradeitem_node, parent, false);
 
-        //set the text
-        nameTextView.setText(assignmentsList.get(position).getItemName());
-        gradeTextView.setText(assignmentsList.get(position).getGrade() + "/" + assignmentsList.get(position).getPoints());
+            //get name and grade textviews
+            TextView nameTextView = convertView.findViewById(R.id.txt_assignment_name);
+            TextView gradeTextView = convertView.findViewById(R.id.txt_grade);
 
-
-        //set padding on the name view
-        int paddingLeftPx = convertDpToPx(PADDING_LEFT_DP);
-        int paddingVerticalPx = convertDpToPx(PADDING_VERTICAL_DP);
-        nameTextView.setPadding(paddingLeftPx, paddingVerticalPx, 0, paddingVerticalPx);
+            //set the text
+            nameTextView.setText(assignmentsList.get(position).getItemName());
+            gradeTextView.setText(assignmentsList.get(position).getGrade() + "/" + assignmentsList.get(position).getPoints());
 
 
-        Animation anim = AnimationUtils.loadAnimation(context, R.anim.listview_anim);
-        anim.setStartOffset(position * 100);
-        rowView.startAnimation(anim);
+            //set padding on the name view
+            int paddingLeftPx = convertDpToPx(PADDING_LEFT_DP);
+            int paddingVerticalPx = convertDpToPx(PADDING_VERTICAL_DP);
+            nameTextView.setPadding(paddingLeftPx, paddingVerticalPx, 0, paddingVerticalPx);
 
-        return rowView;
+
+            Animation anim = AnimationUtils.loadAnimation(context, R.anim.listview_anim);
+            anim.setStartOffset(position * 100);
+            convertView.startAnimation(anim);
+
+        }
+
+        return convertView;
+
     }
 }

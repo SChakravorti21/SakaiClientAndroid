@@ -27,9 +27,13 @@ public class SiteGradesFragment extends BaseFragment {
 
     private ListView siteGradesListView;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private String siteID;
+
+
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
     }
 
@@ -47,8 +51,11 @@ public class SiteGradesFragment extends BaseFragment {
         final View view = inflater.inflate(R.layout.fragment_site_grades, null);
         this.siteGradesListView = view.findViewById(R.id.site_grades_list_view);
 
+        this.siteID = course.getId();
 
-        fillGrades(course.getId(), view);
+
+        refreshCourses();
+
 
 
         this.swipeRefreshLayout = view.findViewById(R.id.swiperefresh);
@@ -61,8 +68,9 @@ public class SiteGradesFragment extends BaseFragment {
                 //checking if instance to prevent casting errors
                 if(parentActivity instanceof NavActivity)
                 {
-                    //reloads the current fragment, (which also remakes the request for courses)
-                    ((NavActivity) parentActivity).loadSiteGradesFragment(true, course.getId());
+                    refreshCourses();
+                    ((NavActivity) parentActivity).refreshSiteGrades(siteID, swipeRefreshLayout);
+
                 }
             }
         });
@@ -72,16 +80,9 @@ public class SiteGradesFragment extends BaseFragment {
 
     }
 
-    /**
-     * Does miscellaneous things such as disable the spinner, and put the grades into the list view
-     * or show a No Grades Found textview
-     * @param siteId = SiteId of the course to show the grades of
-     * @param view = view that was inflated.
-     */
-    private void fillGrades(String siteId, View view) {
-        //makes request for grades for this site and gets them
-        List<GradebookObject> gradesList = DataHandler.getGradesForCourse(siteId);
-
+    public void refreshCourses()
+    {
+        List<GradebookObject> gradesList = DataHandler.getGradesForCourse(this.siteID);
 
         if(gradesList != null) {
 

@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
@@ -37,13 +38,19 @@ public class NavActivity extends AppCompatActivity
     public static final String ASSIGNMENTS_TAG = "ASSIGNMENTS";
     public static final String SITE_GRADES_TAG = "SITEGRADES";
 
-    private FrameLayout container;
-    private ProgressBar spinner;
+    public FrameLayout container;
+    public ProgressBar spinner;
 
 
     @Override
     public void onBackPressed() {
+
+        FrameLayout fl = findViewById(R.id.fragment_container);
+        fl.removeAllViews();
+
         super.onBackPressed();
+
+
     }
 
     @Override
@@ -57,6 +64,8 @@ public class NavActivity extends AppCompatActivity
         //starts spinner
         this.spinner = findViewById(R.id.nav_activity_progressbar);
         this.spinner.setVisibility(View.VISIBLE);
+
+
 
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(this);
@@ -80,15 +89,18 @@ public class NavActivity extends AppCompatActivity
      * @param fragment
      * @return boolean whether the fragment was successfully loaded
      */
-    private boolean loadFragment(Fragment fragment, boolean showAnimations) {
+    private boolean loadFragment(Fragment fragment, boolean showAnimations, boolean addToBackStack) {
 
         if(fragment != null) {
 
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
             if(showAnimations)
-                transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
-                        .addToBackStack(null);
+                transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
+
+            if(addToBackStack) {
+                transaction.addToBackStack(null);
+            }
 
 
             transaction.replace(R.id.fragment_container, fragment).commit();
@@ -140,7 +152,7 @@ public class NavActivity extends AppCompatActivity
 
         }
 
-        return this.loadFragment(fragment, false);
+        return this.loadFragment(fragment, false, false);
 
     }
 
@@ -163,7 +175,7 @@ public class NavActivity extends AppCompatActivity
 
                 AllCoursesFragment frag = new AllCoursesFragment();
                 frag.setArguments(b);
-                loadFragment(frag, false);
+                loadFragment(frag, false, false);
 
                 container.setVisibility(View.VISIBLE);
 
@@ -198,7 +210,7 @@ public class NavActivity extends AppCompatActivity
 
                 AllGradesFragment frag = new AllGradesFragment();
                 frag.setArguments(b);
-                loadFragment(frag, false);
+                loadFragment(frag, false, false);
 
                 container.setVisibility(View.VISIBLE);
 
@@ -213,6 +225,44 @@ public class NavActivity extends AppCompatActivity
             }
         });
     }
+
+
+    public void refreshSiteGrades(String siteId, final SwipeRefreshLayout swipeRefreshLayout) throws IllegalStateException
+    {
+        this.spinner.setVisibility(View.VISIBLE);
+        this.container.setVisibility(View.GONE);
+
+        DataHandler.requestGradesForSite(siteId, true, new RequestCallback()
+        {
+
+            @Override
+            public void onSiteGradesSuccess(Course course)
+            {
+                spinner.setVisibility(View.GONE);
+
+                if(course == null)
+                {
+                    Toast.makeText(NavActivity.this, "Course has no grades", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    Fragment currFrag = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+                    if(currFrag instanceof SiteGradesFragment)
+                    {
+                        ((SiteGradesFragment)currFrag).refreshCourses();
+                        container.setVisibility(View.VISIBLE);
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                    else
+                    {
+                        throw new IllegalStateException();
+                    }
+                }
+            }
+        });
+    }
+
+
 
     public void loadSiteGradesFragment(final boolean refreshGrades, String siteId)
     {
@@ -237,10 +287,10 @@ public class NavActivity extends AppCompatActivity
                     SiteGradesFragment frag = new SiteGradesFragment();
                     frag.setArguments(b);
 
-                    //show animations if we aren't refreshing grades
+                    //add to back stack if we aren't refreshing grades
                     // i.e. we are coming from the course sites page
-                    //if we are refreshing (with swipe refresh) then don't show anims
-                    loadFragment(frag, !refreshGrades);
+                    //if we are refreshing (with swipe refresh) then don't add to stack
+                    loadFragment(frag, true, !refreshGrades);
 
                     setActionBarTitle("Gradebook: " + course.getTitle());
                 }
@@ -264,7 +314,7 @@ public class NavActivity extends AppCompatActivity
 
         CourseSitesFragment frag = new CourseSitesFragment();
         frag.setArguments(b);
-        loadFragment(frag, true);
+        loadFragment(frag, true, true);
         setActionBarTitle(course.getTitle());
 
     }
@@ -285,7 +335,7 @@ public class NavActivity extends AppCompatActivity
 
                 AssignmentsFragment fragment = new AssignmentsFragment();
                 fragment.setArguments(bundle);
-                loadFragment(fragment, false);
+                loadFragment(fragment, false, false);
 
                 container.setVisibility(View.VISIBLE);
             }
@@ -302,5 +352,6 @@ public class NavActivity extends AppCompatActivity
     public void setActionBarTitle(String title) {
         getSupportActionBar().setTitle(title);
     }
+
 
 }
