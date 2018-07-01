@@ -1,4 +1,4 @@
-package com.example.development.sakaiclientandroid.fragments;
+package com.example.development.sakaiclientandroid.fragments.assignments;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -6,22 +6,17 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.example.development.sakaiclientandroid.api_models.assignments.AssignmentObject;
+import com.example.development.sakaiclientandroid.fragments.BaseFragment;
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.models.Term;
 import com.example.development.sakaiclientandroid.utils.custom.TreeViewItemClickListener;
 import com.example.development.sakaiclientandroid.utils.holders.AssignmentCourseViewHolder;
-import com.example.development.sakaiclientandroid.utils.holders.AssignmentNodeViewHolder;
-import com.example.development.sakaiclientandroid.utils.holders.CourseHeaderViewHolder;
 import com.example.development.sakaiclientandroid.utils.holders.TermHeaderViewHolder;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 import java.util.ArrayList;
-import java.util.List;
 
 import static com.example.development.sakaiclientandroid.NavActivity.ASSIGNMENTS_TAG;
-import static com.example.development.sakaiclientandroid.NavActivity.ALL_GRADES_TAG;
 
 public class AssignmentsFragment extends BaseFragment {
     private AndroidTreeView treeView;

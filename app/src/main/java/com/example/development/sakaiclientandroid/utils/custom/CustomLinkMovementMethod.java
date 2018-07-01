@@ -20,6 +20,13 @@ import com.example.development.sakaiclientandroid.fragments.WebFragment;
  */
 
 public class CustomLinkMovementMethod extends LinkMovementMethod {
+
+    /**
+     * A MovementMethod does not have access to the Context in which
+     * it is being used, hence a reference to the NavActivity's fragment
+     * manager must be kept to allow the MovementMethod to create the
+     * WebViews when a link is clicked.
+     */
     private static FragmentManager fragmentManager;
     private static CustomLinkMovementMethod mInstance;
 
