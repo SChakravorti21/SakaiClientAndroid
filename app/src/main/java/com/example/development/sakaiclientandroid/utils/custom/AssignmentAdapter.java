@@ -17,6 +17,7 @@ import com.example.development.sakaiclientandroid.NavActivity;
 import com.example.development.sakaiclientandroid.R;
 import com.example.development.sakaiclientandroid.api_models.assignments.AssignmentObject;
 import com.example.development.sakaiclientandroid.fragments.WebFragment;
+import com.example.development.sakaiclientandroid.fragments.assignments.CourseAssignmentsFragment;
 
 import java.io.Serializable;
 import java.util.List;
@@ -53,7 +54,7 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
             Bundle bundle = new Bundle();
             bundle.putSerializable(NavActivity.ASSIGNMENTS_TAG, (Serializable) assignments);
 
-            WebFragment fragment = new WebFragment();
+            CourseAssignmentsFragment fragment = new CourseAssignmentsFragment();
             fragment.setArguments(bundle);
 
             FragmentManager manager = activity.getSupportFragmentManager();
