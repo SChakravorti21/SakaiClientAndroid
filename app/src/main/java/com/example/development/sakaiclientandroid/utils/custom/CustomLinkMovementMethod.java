@@ -53,15 +53,6 @@ public class CustomLinkMovementMethod extends LinkMovementMethod {
     }
 
     /**
-     * Checks whether {@code CustomLinkMovementMethod} has a fragment manager that
-     * it can use.
-     * @return Whether {@code fragmentManager} is null.
-     */
-    public static boolean hasFragmentManager() {
-        return fragmentManager != null;
-    }
-
-    /**
      * Largely pulled from the Android source code except for the logic
      * of opening a webview when a link is clicked.
      * @param widget TextView in which the clicked span resides
@@ -134,7 +125,9 @@ public class CustomLinkMovementMethod extends LinkMovementMethod {
             fragmentManager.beginTransaction()
                     .setCustomAnimations(R.anim.enter, R.anim.exit,
                             R.anim.pop_enter, R.anim.pop_exit)
-                    .replace(R.id.fragment_container, fragment)
+                    // Add the web fragment so that the previous fragment's
+                    // state remains the same after returning
+                    .add(R.id.fragment_container, fragment)
                     .addToBackStack("WebViewFragment")
                     .commit();
         }
