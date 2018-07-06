@@ -3,10 +3,12 @@ package com.example.development.sakaiclientandroid.utils.custom;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spanned;
+import android.transition.Fade;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +19,7 @@ import com.example.development.sakaiclientandroid.NavActivity;
 import com.example.development.sakaiclientandroid.R;
 import com.example.development.sakaiclientandroid.api_models.assignments.AssignmentObject;
 import com.example.development.sakaiclientandroid.fragments.WebFragment;
+import com.example.development.sakaiclientandroid.fragments.assignments.AssignmentTransition;
 import com.example.development.sakaiclientandroid.fragments.assignments.CourseAssignmentsFragment;
 
 import java.io.Serializable;
@@ -34,6 +37,7 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
     private List<AssignmentObject> assignments;
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+        CardView cardView;
         TextView titleView;
         TextView descriptionView;
         TextView dueDateView;
@@ -41,6 +45,7 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
 
         ViewHolder(CardView cardView) {
             super(cardView);
+            this.cardView = cardView;
             this.titleView = cardView.findViewById(R.id.assignment_name);
             this.descriptionView = cardView.findViewById(R.id.assignment_description);
             this.dueDateView = cardView.findViewById(R.id.assignment_date);
@@ -51,8 +56,7 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
 
             // Set the click listener on the entire CardView
             CardClickListener listener = new CardClickListener(position);
-            titleView.setOnClickListener(listener);
-            dueDateView.setOnClickListener(listener);
+            this.cardView.setOnClickListener(listener);
         }
     }
 
@@ -132,7 +136,11 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
         @Override
         public void onClick(View v) {
             NavActivity activity = (NavActivity) v.getContext();
-            Log.d("CardView", "has been clicked");
+
+            CardView cardView = (CardView) v;
+            ViewGroup header = cardView.findViewById(R.id.card_header);
+            String transitionName = assignments.get(position).getTitle();
+            ViewCompat.setTransitionName(header, transitionName);
 
             Bundle bundle = new Bundle();
             bundle.putSerializable(ASSIGNMENTS_TAG, (Serializable) assignments);
@@ -141,12 +149,16 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
             CourseAssignmentsFragment fragment = new CourseAssignmentsFragment();
             fragment.setArguments(bundle);
 
+            fragment.setSharedElementEnterTransition(new AssignmentTransition());
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                fragment.setEnterTransition(new Fade());
+                fragment.setExitTransition(new Fade());
+            }
+            fragment.setSharedElementReturnTransition(new AssignmentTransition());
+
             FragmentManager manager = activity.getSupportFragmentManager();
             manager.beginTransaction()
-                    .setCustomAnimations(R.anim.enter,
-                            R.anim.exit,
-                            R.anim.pop_enter,
-                            R.anim.pop_exit)
+                    .addSharedElement(header, transitionName)
                     // Add instead of replacing so that the state of opened assignments
                     // remains the same after returning
                     .add(R.id.fragment_container, fragment)

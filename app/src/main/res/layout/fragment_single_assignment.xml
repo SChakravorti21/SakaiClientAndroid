@@ -19,7 +19,7 @@
             android:layout_height="match_parent">
 
             <LinearLayout
-                android:id="@+id/header"
+                android:id="@+id/card_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/sakai_medium_red"
@@ -27,11 +27,7 @@
                 android:paddingBottom="16dp"
                 android:paddingLeft="12dp"
                 android:paddingRight="12dp"
-                android:paddingTop="48dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                android:paddingTop="48dp">
 
                 <TextView
                     android:id="@+id/assignment_name"
@@ -154,7 +150,6 @@
                 </LinearLayout>
 
             </ScrollView>
-
 
         </LinearLayout>
 

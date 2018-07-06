@@ -5,6 +5,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.CardView;
 import android.text.Html;
 import android.text.Spanned;
@@ -49,6 +50,9 @@ public class SingleAssignmentFragment extends Fragment {
         // Inflate the layout for this fragment
         FrameLayout layout = (FrameLayout) inflater.inflate(R.layout.fragment_single_assignment,
                                                     container, false);
+
+        ViewGroup header = layout.findViewById(R.id.card_header);
+        ViewCompat.setTransitionName(header, assignment.getTitle());
 
         // Set assignment text header
         TextView titleView = layout.findViewById(R.id.assignment_name);
