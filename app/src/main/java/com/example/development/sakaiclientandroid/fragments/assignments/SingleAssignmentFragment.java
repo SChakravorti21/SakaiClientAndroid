@@ -74,18 +74,24 @@ public class SingleAssignmentFragment extends Fragment {
 
     private void constructAttachmentsView(FrameLayout layout) {
         List<Attachment> attachments = assignment.getAttachments();
+        TextView attachmentsView = layout.findViewById(R.id.assignment_attachments);
 
-        StringBuilder attachmentsString = new StringBuilder();
-        for(Attachment attachment : attachments) {
-            attachmentsString.append("<p><a href=\"")
-                             .append(attachment.getUrl())
-                             .append("\">")
-                             .append(attachment.getName())
-                             .append("</a></p>");
+        Spanned attachmentBody;
+        if(attachments == null || attachments.size() == 0) {
+            attachmentBody = getSpannedFromHtml("<p>This assignment has no attachments.</p>");
+        } else {
+            StringBuilder attachmentsString = new StringBuilder();
+            for (Attachment attachment : attachments) {
+                attachmentsString.append("<p><a href=\"")
+                        .append(attachment.getUrl())
+                        .append("\">")
+                        .append(attachment.getName())
+                        .append("</a></p>");
+            }
+
+            attachmentBody = getSpannedFromHtml(attachmentsString.toString());
         }
 
-        Spanned attachmentBody = getSpannedFromHtml(attachmentsString.toString());
-        TextView attachmentsView = layout.findViewById(R.id.assignment_attachments);
         attachmentsView.setText(attachmentBody);
         attachmentsView.setMovementMethod(CustomLinkMovementMethod.getInstance());
     }
