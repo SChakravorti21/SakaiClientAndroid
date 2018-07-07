@@ -137,11 +137,6 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
         public void onClick(View v) {
             NavActivity activity = (NavActivity) v.getContext();
 
-            CardView cardView = (CardView) v;
-            ViewGroup header = cardView.findViewById(R.id.card_header);
-            String transitionName = assignments.get(position).getTitle();
-            ViewCompat.setTransitionName(header, transitionName);
-
             Bundle bundle = new Bundle();
             bundle.putSerializable(ASSIGNMENTS_TAG, (Serializable) assignments);
             bundle.putInt(ASSIGNMENT_NUMBER, position);
@@ -149,16 +144,13 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
             CourseAssignmentsFragment fragment = new CourseAssignmentsFragment();
             fragment.setArguments(bundle);
 
-            fragment.setSharedElementEnterTransition(new AssignmentTransition());
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 fragment.setEnterTransition(new Fade());
                 fragment.setExitTransition(new Fade());
             }
-            fragment.setSharedElementReturnTransition(new AssignmentTransition());
 
             FragmentManager manager = activity.getSupportFragmentManager();
             manager.beginTransaction()
-                    .addSharedElement(header, transitionName)
                     // Add instead of replacing so that the state of opened assignments
                     // remains the same after returning
                     .add(R.id.fragment_container, fragment)
