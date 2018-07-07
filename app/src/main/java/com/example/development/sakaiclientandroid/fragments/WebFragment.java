@@ -17,8 +17,10 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 import com.example.development.sakaiclientandroid.R;
+import com.example.development.sakaiclientandroid.api_models.assignments.Attachment;
 
 public class WebFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -68,10 +70,9 @@ public class WebFragment extends Fragment {
     }
 
     private class AttachmentDownloadListener implements DownloadListener {
+
         @Override
         public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
-            DownloadManager downloadManager = (DownloadManager) getContext().getSystemService(Context.DOWNLOAD_SERVICE);
-
             Uri downloadUri = Uri.parse(url);
             DownloadManager.Request request = new DownloadManager.Request(downloadUri);
             request.addRequestHeader("Cookie", getCookies());
@@ -83,17 +84,30 @@ public class WebFragment extends Fragment {
             request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,
                     downloadUri.getLastPathSegment());
 
-            downloadManager.enqueue(request);
-        }
-    }
+            DownloadManager downloadManager = (DownloadManager) getContext().getSystemService(Context.DOWNLOAD_SERVICE);
+            if(downloadManager != null) {
+                downloadManager.enqueue(request);
+            } else {
+                // Show a toast with an error
+                Toast error = Toast.makeText(getContext(), "Download failed, please try again later.",
+                        Toast.LENGTH_SHORT);
+                error.show();
+            }
 
-    private String getCookies() {
-        // Since the CookieManager was managed by reference earlier
-        // in the WebViewClient, the cookies should remain updated
-        // We only need one set of cookies, the Sakai cookies,
-        // so this method does not need to parse any extra cookies.
-        CookieManager cookieManager = CookieManager.getInstance();
-        String cookieUrl = getContext().getString(R.string.COOKIE_URL_1);
-        return cookieManager.getCookie(cookieUrl);
+            // Detach the fragment because it won;t be displaying any information
+            // The WebFragment is always added to the backstack, so we need to pop
+            // the backtstack for the back button to function as expected
+            getActivity().getSupportFragmentManager().popBackStack();
+        }
+
+        private String getCookies() {
+            // Since the CookieManager was managed by reference earlier
+            // in the WebViewClient, the cookies should remain updated
+            // We only need one set of cookies, the Sakai cookies,
+            // so this method does not need to parse any extra cookies.
+            CookieManager cookieManager = CookieManager.getInstance();
+            String cookieUrl = getContext().getString(R.string.COOKIE_URL_1);
+            return cookieManager.getCookie(cookieUrl);
+        }
     }
 }
