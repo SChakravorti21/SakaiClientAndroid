@@ -3,13 +3,11 @@ package com.example.development.sakaiclientandroid.utils.custom;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spanned;
 import android.transition.Fade;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,8 +16,6 @@ import android.widget.TextView;
 import com.example.development.sakaiclientandroid.NavActivity;
 import com.example.development.sakaiclientandroid.R;
 import com.example.development.sakaiclientandroid.api_models.assignments.AssignmentObject;
-import com.example.development.sakaiclientandroid.fragments.WebFragment;
-import com.example.development.sakaiclientandroid.fragments.assignments.AssignmentTransition;
 import com.example.development.sakaiclientandroid.fragments.assignments.CourseAssignmentsFragment;
 
 import java.io.Serializable;
@@ -149,8 +145,8 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
                 fragment.setExitTransition(new Fade());
             }
 
-            FragmentManager manager = activity.getSupportFragmentManager();
-            manager.beginTransaction()
+            activity.getSupportFragmentManager()
+                    .beginTransaction()
                     // Add instead of replacing so that the state of opened assignments
                     // remains the same after returning
                     .add(R.id.fragment_container, fragment)

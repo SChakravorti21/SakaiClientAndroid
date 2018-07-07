@@ -16,10 +16,14 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.example.development.sakaiclientandroid.R;
+import com.example.development.sakaiclientandroid.api_models.assignments.Access;
 import com.example.development.sakaiclientandroid.api_models.assignments.AssignmentObject;
+import com.example.development.sakaiclientandroid.api_models.assignments.Attachment;
 import com.example.development.sakaiclientandroid.utils.custom.CustomLinkMovementMethod;
 
 import org.w3c.dom.Text;
+
+import java.util.List;
 
 import static com.example.development.sakaiclientandroid.NavActivity.ASSIGNMENTS_TAG;
 
@@ -51,41 +55,65 @@ public class SingleAssignmentFragment extends Fragment {
         FrameLayout layout = (FrameLayout) inflater.inflate(R.layout.fragment_single_assignment,
                                                     container, false);
 
-        ViewGroup header = layout.findViewById(R.id.card_header);
-        ViewCompat.setTransitionName(header, assignment.getTitle());
+        // Set assignment text header, due date, assignments details (eg. status), etc.
+        constructTextView(layout, R.id.assignment_name, assignment.getTitle());
+        constructTextView(layout, R.id.assignment_date,
+                "Due: " + assignment.getDueTimeString());
+        constructTextView(layout, R.id.assignment_status, assignment.getStatus());
+        constructTextView(layout, R.id.assignment_max_grade, assignment.getGradeScaleMaxPoints());
+        constructTextView(layout, R.id.assignment_allows_resubmission,
+                assignment.getAllowResubmission() ? "Yes" : "No");
 
-        // Set assignment text header
-        TextView titleView = layout.findViewById(R.id.assignment_name);
-        titleView.setText(assignment.getTitle());
+        // Show the attachments for the assignment
+        constructAttachmentsView(layout);
+        // Create the assignment description
+        constructDescriptionView(layout);
 
-        // Set the assignment due date
-        TextView dueDateView = layout.findViewById(R.id.assignment_date);
-        dueDateView.setText("Due: " + assignment.getDueTimeString());
+        return layout;
+    }
 
-        // Set details of body
-        TextView statusView = layout.findViewById(R.id.assignment_status);
-        statusView.setText(assignment.getStatus());
+    private void constructAttachmentsView(FrameLayout layout) {
+        List<Attachment> attachments = assignment.getAttachments();
 
-        TextView maxGradeView = layout.findViewById(R.id.assignment_max_grade);
-        maxGradeView.setText(assignment.getGradeScaleMaxPoints());
+        StringBuilder attachmentsString = new StringBuilder();
+        for(Attachment attachment : attachments) {
+            attachmentsString.append("<p><a href=\"")
+                             .append(attachment.getUrl())
+                             .append("\">")
+                             .append(attachment.getName())
+                             .append("</a></p>");
+        }
 
-        TextView allowsResubView = layout.findViewById(R.id.assignment_allows_resubmission);
-        allowsResubView.setText(assignment.getAllowResubmission() ? "Yes" : "No");
+        Spanned attachmentBody = getSpannedFromHtml(attachmentsString.toString());
+        TextView attachmentsView = layout.findViewById(R.id.assignment_attachments);
+        attachmentsView.setText(attachmentBody);
+        attachmentsView.setMovementMethod(CustomLinkMovementMethod.getInstance());
+    }
 
+    private void constructDescriptionView(FrameLayout layout) {
         // fromHtml(String) was deprecated in android N, so check the build version
         //before converting the html to text
-        TextView descriptionView = layout.findViewById(R.id.assignment_description);
         String instructions = assignment.getInstructions();
+        Spanned description = getSpannedFromHtml(instructions);
+
+        TextView descriptionView = layout.findViewById(R.id.assignment_description);
+        descriptionView.setText(description);
+        descriptionView.setMovementMethod(CustomLinkMovementMethod.getInstance());
+    }
+
+    private Spanned getSpannedFromHtml(String instructions) {
         Spanned description;
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             description = Html.fromHtml(instructions, Html.FROM_HTML_MODE_LEGACY);
         } else {
             description = Html.fromHtml(instructions);
-        };
-        descriptionView.setText(description);
-        descriptionView.setMovementMethod(CustomLinkMovementMethod.getInstance());
+        }
+        return description;
+    }
 
-        return layout;
+    private void constructTextView(FrameLayout layout, int assignment_name, String text) {
+        TextView textView = layout.findViewById(assignment_name);
+        textView.setText(text);
     }
 
 }

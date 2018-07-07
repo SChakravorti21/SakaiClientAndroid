@@ -18,6 +18,8 @@
         android:id="@+id/view_pager_indicators"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
         android:background="#80000000"
         app:tabIndicatorHeight="0dp"
         app:tabBackground="@drawable/tab_selector"
