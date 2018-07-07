@@ -1,5 +1,8 @@
 package com.example.development.sakaiclientandroid;
 
+import android.app.DownloadManager;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -19,6 +22,7 @@ import com.example.development.sakaiclientandroid.fragments.SettingsFragment;
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
 import com.example.development.sakaiclientandroid.utils.custom.CustomLinkMovementMethod;
+import com.example.development.sakaiclientandroid.utils.requests.DownloadCompleteReceiver;
 import com.example.development.sakaiclientandroid.utils.requests.RequestCallback;
 import com.example.development.sakaiclientandroid.utils.requests.RequestManager;
 
@@ -74,12 +78,21 @@ public class NavActivity extends AppCompatActivity
                 Log.e("Response error", throwable.getMessage());
             }
         });
+
+        // Register the download receiver to open downloads once they are complete
+        registerDownloadReceiver();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         CustomLinkMovementMethod.setFragmentManager(getSupportFragmentManager());
+    }
+
+    public void registerDownloadReceiver() {
+        IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
+        DownloadCompleteReceiver receiver = new DownloadCompleteReceiver();
+        registerReceiver(receiver, filter);
     }
 
     /**

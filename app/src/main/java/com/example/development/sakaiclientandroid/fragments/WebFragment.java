@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.example.development.sakaiclientandroid.R;
 import com.example.development.sakaiclientandroid.api_models.assignments.Attachment;
+import com.example.development.sakaiclientandroid.utils.requests.DownloadCompleteReceiver;
 
 public class WebFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -86,12 +87,18 @@ public class WebFragment extends Fragment {
 
             DownloadManager downloadManager = (DownloadManager) getContext().getSystemService(Context.DOWNLOAD_SERVICE);
             if(downloadManager != null) {
-                downloadManager.enqueue(request);
+                long downloadId = downloadManager.enqueue(request);
+                DownloadCompleteReceiver.addDownloadId(downloadId);
+
+                // Indicate that the download has begun
+                Toast successToast = Toast.makeText(getContext(), "Download started...",
+                        Toast.LENGTH_SHORT);
+                successToast.show();
             } else {
                 // Show a toast with an error
-                Toast error = Toast.makeText(getContext(), "Download failed, please try again later.",
+                Toast errorToast = Toast.makeText(getContext(), "Download failed, please try again later.",
                         Toast.LENGTH_SHORT);
-                error.show();
+                errorToast.show();
             }
 
             // Detach the fragment because it won;t be displaying any information
