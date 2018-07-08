@@ -293,9 +293,9 @@ public final class NavActivity extends AppCompatActivity
     }
 
 
-    public void showNetworkErrorToast()
+    public void showErrorToast(String errorString)
     {
-        Toast toast = Toast.makeText(this, getString(R.string.network_error), Toast.LENGTH_LONG);
+        Toast toast = Toast.makeText(this, errorString, Toast.LENGTH_LONG);
         toast.setGravity(Gravity.CENTER, 0, 0);
 
         View view = toast.getView();

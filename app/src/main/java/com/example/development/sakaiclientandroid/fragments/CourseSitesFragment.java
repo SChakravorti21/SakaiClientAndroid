@@ -118,7 +118,7 @@ public class CourseSitesFragment extends BaseFragment {
                     navActivity.stopProgressBar();
 
                     if(course == null) {
-                        Toast.makeText(navActivity, "Course has no grades", Toast.LENGTH_LONG).show();
+                        navActivity.showErrorToast(navActivity.getString(R.string.no_grades));
                     }
                     //course has grades
                     else {
@@ -142,7 +142,7 @@ public class CourseSitesFragment extends BaseFragment {
                 {
                     //show a network error toast
                     navActivity.stopProgressBar();
-                    navActivity.showNetworkErrorToast();
+                    navActivity.showErrorToast(navActivity.getString(R.string.network_error));
                 }
             });
         }

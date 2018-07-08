@@ -113,13 +113,29 @@ public class SiteGradesFragment extends BaseFragment {
 
                 if(course == null)
                 {
-                    Toast.makeText(mContext, "Course has no grades", Toast.LENGTH_SHORT).show();
+                    FragmentActivity activity = getActivity();
+                    if(activity instanceof NavActivity)
+                    {
+                        ((NavActivity) activity).showErrorToast(activity.getString(R.string.no_grades));
+                    }
                 }
                 else
                 {
                     feedGradesIntoListView();
                 }
             }
+
+            @Override
+            public void onSiteGradesFailure(Throwable t)
+            {
+                swipeRefreshLayout.setRefreshing(false);
+                FragmentActivity activity = getActivity();
+                if(activity instanceof NavActivity)
+                {
+                    ((NavActivity) activity).showErrorToast(activity.getString(R.string.network_error));
+                }
+            }
+
         });
     }
 

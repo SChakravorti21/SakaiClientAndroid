@@ -14,6 +14,7 @@ import com.example.development.sakaiclientandroid.utils.requests.RequestManager;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -87,7 +88,7 @@ public class DataHandler {
             }
 
             @Override
-            public void onFailure(Call<AllAssignments> call, Throwable t) {
+            public void onFailure(@NonNull Call<AllAssignments> call, @NonNull Throwable t) {
                 UICallback.onAllAssignmentsFailure(t);
             }
         });
@@ -102,7 +103,7 @@ public class DataHandler {
 
         RequestManager.fetchAllGrades(new Callback<AllGradesObject>() {
             @Override
-            public void onResponse(Call<AllGradesObject> call, Response<AllGradesObject> response) {
+            public void onResponse(@NonNull Call<AllGradesObject> call, @NonNull Response<AllGradesObject> response) {
 
                 AllGradesObject allGradesObject = response.body();
 
@@ -128,7 +129,7 @@ public class DataHandler {
             }
 
             @Override
-            public void onFailure(Call<AllGradesObject> call, Throwable t) {
+            public void onFailure(@NonNull Call<AllGradesObject> call, @NonNull Throwable t) {
                 UICallback.onAllGradesFailure(t);
             }
         });
@@ -149,7 +150,7 @@ public class DataHandler {
         //pass in site id and callback
         RequestManager.fetchGradesForSite(siteId, new Callback<GradebookCollectionObject>() {
             @Override
-            public void onResponse(Call<GradebookCollectionObject> call, Response<GradebookCollectionObject> response) {
+            public void onResponse(@NonNull Call<GradebookCollectionObject> call, Response<GradebookCollectionObject> response) {
 
                 GradebookCollectionObject gradebookCollectionObject = response.body();
 
@@ -166,13 +167,17 @@ public class DataHandler {
 
 
             @Override
-            public void onFailure(Call<GradebookCollectionObject> call, Throwable t) {
+            public void onFailure(@NonNull Call<GradebookCollectionObject> call, Throwable t) {
                 UICallback.onSiteGradesFailure(t);
             }
         });
     }
 
-
+    /**
+     * Requests all the sites and their site pages
+     * @param refresh whether or not we want to refresh the sites that are cached
+     * @param UICallback call back to be run after the request is done
+     */
     public static void requestAllSites(boolean refresh, final RequestCallback UICallback) {
 
         //dont do anything if we aren't refreshing
@@ -183,16 +188,22 @@ public class DataHandler {
 
         RequestManager.fetchAllSites(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
 
                 try {
-                    String responseBody = response.body().string();
+                    if(response.body() != null) {
+                        String responseBody = response.body().string();
 
-                    ArrayList<Course> allCourses = jsonToCourseObj(responseBody);
-                    organizeByTerm(allCourses);
+                        ArrayList<Course> allCourses = jsonToCourseObj(responseBody);
+                        organizeByTerm(allCourses);
+                    }
+                    else {
+                        UICallback.onAllCoursesFailure(new NullPointerException());
+                    }
                 }
                 catch(Exception e) {
                     e.printStackTrace();
+                    UICallback.onAllCoursesFailure(new ParseException("Failed parsing json response", 0));
                 }
 
                 hasRequestedAllGrades = false;
@@ -203,7 +214,7 @@ public class DataHandler {
             }
 
             @Override
-            public void onFailure(Call<ResponseBody> call, Throwable throwable) {
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable throwable) {
                 UICallback.onAllCoursesFailure(throwable);
             }
         });
@@ -293,7 +304,7 @@ public class DataHandler {
             else {
                 sorted.add(currSites);
 
-                currSites = new ArrayList<Course>();
+                currSites = new ArrayList<>();
                 currSites.add(course);
 
                 currTerm = course.getTerm();
