@@ -6,6 +6,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.drawable.AdaptiveIconDrawable;
 import android.net.Uri;
 import android.support.v4.BuildConfig;
 import android.support.v4.content.FileProvider;
