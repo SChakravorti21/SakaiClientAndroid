@@ -1,16 +1,23 @@
 package com.example.development.sakaiclientandroid.utils.custom;
 
+import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spanned;
 import android.transition.Fade;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.example.development.sakaiclientandroid.NavActivity;
@@ -32,8 +39,9 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
 
     private List<AssignmentObject> assignments;
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        CardView cardView;
+    public class ViewHolder extends RecyclerView.ViewHolder
+            implements PopupMenu.OnMenuItemClickListener, View.OnClickListener {
+
         TextView titleView;
         TextView descriptionView;
         TextView dueDateView;
@@ -41,18 +49,62 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
 
         ViewHolder(CardView cardView) {
             super(cardView);
-            this.cardView = cardView;
             this.titleView = cardView.findViewById(R.id.assignment_name);
             this.descriptionView = cardView.findViewById(R.id.assignment_description);
             this.dueDateView = cardView.findViewById(R.id.assignment_date);
+
+            // Set the click listener on the header and footer
+            titleView.setOnClickListener(this);
+            dueDateView.setOnClickListener(this);
         }
 
         void setPosition(int position) {
             this.position = position;
+        }
 
-            // Set the click listener on the entire CardView
-            CardClickListener listener = new CardClickListener(position);
-            this.cardView.setOnClickListener(listener);
+        @Override
+        public boolean onMenuItemClick(MenuItem item) {
+            int itemId = item.getItemId();
+
+            switch (itemId) {
+                case R.id.action_expand:
+                    // This is the same behavior as expanding the card, so just
+                    // trigger onClick.
+                    // The view passed into the onClick listener does not matter
+                    // much since it is only used to get the context for using the
+                    // fragment manager.
+                    this.expandAssignment( (AppCompatActivity) titleView.getContext() );
+                    return true;
+            }
+
+            return false;
+        }
+
+        @Override
+        public void onClick(View v) {
+            this.expandAssignment( (AppCompatActivity) v.getContext() );
+        }
+
+        private void expandAssignment(AppCompatActivity activity) {
+            Bundle bundle = new Bundle();
+            bundle.putSerializable(ASSIGNMENTS_TAG, (Serializable) assignments);
+            bundle.putInt(ASSIGNMENT_NUMBER, position);
+
+            CourseAssignmentsFragment fragment = new CourseAssignmentsFragment();
+            fragment.setArguments(bundle);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                fragment.setEnterTransition(new Fade());
+                fragment.setExitTransition(new Fade());
+            }
+
+            activity.getSupportFragmentManager()
+                    .beginTransaction()
+                    // Add instead of replacing so that the state of opened assignments
+                    // remains the same after returning
+                    .add(R.id.fragment_container, fragment)
+                    .addToBackStack(null)
+                    .commit();
         }
     }
 
@@ -66,10 +118,27 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
                                                    int viewType) {
         // create a new view. The entire CardView must be passed into
         // the ViewHolder constructor since it is the parent of all inner elements.
-        CardView v = (CardView) LayoutInflater.from(parent.getContext())
+        CardView view = (CardView) LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.assignment_cell_layout, parent, false);
 
-        return new ViewHolder(v);
+        // Inflate the options menu (mainly just used for expanding the card)
+        TextView popupView = view.findViewById(R.id.assignment_popup_menu);
+        final PopupMenu popupMenu = new PopupMenu(parent.getContext(), popupView);
+        MenuInflater menuInflater = popupMenu.getMenuInflater();
+        menuInflater.inflate(R.menu.assignment_card_menu, popupMenu.getMenu());
+
+        // Set the listener for menu click
+        ViewHolder holder = new ViewHolder(view);
+        popupMenu.setOnMenuItemClickListener(holder);
+
+        popupView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popupMenu.show();
+            }
+        });
+
+        return holder;
     }
 
     // Replace the contents of a view (invoked by the layout manager)
@@ -109,49 +178,4 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
         return assignments.size();
     }
 
-
-    private class CardClickListener implements View.OnClickListener {
-        private int position;
-
-        /**
-         * The constructor takes in an integer parameter to indicate what the
-         * position of the assignment is. This allows it to automatically go to
-         * that assignment in the full views when it is clicked.
-         * @param position
-         */
-        CardClickListener(int position) {
-            this.position = position;
-        }
-
-        /**
-         * Creates and adds a new fragment to the view stack which represents
-         * all of the class's assignments. The initial assignment is set to
-         * the one that was clicked.
-         * @param v
-         */
-        @Override
-        public void onClick(View v) {
-            NavActivity activity = (NavActivity) v.getContext();
-
-            Bundle bundle = new Bundle();
-            bundle.putSerializable(ASSIGNMENTS_TAG, (Serializable) assignments);
-            bundle.putInt(ASSIGNMENT_NUMBER, position);
-
-            CourseAssignmentsFragment fragment = new CourseAssignmentsFragment();
-            fragment.setArguments(bundle);
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                fragment.setEnterTransition(new Fade());
-                fragment.setExitTransition(new Fade());
-            }
-
-            activity.getSupportFragmentManager()
-                    .beginTransaction()
-                    // Add instead of replacing so that the state of opened assignments
-                    // remains the same after returning
-                    .add(R.id.fragment_container, fragment)
-                    .addToBackStack(null)
-                    .commit();
-        }
-    }
 }
