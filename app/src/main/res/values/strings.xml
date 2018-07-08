@@ -47,4 +47,7 @@
     <string name="network_error">A network error has occured. Please try again later. </string>
 
     <string name="fetched_grades">Fetched latest grades!</string>
+
+    <string name="grade_item">%1$.2f/%2$.2f</string>
+    <string name="grade_item_null">/%1$.2f</string>
 </resources>

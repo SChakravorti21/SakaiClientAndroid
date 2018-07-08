@@ -28,18 +28,37 @@ public class GradeNodeViewHolder extends TreeNode.BaseNodeViewHolder<GradeNodeVi
         assignmentText.setText(value.assignment);
 
         TextView gradeText = view.findViewById(R.id.txt_grade);
-        gradeText.setText(value.grade);
+
+        //dynamically fills in the string resource
+        if(value.grade == null)
+        {
+            gradeText.setText(
+                    context.getString(R.string.grade_item_null,
+                            value.points)
+            );
+        }
+        else
+        {
+            gradeText.setText(
+                    context.getString(R.string.grade_item,
+                            value.grade,
+                            value.points)
+            );
+        }
 
         return view;
     }
 
 
     public static class GradeTreeItem {
-        public String assignment, grade;
+        public String assignment;
+        public Double grade;
+        public Double points;
 
-        public GradeTreeItem(String a, String g) {
+        public GradeTreeItem(String a, Double g, Double p) {
             this.assignment = a;
             this.grade = g;
+            this.points = p;
         }
     }
 }

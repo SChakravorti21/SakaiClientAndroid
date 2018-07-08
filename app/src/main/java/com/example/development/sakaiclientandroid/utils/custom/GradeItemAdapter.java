@@ -57,7 +57,7 @@ public class GradeItemAdapter extends ArrayAdapter {
 
         if(convertView == null) {
             //create inflater
-            LayoutInflater inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            LayoutInflater inflater = (LayoutInflater) context.getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
             //inflate the row
             convertView = inflater.inflate(R.layout.gradeitem_node, parent, false);
@@ -68,7 +68,24 @@ public class GradeItemAdapter extends ArrayAdapter {
 
             //set the text
             nameTextView.setText(assignmentsList.get(position).getItemName());
-            gradeTextView.setText(assignmentsList.get(position).getGrade() + "/" + assignmentsList.get(position).getPoints());
+
+
+            //dynamically fills in the string resource
+            if(assignmentsList.get(position).getGrade() == null)
+            {
+                gradeTextView.setText(
+                        context.getString(R.string.grade_item_null,
+                                assignmentsList.get(position).getPoints())
+                );
+            }
+            else
+            {
+                gradeTextView.setText(
+                        context.getString(R.string.grade_item,
+                                assignmentsList.get(position).getGrade(),
+                                assignmentsList.get(position).getPoints())
+                );
+            }
 
 
             //set padding on the name view

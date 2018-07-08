@@ -9,7 +9,7 @@ public class GradebookObject {
 
     @SerializedName("grade")
     @Expose
-    private String grade;
+    private Double grade;
     @SerializedName("itemName")
     @Expose
     private String itemName;
@@ -24,11 +24,11 @@ public class GradebookObject {
     private String userName;
 
 
-    public String getGrade() {
+    public Double getGrade() {
         return grade;
     }
 
-    public void setGrade(String grade) {
+    public void setGrade(Double grade) {
         this.grade = grade;
     }
 
