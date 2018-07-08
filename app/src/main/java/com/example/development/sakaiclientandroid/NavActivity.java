@@ -25,6 +25,7 @@ import com.example.development.sakaiclientandroid.fragments.AssignmentsFragment;
 import com.example.development.sakaiclientandroid.fragments.CourseSitesFragment;
 import com.example.development.sakaiclientandroid.fragments.SettingsFragment;
 import com.example.development.sakaiclientandroid.models.Course;
+import com.example.development.sakaiclientandroid.utils.BottomNavigationViewHelper;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
 import com.example.development.sakaiclientandroid.utils.requests.RequestCallback;
 import com.example.development.sakaiclientandroid.utils.requests.RequestManager;
@@ -70,6 +71,8 @@ public final class NavActivity extends AppCompatActivity
 
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(this);
+
+        BottomNavigationViewHelper.removeShiftMode(navigation);
 
         // Create RequestManager's Retrofit instance
         RequestManager.createRetrofitInstance(this);
