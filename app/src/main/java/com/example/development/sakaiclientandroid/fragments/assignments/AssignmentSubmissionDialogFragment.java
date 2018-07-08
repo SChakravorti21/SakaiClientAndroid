@@ -1,77 +1,85 @@
-package com.example.development.sakaiclientandroid.fragments;
+package com.example.development.sakaiclientandroid.fragments.assignments;
+
 
 import android.app.DownloadManager;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
-import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
-import android.webkit.WebSettings;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
 import com.example.development.sakaiclientandroid.R;
-import com.example.development.sakaiclientandroid.api_models.assignments.Attachment;
 import com.example.development.sakaiclientandroid.utils.requests.DownloadCompleteReceiver;
 
-public class WebFragment extends Fragment {
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String URL_PARAM = "URL_PARAM";
+public class AssignmentSubmissionDialogFragment extends BottomSheetDialogFragment {
+    public static final String URL_PARAM = "URL_PARAM";
 
-    private String URL;
+    private String url;
 
-    public WebFragment() {
+    public AssignmentSubmissionDialogFragment() {
         // Required empty public constructor
     }
 
-    public static WebFragment newInstance(String url) {
-        WebFragment fragment = new WebFragment();
-        Bundle args = new Bundle();
-        args.putString(URL_PARAM, url);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            URL = getArguments().getString(URL_PARAM);
-        }
+
+        Bundle arguments = getArguments();
+        url = arguments.getString(URL_PARAM);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_web, container, false);
+        return inflater.inflate(R.layout.fragment_assignment_submission_dialog, container, false);
+    }
 
-        WebView webView = view.findViewById(R.id.data_webview);
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        final WebView webView = view.findViewById(R.id.assignment_submission_view);
         webView.setDownloadListener(new AttachmentDownloadListener());
         webView.setWebViewClient(new WebViewClient() {
             @Override
-            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                // For attachment links, the URLs are often broken by the way
+                // redirects work in this fragment. Intercept the url and adjust it
+                // if the link is broken.
+                if(url.contains("access/null/content")) {
+                    url = url.replaceFirst("/null", "");
+                }
+
+                webView.loadUrl(url);
                 return false;
             }
         });
-        WebSettings settings = webView.getSettings();
-        settings.setJavaScriptEnabled(true);
-        webView.loadUrl(URL);
-
-        return view;
+        webView.loadUrl(url);
     }
 
-    // TODO: This functionality is shared by WebFragment and AssignmentSubmissionDialogFragment,
-    // refactor it to be usable by both classes.
+    private String getCookies() {
+        // Since the CookieManager was managed by reference earlier
+        // in the WebViewClient, the cookies should remain updated
+        // We only need one set of cookies, the Sakai cookies,
+        // so this method does not need to parse any extra cookies.
+        CookieManager cookieManager = CookieManager.getInstance();
+        String cookieUrl = getContext().getString(R.string.COOKIE_URL_1);
+        return cookieManager.getCookie(cookieUrl);
+    }
+
     private class AttachmentDownloadListener implements DownloadListener {
 
         @Override
@@ -102,21 +110,6 @@ public class WebFragment extends Fragment {
                         Toast.LENGTH_SHORT);
                 errorToast.show();
             }
-
-            // Detach the fragment because it won;t be displaying any information
-            // The WebFragment is always added to the backstack, so we need to pop
-            // the backtstack for the back button to function as expected
-            getActivity().getSupportFragmentManager().popBackStack();
-        }
-
-        private String getCookies() {
-            // Since the CookieManager was managed by reference earlier
-            // in the WebViewClient, the cookies should remain updated
-            // We only need one set of cookies, the Sakai cookies,
-            // so this method does not need to parse any extra cookies.
-            CookieManager cookieManager = CookieManager.getInstance();
-            String cookieUrl = getContext().getString(R.string.COOKIE_URL_1);
-            return cookieManager.getCookie(cookieUrl);
         }
     }
 }

@@ -4,14 +4,20 @@ package com.example.development.sakaiclientandroid.fragments.assignments;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetDialog;
+import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.CardView;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -26,11 +32,12 @@ import org.w3c.dom.Text;
 import java.util.List;
 
 import static com.example.development.sakaiclientandroid.NavActivity.ASSIGNMENTS_TAG;
+import static com.example.development.sakaiclientandroid.fragments.assignments.AssignmentSubmissionDialogFragment.URL_PARAM;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class SingleAssignmentFragment extends Fragment {
+public class SingleAssignmentFragment extends Fragment implements View.OnClickListener {
 
     AssignmentObject assignment;
 
@@ -69,7 +76,30 @@ public class SingleAssignmentFragment extends Fragment {
         // Create the assignment description
         constructDescriptionView(layout);
 
+        layout.findViewById(R.id.assignment_submit_button).setOnClickListener(this);
+
         return layout;
+    }
+
+    @Override
+    public void onClick(View v) {
+        int viewId = v.getId();
+
+        switch (viewId) {
+            case R.id.assignment_submit_button:
+                showSubmissionSheet();
+                break;
+        }
+    }
+
+    private void showSubmissionSheet() {
+        Bundle arguments = new Bundle();
+        arguments.putString(URL_PARAM, assignment.getEntityURL());
+
+        BottomSheetDialogFragment dialogFragment = new AssignmentSubmissionDialogFragment();
+        dialogFragment.setArguments(arguments);
+
+        dialogFragment.show(getActivity().getSupportFragmentManager(), "assignment_bottom_sheet");
     }
 
     private void constructAttachmentsView(FrameLayout layout) {
@@ -121,5 +151,4 @@ public class SingleAssignmentFragment extends Fragment {
         TextView textView = layout.findViewById(assignment_name);
         textView.setText(text);
     }
-
 }

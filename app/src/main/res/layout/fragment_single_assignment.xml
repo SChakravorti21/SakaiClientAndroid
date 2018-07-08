@@ -19,35 +19,57 @@
             android:layout_height="match_parent">
 
             <LinearLayout
-                android:id="@+id/card_header"
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/sakai_medium_red"
-                android:orientation="vertical"
                 android:paddingBottom="16dp"
                 android:paddingLeft="12dp"
                 android:paddingRight="12dp"
                 android:paddingTop="48dp">
 
-                <TextView
-                    android:id="@+id/assignment_name"
-                    android:layout_width="match_parent"
+                <LinearLayout
+                    android:id="@+id/card_header"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp"
-                    android:layout_marginRight="32dp"
-                    android:maxLines="2"
-                    android:textColor="@color/sakai_light_silver"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    tools:text="Programming Assignment 1: Introduction to C" />
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/assignment_date"
-                    android:layout_width="match_parent"
+                    <TextView
+                        android:id="@+id/assignment_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="4dp"
+                        android:layout_marginRight="32dp"
+                        android:maxLines="2"
+                        android:textColor="@color/sakai_light_silver"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        tools:text="Programming Assignment 1: Introduction to C" />
+
+                    <TextView
+                        android:id="@+id/assignment_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/sakai_light_silver"
+                        android:textSize="12sp"
+                        tools:text="Due: Feb 15, 2018 11:55 pm" />
+
+                </LinearLayout>
+
+                <!-- Textview for opening the bottom sheet dialog -->
+                <!-- MinWidth prevents button from having excess padding -->
+                <Button
+                    android:id="@+id/assignment_submit_button"
+                    android:text="\uf35d"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/sakai_light_silver"
-                    android:textSize="12sp"
-                    tools:text="Due: Feb 15, 2018 11:55 pm" />
+                    android:minWidth="0dp"
+                    android:textColor="@color/sakai_light_black"
+                    android:textSize="18sp"
+                    android:layout_marginRight="4dp"
+                    style="@style/FontawesomeText"
+                    android:layout_gravity="center_vertical|end"/>
 
             </LinearLayout>
 
