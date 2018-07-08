@@ -117,32 +117,36 @@ public class CourseSitesFragment extends BaseFragment {
                     //stop the progress bar
                     navActivity.stopProgressBar();
 
-                    if(course == null) {
-                        navActivity.showErrorToast(navActivity.getString(R.string.no_grades));
-                    }
-                    //course has grades
-                    else {
-                        Bundle b = new Bundle();
-                        b.putSerializable(SITE_GRADES_TAG, course);
+                    Bundle b = new Bundle();
+                    b.putSerializable(SITE_GRADES_TAG, course);
 
-                        SiteGradesFragment frag = new SiteGradesFragment();
-                        frag.setArguments(b);
+                    SiteGradesFragment frag = new SiteGradesFragment();
+                    frag.setArguments(b);
 
 
-                        //show animations =  true
-                        //add to the back stack = true, since we want to be able to click back from this screen
-                        navActivity.loadFragment(frag, true, true);
+                    //show animations =  true
+                    //add to the back stack = true, since we want to be able to click back from this screen
+                    navActivity.loadFragment(frag, true, true);
 
-                        navActivity.setActionBarTitle("Gradebook: " + course.getTitle());
-                    }
+                    navActivity.setActionBarTitle("Gradebook: " + course.getTitle());
                 }
 
                 @Override
-                public void onSiteGradesFailure(Throwable t)
+                public void onSiteGradesEmpty(int errorMsgId)
                 {
                     //show a network error toast
                     navActivity.stopProgressBar();
-                    navActivity.showErrorToast(navActivity.getString(R.string.network_error));
+                    navActivity.showErrorToast(navActivity.getString(errorMsgId));
+                }
+
+
+                @Override
+                public void onRequestFailure(int errorMsgId, Throwable t)
+                {
+                    navActivity.stopProgressBar();
+                    navActivity.showErrorToast(navActivity.getString(errorMsgId));
+
+                    t.printStackTrace();
                 }
             });
         }

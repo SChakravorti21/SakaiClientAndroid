@@ -1,6 +1,8 @@
 package com.example.development.sakaiclientandroid.utils;
 
 import android.support.annotation.NonNull;
+
+import com.example.development.sakaiclientandroid.R;
 import com.example.development.sakaiclientandroid.api_models.assignments.AllAssignments;
 import com.example.development.sakaiclientandroid.api_models.assignments.AssignmentObject;
 import com.example.development.sakaiclientandroid.api_models.gradebook.AllGradesObject;
@@ -161,14 +163,14 @@ public class DataHandler {
                 }
                 else {
 
-                    UICallback.onSiteGradesSuccess(null);
+                    UICallback.onSiteGradesEmpty(R.string.no_grades);
                 }
             }
 
 
             @Override
             public void onFailure(@NonNull Call<GradebookCollectionObject> call, Throwable t) {
-                UICallback.onSiteGradesFailure(t);
+                UICallback.onRequestFailure(R.string.network_error, t);
             }
         });
     }

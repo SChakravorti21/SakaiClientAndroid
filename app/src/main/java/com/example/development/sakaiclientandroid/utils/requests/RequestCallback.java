@@ -10,13 +10,16 @@ import java.util.ArrayList;
 
 public class RequestCallback {
 
+    public void onRequestFailure(int msgRscId, Throwable t) { }
+
+
     public void onAllCoursesSuccess(ArrayList<ArrayList<Course>> response) { }
 
     public void onAllCoursesFailure(Throwable throwable) { }
 
     public void onSiteGradesSuccess(Course course) { }
 
-    public void onSiteGradesFailure(Throwable throwable) { }
+    public void onSiteGradesEmpty(int msgRscId) { }
 
     public void onAllGradesSuccess(ArrayList<ArrayList<Course>> response) { }
 

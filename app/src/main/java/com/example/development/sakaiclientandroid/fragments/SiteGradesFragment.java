@@ -100,43 +100,47 @@ public class SiteGradesFragment extends BaseFragment {
      * Refreshes the site grades page by remaking the request for grades for that course
      * Then feed the data into list view using feedGradesIntoListView()
      */
-    public void refreshSiteGrades()
+    public void refreshSiteGrades() throws IllegalStateException
     {
-        DataHandler.requestGradesForSite(siteID, true, new RequestCallback()
-        {
 
-            @Override
-            public void onSiteGradesSuccess(Course course)
-            {
+        FragmentActivity activity = getActivity();
+        if(activity instanceof NavActivity) {
 
-                swipeRefreshLayout.setRefreshing(false);
+            final NavActivity navActivity = (NavActivity) activity;
 
-                if(course == null)
-                {
-                    FragmentActivity activity = getActivity();
-                    if(activity instanceof NavActivity)
-                    {
-                        ((NavActivity) activity).showErrorToast(activity.getString(R.string.no_grades));
-                    }
-                }
-                else
-                {
+
+
+            DataHandler.requestGradesForSite(siteID, true, new RequestCallback() {
+
+                //on the success, new grades are automatically stored in the course object
+                @Override
+                public void onSiteGradesSuccess(Course course) {
+
+                    swipeRefreshLayout.setRefreshing(false);
+
                     feedGradesIntoListView();
                 }
-            }
 
-            @Override
-            public void onSiteGradesFailure(Throwable t)
-            {
-                swipeRefreshLayout.setRefreshing(false);
-                FragmentActivity activity = getActivity();
-                if(activity instanceof NavActivity)
-                {
-                    ((NavActivity) activity).showErrorToast(activity.getString(R.string.network_error));
+
+                @Override
+                public void onSiteGradesEmpty(int errorMsgId) {
+                    //show a network error toast
+                    swipeRefreshLayout.setRefreshing(false);
+                    navActivity.showErrorToast(navActivity.getString(errorMsgId));
                 }
-            }
 
-        });
+
+                @Override
+                public void onRequestFailure(int errorMsgId, Throwable t) {
+                    swipeRefreshLayout.setRefreshing(false);
+                    navActivity.showErrorToast(navActivity.getString(errorMsgId));
+
+                    t.printStackTrace();
+                }
+
+            });
+
+        }
     }
 
 
