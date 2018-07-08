@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:title="Sort"
+        android:icon="@drawable/ic_filter_list_24dp"
+        app:showAsAction="ifRoom">
+       <menu>
+           <group android:checkableBehavior="single">
+               <!-- Sorting by date -->
+               <item
+                   android:id="@+id/action_sort_by_date"
+                   android:title="Sort By Date" />
+
+               <!-- Sorting by course (checked because everything
+                    is sorted by courses by default) -->
+               <item
+                   android:id="@+id/action_sort_by_course"
+                   android:title="Sort By Course" />
+           </group>
+       </menu>
+    </item>
+</menu>

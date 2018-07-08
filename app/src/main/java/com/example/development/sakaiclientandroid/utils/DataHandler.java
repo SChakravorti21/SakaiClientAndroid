@@ -18,8 +18,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -32,6 +34,7 @@ public class DataHandler {
 
 
     private static ArrayList<ArrayList<Course>> coursesSortedByTerm;
+    private static ArrayList<ArrayList<AssignmentObject>> assignmentsSortedByDate;
     private static HashMap<String, Course> mapSiteIdToCourse;
 
     //needed so that we don't have to make an unnecessary request if all grades
@@ -62,9 +65,15 @@ public class DataHandler {
         return mapSiteIdToCourse.get(id).getTitle();
     }
 
-    public static void requestAllAssignments(final RequestCallback UICallback) {
+    public static void requestAllAssignments(final RequestCallback UICallback,
+                                             final boolean sortByCourses) {
         if(hasRequestedAllAssignments) {
-            UICallback.onAllAssignmentsSuccess(coursesSortedByTerm);
+            if(sortByCourses) {
+                UICallback.onAllAssignmentsByCourseSuccess(coursesSortedByTerm);
+            } else {
+                UICallback.onAllAssignmentsByDateSuccess(assignmentsSortedByDate);
+            }
+
             return;
         }
 
@@ -81,11 +90,19 @@ public class DataHandler {
 
                 for(AssignmentObject assignment : allAssignments.getAssignmentObject()) {
                     Course course = mapSiteIdToCourse.get(assignment.getContext());
+                    assignment.setTerm(course.getTerm());
                     course.addAssignment(assignment);
                 }
 
                 hasRequestedAllAssignments = true;
-                UICallback.onAllAssignmentsSuccess(coursesSortedByTerm);
+                if(sortByCourses) {
+                    UICallback.onAllAssignmentsByCourseSuccess(coursesSortedByTerm);
+                }
+
+                sortAssignmentsByDate();
+                if(!sortByCourses) {
+                    UICallback.onAllAssignmentsByDateSuccess(assignmentsSortedByDate);
+                }
             }
 
             @Override
@@ -93,6 +110,52 @@ public class DataHandler {
                 UICallback.onAllAssignmentsFailure(t);
             }
         });
+    }
+
+    private static void sortAssignmentsByDate() {
+        // 15 terms should be more than enough for most students (3 * 4 = 12 < 15)
+        assignmentsSortedByDate = new ArrayList<>(15);
+
+        // For performance reasons, it is actually faster to do a quick scan
+        // through all courses to get the number of assignments. There are usually
+        // roughly 4-5 courses per term, so this will be quick and save any O(n)
+        // insert operations when creating the list of assignments.
+        for(ArrayList<Course> courses : coursesSortedByTerm) {
+            int numAssignments = 0;
+            for(Course course : courses) {
+                numAssignments += course.getNumAssignments();
+            }
+
+            // Only create a new list is there are assignments that we care about
+            if(numAssignments > 0) {
+                assignmentsSortedByDate.add(new ArrayList<AssignmentObject>(numAssignments));
+            }
+        }
+
+        int termIndex = 0;
+        for(ArrayList<Course> courses : coursesSortedByTerm) {
+            // If there are no courses, there will be no assignments
+            if(courses.size() == 0 || termIndex >= assignmentsSortedByDate.size())
+                continue;
+
+            ArrayList<AssignmentObject> termAssignments = assignmentsSortedByDate.get(termIndex);
+            for(Course course : coursesSortedByTerm.get(termIndex)) {
+                termAssignments.addAll(course.getAssignmentObjectList());
+            }
+
+            Collections.sort(termAssignments, new Comparator<AssignmentObject>() {
+                @Override
+                public int compare(AssignmentObject o1, AssignmentObject o2) {
+                    Date date1 = new Date(o1.getDueTime().getTime());
+                    Date date2 = new Date(o2.getDueTime().getTime());
+                    // We want the list sorted in reverse chronological order
+                    // so that the latest assignment comes first
+                    return -1 * date1.compareTo(date2);
+                }
+            });
+
+            termIndex++;
+        }
     }
 
     public static void requestAllGrades(boolean refreshGrades, final RequestCallback UICallback) {

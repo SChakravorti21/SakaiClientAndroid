@@ -65,7 +65,7 @@ public class SingleAssignmentFragment extends Fragment implements View.OnClickLi
         // Set assignment text header, due date, assignments details (eg. status), etc.
         constructTextView(layout, R.id.assignment_name, assignment.getTitle());
         constructTextView(layout, R.id.assignment_date,
-                "Due: " + assignment.getDueTimeString());
+                "Due: " + assignment.getDueTime().getDisplay());
         constructTextView(layout, R.id.assignment_status, assignment.getStatus());
         constructTextView(layout, R.id.assignment_max_grade, assignment.getGradeScaleMaxPoints());
         constructTextView(layout, R.id.assignment_allows_resubmission,

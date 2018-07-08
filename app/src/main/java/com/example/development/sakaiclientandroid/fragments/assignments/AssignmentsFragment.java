@@ -4,13 +4,21 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.example.development.sakaiclientandroid.NavActivity;
+import com.example.development.sakaiclientandroid.R;
+import com.example.development.sakaiclientandroid.api_models.assignments.AssignmentObject;
 import com.example.development.sakaiclientandroid.fragments.BaseFragment;
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.models.Term;
 import com.example.development.sakaiclientandroid.utils.custom.TreeViewItemClickListener;
 import com.example.development.sakaiclientandroid.utils.holders.AssignmentCourseViewHolder;
+import com.example.development.sakaiclientandroid.utils.holders.AssignmentTermHeaderViewHolder;
 import com.example.development.sakaiclientandroid.utils.holders.TermHeaderViewHolder;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
@@ -19,17 +27,27 @@ import java.util.ArrayList;
 import static com.example.development.sakaiclientandroid.NavActivity.ASSIGNMENTS_TAG;
 
 public class AssignmentsFragment extends BaseFragment {
+    public static final String ASSIGNMENTS_SORTED_BY_COURSES = "ASSIGNMENTS_SORTED_BY_COURSES";
+
     private AndroidTreeView treeView;
     private ArrayList<ArrayList<Course>> courses;
+    private ArrayList<ArrayList<AssignmentObject>> assignments;
+    private boolean sortedByCourses;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
 
         // Using the bundle arguments, construct the tree to be displayed
         Bundle arguments = getArguments();
+        sortedByCourses = arguments.getBoolean(ASSIGNMENTS_SORTED_BY_COURSES);
         try {
-            courses = (ArrayList<ArrayList<Course>>) arguments.getSerializable(ASSIGNMENTS_TAG);
+            if(sortedByCourses) {
+                courses = (ArrayList<ArrayList<Course>>) arguments.getSerializable(ASSIGNMENTS_TAG);
+            } else {
+                assignments = (ArrayList<ArrayList<AssignmentObject>>) arguments.getSerializable(ASSIGNMENTS_TAG);
+            }
         } catch (ClassCastException exception) {
             // Unable to create the tree, create a dummy tree
             //TODO: Needs better error handling
@@ -40,11 +58,40 @@ public class AssignmentsFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        createTreeView(courses);
+        if(sortedByCourses) {
+            createTreeViewFromCourses();
+        } else {
+            createTreeViewFromAssignments();
+        }
         return treeView.getView();
     }
 
-    private void createTreeView(ArrayList<ArrayList<Course>> courses) {
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.assignments_fragment_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.action_sort_by_date: {
+                NavActivity activity = (NavActivity) getActivity();
+                activity.loadAssignmentsFragment(false);
+                return true;
+            }
+            case R.id.action_sort_by_course: {
+                NavActivity activity = (NavActivity) getActivity();
+                activity.loadAssignmentsFragment(true);
+                return true;
+            }
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
+    }
+
+    private void createTreeViewFromCourses() {
         Context currContext = getActivity();
         TreeNode root = TreeNode.root();
 
@@ -90,6 +137,35 @@ public class AssignmentsFragment extends BaseFragment {
             // Add the term to the root node
             if(termNode.getChildren().size() > 0)
                 root.addChild(termNode);
+        }
+
+        treeView = new AndroidTreeView(currContext, root);
+        treeView.setDefaultAnimation(true);
+        treeView.setDefaultNodeClickListener(new TreeViewItemClickListener(treeView, root));
+    }
+
+    private void createTreeViewFromAssignments() {
+        Context currContext = getActivity();
+        TreeNode root = TreeNode.root();
+
+        // The courses as returned by the DataHandler are already sorted by term,
+        // so we just need to loop through them to create the terms with all
+        // courses and their assignments
+        for(ArrayList<AssignmentObject> termAssignments : assignments) {
+            // Get the term name
+            Term courseTerm = (termAssignments.size() > 0) ? termAssignments.get(0).getTerm() : null;
+            String termName = (courseTerm != null) ?
+                    courseTerm.getTermString() + " " + courseTerm.getYear() : "General";
+
+            // Create a term header item, and make a tree node using it
+            AssignmentTermHeaderViewHolder.TermHeaderItem termHeaderItem =
+                    new AssignmentTermHeaderViewHolder.TermHeaderItem(termName, termAssignments);
+            TreeNode termNode = new TreeNode(termHeaderItem);
+            // Set the term header view holder to inflate the appropriate view
+            termNode.setViewHolder(new AssignmentTermHeaderViewHolder(currContext));
+
+            // Add the term to the root node
+            root.addChild(termNode);
         }
 
         treeView = new AndroidTreeView(currContext, root);

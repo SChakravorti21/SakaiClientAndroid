@@ -168,7 +168,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="16dp"
                 android:layout_marginBottom="16dp"
-                app:srcCompat="@drawable/ic_open_in_new_black_24dp"
+                app:srcCompat="@drawable/ic_open_in_new_24dp"
                 android:tint="@color/sakai_medium_silver" >
 
             </android.support.design.widget.FloatingActionButton>

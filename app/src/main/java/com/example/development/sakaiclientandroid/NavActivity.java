@@ -1,7 +1,6 @@
 package com.example.development.sakaiclientandroid;
 
 import android.app.DownloadManager;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,6 +13,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
+import com.example.development.sakaiclientandroid.api_models.assignments.AssignmentObject;
 import com.example.development.sakaiclientandroid.fragments.AllCoursesFragment;
 import com.example.development.sakaiclientandroid.fragments.AllGradesFragment;
 import com.example.development.sakaiclientandroid.fragments.AnnouncementsFragment;
@@ -144,7 +144,7 @@ public class NavActivity extends AppCompatActivity
                 break;
 
             case R.id.navigation_assignments:
-                loadAssignmentsFragment();
+                loadAssignmentsFragment(true);
                 return true;
 
             case R.id.navigation_gradebook:
@@ -197,18 +197,33 @@ public class NavActivity extends AppCompatActivity
     }
 
 
-    public void loadAssignmentsFragment() {
+    public void loadAssignmentsFragment(final boolean sortedByCourses) {
         this.container.setVisibility(View.GONE);
         this.spinner.setVisibility(View.VISIBLE);
 
         DataHandler.requestAllAssignments(new RequestCallback() {
             @Override
-            public void onAllAssignmentsSuccess(ArrayList<ArrayList<Course>> response) {
-                super.onAllAssignmentsSuccess(response);
+            public void onAllAssignmentsByCourseSuccess(ArrayList<ArrayList<Course>> response) {
                 spinner.setVisibility(View.GONE);
 
                 Bundle bundle = new Bundle();
                 bundle.putSerializable(ASSIGNMENTS_TAG, response);
+                bundle.putBoolean(AssignmentsFragment.ASSIGNMENTS_SORTED_BY_COURSES, sortedByCourses);
+
+                AssignmentsFragment fragment = new AssignmentsFragment();
+                fragment.setArguments(bundle);
+                loadFragment(fragment);
+
+                container.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAllAssignmentsByDateSuccess(ArrayList<ArrayList<AssignmentObject>> response) {
+                spinner.setVisibility(View.GONE);
+
+                Bundle bundle = new Bundle();
+                bundle.putSerializable(ASSIGNMENTS_TAG, response);
+                bundle.putBoolean(AssignmentsFragment.ASSIGNMENTS_SORTED_BY_COURSES, sortedByCourses);
 
                 AssignmentsFragment fragment = new AssignmentsFragment();
                 fragment.setArguments(bundle);
@@ -223,7 +238,7 @@ public class NavActivity extends AppCompatActivity
                 Log.i("Response", "failure");
                 Log.e("Response error", throwable.getMessage());
             }
-        });
+        }, sortedByCourses);
     }
 
     public void setActionBarTitle(String title) {

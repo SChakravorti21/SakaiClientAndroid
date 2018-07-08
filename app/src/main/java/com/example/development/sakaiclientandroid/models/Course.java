@@ -25,7 +25,6 @@ public class Course implements Serializable {
     private List<GradebookObject> gradebookObjectList;
     private List<AssignmentObject> assignmentObjectList;
 
-
     public Course(JSONObject jsonObject) {
         this.assignmentObjectList = new ArrayList<AssignmentObject>();
 
@@ -201,6 +200,10 @@ public class Course implements Serializable {
 
     public void addAssignment(AssignmentObject assignmentObject) {
         assignmentObjectList.add(assignmentObject);
+    }
+
+    public int getNumAssignments() {
+        return (this.assignmentObjectList != null) ? this.assignmentObjectList.size() : 0;
     }
 
 }

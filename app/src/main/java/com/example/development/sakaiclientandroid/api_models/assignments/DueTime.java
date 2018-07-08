@@ -14,7 +14,7 @@ public class DueTime implements Serializable
     private String display;
     @SerializedName("time")
     @Expose
-    private BigInteger time;
+    private long time;
     private final static long serialVersionUID = -4887056960656050957L;
 
     public String getDisplay() {
@@ -25,11 +25,11 @@ public class DueTime implements Serializable
         this.display = display;
     }
 
-    public BigInteger getTime() {
+    public long getTime() {
         return time;
     }
 
-    public void setTime(BigInteger time) {
+    public void setTime(long time) {
         this.time = time;
     }
 

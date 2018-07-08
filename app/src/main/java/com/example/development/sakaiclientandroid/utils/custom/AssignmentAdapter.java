@@ -169,7 +169,7 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
         viewHolder.descriptionView.setMovementMethod(CustomLinkMovementMethod.getInstance());
 
         // Set the assignment due date
-        viewHolder.dueDateView.setText("Due: " + assignment.getDueTimeString());
+        viewHolder.dueDateView.setText("Due: " + assignment.getDueTime().getDisplay());
     }
 
     // Return the size of your data ser (invoked by the layout manager)

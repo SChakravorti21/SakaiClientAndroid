@@ -1,9 +1,10 @@
 package com.example.development.sakaiclientandroid.api_models.assignments;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.example.development.sakaiclientandroid.models.Term;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -88,7 +89,7 @@ public class AssignmentObject implements Serializable
     private String openTimeString;
     @SerializedName("position_order")
     @Expose
-    private BigInteger positionOrder;
+    private long positionOrder;
     @SerializedName("privateNoteText")
     @Expose
     private Object privateNoteText;
@@ -128,7 +129,22 @@ public class AssignmentObject implements Serializable
     @SerializedName("entityTitle")
     @Expose
     private String entityTitle;
+
+    // Term does not come in the response, but it is used internally
+    // for sorting by date
+    @SerializedName("term")
+    @Expose
+    private Term term;
+
     private final static long serialVersionUID = 835944991348229740L;
+
+    public Term getTerm() {
+        return this.term;
+    }
+
+    public void setTerm(Term term) {
+        this.term = term;
+    }
 
     public Access getAccess() {
         return access;
@@ -330,11 +346,11 @@ public class AssignmentObject implements Serializable
         this.openTimeString = openTimeString;
     }
 
-    public BigInteger getPositionOrder() {
+    public long getPositionOrder() {
         return positionOrder;
     }
 
-    public void setPositionOrder(BigInteger positionOrder) {
+    public void setPositionOrder(long positionOrder) {
         this.positionOrder = positionOrder;
     }
 
