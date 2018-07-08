@@ -118,11 +118,14 @@ public class AllCoursesFragment extends BaseFragment{
         SharedPrefsUtil.saveTreeState(mContext, treeView, SharedPrefsUtil.ALL_COURSES_TREE_TYPE);
     }
 
+
     /**
      * Creates a treeview structure using a list of terms, and a hashmap mapping
      * term to list of courses for that term, which is gotten from DataHandler
+     * @param coursesSorted courses sorted by term (gotten from data handler)
+     * @throws ClassCastException if the current activity is not an instance of nav activity
      */
-    public void createTreeView(ArrayList<ArrayList<Course>> coursesSorted)
+    public void createTreeView(ArrayList<ArrayList<Course>> coursesSorted) throws ClassCastException
     {
         TreeNode root = TreeNode.root();
 
@@ -171,7 +174,15 @@ public class AllCoursesFragment extends BaseFragment{
 
                             String courseSiteId = ((CourseHeaderViewHolder.CourseHeaderItem) value).siteId;
 
-                            ((NavActivity) getActivity()).loadCourseFragment(courseSiteId);
+                            FragmentActivity activity = getActivity();
+                            if(activity instanceof NavActivity)
+                            {
+                                ((NavActivity) activity).loadCourseFragment(courseSiteId);
+                            }
+                            else
+                            {
+                                throw new ClassCastException();
+                            }
                         }
                     }
                 });

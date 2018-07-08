@@ -159,7 +159,7 @@ public class DataHandler {
                     UICallback.onSiteGradesSuccess(currCourse);
                 }
                 else {
-                    //TODO better error handling
+
                     UICallback.onSiteGradesSuccess(null);
                 }
             }

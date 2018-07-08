@@ -1,17 +1,21 @@
 package com.example.development.sakaiclientandroid;
 
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.development.sakaiclientandroid.fragments.AllCoursesFragment;
@@ -20,7 +24,6 @@ import com.example.development.sakaiclientandroid.fragments.AnnouncementsFragmen
 import com.example.development.sakaiclientandroid.fragments.AssignmentsFragment;
 import com.example.development.sakaiclientandroid.fragments.CourseSitesFragment;
 import com.example.development.sakaiclientandroid.fragments.SettingsFragment;
-import com.example.development.sakaiclientandroid.fragments.SiteGradesFragment;
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
 import com.example.development.sakaiclientandroid.utils.requests.RequestCallback;
@@ -29,7 +32,7 @@ import com.example.development.sakaiclientandroid.utils.requests.SharedPrefsUtil
 import java.util.ArrayList;
 
 
-public class NavActivity extends AppCompatActivity
+public final class NavActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener {
 
     public static final String ALL_COURSES_TAG = "ALL_COURSES";
@@ -287,6 +290,22 @@ public class NavActivity extends AppCompatActivity
 
     public void setActionBarTitle(String title) {
         getSupportActionBar().setTitle(title);
+    }
+
+
+    public void showNetworkErrorToast()
+    {
+        Toast toast = Toast.makeText(this, getString(R.string.network_error), Toast.LENGTH_LONG);
+        toast.setGravity(Gravity.CENTER, 0, 0);
+
+        View view = toast.getView();
+        view.getBackground().setColorFilter(ContextCompat.getColor(this, R.color.sakai_light_black), PorterDuff.Mode.SRC_IN);
+
+        TextView text = view.findViewById(android.R.id.message);
+        text.setTextColor(ContextCompat.getColor(this, R.color.white));
+        text.setTextSize(20);
+
+        toast.show();
     }
 
 
