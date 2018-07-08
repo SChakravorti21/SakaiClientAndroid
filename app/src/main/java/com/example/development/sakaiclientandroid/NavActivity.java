@@ -39,8 +39,16 @@ public class NavActivity extends AppCompatActivity
     public static final String SITE_GRADES_TAG = "SITEGRADES";
 
     public FrameLayout container;
-    public ProgressBar spinner;
+    private ProgressBar spinner;
 
+
+    public void startProgressBar() {
+        spinner.setVisibility(View.VISIBLE);
+    }
+
+    public void stopProgressBar() {
+        spinner.setVisibility(View.GONE);
+    }
 
 
     @Override
@@ -79,7 +87,7 @@ public class NavActivity extends AppCompatActivity
      * @param fragment
      * @return boolean whether the fragment was successfully loaded
      */
-    private boolean loadFragment(Fragment fragment, boolean showAnimations, boolean addToBackStack) {
+    public boolean loadFragment(Fragment fragment, boolean showAnimations, boolean addToBackStack) {
 
         if(fragment != null) {
 
@@ -225,51 +233,6 @@ public class NavActivity extends AppCompatActivity
 
 
 
-    /**
-     * Loads the site grade fragment
-     * @param refreshGrades whether or not to re-request the grades
-     * @param siteId site id of the course whose grades to display
-     */
-    public void loadSiteGradesFragment(final boolean refreshGrades, String siteId)
-    {
-        this.spinner.setVisibility(View.VISIBLE);
-
-        DataHandler.requestGradesForSite(siteId, refreshGrades, new RequestCallback()
-        {
-
-            @Override
-            public void onSiteGradesSuccess(Course course)
-            {
-                spinner.setVisibility(View.GONE);
-
-                if(course == null) {
-                    Toast.makeText(NavActivity.this, "Course has no grades", Toast.LENGTH_SHORT).show();
-                }
-                //course has grades
-                else {
-                    Bundle b = new Bundle();
-                    b.putSerializable(SITE_GRADES_TAG, course);
-
-                    SiteGradesFragment frag = new SiteGradesFragment();
-                    frag.setArguments(b);
-
-                    //add to back stack if we aren't refreshing grades
-                    // i.e. we are coming from the course sites page
-                    //if we are refreshing (with swipe refresh) then don't add to stack
-                    loadFragment(frag, true, !refreshGrades);
-
-                    setActionBarTitle("Gradebook: " + course.getTitle());
-                }
-            }
-
-            @Override
-            public void onSiteGradesFailure(Throwable t)
-            {
-                //TODO deal with error
-                Log.e("ERROR: ", t.getMessage());
-            }
-        });
-    }
 
     /**
      * Loads the fragment showing a course's sites

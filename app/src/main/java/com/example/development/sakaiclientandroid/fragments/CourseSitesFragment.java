@@ -2,17 +2,24 @@ package com.example.development.sakaiclientandroid.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.development.sakaiclientandroid.NavActivity;
 import com.example.development.sakaiclientandroid.R;
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
+import com.example.development.sakaiclientandroid.utils.requests.RequestCallback;
+
+import static com.example.development.sakaiclientandroid.NavActivity.SITE_GRADES_TAG;
 
 public class CourseSitesFragment extends BaseFragment {
 
@@ -66,7 +73,7 @@ public class CourseSitesFragment extends BaseFragment {
 
                     final String siteId = courseToView.getId();
 
-                    ((NavActivity) getActivity()).loadSiteGradesFragment(false, siteId);
+                    loadSiteGradesFragment(siteId);
 
                 }
             }
@@ -74,6 +81,74 @@ public class CourseSitesFragment extends BaseFragment {
 
 
         return view;
+    }
+
+
+    /**
+     * /**
+     * Loads the site grade fragment
+     * @param siteId site id of the course whose grades to display
+     * @throws IllegalStateException if the current activity is not NavActivity
+     */
+    public void loadSiteGradesFragment(String siteId) throws IllegalStateException
+    {
+
+        FragmentActivity activity = getActivity();
+
+        //check if the current activity is a nav activity
+        if(activity instanceof NavActivity)
+        {
+            //start the progress bar spinner
+            final NavActivity navActivity = (NavActivity)activity;
+            navActivity.startProgressBar();
+
+
+            DataHandler.requestGradesForSite(siteId, false, new RequestCallback()
+            {
+
+                @Override
+                public void onSiteGradesSuccess(Course course)
+                {
+
+                    //stop the progress bar
+                    navActivity.stopProgressBar();
+
+                    if(course == null) {
+                        Toast.makeText(mContext, "Course has no grades", Toast.LENGTH_SHORT).show();
+                    }
+                    //course has grades
+                    else {
+                        Bundle b = new Bundle();
+                        b.putSerializable(SITE_GRADES_TAG, course);
+
+                        SiteGradesFragment frag = new SiteGradesFragment();
+                        frag.setArguments(b);
+
+
+                        //show animations =  true
+                        //add to the back stack = true, since we want to be able to click back from this screen
+                        navActivity.loadFragment(frag, true, true);
+
+                        navActivity.setActionBarTitle("Gradebook: " + course.getTitle());
+                    }
+                }
+
+                @Override
+                public void onSiteGradesFailure(Throwable t)
+                {
+
+                    navActivity.stopProgressBar();
+                    //TODO deal with error
+                    Log.e("ERROR: ", t.getMessage());
+                }
+            });
+        }
+
+        else {
+            throw new IllegalStateException("Activity is not NavActivity!");
+        }
+
+
     }
 }
 

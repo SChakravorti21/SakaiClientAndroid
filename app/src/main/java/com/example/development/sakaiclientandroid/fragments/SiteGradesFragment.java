@@ -98,9 +98,9 @@ public class SiteGradesFragment extends BaseFragment {
 
     /**
      * Refreshes the site grades page by remaking the request for grades for that course
-     * @throws IllegalStateException if the current fragment isn't a site grade fragment, which shouldn't happen
+     * Then feed the data into list view using feedGradesIntoListView()
      */
-    public void refreshSiteGrades() throws IllegalStateException
+    public void refreshSiteGrades()
     {
         DataHandler.requestGradesForSite(siteID, true, new RequestCallback()
         {
