@@ -224,50 +224,6 @@ public class NavActivity extends AppCompatActivity
     }
 
 
-    /**
-     * Refreshes the site grades page by remaking the request for grades for that course
-     * @param siteId id of the course who's grades to refresh
-     * @param swipeRefreshLayout the swipe refresh layout from the site grades fragment
-     * @throws IllegalStateException if the current fragment isn't a site grade fragment, which shouldn't happen
-     */
-    public void refreshSiteGrades(String siteId, final SwipeRefreshLayout swipeRefreshLayout) throws IllegalStateException
-    {
-        this.spinner.setVisibility(View.VISIBLE);
-        this.container.setVisibility(View.GONE);
-
-        DataHandler.requestGradesForSite(siteId, true, new RequestCallback()
-        {
-
-            @Override
-            public void onSiteGradesSuccess(Course course)
-            {
-                spinner.setVisibility(View.GONE);
-
-                if(course == null)
-                {
-                    Toast.makeText(NavActivity.this, "Course has no grades", Toast.LENGTH_SHORT).show();
-                }
-                else
-                {
-                    //get the current visible fragment
-                    Fragment currFrag = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-                    if(currFrag instanceof SiteGradesFragment)
-                    {
-
-                        //refresh the grades in that fragment and stop the progress spinner
-                        ((SiteGradesFragment) currFrag).refreshGradesForSite();
-                        container.setVisibility(View.VISIBLE);
-                        swipeRefreshLayout.setRefreshing(false);
-                    }
-                    else
-                    {
-                        throw new IllegalStateException();
-                    }
-                }
-            }
-        });
-    }
-
 
     /**
      * Loads the site grade fragment

@@ -16,6 +16,7 @@ import com.example.development.sakaiclientandroid.api_models.gradebook.Gradebook
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
 import com.example.development.sakaiclientandroid.utils.custom.GradeItemAdapter;
+import com.example.development.sakaiclientandroid.utils.requests.RequestCallback;
 
 import java.util.List;
 
@@ -50,7 +51,7 @@ public class SiteGradesFragment extends BaseFragment {
         this.siteID = course.getId();
 
 
-        refreshGradesForSite();
+        feedGradesIntoListView();
 
 
 
@@ -64,7 +65,7 @@ public class SiteGradesFragment extends BaseFragment {
                 //checking if instance to prevent casting errors
                 if(parentActivity instanceof NavActivity)
                 {
-                    ((NavActivity) parentActivity).refreshSiteGrades(siteID, swipeRefreshLayout);
+                    refreshSiteGrades();
                 }
             }
         });
@@ -78,7 +79,7 @@ public class SiteGradesFragment extends BaseFragment {
      * Puts the grades of the current course into an adapter and adds the adapter to the
      * list view
      */
-    public void refreshGradesForSite()
+    public void feedGradesIntoListView()
     {
         List<GradebookObject> gradesList = DataHandler.getGradesForCourse(this.siteID);
 
@@ -91,6 +92,35 @@ public class SiteGradesFragment extends BaseFragment {
         else {
             Toast.makeText(mContext, "No grades found", Toast.LENGTH_SHORT).show();
         }
+    }
+
+
+
+    /**
+     * Refreshes the site grades page by remaking the request for grades for that course
+     * @throws IllegalStateException if the current fragment isn't a site grade fragment, which shouldn't happen
+     */
+    public void refreshSiteGrades() throws IllegalStateException
+    {
+        DataHandler.requestGradesForSite(siteID, true, new RequestCallback()
+        {
+
+            @Override
+            public void onSiteGradesSuccess(Course course)
+            {
+
+                swipeRefreshLayout.setRefreshing(false);
+
+                if(course == null)
+                {
+                    Toast.makeText(mContext, "Course has no grades", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    feedGradesIntoListView();
+                }
+            }
+        });
     }
 
 
