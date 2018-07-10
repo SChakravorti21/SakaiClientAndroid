@@ -5,12 +5,13 @@ import android.util.Log;
 
 import com.example.development.sakaiclientandroid.R;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 import static java.security.AccessController.getContext;
 
-public class Term implements Comparable<Term>{
+public class Term implements Comparable<Term>, Serializable{
 
     private int year;
     private int termInt;
