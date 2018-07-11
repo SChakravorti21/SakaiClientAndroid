@@ -4,6 +4,7 @@ package com.example.development.sakaiclientandroid.fragments.assignments;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
@@ -16,6 +17,7 @@ import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
@@ -67,6 +69,17 @@ public class AssignmentSubmissionDialogFragment extends BottomSheetDialogFragmen
                 return false;
             }
         });
+
+        WebSettings settings = webView.getSettings();
+        settings.setPluginState(WebSettings.PluginState.ON);
+        settings.setJavaScriptEnabled(true);
+        settings.setAllowContentAccess(true);
+        settings.setAllowFileAccess(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            settings.setAllowFileAccessFromFileURLs(true);
+        }
+        settings.setJavaScriptCanOpenWindowsAutomatically(true);
+
         webView.loadUrl(url);
     }
 
