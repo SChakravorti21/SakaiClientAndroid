@@ -25,7 +25,7 @@ import java.util.ArrayList;
 
 import static com.example.development.sakaiclientandroid.NavActivity.COURSES_TAG;
 
-public class AllCoursesFragment extends BaseFragment{
+public class AllCoursesFragment extends BaseFragment {
 
 
     private AndroidTreeView treeView;
@@ -37,18 +37,14 @@ public class AllCoursesFragment extends BaseFragment{
         super.onCreate(savedInstanceState);
 
         Bundle bun = getArguments();
-        try
-        {
+        try {
             try {
                 this.courses = (ArrayList<ArrayList<Course>>) bun.getSerializable(COURSES_TAG);
-            }
-            catch (ClassCastException e)
-            {
+            } catch (ClassCastException e) {
                 //TODO better exception handling
                 this.courses = new ArrayList<ArrayList<Course>>();
             }
-        }
-        catch (ClassCastException exception) {
+        } catch (ClassCastException exception) {
             // Unable to create the tree, create a dummy tree
             //TODO: Needs better error handling
             this.courses = new ArrayList<ArrayList<Course>>();
@@ -60,10 +56,11 @@ public class AllCoursesFragment extends BaseFragment{
      * When the fragment view is created, we want to get the responseBody from the bundle so
      * it can be displayed. This raw data is parsed, sorted, and then given to the
      * expandable list viewer for display.
-     * @param inflater used to inflate our layout
-     * @param container .
+     *
+     * @param inflater           used to inflate our layout
+     * @param container          .
      * @param savedInstanceState used to get the arguments that were passed to this fragment
-     * @return  created view
+     * @return created view
      */
     @Nullable
     @Override
@@ -96,14 +93,12 @@ public class AllCoursesFragment extends BaseFragment{
                 FragmentActivity parentActivity = getActivity();
 
                 //checking if instance to prevent casting errors
-                if(parentActivity instanceof NavActivity)
-                {
+                if (parentActivity instanceof NavActivity) {
                     //reloads the current fragment, (which also remakes the request for courses)
                     ((NavActivity) parentActivity).loadAllCoursesFragment(true);
                 }
             }
         });
-
 
 
         return view;
@@ -123,18 +118,16 @@ public class AllCoursesFragment extends BaseFragment{
      * Creates a treeview structure using a list of terms, and a hashmap mapping
      * term to list of courses for that term, which is gotten from DataHandler
      */
-    public void createTreeView(ArrayList<ArrayList<Course>> coursesSorted)
-    {
+    public void createTreeView(ArrayList<ArrayList<Course>> coursesSorted) {
         TreeNode root = TreeNode.root();
 
-        for(ArrayList<Course> coursesInTerm : coursesSorted)
-        {
+        for (ArrayList<Course> coursesInTerm : coursesSorted) {
             Term courseTerm = (coursesSorted.size() > 0) ? coursesInTerm.get(0).getTerm() : null;
 
             String termString = (courseTerm != null) ?
                     courseTerm.getTermString() + " " + courseTerm.getYear() : "General";
 
-            if(termString.contains("General"))
+            if (termString.contains("General"))
                 termString = "General";
 
             //make a term header item, and make a treenode using it
@@ -143,8 +136,7 @@ public class AllCoursesFragment extends BaseFragment{
 
 
             //for each course, get its grades
-            for(Course currCourse : coursesInTerm)
-            {
+            for (Course currCourse : coursesInTerm) {
 
 
                 //create a course header item and make a treenode using it
@@ -163,9 +155,8 @@ public class AllCoursesFragment extends BaseFragment{
                     //when click a course Node, open the CourseFragment to show
                     //course specific information
                     @Override
-                    public void onClick(TreeNode node, Object value)
-                    {
-                        if(value instanceof CourseHeaderViewHolder.CourseHeaderItem) {
+                    public void onClick(TreeNode node, Object value) {
+                        if (value instanceof CourseHeaderViewHolder.CourseHeaderItem) {
                             String courseSiteId = ((CourseHeaderViewHolder.CourseHeaderItem) value).siteId;
 
                             Bundle bun = new Bundle();

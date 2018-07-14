@@ -44,7 +44,7 @@ public class SiteGradesFragment extends BaseFragment {
 
         //changes app title
         Course currCourse = DataHandler.getCourseFromId(siteId);
-        ((NavActivity)getActivity()).setActionBarTitle("Gradebook: " + currCourse.getTitle()
+        ((NavActivity) getActivity()).setActionBarTitle("Gradebook: " + currCourse.getTitle()
         );
 
 
@@ -57,7 +57,7 @@ public class SiteGradesFragment extends BaseFragment {
         this.spinner.setVisibility(View.VISIBLE);
 
         //if the grades are already in storage, don't need to make request
-        if(DataHandler.gradesRequestedForSite(siteId)) {
+        if (DataHandler.gradesRequestedForSite(siteId)) {
             fillGrades(siteId, view);
         }
         //otherwise, we must request
@@ -105,8 +105,9 @@ public class SiteGradesFragment extends BaseFragment {
     /**
      * Does miscellaneous things such as disable the spinner, and put the grades into the list view
      * or show a No Grades Found textview
+     *
      * @param siteId = SiteId of the course to show the grades of
-     * @param view = view that was inflated.
+     * @param view   = view that was inflated.
      */
     private void fillGrades(String siteId, View view) {
         //makes request for grades for this site and gets them
@@ -115,13 +116,12 @@ public class SiteGradesFragment extends BaseFragment {
         //makes spinner invisible
         spinner.setVisibility(View.GONE);
 
-        if(gradesList != null) {
+        if (gradesList != null) {
 
             //puts grades into custom adapter
             GradeItemAdapter adapter = new GradeItemAdapter(getActivity(), gradesList);
             siteGradesListView.setAdapter(adapter);
-        }
-        else {
+        } else {
             TextView noGradesTxt = view.findViewById(R.id.txt_no_grades);
             noGradesTxt.setVisibility(View.VISIBLE);
         }

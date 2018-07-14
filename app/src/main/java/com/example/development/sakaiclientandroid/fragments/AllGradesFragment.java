@@ -41,13 +41,11 @@ public class AllGradesFragment extends BaseFragment {
 
 
         Bundle bun = getArguments();
-        try
-        {
+        try {
             ArrayList<ArrayList<Course>> courses = (ArrayList<ArrayList<Course>>) bun.getSerializable(ALL_GRADES_TAG);
 
             createTreeView(courses);
-        }
-        catch (ClassCastException exception) {
+        } catch (ClassCastException exception) {
             // Unable to create the tree, create a dummy tree
             //TODO: Needs better error handling
             treeView = new AndroidTreeView(getActivity(), TreeNode.root());
@@ -84,8 +82,7 @@ public class AllGradesFragment extends BaseFragment {
                 FragmentActivity parentActivity = getActivity();
 
                 //checking if instance to prevent casting errors
-                if(parentActivity instanceof NavActivity)
-                {
+                if (parentActivity instanceof NavActivity) {
                     //set refresh boolean to true so that the request is made again forcefully
                     //reloads the current fragment, (which also remakes the request for grades)
                     ((NavActivity) parentActivity).loadAllGradesFragment(true);
@@ -112,13 +109,11 @@ public class AllGradesFragment extends BaseFragment {
      * Creates a treeview structure using a list of terms, and a hashmap mapping
      * term to list of courses for that term, which is gotten from DataHandler
      */
-    public void createTreeView(ArrayList<ArrayList<Course>> coursesSorted)
-    {
+    public void createTreeView(ArrayList<ArrayList<Course>> coursesSorted) {
         TreeNode root = TreeNode.root();
 
 
-        for(ArrayList<Course> coursesInTerm : coursesSorted)
-        {
+        for (ArrayList<Course> coursesInTerm : coursesSorted) {
             Term courseTerm = (coursesSorted.size() > 0) ? coursesInTerm.get(0).getTerm() : null;
             String termString = (courseTerm != null) ?
                     courseTerm.getTermString() + " " + courseTerm.getYear() : "General";
@@ -133,8 +128,7 @@ public class AllGradesFragment extends BaseFragment {
             TreeNode termNode = new TreeNode(termNodeItem).setViewHolder(new TermHeaderViewHolder(mContext));
 
             //for each course, get its grades
-            for(Course currCourse : coursesInTerm)
-            {
+            for (Course currCourse : coursesInTerm) {
                 //create a course header item and make a treenode using it
                 String courseIconCode = RutgersSubjectCodes.mapCourseCodeToIcon.get(currCourse.getSubjectCode());
                 CourseHeaderViewHolder.CourseHeaderItem courseNodeItem = new CourseHeaderViewHolder.CourseHeaderItem(
@@ -149,17 +143,14 @@ public class AllGradesFragment extends BaseFragment {
 
                 List<GradebookObject> gradebookObjectList = currCourse.getGradebookObjectList();
                 //only continue if the course has grades
-                if (gradebookObjectList != null && gradebookObjectList.size() > 0)
-                {
+                if (gradebookObjectList != null && gradebookObjectList.size() > 0) {
                     termHasAnyGrades = true;
 
                     //for each grade item in the current course, create a node
-                    for (GradebookObject gradebookObject : gradebookObjectList)
-                    {
+                    for (GradebookObject gradebookObject : gradebookObjectList) {
 
                         String grade = gradebookObject.getGrade();
-                        if(grade == null)
-                        {
+                        if (grade == null) {
                             grade = "";
                         }
 
@@ -179,11 +170,10 @@ public class AllGradesFragment extends BaseFragment {
                 }
 
 
-
             }
 
             //only add the term to the tree only if at least one course has one grade item
-            if(termHasAnyGrades)
+            if (termHasAnyGrades)
                 root.addChild(termNode);
 
         }
@@ -193,7 +183,6 @@ public class AllGradesFragment extends BaseFragment {
         treeView.setDefaultAnimation(true);
         treeView.setDefaultNodeClickListener(new TreeViewItemClickListener(treeView, root));
     }
-
 
 
 }
