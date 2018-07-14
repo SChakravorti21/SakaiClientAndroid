@@ -17,6 +17,7 @@ import com.example.development.sakaiclientandroid.utils.holders.CourseHeaderView
 import com.example.development.sakaiclientandroid.utils.holders.TermHeaderViewHolder;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
+
 import java.util.ArrayList;
 
 import static com.example.development.sakaiclientandroid.NavActivity.ASSIGNMENTS_TAG;
@@ -54,7 +55,7 @@ public class AssignmentsFragment extends BaseFragment {
         // The courses as returned by the DataHandler are already sorted by term,
         // so we just need to loop through them to create the terms with all
         // courses and their assignments
-        for(ArrayList<Course> courseList : courses) {
+        for (ArrayList<Course> courseList : courses) {
             // Get the term name
             Term courseTerm = (courses.size() > 0) ? courseList.get(0).getTerm() : null;
             String termName = (courseTerm != null) ?
@@ -69,9 +70,9 @@ public class AssignmentsFragment extends BaseFragment {
 
             // For each course, create the course node with its respective
             // assignments
-            for(Course course : courseList) {
+            for (Course course : courseList) {
                 //SKIP THE COURSE IF IT DOESN'T HAVE ANY ASSIGNMENTS
-                if(course.getAssignmentObjectList().size() == 0) {
+                if (course.getAssignmentObjectList().size() == 0) {
                     continue;
                 }
 
@@ -90,7 +91,7 @@ public class AssignmentsFragment extends BaseFragment {
 
                 // For each assignment of the course, create a new node and
                 // add it as a child of the course
-                for(AssignmentObject assignment : course.getAssignmentObjectList()) {
+                for (AssignmentObject assignment : course.getAssignmentObjectList()) {
                     String assignmentName = assignment.getTitle();
 
                     // Create an assignment header item, and make a tree node using it
@@ -109,7 +110,7 @@ public class AssignmentsFragment extends BaseFragment {
             }
 
             // Add the term to the root node
-            if(termNode.getChildren().size() > 0)
+            if (termNode.getChildren().size() > 0)
                 root.addChild(termNode);
         }
 

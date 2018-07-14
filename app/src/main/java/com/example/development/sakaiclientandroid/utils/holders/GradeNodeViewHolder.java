@@ -16,7 +16,6 @@ public class GradeNodeViewHolder extends TreeNode.BaseNodeViewHolder<GradeNodeVi
         super(c);
     }
 
-
     @Override
     public View createNodeView(TreeNode node, GradeTreeItem value) {
 

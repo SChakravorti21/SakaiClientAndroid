@@ -45,7 +45,7 @@ public class CourseHeaderViewHolder extends TreeNode.BaseNodeViewHolder<CourseHe
 
         // Initialize the arrow view for toggling the list
         arrowView = view.findViewById(R.id.arrow_image);
-        if(node.getLevel() < 4) {
+        if (node.getLevel() < 4) {
             arrowView.setText(CHEVRON_RIGHT);
         } else {
             arrowView.setVisibility(View.GONE);
@@ -59,7 +59,7 @@ public class CourseHeaderViewHolder extends TreeNode.BaseNodeViewHolder<CourseHe
                 r.getDisplayMetrics()
         );
 
-        LinearLayoutCompat.LayoutParams params =  new LinearLayoutCompat.LayoutParams(
+        LinearLayoutCompat.LayoutParams params = new LinearLayoutCompat.LayoutParams(
                 widthPx,
                 LinearLayoutCompat.LayoutParams.WRAP_CONTENT
         );
@@ -72,7 +72,7 @@ public class CourseHeaderViewHolder extends TreeNode.BaseNodeViewHolder<CourseHe
     @Override
     public void toggle(boolean active) {
         //if default arrow is null, keep default toggle behavior
-        if(arrowView != null && isToggleable)
+        if (arrowView != null && isToggleable)
             arrowView.setText(active ? CHEVRON_DOWN : CHEVRON_RIGHT);
     }
 

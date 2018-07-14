@@ -83,7 +83,7 @@ public class SiteGradesFragment extends BaseFragment {
     {
         List<GradebookObject> gradesList = DataHandler.getGradesForCourse(this.siteID);
 
-        if(gradesList != null) {
+        if (gradesList != null) {
 
             //puts grades into custom adapter
             GradeItemAdapter adapter = new GradeItemAdapter(getActivity(), gradesList);

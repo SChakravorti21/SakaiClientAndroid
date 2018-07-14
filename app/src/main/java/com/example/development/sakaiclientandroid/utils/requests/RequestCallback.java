@@ -12,20 +12,26 @@ public class RequestCallback {
 
     public void onRequestFailure(int msgRscId, Throwable t) { }
 
+    public void onAllCoursesSuccess(ArrayList<ArrayList<Course>> response) {
+    }
 
-    public void onAllCoursesSuccess(ArrayList<ArrayList<Course>> response) { }
-
-    public void onAllCoursesFailure(Throwable throwable) { }
+    public void onAllCoursesFailure(Throwable throwable) {
+    }
 
     public void onSiteGradesSuccess(Course course) { }
 
-    public void onSiteGradesEmpty(int msgRscId) { }
+    public void onSiteGradesEmpty(int msgRscId) {
+    }
 
-    public void onAllGradesSuccess(ArrayList<ArrayList<Course>> response) { }
+    public void onAllGradesSuccess(ArrayList<ArrayList<Course>> response) {
+    }
 
-    public void onAllGradesFailure(Throwable throwable) { }
+    public void onAllGradesFailure(Throwable throwable) {
+    }
 
-    public void onAllAssignmentsSuccess(ArrayList<ArrayList<Course>> response) { }
+    public void onAllAssignmentsSuccess(ArrayList<ArrayList<Course>> response) {
+    }
 
-    public void onAllAssignmentsFailure(Throwable throwable) { }
+    public void onAllAssignmentsFailure(Throwable throwable) {
+    }
 }

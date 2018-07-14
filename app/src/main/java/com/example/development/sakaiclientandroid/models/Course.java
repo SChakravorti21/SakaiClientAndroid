@@ -39,15 +39,14 @@ public class Course implements Serializable {
             this.setDescription(desc);
 
             String title = jsonObject.getString("title");
-            this.setTitle(capitalizeEveryWord(title));
+            this.setTitle(title);
 
             JSONObject props = jsonObject.getJSONObject("props");
             try {
                 String term_eid = props.getString("term_eid");
                 Term courseTerm = new Term(term_eid);
                 this.setTerm(courseTerm);
-            }
-            catch(JSONException e) {
+            } catch (JSONException e) {
                 Term courseTerm = new Term("0000:0");
                 this.setTerm(courseTerm);
             }
@@ -82,8 +81,7 @@ public class Course implements Serializable {
 
             this.gradebookObjectList = null;
 
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -101,29 +99,10 @@ public class Course implements Serializable {
     }
 
 
-    public String capitalizeEveryWord(String org) {
-        org = org.toLowerCase();
-        String[] words = org.split(" ");
-
-        StringBuilder builder = new StringBuilder(org.length());
-        for(int i = 0; i < words.length; i++) {
-            builder.append(words[i].substring(0, 1).toUpperCase() + words[i].substring(1));
-
-
-            if(i != words.length - 1)
-                builder.append(" ");
-
-        }
-
-        return builder.toString();
-
-    }
-
-
     @Override
     public String toString() {
         String ret = (this.title + " : " + this.term.toString() + "     Sites:   ");
-        for(SitePage s : this.sitePages) {
+        for (SitePage s : this.sitePages) {
             ret += s.toString() + ";  ";
         }
 

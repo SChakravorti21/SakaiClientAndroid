@@ -28,7 +28,7 @@ public class AssignmentNodeViewHolder extends
         View view = inflater.inflate(R.layout.assignment_node_layout, null, false);
 
         TextView tvValue = view.findViewById(R.id.assignment_name);
-            tvValue.setText(value.text);
+        tvValue.setText(value.text);
 
         Resources r = inflater.getContext().getResources();
         int widthPx = (int) TypedValue.applyDimension(
@@ -37,7 +37,7 @@ public class AssignmentNodeViewHolder extends
                 r.getDisplayMetrics()
         );
 
-        LinearLayoutCompat.LayoutParams params =  new LinearLayoutCompat.LayoutParams(
+        LinearLayoutCompat.LayoutParams params = new LinearLayoutCompat.LayoutParams(
                 widthPx,
                 LinearLayoutCompat.LayoutParams.WRAP_CONTENT
         );
