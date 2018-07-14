@@ -30,8 +30,7 @@ public class Term implements Comparable<Term>, Serializable{
     private static String intToTerm(int termInt) {
 
         if(termInt == 0) {
-//            return Resources.getSystem().getString(R.string.none_string);
-                return "General";
+            return "General";
         }
 
         else if(termInt >= 12) {

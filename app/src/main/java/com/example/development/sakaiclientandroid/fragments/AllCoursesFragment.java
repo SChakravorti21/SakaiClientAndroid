@@ -2,35 +2,57 @@ package com.example.development.sakaiclientandroid.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ExpandableListView;
 
 import com.example.development.sakaiclientandroid.NavActivity;
 import com.example.development.sakaiclientandroid.R;
 import com.example.development.sakaiclientandroid.models.Course;
-import com.example.development.sakaiclientandroid.utils.DataHandler;
-import com.example.development.sakaiclientandroid.utils.custom.HomeFragmentExpandableListAdapter;
-import com.example.development.sakaiclientandroid.utils.requests.RequestCallback;
+import com.example.development.sakaiclientandroid.models.Term;
+import com.example.development.sakaiclientandroid.utils.RutgersSubjectCodes;
+import com.example.development.sakaiclientandroid.utils.custom.TreeViewItemClickListener;
+import com.example.development.sakaiclientandroid.utils.holders.CourseHeaderViewHolder;
+import com.example.development.sakaiclientandroid.utils.holders.TermHeaderViewHolder;
+import com.example.development.sakaiclientandroid.utils.requests.SharedPrefsUtil;
+import com.unnamed.b.atv.model.TreeNode;
+import com.unnamed.b.atv.view.AndroidTreeView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+
+import static com.example.development.sakaiclientandroid.NavActivity.COURSES_TAG;
 
 public class AllCoursesFragment extends BaseFragment{
 
 
-    private List<String> termHeaders;
-    private HashMap<String, List<Course>> headerToCourses;
-
+    private AndroidTreeView treeView;
     private SwipeRefreshLayout swipeRefreshLayout;
+    ArrayList<ArrayList<Course>> courses;
 
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Bundle bun = getArguments();
+        try
+        {
+            try {
+                this.courses = (ArrayList<ArrayList<Course>>) bun.getSerializable(COURSES_TAG);
+            }
+            catch (ClassCastException e)
+            {
+                //TODO better exception handling
+                this.courses = new ArrayList<ArrayList<Course>>();
+            }
+        }
+        catch (ClassCastException exception) {
+            // Unable to create the tree, create a dummy tree
+            //TODO: Needs better error handling
+            this.courses = new ArrayList<ArrayList<Course>>();
+        }
     }
 
 
@@ -49,39 +71,39 @@ public class AllCoursesFragment extends BaseFragment{
 
 
         View view = inflater.inflate(R.layout.fragment_all_courses, null);
-
-
-        //gets courses from data handler and feeds to list view
-        ExpandableListView sitesListView = view.findViewById(R.id.all_courses_explistview);
-        feedExpandableListData(sitesListView);
-
-
-        //expands latest semester's list view by default
-        sitesListView.expandGroup(0);
-
-        //reset header
-        ((NavActivity)getActivity()).setActionBarTitle(getString(R.string.app_name));
-
-
         this.swipeRefreshLayout = view.findViewById(R.id.swiperefresh);
+
+
+        //add the treeview to the layout
+        createTreeView(this.courses);
+        this.swipeRefreshLayout.addView(treeView.getView());
+
+        //temporarily disable animations so the animations don't play when the state
+        //is being restored
+        treeView.setDefaultAnimation(false);
+
+        //state must be restored after the view is added to the layout
+        String state = SharedPrefsUtil.getTreeState(mContext, SharedPrefsUtil.ALL_COURSES_TREE_TYPE);
+        treeView.restoreState(state);
+
+        //re-enable animations
+        treeView.setDefaultAnimation(true);
+
         this.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
 
-                DataHandler.requestAllSites(new RequestCallback() {
+                FragmentActivity parentActivity = getActivity();
 
-                    @Override
-                    public void onCoursesSuccess() {
-                        swipeRefreshLayout.setRefreshing(false);
-                    }
-
-                    @Override
-                    public void onCoursesFailure(Throwable throwable) {
-                        //TODO failure
-                    }
-                });
+                //checking if instance to prevent casting errors
+                if(parentActivity instanceof NavActivity)
+                {
+                    //reloads the current fragment, (which also remakes the request for courses)
+                    ((NavActivity) parentActivity).loadAllCoursesFragment(true);
+                }
             }
         });
+
 
 
         return view;
@@ -89,58 +111,93 @@ public class AllCoursesFragment extends BaseFragment{
 
     }
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
 
-    /**
-     * List of courses sorted and organized by term is fed into the expandable list view for display
-     * @param expListView = List view to feed data into
-     */
-    private void feedExpandableListData(ExpandableListView expListView) {
-
-        this.termHeaders = new ArrayList<>();
-        this.headerToCourses = new HashMap<>();
-
-        DataHandler.prepareTermHeadersToCourses(
-                this.termHeaders,
-                this.headerToCourses
-        );
-
-        HomeFragmentExpandableListAdapter listAdapter = new HomeFragmentExpandableListAdapter(getActivity(), termHeaders, headerToCourses);
-        expListView.setAdapter(listAdapter);
-
-        expListView.setOnChildClickListener(new ExpandableListViewOnChildClickListener());
+        //here we should save tree state
+        SharedPrefsUtil.saveTreeState(mContext, treeView, SharedPrefsUtil.ALL_COURSES_TREE_TYPE);
     }
 
-
-
-
     /**
-     * when click a child, serialize the site collection and then send it to the SitePageActivity class
+     * Creates a treeview structure using a list of terms, and a hashmap mapping
+     * term to list of courses for that term, which is gotten from DataHandler
      */
-    //TODO also make this a fragment.
-    private class ExpandableListViewOnChildClickListener implements ExpandableListView.OnChildClickListener {
+    public void createTreeView(ArrayList<ArrayList<Course>> coursesSorted)
+    {
+        TreeNode root = TreeNode.root();
 
-        @Override
-        public boolean onChildClick(ExpandableListView parent, View v,
-                                    int groupPosition, int childPosition, long id) {
+        for(ArrayList<Course> coursesInTerm : coursesSorted)
+        {
+            Term courseTerm = (coursesSorted.size() > 0) ? coursesInTerm.get(0).getTerm() : null;
+
+            String termString = (courseTerm != null) ?
+                    courseTerm.getTermString() + " " + courseTerm.getYear() : "General";
+
+            if(termString.contains("General"))
+                termString = "General";
+
+            //make a term header item, and make a treenode using it
+            TermHeaderViewHolder.TermHeaderItem termNodeItem = new TermHeaderViewHolder.TermHeaderItem(termString);
+            TreeNode termNode = new TreeNode(termNodeItem).setViewHolder(new TermHeaderViewHolder(mContext));
 
 
-            String courseSiteId =  headerToCourses.get(termHeaders.get(groupPosition)).get(childPosition).getId();
+            //for each course, get its grades
+            for(Course currCourse : coursesInTerm)
+            {
 
 
-            Bundle bun = new Bundle();
-            bun.putString(getString(R.string.site_id), courseSiteId);
-            CourseFragment fragment = new CourseFragment();
-            fragment.setArguments(bun);
+                //create a course header item and make a treenode using it
+                String courseIconCode = RutgersSubjectCodes.mapCourseCodeToIcon.get(currCourse.getSubjectCode());
+                CourseHeaderViewHolder.CourseHeaderItem courseNodeItem = new CourseHeaderViewHolder.CourseHeaderItem(
+                        currCourse.getTitle(),
+                        currCourse.getId(),
+                        courseIconCode
+                );
+
+                //set the custom view holder
+                TreeNode courseNode = new TreeNode(courseNodeItem).setViewHolder(new CourseHeaderViewHolder(mContext, false));
+
+                courseNode.setClickListener(new TreeNode.TreeNodeClickListener() {
+
+                    //when click a course Node, open the CourseFragment to show
+                    //course specific information
+                    @Override
+                    public void onClick(TreeNode node, Object value)
+                    {
+                        if(value instanceof CourseHeaderViewHolder.CourseHeaderItem) {
+                            String courseSiteId = ((CourseHeaderViewHolder.CourseHeaderItem) value).siteId;
+
+                            Bundle bun = new Bundle();
+                            bun.putString(getString(R.string.site_id), courseSiteId);
+                            CourseFragment fragment = new CourseFragment();
+                            fragment.setArguments(bun);
 
 
-            //replaces current Fragment with CourseFragment
-            FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-            ft.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
-                    .replace(R.id.fragment_container, fragment, null)
-                    .addToBackStack(null)
-                    .commit();
+                            //here we should save tree state
+                            SharedPrefsUtil.saveTreeState(mContext, treeView, SharedPrefsUtil.ALL_COURSES_TREE_TYPE);
 
-            return true;
+                            //replaces current Fragment with CourseFragment
+                            FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+                            ft.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
+                                    .replace(R.id.fragment_container, fragment, null)
+                                    .addToBackStack(null)
+                                    .commit();
+                        }
+                    }
+                });
+                termNode.addChild(courseNode);
+
+            }
+
+            root.addChild(termNode);
+
         }
+
+
+        treeView = new AndroidTreeView(getActivity(), root);
+        treeView.setDefaultAnimation(true);
+        treeView.setDefaultNodeClickListener(new TreeViewItemClickListener(treeView, root));
     }
+
 }

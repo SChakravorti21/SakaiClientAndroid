@@ -20,20 +20,23 @@ import com.example.development.sakaiclientandroid.fragments.AnnouncementsFragmen
 import com.example.development.sakaiclientandroid.fragments.assignments.AssignmentsFragment;
 import com.example.development.sakaiclientandroid.fragments.SettingsFragment;
 import com.example.development.sakaiclientandroid.models.Course;
+import com.example.development.sakaiclientandroid.utils.BottomNavigationViewHelper;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
 import com.example.development.sakaiclientandroid.utils.custom.CustomLinkMovementMethod;
 import com.example.development.sakaiclientandroid.utils.requests.DownloadCompleteReceiver;
 import com.example.development.sakaiclientandroid.utils.requests.RequestCallback;
 import com.example.development.sakaiclientandroid.utils.requests.RequestManager;
 
+import com.example.development.sakaiclientandroid.utils.requests.SharedPrefsUtil;
 import java.util.ArrayList;
 
 
 public class NavActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener {
 
-    public static final String ASSIGNMENTS_TAG = "COURSES";
+    public static final String COURSES_TAG = "COURSES";
     public static final String ALL_GRADES_TAG = "GRADES";
+    public static final String ASSIGNMENTS_TAG = "ASSIGNMENTS";
 
     private FrameLayout container;
     private ProgressBar spinner;
@@ -54,33 +57,19 @@ public class NavActivity extends AppCompatActivity
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(this);
 
+        BottomNavigationViewHelper.removeShiftMode(navigation);
+
         // Create RequestManager's Retrofit instance
         RequestManager.createRetrofitInstance(this);
-        // Request all site pages for the Home Fragment
-        DataHandler.requestAllSites(new RequestCallback() {
-            @Override
-            public void onCoursesSuccess() {
 
-                spinner.setVisibility(View.GONE);
 
-                Bundle bun = new Bundle();
-                bun.putString("showHomeOrGrades", "Home");
+        //clear the saved tree states in saved preferences so some nodes aren't opened by default
+        SharedPrefsUtil.clearTreeStates(this);
 
-                AllCoursesFragment fragment = new AllCoursesFragment();
-                fragment.setArguments(bun);
-                loadFragment(fragment);
-            }
+        // Request all site pages for the Home Fragment and then loads the fragment
+        //refresh since we are loading for the same time
+        loadAllCoursesFragment(true);
 
-            @Override
-            public void onCoursesFailure(Throwable throwable) {
-                // TODO: Handle errors give proper error message
-                Log.i("Response", "failure");
-                Log.e("Response error", throwable.getMessage());
-            }
-        });
-
-        // Register the download receiver to open downloads once they are complete
-        registerDownloadReceiver();
     }
 
     @Override
@@ -135,9 +124,8 @@ public class NavActivity extends AppCompatActivity
         switch(item.getItemId()) {
 
             case R.id.navigation_home:
-                fragment = new AllCoursesFragment();
-                break;
-
+                loadAllCoursesFragment(false);
+                return true;
 
             case R.id.navigation_announcements:
                 fragment = new AnnouncementsFragment();
@@ -161,6 +149,42 @@ public class NavActivity extends AppCompatActivity
         return this.loadFragment(fragment);
 
     }
+
+
+    public void loadAllCoursesFragment(boolean refresh)
+    {
+        this.container.setVisibility(View.GONE);
+        this.spinner.setVisibility(View.VISIBLE);
+
+        DataHandler.requestAllSites(refresh, new RequestCallback()
+        {
+
+            @Override
+            public void onCoursesSuccess(ArrayList<ArrayList<Course>> response)
+            {
+                spinner.setVisibility(View.GONE);
+
+                Bundle b = new Bundle();
+                b.putSerializable(COURSES_TAG, response);
+
+                AllCoursesFragment frag = new AllCoursesFragment();
+                frag.setArguments(b);
+                loadFragment(frag);
+
+                container.setVisibility(View.VISIBLE);
+
+                setActionBarTitle(getString(R.string.app_name));
+            }
+
+            @Override
+            public void onAllGradesFailure(Throwable t)
+            {
+                //TODO deal with error
+                Log.e("ERROR: ", t.getMessage());
+            }
+        });
+    }
+
 
     public void loadAllGradesFragment(boolean refreshGrades)
     {

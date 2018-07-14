@@ -38,7 +38,7 @@
 
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
-    <string name="title_announcements">Announcements</string>
+    <string name="title_announcements">Alerts</string>
     <string name="title_assignments">Assignments</string>
     <string name="title_gradebook">Gradebook</string>
     <string name="title_settings">Settings</string>

@@ -37,7 +37,7 @@ public class Course implements Serializable {
             this.setDescription(desc);
 
             String title = jsonObject.getString("title");
-            this.setTitle(capitalizeEveryWord(title));
+            this.setTitle(title);
 
             JSONObject props = jsonObject.getJSONObject("props");
             try {
@@ -96,25 +96,6 @@ public class Course implements Serializable {
         this.assignmentObjectList = course.assignmentObjectList;
         this.title = course.title;
         this.term = course.term;
-    }
-
-
-    public String capitalizeEveryWord(String org) {
-        org = org.toLowerCase();
-        String[] words = org.split(" ");
-
-        StringBuilder builder = new StringBuilder(org.length());
-        for(int i = 0; i < words.length; i++) {
-            builder.append(words[i].substring(0, 1).toUpperCase() + words[i].substring(1));
-
-
-            if(i != words.length - 1)
-                builder.append(" ");
-
-        }
-
-        return builder.toString();
-
     }
 
 

@@ -5,10 +5,6 @@ import com.example.development.sakaiclientandroid.api_models.assignments.Assignm
 import com.example.development.sakaiclientandroid.models.Course;
 
 import java.util.ArrayList;
-import java.util.List;
-
-import okhttp3.ResponseBody;
-import retrofit2.Response;
 
 /**
  * Created by Development on 5/21/18.
@@ -16,7 +12,7 @@ import retrofit2.Response;
 
 public class RequestCallback {
 
-    public void onCoursesSuccess() { }
+    public void onCoursesSuccess(ArrayList<ArrayList<Course>> response) { }
 
     public void onCoursesFailure(Throwable throwable) { }
 

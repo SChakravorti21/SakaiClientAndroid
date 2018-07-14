@@ -13,10 +13,13 @@ import com.example.development.sakaiclientandroid.R;
 import com.example.development.sakaiclientandroid.api_models.gradebook.GradebookObject;
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.models.Term;
+import com.example.development.sakaiclientandroid.utils.RutgersSubjectCodes;
 import com.example.development.sakaiclientandroid.utils.custom.TreeViewItemClickListener;
 import com.example.development.sakaiclientandroid.utils.holders.CourseHeaderViewHolder;
 import com.example.development.sakaiclientandroid.utils.holders.GradeNodeViewHolder;
 import com.example.development.sakaiclientandroid.utils.holders.TermHeaderViewHolder;
+import com.example.development.sakaiclientandroid.utils.requests.RequestCallback;
+import com.example.development.sakaiclientandroid.utils.requests.SharedPrefsUtil;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
@@ -31,7 +34,6 @@ public class AllGradesFragment extends BaseFragment {
     SwipeRefreshLayout swipeRefreshLayout;
 
     private AndroidTreeView treeView;
-    private View viewTree;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,9 +64,17 @@ public class AllGradesFragment extends BaseFragment {
         this.swipeRefreshLayout = view.findViewById(R.id.swiperefresh);
 
 
-        swipeRefreshLayout.addView(viewTree);
+        swipeRefreshLayout.addView(treeView.getView());
 
+        //temporarily disable animations so the animations don't play when the state
+        //is being restored
+        treeView.setDefaultAnimation(false);
 
+        //state must be restored after the view is added to the layout
+        String state = SharedPrefsUtil.getTreeState(mContext, SharedPrefsUtil.ALL_GRADES_TREE_TYPE);
+        treeView.restoreState(state);
+
+        treeView.setDefaultAnimation(true);
 
 
         this.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -86,6 +96,15 @@ public class AllGradesFragment extends BaseFragment {
 
 
         return view;
+    }
+
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+        //here we should save tree state when user navigates away from fragment
+        SharedPrefsUtil.saveTreeState(mContext, treeView, SharedPrefsUtil.ALL_GRADES_TREE_TYPE);
     }
 
 
@@ -117,13 +136,15 @@ public class AllGradesFragment extends BaseFragment {
             for(Course currCourse : coursesInTerm)
             {
                 //create a course header item and make a treenode using it
-                //TODO give correct img to the course header
+                String courseIconCode = RutgersSubjectCodes.mapCourseCodeToIcon.get(currCourse.getSubjectCode());
                 CourseHeaderViewHolder.CourseHeaderItem courseNodeItem = new CourseHeaderViewHolder.CourseHeaderItem(
-                        currCourse.getTitle()
+                        currCourse.getTitle(),
+                        currCourse.getId(),
+                        courseIconCode
                 );
 
                 //set the custom view holder
-                TreeNode courseNode = new TreeNode(courseNodeItem).setViewHolder(new CourseHeaderViewHolder(mContext));
+                TreeNode courseNode = new TreeNode(courseNodeItem).setViewHolder(new CourseHeaderViewHolder(mContext, true));
 
 
                 List<GradebookObject> gradebookObjectList = currCourse.getGradebookObjectList();
@@ -171,7 +192,6 @@ public class AllGradesFragment extends BaseFragment {
         treeView = new AndroidTreeView(getActivity(), root);
         treeView.setDefaultAnimation(true);
         treeView.setDefaultNodeClickListener(new TreeViewItemClickListener(treeView, root));
-        viewTree = treeView.getView();
     }
 
 
