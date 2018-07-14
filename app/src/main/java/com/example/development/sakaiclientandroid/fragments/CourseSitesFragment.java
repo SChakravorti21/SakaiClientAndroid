@@ -45,7 +45,7 @@ public class CourseSitesFragment extends BaseFragment {
 
 
         Bundle bundle = this.getArguments();
-        if(bundle == null) {
+        if (bundle == null) {
             //TODO error message even though we shouldn't get an error here
             return view;
         }
@@ -53,7 +53,7 @@ public class CourseSitesFragment extends BaseFragment {
 
         this.courseToView = (Course) bundle.getSerializable(NavActivity.COURSE_TAG);
         final String[] siteTitles = new String[this.courseToView.getSitePages().size()];
-        for(int i = 0; i < siteTitles.length; i++) {
+        for (int i = 0; i < siteTitles.length; i++) {
             siteTitles[i] = this.courseToView.getSitePages().get(i).getTitle();
         }
 
@@ -73,7 +73,7 @@ public class CourseSitesFragment extends BaseFragment {
                 String siteName = (String) sitePagesListView.getItemAtPosition(pos);
 
 
-                if(siteName.equals(getString(R.string.gradebook))) {
+                if (siteName.equals(getString(R.string.gradebook))) {
 
                     final String siteId = courseToView.getId();
 
@@ -91,28 +91,25 @@ public class CourseSitesFragment extends BaseFragment {
     /**
      * /**
      * Loads the site grade fragment
+     *
      * @param siteId site id of the course whose grades to display
      * @throws IllegalStateException if the current activity is not NavActivity
      */
-    public void loadSiteGradesFragment(String siteId) throws IllegalStateException
-    {
+    public void loadSiteGradesFragment(String siteId) throws IllegalStateException {
 
         FragmentActivity activity = getActivity();
 
         //check if the current activity is a nav activity
-        if(activity instanceof NavActivity)
-        {
+        if (activity instanceof NavActivity) {
             //start the progress bar spinner
-            final NavActivity navActivity = (NavActivity)activity;
+            final NavActivity navActivity = (NavActivity) activity;
             navActivity.startProgressBar();
 
 
-            DataHandler.requestGradesForSite(siteId, false, new RequestCallback()
-            {
+            DataHandler.requestGradesForSite(siteId, false, new RequestCallback() {
 
                 @Override
-                public void onSiteGradesSuccess(Course course)
-                {
+                public void onSiteGradesSuccess(Course course) {
 
                     //stop the progress bar
                     navActivity.stopProgressBar();
@@ -132,8 +129,7 @@ public class CourseSitesFragment extends BaseFragment {
                 }
 
                 @Override
-                public void onSiteGradesEmpty(int errorMsgId)
-                {
+                public void onSiteGradesEmpty(int errorMsgId) {
                     //show a network error toast
                     navActivity.stopProgressBar();
                     navActivity.showErrorToast(navActivity.getString(errorMsgId));
@@ -141,17 +137,14 @@ public class CourseSitesFragment extends BaseFragment {
 
 
                 @Override
-                public void onRequestFailure(int errorMsgId, Throwable t)
-                {
+                public void onRequestFailure(int errorMsgId, Throwable t) {
                     navActivity.stopProgressBar();
                     navActivity.showErrorToast(navActivity.getString(errorMsgId));
 
                     t.printStackTrace();
                 }
             });
-        }
-
-        else {
+        } else {
             throw new IllegalStateException("Activity is not NavActivity!");
         }
 

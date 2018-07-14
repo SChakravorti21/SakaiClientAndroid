@@ -51,10 +51,10 @@ public class GradeNodeViewHolder extends TreeNode.BaseNodeViewHolder<GradeNodeVi
 
     public static class GradeTreeItem {
         public String assignment;
-        public Double grade;
+        public String grade;
         public Double points;
 
-        public GradeTreeItem(String a, Double g, Double p) {
+        public GradeTreeItem(String a, String g, Double p) {
             this.assignment = a;
             this.grade = g;
             this.points = p;

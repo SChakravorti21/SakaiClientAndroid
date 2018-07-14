@@ -27,10 +27,8 @@ public class SiteGradesFragment extends BaseFragment {
     private String siteID;
 
 
-
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState)
-    {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
@@ -54,7 +52,6 @@ public class SiteGradesFragment extends BaseFragment {
         feedGradesIntoListView();
 
 
-
         this.swipeRefreshLayout = view.findViewById(R.id.swiperefresh);
         this.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -63,8 +60,7 @@ public class SiteGradesFragment extends BaseFragment {
                 FragmentActivity parentActivity = getActivity();
 
                 //checking if instance to prevent casting errors
-                if(parentActivity instanceof NavActivity)
-                {
+                if (parentActivity instanceof NavActivity) {
                     refreshSiteGrades();
                 }
             }
@@ -79,8 +75,7 @@ public class SiteGradesFragment extends BaseFragment {
      * Puts the grades of the current course into an adapter and adds the adapter to the
      * list view
      */
-    public void feedGradesIntoListView()
-    {
+    public void feedGradesIntoListView() {
         List<GradebookObject> gradesList = DataHandler.getGradesForCourse(this.siteID);
 
         if (gradesList != null) {
@@ -88,26 +83,22 @@ public class SiteGradesFragment extends BaseFragment {
             //puts grades into custom adapter
             GradeItemAdapter adapter = new GradeItemAdapter(getActivity(), gradesList);
             siteGradesListView.setAdapter(adapter);
-        }
-        else {
+        } else {
             Toast.makeText(mContext, "No grades found", Toast.LENGTH_SHORT).show();
         }
     }
-
 
 
     /**
      * Refreshes the site grades page by remaking the request for grades for that course
      * Then feed the data into list view using feedGradesIntoListView()
      */
-    public void refreshSiteGrades() throws IllegalStateException
-    {
+    public void refreshSiteGrades() {
 
         FragmentActivity activity = getActivity();
-        if(activity instanceof NavActivity) {
+        if (activity instanceof NavActivity) {
 
             final NavActivity navActivity = (NavActivity) activity;
-
 
 
             DataHandler.requestGradesForSite(siteID, true, new RequestCallback() {

@@ -43,7 +43,7 @@ public final class NavActivity extends AppCompatActivity
     public static final String ASSIGNMENTS_TAG = "ASSIGNMENTS";
     public static final String SITE_GRADES_TAG = "SITEGRADES";
 
-    public FrameLayout container;
+    private FrameLayout container;
     private ProgressBar spinner;
 
 
@@ -69,7 +69,6 @@ public final class NavActivity extends AppCompatActivity
         this.spinner.setVisibility(View.VISIBLE);
 
 
-
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(this);
 
@@ -91,19 +90,20 @@ public final class NavActivity extends AppCompatActivity
 
     /**
      * Loads a given fragment into the fragment container in the NavActivity layout
+     *
      * @param fragment
      * @return boolean whether the fragment was successfully loaded
      */
     public boolean loadFragment(Fragment fragment, boolean showAnimations, boolean addToBackStack) {
 
-        if(fragment != null) {
+        if (fragment != null) {
 
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
-            if(showAnimations)
+            if (showAnimations)
                 transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
 
-            if(addToBackStack) {
+            if (addToBackStack) {
                 transaction.addToBackStack(null);
             }
 
@@ -163,11 +163,9 @@ public final class NavActivity extends AppCompatActivity
 
     /**
      * Loads the all courses fragment (home page)
+     *
      * @param refresh whether or not to refresh courses
      */
-    public void loadAllCoursesFragment(boolean refresh)
-    {
-
     public void loadAllCoursesFragment(boolean refresh) {
         this.container.setVisibility(View.GONE);
         this.spinner.setVisibility(View.VISIBLE);
@@ -175,8 +173,7 @@ public final class NavActivity extends AppCompatActivity
         DataHandler.requestAllSites(refresh, new RequestCallback() {
 
             @Override
-            public void onAllCoursesSuccess(ArrayList<ArrayList<Course>> response)
-            {
+            public void onAllCoursesSuccess(ArrayList<ArrayList<Course>> response) {
                 spinner.setVisibility(View.GONE);
 
                 Bundle b = new Bundle();
@@ -202,10 +199,10 @@ public final class NavActivity extends AppCompatActivity
 
     /**
      * Loads the all grades tab
+     *
      * @param refreshGrades whether or not to refresh grades
      */
-    public void loadAllGradesFragment(boolean refreshGrades)
-    {
+    public void loadAllGradesFragment(boolean refreshGrades) {
         this.container.setVisibility(View.GONE);
         this.spinner.setVisibility(View.VISIBLE);
 
@@ -236,14 +233,12 @@ public final class NavActivity extends AppCompatActivity
     }
 
 
-
-
     /**
      * Loads the fragment showing a course's sites
+     *
      * @param siteId id of course to show
      */
-    public void loadCourseFragment(String siteId)
-    {
+    public void loadCourseFragment(String siteId) {
 
         Course course = DataHandler.getCourseFromId(siteId);
         Bundle b = new Bundle();
@@ -294,8 +289,7 @@ public final class NavActivity extends AppCompatActivity
     }
 
 
-    public void showErrorToast(String errorString)
-    {
+    public void showErrorToast(String errorString) {
         Toast toast = Toast.makeText(this, errorString, Toast.LENGTH_LONG);
         toast.setGravity(Gravity.CENTER, 0, 0);
 

@@ -38,7 +38,7 @@ public class AllCoursesFragment extends BaseFragment {
         Bundle bun = getArguments();
         try {
             try {
-                this.courses = (ArrayList<ArrayList<Course>>) bun.getSerializable(COURSES_TAG);
+                this.courses = (ArrayList<ArrayList<Course>>) bun.getSerializable(ALL_COURSES_TAG);
             } catch (ClassCastException e) {
                 //TODO better exception handling
                 this.courses = new ArrayList<ArrayList<Course>>();
@@ -117,8 +117,8 @@ public class AllCoursesFragment extends BaseFragment {
     /**
      * Creates a treeview structure using a list of terms, and a hashmap mapping
      * term to list of courses for that term, which is gotten from DataHandler
+     *
      * @param coursesSorted courses sorted by term (gotten from data handler)
-     * @throws ClassCastException if the current activity is not an instance of nav activity
      */
     public void createTreeView(ArrayList<ArrayList<Course>> coursesSorted) {
         TreeNode root = TreeNode.root();
@@ -163,24 +163,19 @@ public class AllCoursesFragment extends BaseFragment {
 
                             Bundle bun = new Bundle();
                             bun.putString(getString(R.string.site_id), courseSiteId);
-                            CourseFragment fragment = new CourseFragment();
+                            AllCoursesFragment fragment = new AllCoursesFragment();
                             fragment.setArguments(bun);
 
 
                             //here we should save tree state
                             SharedPrefsUtil.saveTreeState(mContext, treeView, SharedPrefsUtil.ALL_COURSES_TREE_TYPE);
 
-                            String courseSiteId = ((CourseHeaderViewHolder.CourseHeaderItem) value).siteId;
-
                             FragmentActivity activity = getActivity();
-                            if(activity instanceof NavActivity)
-                            {
+                            if (activity instanceof NavActivity) {
                                 ((NavActivity) activity).loadCourseFragment(courseSiteId);
                             }
-                            else
-                            {
-                                throw new ClassCastException();
-                            }
+                            //if its not, dont do anything
+
                         }
                     }
                 });
