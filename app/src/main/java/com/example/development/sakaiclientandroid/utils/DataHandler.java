@@ -1,6 +1,7 @@
 package com.example.development.sakaiclientandroid.utils;
 
 import android.support.annotation.NonNull;
+
 import com.example.development.sakaiclientandroid.api_models.assignments.AllAssignments;
 import com.example.development.sakaiclientandroid.api_models.assignments.AssignmentObject;
 import com.example.development.sakaiclientandroid.api_models.gradebook.AllGradesObject;
@@ -37,7 +38,6 @@ public class DataHandler {
     private static boolean hasRequestedAllAssignments = false;
 
 
-
     public static ArrayList<ArrayList<Course>> getCoursesSortedByTerm() {
         return coursesSortedByTerm;
     }
@@ -61,7 +61,7 @@ public class DataHandler {
 
 
     public static void requestAllAssignments(final RequestCallback UICallback) {
-        if(hasRequestedAllAssignments) {
+        if (hasRequestedAllAssignments) {
             UICallback.onAllAssignmentsSuccess(coursesSortedByTerm);
             return;
         }
@@ -69,15 +69,15 @@ public class DataHandler {
         RequestManager.fetchAllAssignments(new Callback<AllAssignments>() {
             @Override
             public void onResponse(@NonNull Call<AllAssignments> call,
-                                   @NonNull  Response<AllAssignments> response) {
+                                   @NonNull Response<AllAssignments> response) {
                 AllAssignments allAssignments = response.body();
 
-                if(allAssignments == null || allAssignments.getAssignmentObject().size() == 0) {
+                if (allAssignments == null || allAssignments.getAssignmentObject().size() == 0) {
                     UICallback.onAllAssignmentsFailure(new Throwable("Assignments is empty!"));
                     return;
                 }
 
-                for(AssignmentObject assignment : allAssignments.getAssignmentObject()) {
+                for (AssignmentObject assignment : allAssignments.getAssignmentObject()) {
                     Course course = mapSiteIdToCourse.get(assignment.getContext());
                     course.addAssignment(assignment);
                 }
@@ -95,7 +95,7 @@ public class DataHandler {
 
     public static void requestAllGrades(boolean refreshGrades, final RequestCallback UICallback) {
 
-        if(hasRequestedAllGrades && !refreshGrades) {
+        if (hasRequestedAllGrades && !refreshGrades) {
             UICallback.onAllGradesSuccess(coursesSortedByTerm);
             return;
         }
@@ -106,7 +106,7 @@ public class DataHandler {
 
                 AllGradesObject allGradesObject = response.body();
 
-                if(allGradesObject != null) {
+                if (allGradesObject != null) {
                     //for each course's gradebook
                     for (GradebookCollectionObject gradebook : allGradesObject.getGradebookCollection()) {
 
@@ -144,7 +144,7 @@ public class DataHandler {
 
                 GradebookCollectionObject gradebookCollectionObject = response.body();
 
-                if(gradebookCollectionObject != null) {
+                if (gradebookCollectionObject != null) {
                     Course currCourse = DataHandler.getCourseFromId(siteId);
                     currCourse.setGradebookObjectList(gradebookCollectionObject.getAssignments());
                 }
@@ -164,7 +164,7 @@ public class DataHandler {
     public static void requestAllSites(boolean refresh, final RequestCallback UICallback) {
 
         //dont do anything if we aren't refreshing
-        if(!refresh) {
+        if (!refresh) {
             UICallback.onCoursesSuccess(coursesSortedByTerm);
             return;
         }
@@ -178,8 +178,7 @@ public class DataHandler {
 
                     ArrayList<Course> allCourses = jsonToCourseObj(responseBody);
                     organizeByTerm(allCourses);
-                }
-                catch(Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
@@ -223,8 +222,7 @@ public class DataHandler {
 
                 mapSiteIdToCourse.put(c.getId(), c);
             }
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -235,9 +233,9 @@ public class DataHandler {
 
     public static Course getCourseFromId(String siteId) {
 
-        for(ArrayList<Course> courses : coursesSortedByTerm) {
-            for(Course c : courses) {
-                if(c.getId().equals(siteId)) {
+        for (ArrayList<Course> courses : coursesSortedByTerm) {
+            for (Course c : courses) {
+                if (c.getId().equals(siteId)) {
                     return c;
                 }
             }
@@ -250,6 +248,7 @@ public class DataHandler {
     /**
      * Organizes the Course objects by term. Makes a seperate ArrayList for sites collections
      * in the same term; terms are sorted chronologically.
+     *
      * @param courses = ArrayList of course objects
      */
     private static void organizeByTerm(ArrayList<Course> courses) {
@@ -270,10 +269,10 @@ public class DataHandler {
         Term currTerm = courses.get(0).getTerm();
         ArrayList<Course> currSites = new ArrayList<>();
 
-        for(Course course : courses) {
+        for (Course course : courses) {
 
             //if terms are the same, just add to current array list
-            if(course.getTerm().compareTo(currTerm) == 0) {
+            if (course.getTerm().compareTo(currTerm) == 0) {
                 currSites.add(course);
             }
             //otherwise finalize the current arraylist of terms and make a new arraylist
@@ -294,7 +293,6 @@ public class DataHandler {
 
         coursesSortedByTerm = sorted;
     }
-
 
 
 }

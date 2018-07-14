@@ -14,8 +14,7 @@ public class SitePage {
             this.siteId = jsonObj.getString("id");
             this.title = jsonObj.getString("title");
             this.url = jsonObj.getString("url");
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

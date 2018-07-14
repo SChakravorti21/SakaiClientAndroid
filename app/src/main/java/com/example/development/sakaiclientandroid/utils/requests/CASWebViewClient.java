@@ -69,7 +69,7 @@ public class CASWebViewClient extends WebViewClient {
     public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
         // We only need to intercept once authentication is complete, as the
         // the cookies do not change afterwards
-        if(url.startsWith("https://sakai.rutgers.edu/portal") && !gotHeaders) {
+        if (url.startsWith("https://sakai.rutgers.edu/portal") && !gotHeaders) {
             return handleRequest(url);
         }
 
@@ -93,7 +93,7 @@ public class CASWebViewClient extends WebViewClient {
             // the X-Sakai-Session cookie.
             final Response response = call.execute();
             Headers temp = response.headers();
-            if(temp.get("x-sakai-session") != null && !gotHeaders) {
+            if (temp.get("x-sakai-session") != null && !gotHeaders) {
                 Log.i("Headers", response.headers().toString());
                 savedHeaders = temp;
                 gotHeaders = true;
@@ -119,8 +119,8 @@ public class CASWebViewClient extends WebViewClient {
         // Once the main Sakai page loads ("/portal"), we can
         // fire the listener that will let the WebViewActivity
         // know to fire up a new intent and start the main activity
-        if(url.equals(cookieUrl) && gotHeaders
-                && sakaiLoadedListener != null ) {
+        if (url.equals(cookieUrl) && gotHeaders
+                && sakaiLoadedListener != null) {
             sakaiLoadedListener.onSakaiMainPageLoaded(savedHeaders);
         }
     }

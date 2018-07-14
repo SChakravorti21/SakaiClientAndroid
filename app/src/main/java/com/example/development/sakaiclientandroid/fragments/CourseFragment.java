@@ -34,7 +34,7 @@ public class CourseFragment extends BaseFragment {
 
 
         Bundle bundle = this.getArguments();
-        if(bundle == null) {
+        if (bundle == null) {
             //TODO error message even though we shouldn't get an error here
             return view;
         }
@@ -43,7 +43,7 @@ public class CourseFragment extends BaseFragment {
         String courseId = bundle.getString(getString(R.string.site_id));
         this.courseToView = DataHandler.getCourseFromId(courseId);
         final String[] siteTitles = new String[this.courseToView.getSitePages().size()];
-        for(int i = 0; i < siteTitles.length; i++) {
+        for (int i = 0; i < siteTitles.length; i++) {
             siteTitles[i] = this.courseToView.getSitePages().get(i).getTitle();
         }
 
@@ -63,7 +63,7 @@ public class CourseFragment extends BaseFragment {
                 String siteName = (String) sitePagesListView.getItemAtPosition(pos);
 
 
-                if(siteName.equals(getString(R.string.gradebook))) {
+                if (siteName.equals(getString(R.string.gradebook))) {
 
                     final String siteId = courseToView.getId();
                     //puts the siteId into the bundle

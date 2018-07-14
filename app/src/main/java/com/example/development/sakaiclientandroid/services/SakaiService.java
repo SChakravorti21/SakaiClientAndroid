@@ -22,7 +22,7 @@ public interface SakaiService {
     Call<AllGradesObject> getAllGrades();
 
     @GET("gradebook/site/{site_id}.json")
-    Call<GradebookCollectionObject> getGradeForSite(@Path(value = "site_id", encoded =  true) String siteId);
+    Call<GradebookCollectionObject> getGradeForSite(@Path(value = "site_id", encoded = true) String siteId);
 
     @GET("assignment/my.json")
     Call<AllAssignments> getAllAssignments();

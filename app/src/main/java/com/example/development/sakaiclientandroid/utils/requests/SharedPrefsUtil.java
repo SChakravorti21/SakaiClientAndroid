@@ -22,15 +22,13 @@ public class SharedPrefsUtil {
     public static String ALL_COURSES_TREE_TYPE = "ALL_COURSES";
 
 
-    public static String getTreeState(Context context, String treeType)
-    {
-        SharedPreferences sharedPref = context.getSharedPreferences(TREE_SET,Context.MODE_PRIVATE);
+    public static String getTreeState(Context context, String treeType) {
+        SharedPreferences sharedPref = context.getSharedPreferences(TREE_SET, Context.MODE_PRIVATE);
         return sharedPref.getString(treeType, "");
     }
 
-    public static void saveTreeState(Context context, AndroidTreeView tree, String treeType)
-    {
-        SharedPreferences sharedPref = context.getSharedPreferences(TREE_SET,Context.MODE_PRIVATE);
+    public static void saveTreeState(Context context, AndroidTreeView tree, String treeType) {
+        SharedPreferences sharedPref = context.getSharedPreferences(TREE_SET, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
 
         String state = tree.getSaveState();
@@ -38,9 +36,8 @@ public class SharedPrefsUtil {
         editor.apply();
     }
 
-    public static void clearTreeStates(Context context)
-    {
-        SharedPreferences sharedPref = context.getSharedPreferences(TREE_SET,Context.MODE_PRIVATE);
+    public static void clearTreeStates(Context context) {
+        SharedPreferences sharedPref = context.getSharedPreferences(TREE_SET, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.clear();
 
@@ -51,8 +48,9 @@ public class SharedPrefsUtil {
      * Given a context and a key-set, this method saves all items from the
      * Headers object into the SharedPreferences for access later throughout
      * the application
+     *
      * @param context The context to use when accessing the SharedPreferences object
-     * @param set The set that should store the headers. This is currently simply "Headers"
+     * @param set     The set that should store the headers. This is currently simply "Headers"
      * @param headers The set of headers to save
      */
     public static void saveHeaders(Context context, String set, Headers headers) {
@@ -65,8 +63,8 @@ public class SharedPrefsUtil {
         editor.clear();
 
         // Add all headers through editor
-        for(String headerName : headers.names()) {
-            if(!headerName.contains("cookie") && !headerName.contains("cnection")) {
+        for (String headerName : headers.names()) {
+            if (!headerName.contains("cookie") && !headerName.contains("cnection")) {
                 editor.putString(headerName, headers.get(headerName));
             }
         }
@@ -80,8 +78,9 @@ public class SharedPrefsUtil {
      * all key-value pairs in the SharedPreferences set designated by the key-set
      * to the builder. Specifically, this method is used to apply headers to the
      * builder, the most important of which is the X-Sakai-Session header.
+     *
      * @param context The context to use when accessing the SharedPreferences object
-     * @param set The set that should store the headers. This is currently simply "Headers"
+     * @param set     The set that should store the headers. This is currently simply "Headers"
      * @param builder The Request.Builder object on which to apply the headers
      */
     public static void applyHeaders(Context context, String set, Request.Builder builder) {
@@ -98,11 +97,11 @@ public class SharedPrefsUtil {
 
             // We can simply cast the value to a String since we know
             // that we only set String-valued headers in the past.
-            String value = (String)entry.getValue();
+            String value = (String) entry.getValue();
 
             // We do not want to set the Headers designated by "Set-Cookies"
             // or "X-Cnection", since those might tamper with our intended requests.
-            if(!key.contains("cookie") || !key.contains("cnection")) {
+            if (!key.contains("cookie") || !key.contains("cnection")) {
                 builder.addHeader(key, value);
             }
         }

@@ -11,7 +11,9 @@ import com.unnamed.b.atv.model.TreeNode;
 public class GradeNodeViewHolder extends TreeNode.BaseNodeViewHolder<GradeNodeViewHolder.GradeTreeItem> {
 
 
-    public GradeNodeViewHolder(Context c) { super(c); }
+    public GradeNodeViewHolder(Context c) {
+        super(c);
+    }
 
     @Override
     public View createNodeView(TreeNode node, GradeTreeItem value) {

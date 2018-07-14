@@ -10,19 +10,27 @@ import java.util.ArrayList;
 
 public class RequestCallback {
 
-    public void onCoursesSuccess(ArrayList<ArrayList<Course>> response) { }
+    public void onCoursesSuccess(ArrayList<ArrayList<Course>> response) {
+    }
 
-    public void onCoursesFailure(Throwable throwable) { }
+    public void onCoursesFailure(Throwable throwable) {
+    }
 
-    public void onSiteGradesSuccess() { }
+    public void onSiteGradesSuccess() {
+    }
 
-    public void onSiteGradesFailure(Throwable throwable) { }
+    public void onSiteGradesFailure(Throwable throwable) {
+    }
 
-    public void onAllGradesSuccess(ArrayList<ArrayList<Course>> response) { }
+    public void onAllGradesSuccess(ArrayList<ArrayList<Course>> response) {
+    }
 
-    public void onAllGradesFailure(Throwable throwable) { }
+    public void onAllGradesFailure(Throwable throwable) {
+    }
 
-    public void onAllAssignmentsSuccess(ArrayList<ArrayList<Course>> response) { }
+    public void onAllAssignmentsSuccess(ArrayList<ArrayList<Course>> response) {
+    }
 
-    public void onAllAssignmentsFailure(Throwable throwable) { }
+    public void onAllAssignmentsFailure(Throwable throwable) {
+    }
 }

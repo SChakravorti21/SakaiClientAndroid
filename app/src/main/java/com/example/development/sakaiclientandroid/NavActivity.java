@@ -22,6 +22,7 @@ import com.example.development.sakaiclientandroid.utils.DataHandler;
 import com.example.development.sakaiclientandroid.utils.requests.RequestCallback;
 import com.example.development.sakaiclientandroid.utils.requests.RequestManager;
 import com.example.development.sakaiclientandroid.utils.requests.SharedPrefsUtil;
+
 import java.util.ArrayList;
 
 
@@ -69,12 +70,13 @@ public class NavActivity extends AppCompatActivity
 
     /**
      * Loads a given fragment into the fragment container in the NavActivity layout
+     *
      * @param fragment
      * @return boolean whether the fragment was successfully loaded
      */
     private boolean loadFragment(Fragment fragment) {
 
-        if(fragment != null) {
+        if (fragment != null) {
             container.removeAllViews();
 
             getSupportFragmentManager()
@@ -104,7 +106,7 @@ public class NavActivity extends AppCompatActivity
 
         Fragment fragment = null;
 
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
 
             case R.id.navigation_home:
                 loadAllCoursesFragment(false);
@@ -134,17 +136,14 @@ public class NavActivity extends AppCompatActivity
     }
 
 
-    public void loadAllCoursesFragment(boolean refresh)
-    {
+    public void loadAllCoursesFragment(boolean refresh) {
         this.container.setVisibility(View.GONE);
         this.spinner.setVisibility(View.VISIBLE);
 
-        DataHandler.requestAllSites(refresh, new RequestCallback()
-        {
+        DataHandler.requestAllSites(refresh, new RequestCallback() {
 
             @Override
-            public void onCoursesSuccess(ArrayList<ArrayList<Course>> response)
-            {
+            public void onCoursesSuccess(ArrayList<ArrayList<Course>> response) {
                 spinner.setVisibility(View.GONE);
 
                 Bundle b = new Bundle();
@@ -160,8 +159,7 @@ public class NavActivity extends AppCompatActivity
             }
 
             @Override
-            public void onAllGradesFailure(Throwable t)
-            {
+            public void onAllGradesFailure(Throwable t) {
                 //TODO deal with error
                 Log.e("ERROR: ", t.getMessage());
             }
@@ -169,17 +167,14 @@ public class NavActivity extends AppCompatActivity
     }
 
 
-    public void loadAllGradesFragment(boolean refreshGrades)
-    {
+    public void loadAllGradesFragment(boolean refreshGrades) {
         this.container.setVisibility(View.GONE);
         this.spinner.setVisibility(View.VISIBLE);
 
-        DataHandler.requestAllGrades(refreshGrades, new RequestCallback()
-        {
+        DataHandler.requestAllGrades(refreshGrades, new RequestCallback() {
 
             @Override
-            public void onAllGradesSuccess(ArrayList<ArrayList<Course>> response)
-            {
+            public void onAllGradesSuccess(ArrayList<ArrayList<Course>> response) {
                 spinner.setVisibility(View.GONE);
 
                 Bundle b = new Bundle();
@@ -195,8 +190,7 @@ public class NavActivity extends AppCompatActivity
             }
 
             @Override
-            public void onAllGradesFailure(Throwable t)
-            {
+            public void onAllGradesFailure(Throwable t) {
                 //TODO deal with error
                 Log.e("ERROR: ", t.getMessage());
             }
