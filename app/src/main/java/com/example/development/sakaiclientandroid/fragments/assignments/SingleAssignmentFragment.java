@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.LayoutInflater;
@@ -67,6 +68,7 @@ public class SingleAssignmentFragment extends Fragment implements View.OnClickLi
         constructDescriptionView(layout);
 
         layout.findViewById(R.id.assignment_submit_button).setOnClickListener(this);
+        layout.findViewById(R.id.assignment_close_button).setOnClickListener(this);
 
         return layout;
     }
@@ -78,6 +80,10 @@ public class SingleAssignmentFragment extends Fragment implements View.OnClickLi
         switch (viewId) {
             case R.id.assignment_submit_button:
                 showSubmissionSheet();
+                break;
+            case R.id.assignment_close_button:
+                AppCompatActivity activity = (AppCompatActivity) getActivity();
+                activity.getSupportFragmentManager().popBackStack();
                 break;
         }
     }
