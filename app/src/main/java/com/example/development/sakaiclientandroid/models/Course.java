@@ -25,65 +25,56 @@ public class Course implements Serializable {
     private List<GradebookObject> gradebookObjectList;
     private List<Assignment> assignmentList;
 
-    public Course(JSONObject jsonObject) {
+    public Course(JSONObject jsonObject) throws JSONException {
         this.assignmentList = new ArrayList<Assignment>();
 
+        String id = jsonObject.getString("id");
+        this.setId(id);
+
+        String desc = jsonObject.getString("description");
+        this.setDescription(desc);
+
+        String title = jsonObject.getString("title");
+        this.setTitle(title);
+
+        JSONObject props = jsonObject.getJSONObject("props");
         try {
+            String term_eid = props.getString("term_eid");
+            Term courseTerm = new Term(term_eid);
+            this.setTerm(courseTerm);
+        }
+        catch(JSONException e) {
+            Term courseTerm = new Term("0000:0");
+            this.setTerm(courseTerm);
+        }
 
-            String id = jsonObject.getString("id");
-            this.setId(id);
-
-            String desc = jsonObject.getString("description");
-            this.setDescription(desc);
-
-            String title = jsonObject.getString("title");
-            this.setTitle(title);
-
-            JSONObject props = jsonObject.getJSONObject("props");
-            try {
-                String term_eid = props.getString("term_eid");
-                Term courseTerm = new Term(term_eid);
-                this.setTerm(courseTerm);
-            }
-            catch(JSONException e) {
-                Term courseTerm = new Term("0000:0");
-                this.setTerm(courseTerm);
-            }
-
-            JSONObject siteOwner = jsonObject.getJSONObject("siteOwner");
-            String ownerName = siteOwner.getString("userDisplayName");
-            this.setSiteOwner(ownerName);
+        JSONObject siteOwner = jsonObject.getJSONObject("siteOwner");
+        String ownerName = siteOwner.getString("userDisplayName");
+        this.setSiteOwner(ownerName);
 
 
-            String providerGroupId = jsonObject.getString("providerGroupId");
-            if (!providerGroupId.equals("null")) {
+        String providerGroupId = jsonObject.getString("providerGroupId");
+        if (!providerGroupId.equals("null")) {
 
-                providerGroupId = providerGroupId.replace("+", "_delim_");
+            providerGroupId = providerGroupId.replace("+", "_delim_");
 
-                String courseCode = providerGroupId.split("_delim_")[0];
-                String subjectCode = courseCode.split(":")[3];
-                this.setSubjectCode(Integer.parseInt(subjectCode));
-
-            }
-
-
-            ArrayList<SitePage> sitePages = new ArrayList<>();
-
-            JSONArray sitePagesObj = jsonObject.getJSONArray("sitePages");
-            for (int j = 0; j < sitePagesObj.length(); j++) {
-                JSONObject pageObj = sitePagesObj.getJSONObject(j);
-                SitePage sitePage = new SitePage(pageObj);
-                sitePages.add(sitePage);
-            }
-            this.sitePages = sitePages;
-
-
-            this.gradebookObjectList = null;
+            String courseCode = providerGroupId.split("_delim_")[0];
+            String subjectCode = courseCode.split(":")[3];
+            this.setSubjectCode(Integer.parseInt(subjectCode));
 
         }
-        catch(Exception e) {
-            e.printStackTrace();
+
+        ArrayList<SitePage> sitePages = new ArrayList<>();
+
+        JSONArray sitePagesObj = jsonObject.getJSONArray("sitePages");
+        for (int j = 0; j < sitePagesObj.length(); j++) {
+            JSONObject pageObj = sitePagesObj.getJSONObject(j);
+            SitePage sitePage = new SitePage(pageObj);
+            sitePages.add(sitePage);
         }
+        this.sitePages = sitePages;
+
+        this.gradebookObjectList = null;
 
     }
 

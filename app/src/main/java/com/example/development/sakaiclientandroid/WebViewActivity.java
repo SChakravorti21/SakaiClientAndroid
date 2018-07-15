@@ -38,6 +38,7 @@ public class WebViewActivity extends AppCompatActivity {
 
                         Intent intent = new Intent(WebViewActivity.this, NavActivity.class);
                         startActivity(intent);
+                        finish();
                     }
                 }
         );

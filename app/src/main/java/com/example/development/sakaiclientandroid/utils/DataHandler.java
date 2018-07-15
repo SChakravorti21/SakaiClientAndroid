@@ -12,6 +12,7 @@ import com.example.development.sakaiclientandroid.utils.requests.RequestCallback
 import com.example.development.sakaiclientandroid.utils.requests.RequestManager;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -240,8 +241,9 @@ public class DataHandler {
 
                     ArrayList<Course> allCourses = jsonToCourseObj(responseBody);
                     organizeByTerm(allCourses);
-                }
-                catch(Exception e) {
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch(Exception e) {
                     e.printStackTrace();
                 }
 
@@ -266,30 +268,23 @@ public class DataHandler {
 
     // **repeat for assignments, announcements**
 
-    private static ArrayList<Course> jsonToCourseObj(String responseBody) {
+    private static ArrayList<Course> jsonToCourseObj(String responseBody) throws JSONException {
 
 
         ArrayList<Course> coursesList = new ArrayList<>();
         mapSiteIdToCourse = new HashMap<>();
 
+        JSONObject obj = new JSONObject(responseBody);
+        JSONArray courses = obj.getJSONArray("site_collection");
 
-        try {
-            JSONObject obj = new JSONObject(responseBody);
-            JSONArray courses = obj.getJSONArray("site_collection");
+        for (int i = 0; i < courses.length(); i++) {
 
-            for (int i = 0; i < courses.length(); i++) {
+            JSONObject currCourse = courses.getJSONObject(i);
+            Course c = new Course(currCourse);
+            coursesList.add(c);
 
-                JSONObject currCourse = courses.getJSONObject(i);
-                Course c = new Course(currCourse);
-                coursesList.add(c);
-
-                mapSiteIdToCourse.put(c.getId(), c);
-            }
+            mapSiteIdToCourse.put(c.getId(), c);
         }
-        catch(Exception e){
-            e.printStackTrace();
-        }
-
 
         return coursesList;
     }
@@ -325,7 +320,6 @@ public class DataHandler {
                 return -1 * o1.getTerm().compareTo(o2.getTerm());
             }
         });
-
 
         ArrayList<ArrayList<Course>> sorted = new ArrayList<>();
 
