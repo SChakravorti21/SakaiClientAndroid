@@ -12,12 +12,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 public class AssignmentObject implements Serializable
 {
 
-    @SerializedName("access")
-    @Expose
-    private Access access;
-    @SerializedName("allPurposeItemText")
-    @Expose
-    private Object allPurposeItemText;
     @SerializedName("attachments")
     @Expose
     private List<Attachment> attachments = new ArrayList<Attachment>();
@@ -33,24 +27,12 @@ public class AssignmentObject implements Serializable
     @SerializedName("closeTimeString")
     @Expose
     private String closeTimeString;
-    @SerializedName("content")
-    @Expose
-    private Object content;
-    @SerializedName("contentReference")
-    @Expose
-    private String contentReference;
     @SerializedName("context")
     @Expose
     private String context;
     @SerializedName("creator")
     @Expose
     private String creator;
-    @SerializedName("dropDeadTime")
-    @Expose
-    private DropDeadTime dropDeadTime;
-    @SerializedName("dropDeadTimeString")
-    @Expose
-    private String dropDeadTimeString;
     @SerializedName("dueTime")
     @Expose
     private DueTime dueTime;
@@ -87,24 +69,12 @@ public class AssignmentObject implements Serializable
     @SerializedName("openTimeString")
     @Expose
     private String openTimeString;
-    @SerializedName("position_order")
-    @Expose
-    private long positionOrder;
-    @SerializedName("privateNoteText")
-    @Expose
-    private Object privateNoteText;
-    @SerializedName("section")
-    @Expose
-    private String section;
     @SerializedName("status")
     @Expose
     private String status;
     @SerializedName("submissionType")
     @Expose
     private String submissionType;
-    @SerializedName("timeCreated")
-    @Expose
-    private TimeCreated timeCreated;
     @SerializedName("timeLastModified")
     @Expose
     private TimeLastModified timeLastModified;
@@ -114,12 +84,6 @@ public class AssignmentObject implements Serializable
     @SerializedName("allowResubmission")
     @Expose
     private Boolean allowResubmission;
-    @SerializedName("draft")
-    @Expose
-    private Boolean draft;
-    @SerializedName("entityReference")
-    @Expose
-    private String entityReference;
     @SerializedName("entityURL")
     @Expose
     private String entityURL;
@@ -146,22 +110,6 @@ public class AssignmentObject implements Serializable
         this.term = term;
     }
 
-    public Access getAccess() {
-        return access;
-    }
-
-    public void setAccess(Access access) {
-        this.access = access;
-    }
-
-    public Object getAllPurposeItemText() {
-        return allPurposeItemText;
-    }
-
-    public void setAllPurposeItemText(Object allPurposeItemText) {
-        this.allPurposeItemText = allPurposeItemText;
-    }
-
     public List<Attachment> getAttachments() {
         return attachments;
     }
@@ -176,14 +124,6 @@ public class AssignmentObject implements Serializable
 
     public void setAuthorLastModified(String authorLastModified) {
         this.authorLastModified = authorLastModified;
-    }
-
-    public List<Object> getAuthors() {
-        return authors;
-    }
-
-    public void setAuthors(List<Object> authors) {
-        this.authors = authors;
     }
 
     public CloseTime getCloseTime() {
@@ -202,22 +142,6 @@ public class AssignmentObject implements Serializable
         this.closeTimeString = closeTimeString;
     }
 
-    public Object getContent() {
-        return content;
-    }
-
-    public void setContent(Object content) {
-        this.content = content;
-    }
-
-    public String getContentReference() {
-        return contentReference;
-    }
-
-    public void setContentReference(String contentReference) {
-        this.contentReference = contentReference;
-    }
-
     public String getContext() {
         return context;
     }
@@ -232,22 +156,6 @@ public class AssignmentObject implements Serializable
 
     public void setCreator(String creator) {
         this.creator = creator;
-    }
-
-    public DropDeadTime getDropDeadTime() {
-        return dropDeadTime;
-    }
-
-    public void setDropDeadTime(DropDeadTime dropDeadTime) {
-        this.dropDeadTime = dropDeadTime;
-    }
-
-    public String getDropDeadTimeString() {
-        return dropDeadTimeString;
-    }
-
-    public void setDropDeadTimeString(String dropDeadTimeString) {
-        this.dropDeadTimeString = dropDeadTimeString;
     }
 
     public DueTime getDueTime() {
@@ -298,14 +206,6 @@ public class AssignmentObject implements Serializable
         this.gradebookItemName = gradebookItemName;
     }
 
-    public List<Object> getGroups() {
-        return groups;
-    }
-
-    public void setGroups(List<Object> groups) {
-        this.groups = groups;
-    }
-
     public String getId() {
         return id;
     }
@@ -346,30 +246,6 @@ public class AssignmentObject implements Serializable
         this.openTimeString = openTimeString;
     }
 
-    public long getPositionOrder() {
-        return positionOrder;
-    }
-
-    public void setPositionOrder(long positionOrder) {
-        this.positionOrder = positionOrder;
-    }
-
-    public Object getPrivateNoteText() {
-        return privateNoteText;
-    }
-
-    public void setPrivateNoteText(Object privateNoteText) {
-        this.privateNoteText = privateNoteText;
-    }
-
-    public String getSection() {
-        return section;
-    }
-
-    public void setSection(String section) {
-        this.section = section;
-    }
-
     public String getStatus() {
         return status;
     }
@@ -384,14 +260,6 @@ public class AssignmentObject implements Serializable
 
     public void setSubmissionType(String submissionType) {
         this.submissionType = submissionType;
-    }
-
-    public TimeCreated getTimeCreated() {
-        return timeCreated;
-    }
-
-    public void setTimeCreated(TimeCreated timeCreated) {
-        this.timeCreated = timeCreated;
     }
 
     public TimeLastModified getTimeLastModified() {
@@ -416,22 +284,6 @@ public class AssignmentObject implements Serializable
 
     public void setAllowResubmission(Boolean allowResubmission) {
         this.allowResubmission = allowResubmission;
-    }
-
-    public Boolean getDraft() {
-        return draft;
-    }
-
-    public void setDraft(Boolean draft) {
-        this.draft = draft;
-    }
-
-    public String getEntityReference() {
-        return entityReference;
-    }
-
-    public void setEntityReference(String entityReference) {
-        this.entityReference = entityReference;
     }
 
     public String getEntityURL() {
@@ -460,7 +312,33 @@ public class AssignmentObject implements Serializable
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("access", access).append("allPurposeItemText", allPurposeItemText).append("attachments", attachments).append("authorLastModified", authorLastModified).append("authors", authors).append("closeTime", closeTime).append("closeTimeString", closeTimeString).append("content", content).append("contentReference", contentReference).append("context", context).append("creator", creator).append("dropDeadTime", dropDeadTime).append("dropDeadTimeString", dropDeadTimeString).append("dueTime", dueTime).append("dueTimeString", dueTimeString).append("gradeScale", gradeScale).append("gradeScaleMaxPoints", gradeScaleMaxPoints).append("gradebookItemId", gradebookItemId).append("gradebookItemName", gradebookItemName).append("groups", groups).append("id", id).append("instructions", instructions).append("modelAnswerText", modelAnswerText).append("openTime", openTime).append("openTimeString", openTimeString).append("positionOrder", positionOrder).append("privateNoteText", privateNoteText).append("section", section).append("status", status).append("submissionType", submissionType).append("timeCreated", timeCreated).append("timeLastModified", timeLastModified).append("title", title).append("allowResubmission", allowResubmission).append("draft", draft).append("entityReference", entityReference).append("entityURL", entityURL).append("entityId", entityId).append("entityTitle", entityTitle).toString();
+        return new ToStringBuilder(this)
+                .append("attachments", attachments)
+                .append("authorLastModified", authorLastModified)
+                .append("authors", authors)
+                .append("closeTime", closeTime)
+                .append("closeTimeString", closeTimeString)
+                .append("context", context)
+                .append("creator", creator)
+                .append("dueTime", dueTime)
+                .append("dueTimeString", dueTimeString)
+                .append("gradeScale", gradeScale)
+                .append("gradeScaleMaxPoints", gradeScaleMaxPoints)
+                .append("gradebookItemId", gradebookItemId)
+                .append("gradebookItemName", gradebookItemName)
+                .append("id", id)
+                .append("instructions", instructions)
+                .append("modelAnswerText", modelAnswerText)
+                .append("openTime", openTime)
+                .append("openTimeString", openTimeString)
+                .append("status", status)
+                .append("submissionType", submissionType)
+                .append("timeLastModified", timeLastModified)
+                .append("title", title)
+                .append("allowResubmission", allowResubmission)
+                .append("entityURL", entityURL)
+                .append("entityId", entityId)
+                .append("entityTitle", entityTitle).toString();
     }
 
 }

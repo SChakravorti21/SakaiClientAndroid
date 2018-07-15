@@ -37,9 +37,9 @@
     <View
         android:id="@+id/shadow"
         android:layout_width="0dp"
-        android:layout_height="10dp"
+        android:layout_height="5dp"
         android:layout_above="@id/navigation"
-        android:background="@drawable/shadow"
+        android:background="@drawable/card_footer_gradient"
         app:layout_constraintBottom_toTopOf="@+id/navigation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
