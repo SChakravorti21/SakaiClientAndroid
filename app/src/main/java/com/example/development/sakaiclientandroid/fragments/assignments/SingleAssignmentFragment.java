@@ -15,7 +15,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.example.development.sakaiclientandroid.R;
-import com.example.development.sakaiclientandroid.api_models.assignments.AssignmentObject;
+import com.example.development.sakaiclientandroid.api_models.assignments.Assignment;
 import com.example.development.sakaiclientandroid.api_models.assignments.Attachment;
 import com.example.development.sakaiclientandroid.utils.custom.CustomLinkMovementMethod;
 
@@ -29,7 +29,7 @@ import static com.example.development.sakaiclientandroid.fragments.assignments.A
  */
 public class SingleAssignmentFragment extends Fragment implements View.OnClickListener {
 
-    AssignmentObject assignment;
+    Assignment assignment;
 
     public SingleAssignmentFragment() {
         // Required empty public constructor
@@ -41,7 +41,7 @@ public class SingleAssignmentFragment extends Fragment implements View.OnClickLi
 
         Bundle arguments = getArguments();
         if(arguments != null) {
-            this.assignment = (AssignmentObject) arguments.getSerializable(ASSIGNMENTS_TAG);
+            this.assignment = (Assignment) arguments.getSerializable(ASSIGNMENTS_TAG);
         }
     }
 

@@ -11,7 +11,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.example.development.sakaiclientandroid.R;
-import com.example.development.sakaiclientandroid.api_models.assignments.AssignmentObject;
+import com.example.development.sakaiclientandroid.api_models.assignments.Assignment;
 import com.example.development.sakaiclientandroid.utils.custom.AssignmentAdapter;
 import com.unnamed.b.atv.model.TreeNode;
 
@@ -95,9 +95,9 @@ public class AssignmentTermHeaderViewHolder
     public static class TermHeaderItem {
         public String text;
         public String icon;
-        public List<AssignmentObject> assignments;
+        public List<Assignment> assignments;
 
-        public TermHeaderItem(String text, List<AssignmentObject> assignments) {
+        public TermHeaderItem(String text, List<Assignment> assignments) {
             this.text = text;
             this.assignments = assignments;
         }

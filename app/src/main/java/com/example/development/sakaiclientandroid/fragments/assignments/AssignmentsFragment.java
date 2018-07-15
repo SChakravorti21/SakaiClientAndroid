@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 
 import com.example.development.sakaiclientandroid.NavActivity;
 import com.example.development.sakaiclientandroid.R;
-import com.example.development.sakaiclientandroid.api_models.assignments.AssignmentObject;
+import com.example.development.sakaiclientandroid.api_models.assignments.Assignment;
 import com.example.development.sakaiclientandroid.fragments.BaseFragment;
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.models.Term;
@@ -31,7 +31,7 @@ public class AssignmentsFragment extends BaseFragment {
 
     private AndroidTreeView treeView;
     private ArrayList<ArrayList<Course>> courses;
-    private ArrayList<ArrayList<AssignmentObject>> assignments;
+    private ArrayList<ArrayList<Assignment>> assignments;
     private boolean sortedByCourses;
 
     @Override
@@ -46,7 +46,7 @@ public class AssignmentsFragment extends BaseFragment {
             if(sortedByCourses) {
                 courses = (ArrayList<ArrayList<Course>>) arguments.getSerializable(ASSIGNMENTS_TAG);
             } else {
-                assignments = (ArrayList<ArrayList<AssignmentObject>>) arguments.getSerializable(ASSIGNMENTS_TAG);
+                assignments = (ArrayList<ArrayList<Assignment>>) arguments.getSerializable(ASSIGNMENTS_TAG);
             }
         } catch (ClassCastException exception) {
             // Unable to create the tree, create a dummy tree
@@ -115,7 +115,7 @@ public class AssignmentsFragment extends BaseFragment {
             // assignments
             for(Course course : courseList) {
                 //SKIP THE COURSE IF IT DOESN'T HAVE ANY ASSIGNMENTS
-                if(course.getAssignmentObjectList().size() == 0) {
+                if(course.getAssignmentList().size() == 0) {
                     continue;
                 }
 
@@ -125,7 +125,7 @@ public class AssignmentsFragment extends BaseFragment {
                 // Create a course header item, and make a tree node using it
                 AssignmentCourseViewHolder.CourseHeaderItem courseHeaderItem =
                         new AssignmentCourseViewHolder.CourseHeaderItem(courseName,
-                                course.getAssignmentObjectList());
+                                course.getAssignmentList());
                 TreeNode courseNode = new TreeNode(courseHeaderItem);
                 // Set the course header view holder to inflate the appropriate view
                 courseNode.setViewHolder(new AssignmentCourseViewHolder(currContext));
@@ -151,7 +151,7 @@ public class AssignmentsFragment extends BaseFragment {
         // The courses as returned by the DataHandler are already sorted by term,
         // so we just need to loop through them to create the terms with all
         // courses and their assignments
-        for(ArrayList<AssignmentObject> termAssignments : assignments) {
+        for(ArrayList<Assignment> termAssignments : assignments) {
             // Get the term name
             Term courseTerm = (termAssignments.size() > 0) ? termAssignments.get(0).getTerm() : null;
             String termName = (courseTerm != null) ?

@@ -1,6 +1,6 @@
 package com.example.development.sakaiclientandroid.models;
 
-import com.example.development.sakaiclientandroid.api_models.assignments.AssignmentObject;
+import com.example.development.sakaiclientandroid.api_models.assignments.Assignment;
 import com.example.development.sakaiclientandroid.api_models.gradebook.GradebookObject;
 
 import org.json.JSONArray;
@@ -23,10 +23,10 @@ public class Course implements Serializable {
     private String siteOwner;
     private int subjectCode;
     private List<GradebookObject> gradebookObjectList;
-    private List<AssignmentObject> assignmentObjectList;
+    private List<Assignment> assignmentList;
 
     public Course(JSONObject jsonObject) {
-        this.assignmentObjectList = new ArrayList<AssignmentObject>();
+        this.assignmentList = new ArrayList<Assignment>();
 
         try {
 
@@ -93,7 +93,7 @@ public class Course implements Serializable {
 
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
         Course course = (Course) in.readObject();
-        this.assignmentObjectList = course.assignmentObjectList;
+        this.assignmentList = course.assignmentList;
         this.title = course.title;
         this.term = course.term;
     }
@@ -175,16 +175,16 @@ public class Course implements Serializable {
         this.gradebookObjectList = gradebookObjectList;
     }
 
-    public List<AssignmentObject> getAssignmentObjectList() {
-        return this.assignmentObjectList;
+    public List<Assignment> getAssignmentList() {
+        return this.assignmentList;
     }
 
-    public void addAssignment(AssignmentObject assignmentObject) {
-        assignmentObjectList.add(assignmentObject);
+    public void addAssignment(Assignment assignment) {
+        assignmentList.add(assignment);
     }
 
     public int getNumAssignments() {
-        return (this.assignmentObjectList != null) ? this.assignmentObjectList.size() : 0;
+        return (this.assignmentList != null) ? this.assignmentList.size() : 0;
     }
 
 }

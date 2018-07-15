@@ -13,7 +13,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
-import com.example.development.sakaiclientandroid.api_models.assignments.AssignmentObject;
+import com.example.development.sakaiclientandroid.api_models.assignments.Assignment;
 import com.example.development.sakaiclientandroid.fragments.AllCoursesFragment;
 import com.example.development.sakaiclientandroid.fragments.AllGradesFragment;
 import com.example.development.sakaiclientandroid.fragments.AnnouncementsFragment;
@@ -242,7 +242,7 @@ public class NavActivity extends AppCompatActivity
             }
 
             @Override
-            public void onAllAssignmentsByDateSuccess(ArrayList<ArrayList<AssignmentObject>> response) {
+            public void onAllAssignmentsByDateSuccess(ArrayList<ArrayList<Assignment>> response) {
                 spinner.setVisibility(View.GONE);
 
                 Bundle bundle = new Bundle();

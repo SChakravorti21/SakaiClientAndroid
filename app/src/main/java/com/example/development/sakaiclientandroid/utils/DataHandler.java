@@ -2,7 +2,7 @@ package com.example.development.sakaiclientandroid.utils;
 
 import android.support.annotation.NonNull;
 import com.example.development.sakaiclientandroid.api_models.assignments.AllAssignments;
-import com.example.development.sakaiclientandroid.api_models.assignments.AssignmentObject;
+import com.example.development.sakaiclientandroid.api_models.assignments.Assignment;
 import com.example.development.sakaiclientandroid.api_models.gradebook.AllGradesObject;
 import com.example.development.sakaiclientandroid.api_models.gradebook.GradebookObject;
 import com.example.development.sakaiclientandroid.api_models.gradebook.GradebookCollectionObject;
@@ -15,7 +15,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -31,7 +30,7 @@ public class DataHandler {
 
 
     private static ArrayList<ArrayList<Course>> coursesSortedByTerm;
-    private static ArrayList<ArrayList<AssignmentObject>> assignmentsSortedByDate;
+    private static ArrayList<ArrayList<Assignment>> assignmentsSortedByDate;
     private static HashMap<String, Course> mapSiteIdToCourse;
 
     //needed so that we don't have to make an unnecessary request if all grades
@@ -81,12 +80,12 @@ public class DataHandler {
                                    @NonNull  Response<AllAssignments> response) {
                 AllAssignments allAssignments = response.body();
 
-                if(allAssignments == null || allAssignments.getAssignmentObject().size() == 0) {
+                if(allAssignments == null || allAssignments.getAssignment().size() == 0) {
                     UICallback.onAllAssignmentsFailure(new Throwable("Assignments is empty!"));
                     return;
                 }
 
-                for(AssignmentObject assignment : allAssignments.getAssignmentObject()) {
+                for(Assignment assignment : allAssignments.getAssignment()) {
                     Course course = mapSiteIdToCourse.get(assignment.getContext());
                     assignment.setTerm(course.getTerm());
                     course.addAssignment(assignment);
@@ -126,7 +125,7 @@ public class DataHandler {
 
             // Only create a new list is there are assignments that we care about
             if(numAssignments > 0) {
-                assignmentsSortedByDate.add(new ArrayList<AssignmentObject>(numAssignments));
+                assignmentsSortedByDate.add(new ArrayList<Assignment>(numAssignments));
             }
         }
 
@@ -136,14 +135,14 @@ public class DataHandler {
             if(courses.size() == 0 || termIndex >= assignmentsSortedByDate.size())
                 continue;
 
-            ArrayList<AssignmentObject> termAssignments = assignmentsSortedByDate.get(termIndex);
+            ArrayList<Assignment> termAssignments = assignmentsSortedByDate.get(termIndex);
             for(Course course : coursesSortedByTerm.get(termIndex)) {
-                termAssignments.addAll(course.getAssignmentObjectList());
+                termAssignments.addAll(course.getAssignmentList());
             }
 
-            Collections.sort(termAssignments, new Comparator<AssignmentObject>() {
+            Collections.sort(termAssignments, new Comparator<Assignment>() {
                 @Override
-                public int compare(AssignmentObject o1, AssignmentObject o2) {
+                public int compare(Assignment o1, Assignment o2) {
                     Date date1 = new Date(o1.getDueTime().getTime());
                     Date date2 = new Date(o2.getDueTime().getTime());
                     // We want the list sorted in reverse chronological order

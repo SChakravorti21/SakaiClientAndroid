@@ -1,10 +1,7 @@
 package com.example.development.sakaiclientandroid.utils.custom;
 
-import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -16,13 +13,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
-import com.example.development.sakaiclientandroid.NavActivity;
 import com.example.development.sakaiclientandroid.R;
-import com.example.development.sakaiclientandroid.api_models.assignments.AssignmentObject;
+import com.example.development.sakaiclientandroid.api_models.assignments.Assignment;
 import com.example.development.sakaiclientandroid.fragments.assignments.CourseAssignmentsFragment;
 
 import java.io.Serializable;
@@ -37,17 +32,17 @@ import static com.example.development.sakaiclientandroid.fragments.assignments.C
 
 public class AssignmentAdapter extends RecyclerView.Adapter {
 
-    private List<AssignmentObject> assignments;
+    private List<Assignment> assignments;
 
     public class ViewHolder extends RecyclerView.ViewHolder
-            implements PopupMenu.OnMenuItemClickListener, View.OnClickListener {
+            implements View.OnClickListener {
 
         TextView titleView;
         TextView descriptionView;
         TextView dueDateView;
         int position;
 
-        ViewHolder(CardView cardView) {
+        ViewHolder(CardView cardView, View popupView) {
             super(cardView);
             this.titleView = cardView.findViewById(R.id.assignment_name);
             this.descriptionView = cardView.findViewById(R.id.assignment_description);
@@ -56,28 +51,11 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
             // Set the click listener on the header and footer
             titleView.setOnClickListener(this);
             dueDateView.setOnClickListener(this);
+            popupView.setOnClickListener(this);
         }
 
         void setPosition(int position) {
             this.position = position;
-        }
-
-        @Override
-        public boolean onMenuItemClick(MenuItem item) {
-            int itemId = item.getItemId();
-
-            switch (itemId) {
-                case R.id.action_expand:
-                    // This is the same behavior as expanding the card, so just
-                    // trigger onClick.
-                    // The view passed into the onClick listener does not matter
-                    // much since it is only used to get the context for using the
-                    // fragment manager.
-                    this.expandAssignment( (AppCompatActivity) titleView.getContext() );
-                    return true;
-            }
-
-            return false;
         }
 
         @Override
@@ -108,7 +86,7 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public AssignmentAdapter(List<AssignmentObject> assignments) {
+    public AssignmentAdapter(List<Assignment> assignments) {
         this.assignments = assignments;
     }
 
@@ -122,23 +100,8 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
                 .inflate(R.layout.assignment_cell_layout, parent, false);
 
         // Inflate the options menu (mainly just used for expanding the card)
-        TextView popupView = view.findViewById(R.id.assignment_popup_menu);
-        final PopupMenu popupMenu = new PopupMenu(parent.getContext(), popupView);
-        MenuInflater menuInflater = popupMenu.getMenuInflater();
-        menuInflater.inflate(R.menu.assignment_card_menu, popupMenu.getMenu());
-
-        // Set the listener for menu click
-        ViewHolder holder = new ViewHolder(view);
-        popupMenu.setOnMenuItemClickListener(holder);
-
-        popupView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                popupMenu.show();
-            }
-        });
-
-        return holder;
+        TextView popupView = view.findViewById(R.id.assignment_expand_button);
+        return new ViewHolder(view, popupView);
     }
 
     // Replace the contents of a view (invoked by the layout manager)
@@ -152,7 +115,7 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
         viewHolder.setPosition(position);
 
         // Set the assignment title
-        AssignmentObject assignment = assignments.get(position);
+        Assignment assignment = assignments.get(position);
         viewHolder.titleView.setText(assignment.getTitle());
 
         // Set the assignment description

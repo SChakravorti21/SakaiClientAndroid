@@ -1,7 +1,6 @@
 package com.example.development.sakaiclientandroid.utils.requests;
 
-import com.example.development.sakaiclientandroid.api_models.assignments.AllAssignments;
-import com.example.development.sakaiclientandroid.api_models.assignments.AssignmentObject;
+import com.example.development.sakaiclientandroid.api_models.assignments.Assignment;
 import com.example.development.sakaiclientandroid.models.Course;
 
 import java.util.ArrayList;
@@ -26,7 +25,7 @@ public class RequestCallback {
 
     public void onAllAssignmentsByCourseSuccess(ArrayList<ArrayList<Course>> response) { }
 
-    public void onAllAssignmentsByDateSuccess(ArrayList<ArrayList<AssignmentObject>> response) { }
+    public void onAllAssignmentsByDateSuccess(ArrayList<ArrayList<Assignment>> response) { }
 
     public void onAllAssignmentsFailure(Throwable throwable) { }
 }

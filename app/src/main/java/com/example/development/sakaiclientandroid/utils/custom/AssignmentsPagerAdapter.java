@@ -4,16 +4,13 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.PagerAdapter;
-import android.view.View;
 
-import com.example.development.sakaiclientandroid.api_models.assignments.AssignmentObject;
+import com.example.development.sakaiclientandroid.api_models.assignments.Assignment;
 import com.example.development.sakaiclientandroid.fragments.assignments.SingleAssignmentFragment;
 
 import java.util.List;
 
 import static com.example.development.sakaiclientandroid.NavActivity.ASSIGNMENTS_TAG;
-import static com.example.development.sakaiclientandroid.fragments.assignments.CourseAssignmentsFragment.ASSIGNMENT_NUMBER;
 
 /**
  * Created by Development on 6/30/18.
@@ -21,10 +18,10 @@ import static com.example.development.sakaiclientandroid.fragments.assignments.C
 
 public class AssignmentsPagerAdapter extends FragmentStatePagerAdapter {
 
-    private List<AssignmentObject> assignments;
+    private List<Assignment> assignments;
 
     public AssignmentsPagerAdapter(FragmentManager fragmentManager,
-                                   List<AssignmentObject> assignments) {
+                                   List<Assignment> assignments) {
         super(fragmentManager);
         this.assignments = assignments;
     }

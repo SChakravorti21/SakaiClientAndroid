@@ -15,7 +15,7 @@ public class AllAssignments implements Serializable
     private String entityPrefix;
     @SerializedName("assignment_collection")
     @Expose
-    private List<AssignmentObject> assignmentObject = new ArrayList<AssignmentObject>();
+    private List<Assignment> assignment = new ArrayList<Assignment>();
     private final static long serialVersionUID = 6209006925278274013L;
 
     public String getEntityPrefix() {
@@ -26,17 +26,17 @@ public class AllAssignments implements Serializable
         this.entityPrefix = entityPrefix;
     }
 
-    public List<AssignmentObject> getAssignmentObject() {
-        return assignmentObject;
+    public List<Assignment> getAssignment() {
+        return assignment;
     }
 
-    public void setAssignmentObject(List<AssignmentObject> assignmentObject) {
-        this.assignmentObject = assignmentObject;
+    public void setAssignment(List<Assignment> assignment) {
+        this.assignment = assignment;
     }
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("entityPrefix", entityPrefix).append("assignmentObject", assignmentObject).toString();
+        return new ToStringBuilder(this).append("entityPrefix", entityPrefix).append("assignment", assignment).toString();
     }
 
 }

@@ -9,11 +9,9 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 
 import com.example.development.sakaiclientandroid.R;
-import com.example.development.sakaiclientandroid.api_models.assignments.AssignmentObject;
+import com.example.development.sakaiclientandroid.api_models.assignments.Assignment;
 import com.example.development.sakaiclientandroid.utils.custom.AssignmentsPagerAdapter;
 
 import java.util.List;
@@ -27,7 +25,7 @@ public class CourseAssignmentsFragment extends Fragment {
 
     public static String ASSIGNMENT_NUMBER = "ASSIGNMENT_NUMBER";
 
-    private List<AssignmentObject> assignments;
+    private List<Assignment> assignments;
     private int initialPosition;
 
     public CourseAssignmentsFragment() {
@@ -40,7 +38,7 @@ public class CourseAssignmentsFragment extends Fragment {
 
         Bundle arguments = getArguments();
         if(arguments != null) {
-            assignments = (List<AssignmentObject>) arguments.getSerializable(ASSIGNMENTS_TAG);
+            assignments = (List<Assignment>) arguments.getSerializable(ASSIGNMENTS_TAG);
             initialPosition = arguments.getInt(ASSIGNMENT_NUMBER);
         }
     }

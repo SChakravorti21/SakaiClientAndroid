@@ -31,24 +31,24 @@
             <TextView
                 android:id="@+id/assignment_name"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:layout_gravity="fill"
                 android:textColor="@color/sakai_light_silver"
                 android:textStyle="bold"
-                android:lines="2"
                 android:maxLines="2"/>
 
             <TextView
-                android:id="@+id/assignment_popup_menu"
+                android:id="@+id/assignment_expand_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/sakai_medium_silver"
-                android:text="\uf142"
+                android:textColor="@color/sakai_light_silver"
+                android:background="?android:attr/selectableItemBackground"
+                android:text="\uf065"
                 android:textSize="16sp"
-                android:lines="2"
-                android:maxLines="2"
                 android:paddingLeft="12dp"
-                android:paddingRight="8dp"
+                android:paddingRight="4dp"
+                android:paddingTop="0dp"
                 style="@style/FontawesomeText" />
 
         </LinearLayout>
