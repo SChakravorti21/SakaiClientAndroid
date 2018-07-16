@@ -11,9 +11,8 @@
         android:layout_margin="12dp"
         app:cardCornerRadius="4dp"
         app:cardPreventCornerOverlap="true"
-        android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp"
-        android:layout_marginTop="12dp">
+        android:elevation="12dp"
+        android:padding="12dp">
 
         <RelativeLayout
             android:orientation="vertical"

@@ -9,22 +9,19 @@ import android.text.Html;
 import android.text.Spanned;
 import android.transition.Fade;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.example.development.sakaiclientandroid.R;
 import com.example.development.sakaiclientandroid.api_models.assignments.Assignment;
-import com.example.development.sakaiclientandroid.fragments.assignments.CourseAssignmentsFragment;
+import com.example.development.sakaiclientandroid.fragments.assignments.SiteAssignmentsFragment;
 
 import java.io.Serializable;
 import java.util.List;
 
 import static com.example.development.sakaiclientandroid.NavActivity.ASSIGNMENTS_TAG;
-import static com.example.development.sakaiclientandroid.fragments.assignments.CourseAssignmentsFragment.ASSIGNMENT_NUMBER;
+import static com.example.development.sakaiclientandroid.fragments.assignments.SiteAssignmentsFragment.ASSIGNMENT_NUMBER;
 
 /**
  * Created by Development on 6/23/18.
@@ -49,6 +46,7 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
             this.dueDateView = cardView.findViewById(R.id.assignment_date);
 
             // Set the click listener on the header and footer
+            cardView.setOnClickListener(this);
             titleView.setOnClickListener(this);
             dueDateView.setOnClickListener(this);
             popupView.setOnClickListener(this);
@@ -68,7 +66,7 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
             bundle.putSerializable(ASSIGNMENTS_TAG, (Serializable) assignments);
             bundle.putInt(ASSIGNMENT_NUMBER, position);
 
-            CourseAssignmentsFragment fragment = new CourseAssignmentsFragment();
+            SiteAssignmentsFragment fragment = new SiteAssignmentsFragment();
             fragment.setArguments(bundle);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -111,7 +109,7 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
         // - replace the contents of the view with that element
         ViewHolder viewHolder = (ViewHolder) holder;
         // Update the ViewHolder's position so that the click
-        // listener can dictate how to initialize the CourseAssignmentsFragment
+        // listener can dictate how to initialize the SiteAssignmentsFragment
         viewHolder.setPosition(position);
 
         // Set the assignment title

@@ -21,14 +21,14 @@ import static com.example.development.sakaiclientandroid.NavActivity.ASSIGNMENTS
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CourseAssignmentsFragment extends Fragment {
+public class SiteAssignmentsFragment extends Fragment {
 
     public static String ASSIGNMENT_NUMBER = "ASSIGNMENT_NUMBER";
 
     private List<Assignment> assignments;
     private int initialPosition;
 
-    public CourseAssignmentsFragment() {
+    public SiteAssignmentsFragment() {
         // Required empty public constructor
     }
 
@@ -39,7 +39,7 @@ public class CourseAssignmentsFragment extends Fragment {
         Bundle arguments = getArguments();
         if(arguments != null) {
             assignments = (List<Assignment>) arguments.getSerializable(ASSIGNMENTS_TAG);
-            initialPosition = arguments.getInt(ASSIGNMENT_NUMBER);
+            initialPosition = arguments.getInt(ASSIGNMENT_NUMBER, 0);
         }
     }
 

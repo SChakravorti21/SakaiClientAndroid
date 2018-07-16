@@ -36,7 +36,8 @@
                 android:layout_gravity="fill"
                 android:textColor="@color/sakai_light_silver"
                 android:textStyle="bold"
-                android:maxLines="2"/>
+                android:maxLines="2"
+                android:paddingRight="12dp"/>
 
             <TextView
                 android:id="@+id/assignment_expand_button"
@@ -46,8 +47,7 @@
                 android:background="?android:attr/selectableItemBackground"
                 android:text="\uf065"
                 android:textSize="16sp"
-                android:paddingLeft="12dp"
-                android:paddingRight="4dp"
+                android:layout_marginRight="4dp"
                 android:paddingTop="0dp"
                 style="@style/FontawesomeText" />
 

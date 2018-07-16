@@ -99,6 +99,9 @@ public class Assignment implements Serializable
     @SerializedName("term")
     @Expose
     private Term term;
+    @SerializedName("currentGrade")
+    @Expose
+    private String currentGrade;
 
     private final static long serialVersionUID = 835944991348229740L;
 
@@ -341,4 +344,11 @@ public class Assignment implements Serializable
                 .append("entityTitle", entityTitle).toString();
     }
 
+    public String getCurrentGrade() {
+        return currentGrade;
+    }
+
+    public void setCurrentGrade(String currentGrade) {
+        this.currentGrade = currentGrade;
+    }
 }
