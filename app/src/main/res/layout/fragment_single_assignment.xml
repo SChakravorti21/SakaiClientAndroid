@@ -115,19 +115,6 @@
 
                         <TableRow android:layout_marginBottom="4dp">
 
-                            <TextView android:text="Current Grade" />
-
-                            <TextView
-                                android:id="@+id/assignment_curr_grade"
-                                android:layout_width="0dp"
-                                android:layout_gravity="end"
-                                android:layout_weight="1"
-                                android:textAlignment="textEnd"
-                                tools:text="95" />
-                        </TableRow>
-
-                        <TableRow android:layout_marginBottom="4dp">
-
                             <TextView android:text="Allows Resubmissions" />
 
                             <TextView
