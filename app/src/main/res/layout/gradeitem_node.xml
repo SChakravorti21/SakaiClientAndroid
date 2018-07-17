@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.LinearLayoutCompat
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,11 +11,9 @@
     android:padding="10dp">
 
     <TextView
-
         android:id="@+id/txt_assignment_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="left"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:layout_weight="1"
@@ -23,19 +22,20 @@
         android:paddingTop="8dp"
         android:text="FINAL EXAM"
         android:textColor="@color/sakai_light_black"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:background="@color/colorAccent"/>
 
 
     <TextView
+        android:layout_gravity="right"
+        android:background="@color/colorPrimary"
         android:id="@+id/txt_grade"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_marginRight="8dp"
-        android:layout_weight="1"
-        android:gravity="right"
         android:paddingBottom="8dp"
         android:paddingTop="8dp"
-        android:text="h"
+        android:text="100/100.00"
         android:textColor="@color/sakai_light_black"
         android:textSize="16sp" />
 
