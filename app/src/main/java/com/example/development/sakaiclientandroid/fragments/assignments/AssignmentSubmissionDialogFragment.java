@@ -66,7 +66,7 @@ public class AssignmentSubmissionDialogFragment extends BottomSheetDialogFragmen
                 }
 
                 webView.loadUrl(url);
-                return false;
+                return true;
             }
         });
 

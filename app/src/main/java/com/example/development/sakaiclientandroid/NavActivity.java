@@ -69,7 +69,7 @@ public class NavActivity extends AppCompatActivity
         // Request all site pages for the Home Fragment and then loads the fragment
         //refresh since we are loading for the same time
         loadAllCoursesFragment(true);
-
+        registerDownloadReceiver();
     }
 
     @Override
