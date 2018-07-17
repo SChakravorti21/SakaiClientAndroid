@@ -74,16 +74,13 @@ public class GradeItemAdapter extends ArrayAdapter {
             if(assignmentsList.get(position).getGrade() == null)
             {
                 gradeTextView.setText(
-                        context.getString(R.string.grade_item_null,
-                                assignmentsList.get(position).getPoints())
+                        context.getString(R.string.grade_item_null, assignmentsList.get(position).getPoints())
                 );
             }
             else
             {
                 gradeTextView.setText(
-                        context.getString(R.string.grade_item,
-                                assignmentsList.get(position).getGrade(),
-                                assignmentsList.get(position).getPoints())
+                        context.getString(R.string.grade_item, assignmentsList.get(position).getGrade(), assignmentsList.get(position).getPoints())
                 );
             }
 
