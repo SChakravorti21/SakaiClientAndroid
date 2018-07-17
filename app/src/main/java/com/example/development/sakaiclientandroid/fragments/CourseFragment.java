@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.development.sakaiclientandroid.NavActivity;
 import com.example.development.sakaiclientandroid.R;
@@ -17,8 +18,10 @@ import com.example.development.sakaiclientandroid.api_models.assignments.Assignm
 import com.example.development.sakaiclientandroid.fragments.assignments.SiteAssignmentsFragment;
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
+import com.example.development.sakaiclientandroid.utils.requests.RequestCallback;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CourseFragment extends BaseFragment {
@@ -74,19 +77,22 @@ public class CourseFragment extends BaseFragment {
 
             // Initialized as dummy fragment to prevent crashing
             // TODO: Initialize as webview with appropriate destination url
-            Fragment fragment = new Fragment();
             if (siteName.equalsIgnoreCase(getString(R.string.gradebook))) {
-                fragment = constructSiteGradesFragment();
+                loadSiteGradesFragment();
             } else if (siteName.equalsIgnoreCase(getString(R.string.assignments))) {
-                fragment = constructSiteAssignmentsFragment();
+                Fragment fragment = constructSiteAssignmentsFragment();
+                loadFragment(fragment);
             }
 
-            loadFragment(fragment);
         }
 
         private SiteAssignmentsFragment constructSiteAssignmentsFragment() {
             List<Assignment> assignments = course.getAssignmentList();
 
+            return constructSiteAssignmentsFragment(assignments);
+        }
+
+        private SiteAssignmentsFragment constructSiteAssignmentsFragment(List<Assignment> assignments) {
             Bundle bundle = new Bundle();
             bundle.putSerializable(NavActivity.ASSIGNMENTS_TAG, (Serializable) assignments);
 
@@ -96,15 +102,22 @@ public class CourseFragment extends BaseFragment {
             return fragment;
         }
 
-        private SiteGradesFragment constructSiteGradesFragment() {
+        private void loadSiteGradesFragment() {
             final String siteId = course.getId();
-            //puts the siteId into the bundle
-            Bundle bun = new Bundle();
-            bun.putString(getString(R.string.site_id), siteId);
 
-            SiteGradesFragment frag = new SiteGradesFragment();
-            frag.setArguments(bun);
-            return frag;
+            DataHandler.requestAssignmentsForSite(new RequestCallback() {
+                @Override
+                public void onSiteAssignmentsSuccess(ArrayList<Assignment> response) {
+                    Fragment fragment = constructSiteAssignmentsFragment(response);
+                    loadFragment(fragment);
+                }
+
+                @Override
+                public void onSiteAssignmentsFailure(Throwable throwable) {
+                    Toast toast = Toast.makeText(getActivity(), "No assignments found!", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+            }, siteId);
         }
 
         private void loadFragment(Fragment fragment) {

@@ -26,4 +26,7 @@ public interface SakaiService {
 
     @GET("assignment/my.json")
     Call<AllAssignments> getAllAssignments();
+
+    @GET("assignment/site/{site_id}.json")
+    Call<AllAssignments> getSiteAssignments(@Path(value = "site_id", encoded = true) String siteId);
 }

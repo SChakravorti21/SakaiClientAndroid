@@ -110,6 +110,28 @@ public class DataHandler {
         });
     }
 
+    public static void requestAssignmentsForSite(final RequestCallback UICallback,
+                                               String siteId) {
+        RequestManager.fetchAssignmentsForSite(siteId, new Callback<AllAssignments>() {
+
+            @Override
+            public void onResponse(Call<AllAssignments> call, Response<AllAssignments> response) {
+                AllAssignments allAssignments = response.body();
+
+                if(allAssignments != null) {
+                    UICallback.onSiteAssignmentsSuccess( (ArrayList<Assignment>) allAssignments.getAssignment() );
+                } else {
+                    UICallback.onSiteAssignmentsFailure(new Throwable("No assignments found"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AllAssignments> call, Throwable t) {
+                UICallback.onSiteAssignmentsFailure(t);
+            }
+        });
+    }
+
     private static void sortAssignmentsByDate() {
         // 15 terms should be more than enough for most students (3 * 4 = 12 < 15)
         assignmentsSortedByDate = new ArrayList<>(15);
