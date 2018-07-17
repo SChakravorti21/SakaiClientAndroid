@@ -3,6 +3,7 @@ package com.example.development.sakaiclientandroid;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.webkit.CookieManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
@@ -17,6 +18,10 @@ public class WebViewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web_view);
+
+        // Make sure that the CookieManager accepts all cookies
+        CookieManager cookieManager = CookieManager.getInstance();
+        cookieManager.setAcceptCookie(true);
 
         // Get the WebView from the main view and attach the custom client
         // to it for keeping track of cookies and login completion
@@ -47,6 +52,8 @@ public class WebViewActivity extends AppCompatActivity {
         //The CAS system requires Javascript for the login to even load
         WebSettings loginSettings = loginWebView.getSettings();
         loginSettings.setJavaScriptEnabled(true);
+        loginSettings.setSaveFormData(true);
+        loginSettings.setSavePassword(true);
 
         // Load the login page once all configurations are complete
         loginWebView.loadUrl(getString(R.string.CAS_BASE_URL));

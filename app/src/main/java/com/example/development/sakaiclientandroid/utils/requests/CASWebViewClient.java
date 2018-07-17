@@ -26,9 +26,6 @@ public class CASWebViewClient extends WebViewClient {
     // login was successful, and a new activity can be started
     private SakaiLoadedListener sakaiLoadedListener;
 
-    // CookieManager automatically saves all cookies from requests,
-    // we just need to set the acceptance policy
-    private CookieManager cookieManager;
     // The url which is associated with the relevant Sakai cookies
     private final String cookieUrl;
 
@@ -46,11 +43,6 @@ public class CASWebViewClient extends WebViewClient {
 
         httpClient = new OkHttpClient();
         gotHeaders = false;
-
-        // Make sure that the CookieManager accepts all cookies
-        cookieManager = CookieManager.getInstance();
-        cookieManager.setAcceptCookie(true);
-        cookieManager.removeSessionCookie();
     }
 
     @Override
@@ -82,7 +74,7 @@ public class CASWebViewClient extends WebViewClient {
             // Sakai does not acknowledge the request.
             final Call call = httpClient.newCall(new Request.Builder()
                     .url(url)
-                    .addHeader("Cookie", cookieManager.getCookie(cookieUrl))
+                    .addHeader("Cookie", CookieManager.getInstance().getCookie(cookieUrl))
                     .build()
             );
 
