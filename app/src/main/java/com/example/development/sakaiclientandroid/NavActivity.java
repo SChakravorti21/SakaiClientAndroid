@@ -7,7 +7,6 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
@@ -170,7 +169,7 @@ public final class NavActivity extends AppCompatActivity
         this.container.setVisibility(View.GONE);
         this.spinner.setVisibility(View.VISIBLE);
 
-        DataHandler.requestAllSites(refresh, new RequestCallback() {
+        DataHandler.requestAllCourses(refresh, new RequestCallback() {
 
             @Override
             public void onAllCoursesSuccess(ArrayList<ArrayList<Course>> response) {
@@ -189,9 +188,18 @@ public final class NavActivity extends AppCompatActivity
             }
 
             @Override
-            public void onAllGradesFailure(Throwable t) {
-                //TODO deal with error
-                Log.e("ERROR: ", t.getMessage());
+            public void onAllCoursesEmpty(int msgRscId) {
+
+                spinner.setVisibility(View.GONE);
+                showErrorToast(getString(msgRscId));
+            }
+
+            @Override
+            public void onRequestFailure(int msgRscId, Throwable t) {
+                spinner.setVisibility(View.GONE);
+                showErrorToast(getString(msgRscId));
+
+                t.printStackTrace();
             }
         });
     }
@@ -225,9 +233,19 @@ public final class NavActivity extends AppCompatActivity
             }
 
             @Override
-            public void onAllGradesFailure(Throwable t) {
-                //TODO deal with error
-                Log.e("ERROR: ", t.getMessage());
+            public void onAllGradesEmpty(int msgRscId) {
+
+                spinner.setVisibility(View.GONE);
+                showErrorToast(getString(msgRscId));
+            }
+
+            @Override
+            public void onRequestFailure(int msgRscId, Throwable t) {
+                spinner.setVisibility(View.GONE);
+                showErrorToast(getString(msgRscId));
+
+                t.printStackTrace();
+
             }
         });
     }

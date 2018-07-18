@@ -15,8 +15,10 @@ import com.example.development.sakaiclientandroid.utils.requests.RequestCallback
 import com.example.development.sakaiclientandroid.utils.requests.RequestManager;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -109,7 +111,7 @@ public class DataHandler {
 
                 AllGradesObject allGradesObject = response.body();
 
-                if (allGradesObject != null) {
+                if (allGradesObject != null && allGradesObject.getGradebookCollection() != null && allGradesObject.getGradebookCollection().size() > 0) {
                     //for each course's gradebook
                     for (GradebookCollectionObject gradebook : allGradesObject.getGradebookCollection()) {
 
@@ -123,16 +125,19 @@ public class DataHandler {
 
                     }
 
+                    hasRequestedAllGrades = true;
+                    UICallback.onAllGradesSuccess(coursesSortedByTerm);
                 }
-
-                hasRequestedAllGrades = true;
-                UICallback.onAllGradesSuccess(coursesSortedByTerm);
+                //if no grades...
+                else {
+                    UICallback.onAllGradesEmpty(R.string.no_grades);
+                }
 
             }
 
             @Override
             public void onFailure(@NonNull Call<AllGradesObject> call, @NonNull Throwable t) {
-                UICallback.onAllGradesFailure(t);
+                UICallback.onRequestFailure(R.string.network_error, t);
             }
         });
     }
@@ -142,7 +147,7 @@ public class DataHandler {
 
         //if we don't want to refresh and we have the grades
         //just use the already cached course
-        if(!refresh && gradesRequestedForSite(siteId)) {
+        if (!refresh && gradesRequestedForSite(siteId)) {
             Course course = mapSiteIdToCourse.get(siteId);
             UICallback.onSiteGradesSuccess(course);
             return;
@@ -160,8 +165,7 @@ public class DataHandler {
                     Course currCourse = DataHandler.getCourseFromId(siteId);
                     currCourse.setGradebookObjectList(gradebookCollectionObject.getAssignments());
                     UICallback.onSiteGradesSuccess(currCourse);
-                }
-                else {
+                } else {
 
                     UICallback.onSiteGradesEmpty(R.string.no_grades);
                 }
@@ -177,35 +181,42 @@ public class DataHandler {
 
     /**
      * Requests all the sites and their site pages
-     * @param refresh whether or not we want to refresh the sites that are cached
+     *
+     * @param refresh    whether or not we want to refresh the sites that are cached
      * @param UICallback call back to be run after the request is done
      */
-    public static void requestAllSites(boolean refresh, final RequestCallback UICallback) {
+    public static void requestAllCourses(boolean refresh, final RequestCallback UICallback) {
 
         //dont do anything if we aren't refreshing
-        if(!refresh) {
+        if (!refresh) {
             UICallback.onAllCoursesSuccess(coursesSortedByTerm);
             return;
         }
 
-        RequestManager.fetchAllSites(new Callback<ResponseBody>() {
+        RequestManager.fetchAllCourses(new Callback<ResponseBody>() {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
 
                 try {
-                    if(response.body() != null) {
+                    if (response.body() != null) {
                         String responseBody = response.body().string();
 
                         ArrayList<Course> allCourses = jsonToCourseObj(responseBody);
                         organizeByTerm(allCourses);
-                    }
-                    else {
-                        UICallback.onAllCoursesFailure(new NullPointerException());
+                    } else {
+                        UICallback.onAllCoursesEmpty(R.string.no_courses);
                     }
                 }
-                catch(Exception e) {
+                //if we failed parsing the JSON, say the request failed,
+                //since there is a problem with the server
+                catch (JSONException e) {
                     e.printStackTrace();
-                    UICallback.onAllCoursesFailure(new ParseException("Failed parsing json response", 0));
+                    UICallback.onRequestFailure(R.string.network_error, e);
+                }
+                //possible IOException with parsing the response body to a string
+                catch (IOException e) {
+                    e.printStackTrace();
+                    UICallback.onRequestFailure(R.string.network_error, e);
                 }
 
                 hasRequestedAllGrades = false;
@@ -217,7 +228,7 @@ public class DataHandler {
 
             @Override
             public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable throwable) {
-                UICallback.onAllCoursesFailure(throwable);
+                UICallback.onRequestFailure(R.string.network_error, throwable);
             }
         });
     }
@@ -229,27 +240,30 @@ public class DataHandler {
 
     // **repeat for assignments, announcements**
 
-    private static ArrayList<Course> jsonToCourseObj(String responseBody) {
+    /**
+     * Parses the raw response body into an array list of courses
+     *
+     * @param responseBody raw json response from sakai api
+     * @return array list of parsed courses
+     * @throws JSONException if the response was unable to be parsed
+     */
+    private static ArrayList<Course> jsonToCourseObj(String responseBody) throws JSONException {
 
 
         ArrayList<Course> coursesList = new ArrayList<>();
         mapSiteIdToCourse = new HashMap<>();
 
 
-        try {
-            JSONObject obj = new JSONObject(responseBody);
-            JSONArray courses = obj.getJSONArray("site_collection");
+        JSONObject obj = new JSONObject(responseBody);
+        JSONArray courses = obj.getJSONArray("site_collection");
 
-            for (int i = 0; i < courses.length(); i++) {
+        for (int i = 0; i < courses.length(); i++) {
 
-                JSONObject currCourse = courses.getJSONObject(i);
-                Course c = new Course(currCourse);
-                coursesList.add(c);
+            JSONObject currCourse = courses.getJSONObject(i);
+            Course c = new Course(currCourse);
+            coursesList.add(c);
 
-                mapSiteIdToCourse.put(c.getId(), c);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+            mapSiteIdToCourse.put(c.getId(), c);
         }
 
 

@@ -58,7 +58,7 @@ public class RequestManager {
         httpClient.dispatcher().cancelAll();
     }
 
-    public static void fetchAllSites(Callback<ResponseBody> responseCallback) {
+    public static void fetchAllCourses(Callback<ResponseBody> responseCallback) {
         purgeRequestQueue();
 
         Call<ResponseBody> fetchSitesCall = sakaiService.getAllSites();
