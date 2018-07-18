@@ -1,8 +1,11 @@
 package com.example.development.sakaiclientandroid.utils.holders;
 
 import android.content.Context;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.development.sakaiclientandroid.R;
@@ -21,22 +24,45 @@ public class GradeNodeViewHolder extends TreeNode.BaseNodeViewHolder<GradeNodeVi
         final LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.gradeitem_node, null, false);
 
+        view.setLayoutParams(
+                new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+        );
+
         TextView assignmentText = view.findViewById(R.id.txt_assignment_name);
         assignmentText.setText(value.assignment);
 
         TextView gradeText = view.findViewById(R.id.txt_grade);
-        gradeText.setText(value.grade);
+
+        //dynamically fills in the string resource
+        if(value.grade == null)
+        {
+            gradeText.setText(
+                    context.getString(R.string.grade_item_null, value.points)
+            );
+        }
+        else
+        {
+            gradeText.setText(
+                    context.getString(R.string.grade_item, value.grade, value.points)
+            );
+        }
 
         return view;
     }
 
 
     public static class GradeTreeItem {
-        public String assignment, grade;
+        public String assignment;
+        public String grade;
+        public Double points;
 
-        public GradeTreeItem(String a, String g) {
+        public GradeTreeItem(String a, String g, Double p) {
             this.assignment = a;
             this.grade = g;
+            this.points = p;
         }
     }
 }

@@ -3,7 +3,6 @@ package com.example.development.sakaiclientandroid.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,7 +22,7 @@ import com.unnamed.b.atv.view.AndroidTreeView;
 
 import java.util.ArrayList;
 
-import static com.example.development.sakaiclientandroid.NavActivity.COURSES_TAG;
+import static com.example.development.sakaiclientandroid.NavActivity.ALL_COURSES_TAG;
 
 public class AllCoursesFragment extends BaseFragment {
 
@@ -39,7 +38,7 @@ public class AllCoursesFragment extends BaseFragment {
         Bundle bun = getArguments();
         try {
             try {
-                this.courses = (ArrayList<ArrayList<Course>>) bun.getSerializable(COURSES_TAG);
+                this.courses = (ArrayList<ArrayList<Course>>) bun.getSerializable(ALL_COURSES_TAG);
             } catch (ClassCastException e) {
                 //TODO better exception handling
                 this.courses = new ArrayList<ArrayList<Course>>();
@@ -114,9 +113,12 @@ public class AllCoursesFragment extends BaseFragment {
         SharedPrefsUtil.saveTreeState(mContext, treeView, SharedPrefsUtil.ALL_COURSES_TREE_TYPE);
     }
 
+
     /**
      * Creates a treeview structure using a list of terms, and a hashmap mapping
      * term to list of courses for that term, which is gotten from DataHandler
+     *
+     * @param coursesSorted courses sorted by term (gotten from data handler)
      */
     public void createTreeView(ArrayList<ArrayList<Course>> coursesSorted) {
         TreeNode root = TreeNode.root();
@@ -152,7 +154,7 @@ public class AllCoursesFragment extends BaseFragment {
 
                 courseNode.setClickListener(new TreeNode.TreeNodeClickListener() {
 
-                    //when click a course Node, open the CourseFragment to show
+                    //when click a course Node, open the CourseSitesFragment to show
                     //course specific information
                     @Override
                     public void onClick(TreeNode node, Object value) {
@@ -161,19 +163,19 @@ public class AllCoursesFragment extends BaseFragment {
 
                             Bundle bun = new Bundle();
                             bun.putString(getString(R.string.site_id), courseSiteId);
-                            CourseFragment fragment = new CourseFragment();
+                            AllCoursesFragment fragment = new AllCoursesFragment();
                             fragment.setArguments(bun);
 
 
                             //here we should save tree state
                             SharedPrefsUtil.saveTreeState(mContext, treeView, SharedPrefsUtil.ALL_COURSES_TREE_TYPE);
 
-                            //replaces current Fragment with CourseFragment
-                            FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-                            ft.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
-                                    .replace(R.id.fragment_container, fragment, null)
-                                    .addToBackStack(null)
-                                    .commit();
+                            FragmentActivity activity = getActivity();
+                            if (activity instanceof NavActivity) {
+                                ((NavActivity) activity).loadCourseFragment(courseSiteId);
+                            }
+                            //if its not, dont do anything
+
                         }
                     }
                 });

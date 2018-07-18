@@ -1,5 +1,6 @@
 package com.example.development.sakaiclientandroid.models;
 
+import com.example.development.sakaiclientandroid.R;
 import com.example.development.sakaiclientandroid.api_models.assignments.AssignmentObject;
 import com.example.development.sakaiclientandroid.api_models.gradebook.GradebookObject;
 

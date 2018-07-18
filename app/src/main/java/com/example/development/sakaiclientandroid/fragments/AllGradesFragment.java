@@ -149,15 +149,12 @@ public class AllGradesFragment extends BaseFragment {
                     //for each grade item in the current course, create a node
                     for (GradebookObject gradebookObject : gradebookObjectList) {
 
-                        String grade = gradebookObject.getGrade();
-                        if (grade == null) {
-                            grade = "";
-                        }
-
                         GradeNodeViewHolder.GradeTreeItem gradeNodeItem = new GradeNodeViewHolder.GradeTreeItem(
                                 gradebookObject.getItemName(),
-                                grade + "/" + gradebookObject.getPoints()
+                                gradebookObject.getGrade(),
+                                gradebookObject.getPoints()
                         );
+
 
                         //set the custom view holder
                         TreeNode gradeNode = new TreeNode(gradeNodeItem).setViewHolder(new GradeNodeViewHolder(mContext));

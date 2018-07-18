@@ -2,6 +2,8 @@ package com.example.development.sakaiclientandroid.utils;
 
 import android.support.annotation.NonNull;
 
+import com.example.development.sakaiclientandroid.R;
+
 import com.example.development.sakaiclientandroid.api_models.assignments.AllAssignments;
 import com.example.development.sakaiclientandroid.api_models.assignments.AssignmentObject;
 import com.example.development.sakaiclientandroid.api_models.gradebook.AllGradesObject;
@@ -15,6 +17,7 @@ import com.example.development.sakaiclientandroid.utils.requests.RequestManager;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -87,7 +90,7 @@ public class DataHandler {
             }
 
             @Override
-            public void onFailure(Call<AllAssignments> call, Throwable t) {
+            public void onFailure(@NonNull Call<AllAssignments> call, @NonNull Throwable t) {
                 UICallback.onAllAssignmentsFailure(t);
             }
         });
@@ -102,7 +105,7 @@ public class DataHandler {
 
         RequestManager.fetchAllGrades(new Callback<AllGradesObject>() {
             @Override
-            public void onResponse(Call<AllGradesObject> call, Response<AllGradesObject> response) {
+            public void onResponse(@NonNull Call<AllGradesObject> call, @NonNull Response<AllGradesObject> response) {
 
                 AllGradesObject allGradesObject = response.body();
 
@@ -128,70 +131,93 @@ public class DataHandler {
             }
 
             @Override
-            public void onFailure(Call<AllGradesObject> call, Throwable t) {
+            public void onFailure(@NonNull Call<AllGradesObject> call, @NonNull Throwable t) {
                 UICallback.onAllGradesFailure(t);
             }
         });
     }
 
 
-    public static void requestGradesForSite(final String siteId, final RequestCallback UICallback) {
+    public static void requestGradesForSite(final String siteId, boolean refresh, final RequestCallback UICallback) {
+
+        //if we don't want to refresh and we have the grades
+        //just use the already cached course
+        if(!refresh && gradesRequestedForSite(siteId)) {
+            Course course = mapSiteIdToCourse.get(siteId);
+            UICallback.onSiteGradesSuccess(course);
+            return;
+        }
+
 
         //pass in site id and callback
         RequestManager.fetchGradesForSite(siteId, new Callback<GradebookCollectionObject>() {
             @Override
-            public void onResponse(Call<GradebookCollectionObject> call, Response<GradebookCollectionObject> response) {
+            public void onResponse(@NonNull Call<GradebookCollectionObject> call, Response<GradebookCollectionObject> response) {
 
                 GradebookCollectionObject gradebookCollectionObject = response.body();
 
                 if (gradebookCollectionObject != null) {
                     Course currCourse = DataHandler.getCourseFromId(siteId);
                     currCourse.setGradebookObjectList(gradebookCollectionObject.getAssignments());
+                    UICallback.onSiteGradesSuccess(currCourse);
                 }
+                else {
 
-                UICallback.onSiteGradesSuccess();
+                    UICallback.onSiteGradesEmpty(R.string.no_grades);
+                }
             }
 
 
             @Override
-            public void onFailure(Call<GradebookCollectionObject> call, Throwable t) {
-                UICallback.onSiteGradesFailure(t);
+            public void onFailure(@NonNull Call<GradebookCollectionObject> call, Throwable t) {
+                UICallback.onRequestFailure(R.string.network_error, t);
             }
         });
     }
 
-
+    /**
+     * Requests all the sites and their site pages
+     * @param refresh whether or not we want to refresh the sites that are cached
+     * @param UICallback call back to be run after the request is done
+     */
     public static void requestAllSites(boolean refresh, final RequestCallback UICallback) {
 
         //dont do anything if we aren't refreshing
-        if (!refresh) {
-            UICallback.onCoursesSuccess(coursesSortedByTerm);
+        if(!refresh) {
+            UICallback.onAllCoursesSuccess(coursesSortedByTerm);
             return;
         }
 
         RequestManager.fetchAllSites(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
 
                 try {
-                    String responseBody = response.body().string();
+                    if(response.body() != null) {
+                        String responseBody = response.body().string();
 
-                    ArrayList<Course> allCourses = jsonToCourseObj(responseBody);
-                    organizeByTerm(allCourses);
-                } catch (Exception e) {
+                        ArrayList<Course> allCourses = jsonToCourseObj(responseBody);
+                        organizeByTerm(allCourses);
+                    }
+                    else {
+                        UICallback.onAllCoursesFailure(new NullPointerException());
+                    }
+                }
+                catch(Exception e) {
                     e.printStackTrace();
+                    UICallback.onAllCoursesFailure(new ParseException("Failed parsing json response", 0));
                 }
 
                 hasRequestedAllGrades = false;
                 hasRequestedAllAssignments = false;
-                UICallback.onCoursesSuccess(coursesSortedByTerm);
+                UICallback.onAllCoursesSuccess(coursesSortedByTerm);
 
 
             }
 
             @Override
-            public void onFailure(Call<ResponseBody> call, Throwable throwable) {
-                UICallback.onCoursesFailure(throwable);
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable throwable) {
+                UICallback.onAllCoursesFailure(throwable);
             }
         });
     }
@@ -280,7 +306,7 @@ public class DataHandler {
             else {
                 sorted.add(currSites);
 
-                currSites = new ArrayList<Course>();
+                currSites = new ArrayList<>();
                 currSites.add(course);
 
                 currTerm = course.getTerm();

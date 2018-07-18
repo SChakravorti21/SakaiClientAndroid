@@ -2,14 +2,13 @@ package com.example.development.sakaiclientandroid.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.development.sakaiclientandroid.NavActivity;
 import com.example.development.sakaiclientandroid.R;
@@ -24,8 +23,9 @@ import java.util.List;
 public class SiteGradesFragment extends BaseFragment {
 
     private ListView siteGradesListView;
-    private ProgressBar spinner;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private String siteID;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,61 +39,30 @@ public class SiteGradesFragment extends BaseFragment {
 
         //gets side Id from bundle
         Bundle bun = this.getArguments();
-        final String siteId = bun.getString(getString(R.string.site_id));
-
-
-        //changes app title
-        Course currCourse = DataHandler.getCourseFromId(siteId);
-        ((NavActivity) getActivity()).setActionBarTitle("Gradebook: " + currCourse.getTitle()
-        );
+        final Course course = (Course) bun.getSerializable(NavActivity.SITE_GRADES_TAG);
 
 
         //inflates the view
         final View view = inflater.inflate(R.layout.fragment_site_grades, null);
         this.siteGradesListView = view.findViewById(R.id.site_grades_list_view);
 
-        //starts spinning a spinner
-        this.spinner = view.findViewById(R.id.site_grades_progressbar);
-        this.spinner.setVisibility(View.VISIBLE);
+        this.siteID = course.getId();
 
-        //if the grades are already in storage, don't need to make request
-        if (DataHandler.gradesRequestedForSite(siteId)) {
-            fillGrades(siteId, view);
-        }
-        //otherwise, we must request
-        else {
-            DataHandler.requestGradesForSite(siteId, new RequestCallback() {
 
-                @Override
-                public void onSiteGradesSuccess() {
-                    fillGrades(siteId, view);
-                }
-
-                @Override
-                public void onSiteGradesFailure(Throwable t) {
-                    //TODO proper failure
-                    Log.d("fail", "fail");
-                }
-            });
-        }
+        feedGradesIntoListView();
 
 
         this.swipeRefreshLayout = view.findViewById(R.id.swiperefresh);
         this.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                DataHandler.requestGradesForSite(siteId, new RequestCallback() {
 
-                    @Override
-                    public void onSiteGradesSuccess() {
-                        swipeRefreshLayout.setRefreshing(false);
-                    }
+                FragmentActivity parentActivity = getActivity();
 
-                    @Override
-                    public void onSiteGradesFailure(Throwable throwable) {
-                        //TODO error
-                    }
-                });
+                //checking if instance to prevent casting errors
+                if (parentActivity instanceof NavActivity) {
+                    refreshSiteGrades();
+                }
             }
         });
 
@@ -103,18 +72,11 @@ public class SiteGradesFragment extends BaseFragment {
     }
 
     /**
-     * Does miscellaneous things such as disable the spinner, and put the grades into the list view
-     * or show a No Grades Found textview
-     *
-     * @param siteId = SiteId of the course to show the grades of
-     * @param view   = view that was inflated.
+     * Puts the grades of the current course into an adapter and adds the adapter to the
+     * list view
      */
-    private void fillGrades(String siteId, View view) {
-        //makes request for grades for this site and gets them
-        List<GradebookObject> gradesList = DataHandler.getGradesForCourse(siteId);
-
-        //makes spinner invisible
-        spinner.setVisibility(View.GONE);
+    public void feedGradesIntoListView() {
+        List<GradebookObject> gradesList = DataHandler.getGradesForCourse(this.siteID);
 
         if (gradesList != null) {
 
@@ -122,8 +84,53 @@ public class SiteGradesFragment extends BaseFragment {
             GradeItemAdapter adapter = new GradeItemAdapter(getActivity(), gradesList);
             siteGradesListView.setAdapter(adapter);
         } else {
-            TextView noGradesTxt = view.findViewById(R.id.txt_no_grades);
-            noGradesTxt.setVisibility(View.VISIBLE);
+            Toast.makeText(mContext, "No grades found", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    /**
+     * Refreshes the site grades page by remaking the request for grades for that course
+     * Then feed the data into list view using feedGradesIntoListView()
+     */
+    public void refreshSiteGrades() {
+
+        FragmentActivity activity = getActivity();
+        if (activity instanceof NavActivity) {
+
+            final NavActivity navActivity = (NavActivity) activity;
+
+
+            DataHandler.requestGradesForSite(siteID, true, new RequestCallback() {
+
+                //on the success, new grades are automatically stored in the course object
+                @Override
+                public void onSiteGradesSuccess(Course course) {
+
+                    swipeRefreshLayout.setRefreshing(false);
+
+                    feedGradesIntoListView();
+                }
+
+
+                @Override
+                public void onSiteGradesEmpty(int errorMsgId) {
+                    //show a network error toast
+                    swipeRefreshLayout.setRefreshing(false);
+                    navActivity.showErrorToast(navActivity.getString(errorMsgId));
+                }
+
+
+                @Override
+                public void onRequestFailure(int errorMsgId, Throwable t) {
+                    swipeRefreshLayout.setRefreshing(false);
+                    navActivity.showErrorToast(navActivity.getString(errorMsgId));
+
+                    t.printStackTrace();
+                }
+
+            });
+
         }
     }
 
