@@ -4,6 +4,8 @@ import android.content.Context;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.development.sakaiclientandroid.R;
@@ -22,6 +24,12 @@ public class GradeNodeViewHolder extends TreeNode.BaseNodeViewHolder<GradeNodeVi
         final LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.gradeitem_node, null, false);
 
+        view.setLayoutParams(
+                new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+        );
 
         TextView assignmentText = view.findViewById(R.id.txt_assignment_name);
         assignmentText.setText(value.assignment);
@@ -32,8 +40,10 @@ public class GradeNodeViewHolder extends TreeNode.BaseNodeViewHolder<GradeNodeVi
         if(value.grade == null)
         {
             gradeText.setText(
-                    context.getString(R.string.grade_item_null,
-                            value.points)
+                    context.getString(
+                            R.string.grade_item_null,
+                            value.points
+                    )
             );
         }
         else
