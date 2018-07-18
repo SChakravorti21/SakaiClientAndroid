@@ -40,18 +40,13 @@ public class GradeNodeViewHolder extends TreeNode.BaseNodeViewHolder<GradeNodeVi
         if(value.grade == null)
         {
             gradeText.setText(
-                    context.getString(
-                            R.string.grade_item_null,
-                            value.points
-                    )
+                    context.getString(R.string.grade_item_null, value.points)
             );
         }
         else
         {
             gradeText.setText(
-                    context.getString(R.string.grade_item,
-                            value.grade,
-                            value.points)
+                    context.getString(R.string.grade_item, value.grade, value.points)
             );
         }
 
