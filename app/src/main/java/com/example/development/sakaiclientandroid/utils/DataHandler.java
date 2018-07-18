@@ -6,7 +6,7 @@ import com.example.development.sakaiclientandroid.R;
 
 import com.example.development.sakaiclientandroid.api_models.assignments.AllAssignments;
 import com.example.development.sakaiclientandroid.api_models.assignments.AssignmentObject;
-import com.example.development.sakaiclientandroid.api_models.gradebook.AllGradesObject;
+import com.example.development.sakaiclientandroid.api_models.gradebook.AllGradesPost;
 import com.example.development.sakaiclientandroid.api_models.gradebook.GradebookObject;
 import com.example.development.sakaiclientandroid.api_models.gradebook.GradebookCollectionObject;
 import com.example.development.sakaiclientandroid.models.Course;
@@ -19,7 +19,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -111,15 +110,15 @@ public class DataHandler {
             return;
         }
 
-        RequestManager.fetchAllGrades(new Callback<AllGradesObject>() {
+        RequestManager.fetchAllGrades(new Callback<AllGradesPost>() {
             @Override
-            public void onResponse(@NonNull Call<AllGradesObject> call, @NonNull Response<AllGradesObject> response) {
+            public void onResponse(@NonNull Call<AllGradesPost> call, @NonNull Response<AllGradesPost> response) {
 
-                AllGradesObject allGradesObject = response.body();
+                AllGradesPost allGradesPost = response.body();
 
-                if (allGradesObject != null && allGradesObject.getGradebookCollection() != null && allGradesObject.getGradebookCollection().size() > 0) {
+                if (allGradesPost != null && allGradesPost.getGradebookCollection() != null && allGradesPost.getGradebookCollection().size() > 0) {
                     //for each course's gradebook
-                    for (GradebookCollectionObject gradebook : allGradesObject.getGradebookCollection()) {
+                    for (GradebookCollectionObject gradebook : allGradesPost.getGradebookCollection()) {
 
                         //set the gradebook's list of assignments to the course's list of assignments
                         List<GradebookObject> assignments = gradebook.getAssignments();
@@ -142,7 +141,7 @@ public class DataHandler {
             }
 
             @Override
-            public void onFailure(@NonNull Call<AllGradesObject> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<AllGradesPost> call, @NonNull Throwable t) {
                 UICallback.onRequestFailure(R.string.network_error, t);
             }
         });

@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.example.development.sakaiclientandroid.R;
 import com.example.development.sakaiclientandroid.api_models.assignments.AllAssignments;
-import com.example.development.sakaiclientandroid.api_models.gradebook.AllGradesObject;
+import com.example.development.sakaiclientandroid.api_models.gradebook.AllGradesPost;
 import com.example.development.sakaiclientandroid.api_models.gradebook.GradebookCollectionObject;
 import com.example.development.sakaiclientandroid.services.SakaiService;
 
@@ -66,10 +66,10 @@ public class RequestManager {
     }
 
 
-    public static void fetchAllGrades(Callback<AllGradesObject> responseCallBack) {
+    public static void fetchAllGrades(Callback<AllGradesPost> responseCallBack) {
         purgeRequestQueue();
 
-        Call<AllGradesObject> fetchGradesCall = sakaiService.getAllGrades();
+        Call<AllGradesPost> fetchGradesCall = sakaiService.getAllGrades();
         fetchGradesCall.enqueue(responseCallBack);
     }
 
