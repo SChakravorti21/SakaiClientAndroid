@@ -98,6 +98,12 @@ public class DataHandler {
         });
     }
 
+
+    /**
+     * Requests all the grades for all the courses
+     * @param refreshGrades whether or not we want to refresh all grades
+     * @param UICallback callback to execute after request is done
+     */
     public static void requestAllGrades(boolean refreshGrades, final RequestCallback UICallback) {
 
         if (hasRequestedAllGrades && !refreshGrades) {
@@ -143,6 +149,12 @@ public class DataHandler {
     }
 
 
+    /**
+     * Requests all the grades for a specific course
+     * @param siteId id of course
+     * @param refresh whether or not we want to refresh
+     * @param UICallback callback to execute after request is complete
+     */
     public static void requestGradesForSite(final String siteId, boolean refresh, final RequestCallback UICallback) {
 
         //if we don't want to refresh and we have the grades
@@ -161,7 +173,7 @@ public class DataHandler {
 
                 GradebookCollectionObject gradebookCollectionObject = response.body();
 
-                if (gradebookCollectionObject != null) {
+                if (gradebookCollectionObject != null && gradebookCollectionObject.getAssignments() != null && gradebookCollectionObject.getAssignments().size() > 0) {
                     Course currCourse = DataHandler.getCourseFromId(siteId);
                     currCourse.setGradebookObjectList(gradebookCollectionObject.getAssignments());
                     UICallback.onSiteGradesSuccess(currCourse);
@@ -181,7 +193,6 @@ public class DataHandler {
 
     /**
      * Requests all the sites and their site pages
-     *
      * @param refresh    whether or not we want to refresh the sites that are cached
      * @param UICallback call back to be run after the request is done
      */
@@ -219,6 +230,8 @@ public class DataHandler {
                     UICallback.onRequestFailure(R.string.network_error, e);
                 }
 
+                //reset the has requested grades booleans so we know to
+                //refresh them next time we want to see the grades or assignments
                 hasRequestedAllGrades = false;
                 hasRequestedAllAssignments = false;
                 UICallback.onAllCoursesSuccess(coursesSortedByTerm);
@@ -233,12 +246,6 @@ public class DataHandler {
         });
     }
 
-
-    //get sorted time grades for one class
-
-    //get all grades sorted by term, and then by time.
-
-    // **repeat for assignments, announcements**
 
     /**
      * Parses the raw response body into an array list of courses
@@ -271,15 +278,12 @@ public class DataHandler {
     }
 
 
+    /**
+     * Helper method to get the course from a siteID
+     * @param siteId id of course
+     * @return the corresponding course
+     */
     public static Course getCourseFromId(String siteId) {
-
-        for (ArrayList<Course> courses : coursesSortedByTerm) {
-            for (Course c : courses) {
-                if (c.getId().equals(siteId)) {
-                    return c;
-                }
-            }
-        }
 
         return mapSiteIdToCourse.get(siteId);
     }
