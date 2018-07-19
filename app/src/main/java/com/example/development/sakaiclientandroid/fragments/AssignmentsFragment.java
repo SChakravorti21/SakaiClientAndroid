@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.development.sakaiclientandroid.api_models.assignments.AssignmentObject;
+import com.example.development.sakaiclientandroid.api_models.assignments.Assignment;
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.models.Term;
 import com.example.development.sakaiclientandroid.utils.RutgersSubjectCodes;
@@ -72,7 +72,7 @@ public class AssignmentsFragment extends BaseFragment {
             // assignments
             for (Course course : courseList) {
                 //SKIP THE COURSE IF IT DOESN'T HAVE ANY ASSIGNMENTS
-                if (course.getAssignmentObjectList().size() == 0) {
+                if (course.getAssignmentList().size() == 0) {
                     continue;
                 }
 
@@ -91,7 +91,7 @@ public class AssignmentsFragment extends BaseFragment {
 
                 // For each assignment of the course, create a new node and
                 // add it as a child of the course
-                for (AssignmentObject assignment : course.getAssignmentObjectList()) {
+                for (Assignment assignment : course.getAssignmentList()) {
                     String assignmentName = assignment.getTitle();
 
                     // Create an assignment header item, and make a tree node using it

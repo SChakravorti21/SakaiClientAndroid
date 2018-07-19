@@ -25,7 +25,6 @@ import com.example.development.sakaiclientandroid.fragments.AllCoursesFragment;
 import com.example.development.sakaiclientandroid.fragments.AllGradesFragment;
 import com.example.development.sakaiclientandroid.fragments.AnnouncementsFragment;
 import com.example.development.sakaiclientandroid.fragments.assignments.AssignmentsFragment;
-import com.example.development.sakaiclientandroid.fragments.AssignmentsFragment;
 import com.example.development.sakaiclientandroid.fragments.CourseSitesFragment;
 import com.example.development.sakaiclientandroid.fragments.SettingsFragment;
 import com.example.development.sakaiclientandroid.models.Course;
@@ -273,7 +272,7 @@ public final class NavActivity extends AppCompatActivity
     /**
      * Loads all assignments tab
      */
-    public void loadAssignmentsFragment() {
+    public void loadAssignmentsFragment(final boolean sortedByCourses) {
         this.container.setVisibility(View.GONE);
         this.spinner.setVisibility(View.VISIBLE);
 
@@ -288,7 +287,7 @@ public final class NavActivity extends AppCompatActivity
 
                 AssignmentsFragment fragment = new AssignmentsFragment();
                 fragment.setArguments(bundle);
-                loadFragment(fragment);
+                loadFragment(fragment, false, false);
 
                 container.setVisibility(View.VISIBLE);
             }

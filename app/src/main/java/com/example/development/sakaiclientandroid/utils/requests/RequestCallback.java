@@ -31,8 +31,6 @@ public class RequestCallback {
 
     public void onAllAssignmentsByDateSuccess(ArrayList<ArrayList<Assignment>> response) { }
 
-    public void onAllAssignmentsFailure(Throwable throwable) { }
-
     public void onSiteAssignmentsSuccess(ArrayList<Assignment> response) { }
 
     public void onSiteAssignmentsFailure(Throwable throwable) { }

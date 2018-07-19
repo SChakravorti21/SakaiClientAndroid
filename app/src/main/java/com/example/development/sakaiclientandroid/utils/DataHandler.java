@@ -276,25 +276,22 @@ public class DataHandler {
         RequestManager.fetchAllSites(new Callback<ResponseBody>() {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
-
                 try {
-                    if(response.body() != null) {
-                        String responseBody = response.body().string();
+                    String responseBody = response.body().string();
 
                     ArrayList<Course> allCourses = jsonToCourseObj(responseBody);
                     organizeByTerm(allCourses);
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    UICallback.onAllCoursesFailure(new ParseException("Failed parsing json response", 0));
                 } catch(Exception e) {
                     e.printStackTrace();
-                    UICallback.onAllCoursesFailure(new ParseException("Failed parsing json response", 0));
+                    UICallback.onAllCoursesFailure(new ParseException("Unable to parse response", 0));
                 }
 
                 hasRequestedAllGrades = false;
                 hasRequestedAllAssignments = false;
                 UICallback.onAllCoursesSuccess(coursesSortedByTerm);
-
-
             }
 
             @Override
