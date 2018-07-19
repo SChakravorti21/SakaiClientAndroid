@@ -113,8 +113,8 @@ public class DataHandler {
         });
     }
 
-    public static void requestAssignmentsForSite(final RequestCallback UICallback,
-                                               String siteId) {
+    public static void requestAssignmentsForSite(String siteId,
+                                                 final RequestCallback UICallback) {
         RequestManager.fetchAssignmentsForSite(siteId, new Callback<AllAssignments>() {
 
             @Override

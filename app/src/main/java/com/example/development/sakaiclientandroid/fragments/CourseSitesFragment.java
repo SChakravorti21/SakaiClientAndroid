@@ -19,10 +19,15 @@ import android.widget.Toast;
 
 import com.example.development.sakaiclientandroid.NavActivity;
 import com.example.development.sakaiclientandroid.R;
+import com.example.development.sakaiclientandroid.api_models.assignments.Assignment;
+import com.example.development.sakaiclientandroid.fragments.assignments.SiteAssignmentsFragment;
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
 import com.example.development.sakaiclientandroid.utils.requests.RequestCallback;
 
+import java.util.ArrayList;
+
+import static com.example.development.sakaiclientandroid.NavActivity.ASSIGNMENTS_TAG;
 import static com.example.development.sakaiclientandroid.NavActivity.SITE_GRADES_TAG;
 
 public class CourseSitesFragment extends BaseFragment {
@@ -73,20 +78,61 @@ public class CourseSitesFragment extends BaseFragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int pos, long id) {
 
                 String siteName = (String) sitePagesListView.getItemAtPosition(pos);
-
+                final String siteId = courseToView.getId();
 
                 if (siteName.equals(getString(R.string.gradebook))) {
-
-                    final String siteId = courseToView.getId();
-
                     loadSiteGradesFragment(siteId);
-
+                } else if(siteName.equals("Assignments")) {
+                    loadSiteAssignmentsFragment(siteId);
                 }
             }
         });
 
 
         return view;
+    }
+
+    private void loadSiteAssignmentsFragment(String siteId) throws IllegalStateException {
+
+        FragmentActivity activity = getActivity();
+
+        //check if the current activity is a nav activity
+        if (activity instanceof NavActivity) {
+            //start the progress bar spinner
+            final NavActivity navActivity = (NavActivity) activity;
+            navActivity.startProgressBar();
+
+            DataHandler.requestAssignmentsForSite(siteId, new RequestCallback() {
+
+                @Override
+                public void onSiteAssignmentsSuccess(ArrayList<Assignment> response) {
+                    //stop the progress bar
+                    navActivity.stopProgressBar();
+
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable(NavActivity.ASSIGNMENTS_TAG, response);
+
+                    SiteAssignmentsFragment frag = new SiteAssignmentsFragment();
+                    frag.setArguments(bundle);
+
+                    //show animations =  true
+                    //add to the back stack = true, since we want to be able to click back from this screen
+                    navActivity.loadFragment(frag, true, true);
+
+                    navActivity.setActionBarTitle("Assignments: " + courseToView.getTitle());
+                }
+
+                @Override
+                public void onSiteAssignmentsFailure(Throwable throwable) {
+                    navActivity.stopProgressBar();
+                    //navActivity.showErrorToast(navActivity.getString(errorMsgId));
+
+                    throwable.printStackTrace();
+                }
+            });
+        } else {
+            throw new IllegalStateException("Activity is not NavActivity!");
+        }
     }
 
 
