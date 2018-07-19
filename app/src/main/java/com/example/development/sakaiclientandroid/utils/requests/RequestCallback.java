@@ -11,17 +11,21 @@ import java.util.ArrayList;
 
 public class RequestCallback {
 
-    public void onCoursesSuccess(ArrayList<ArrayList<Course>> response) { }
+    public void onRequestFailure(int msgRscId, Throwable t) { }
 
-    public void onCoursesFailure(Throwable throwable) { }
+    public void onAllCoursesSuccess(ArrayList<ArrayList<Course>> response) {
+    }
 
-    public void onSiteGradesSuccess() { }
+    public void onAllCoursesFailure(Throwable throwable) {
+    }
 
-    public void onSiteGradesFailure(Throwable throwable) { }
+    public void onSiteGradesSuccess(Course course) { }
 
-    public void onAllGradesSuccess(ArrayList<ArrayList<Course>> response) { }
+    public void onSiteGradesEmpty(int msgRscId) {
+    }
 
-    public void onAllGradesFailure(Throwable throwable) { }
+    public void onAllGradesSuccess(ArrayList<ArrayList<Course>> response) {
+    }
 
     public void onAllAssignmentsByCourseSuccess(ArrayList<ArrayList<Course>> response) { }
 
@@ -32,4 +36,12 @@ public class RequestCallback {
     public void onSiteAssignmentsSuccess(ArrayList<Assignment> response) { }
 
     public void onSiteAssignmentsFailure(Throwable throwable) { }
+    public void onAllGradesFailure(Throwable throwable) {
+    }
+
+    public void onAllAssignmentsSuccess(ArrayList<ArrayList<Course>> response) {
+    }
+
+    public void onAllAssignmentsFailure(Throwable throwable) {
+    }
 }

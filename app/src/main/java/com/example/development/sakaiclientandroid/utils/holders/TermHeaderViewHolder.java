@@ -38,7 +38,7 @@ public class TermHeaderViewHolder extends
 
         // Initialize the arrow view for toggling the list
         arrowView = view.findViewById(R.id.arrow_image);
-        if(node.getLevel() < 4) {
+        if (node.getLevel() < 4) {
             arrowView.setText(CHEVRON_RIGHT);
         } else {
             arrowView.setVisibility(View.GONE);
@@ -54,9 +54,9 @@ public class TermHeaderViewHolder extends
         );
 
         // Apply the layout parameters
-        LinearLayoutCompat.LayoutParams params =  new LinearLayoutCompat.LayoutParams(
-            widthPx,
-            LinearLayoutCompat.LayoutParams.WRAP_CONTENT
+        LinearLayoutCompat.LayoutParams params = new LinearLayoutCompat.LayoutParams(
+                widthPx,
+                LinearLayoutCompat.LayoutParams.WRAP_CONTENT
         );
         view.setLayoutParams(params);
 
@@ -65,7 +65,7 @@ public class TermHeaderViewHolder extends
 
     @Override
     public void toggle(boolean active) {
-        if(arrowView != null)
+        if (arrowView != null)
             arrowView.setText(active ? CHEVRON_DOWN : CHEVRON_RIGHT);
     }
 

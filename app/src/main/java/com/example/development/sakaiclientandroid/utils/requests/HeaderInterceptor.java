@@ -61,12 +61,13 @@ public class HeaderInterceptor implements Interceptor {
     /**
      * Given a Request object, logs all headers attached to it. Used
      * solely for debugging purposes.
+     *
      * @param request The Request object to analyze
      */
     private void logHeaders(Request request) {
         Log.i("Intercepted request", "logging headers");
         Headers allHeaders = request.headers();
-        for(String name : allHeaders.names()) {
+        for (String name : allHeaders.names()) {
             Log.i("Injected " + name, allHeaders.get(name));
         }
     }

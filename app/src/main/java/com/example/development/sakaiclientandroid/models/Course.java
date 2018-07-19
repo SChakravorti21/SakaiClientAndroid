@@ -1,6 +1,8 @@
 package com.example.development.sakaiclientandroid.models;
 
 import com.example.development.sakaiclientandroid.api_models.assignments.Assignment;
+import com.example.development.sakaiclientandroid.R;
+import com.example.development.sakaiclientandroid.api_models.assignments.AssignmentObject;
 import com.example.development.sakaiclientandroid.api_models.gradebook.GradebookObject;
 
 import org.json.JSONArray;
@@ -93,7 +95,7 @@ public class Course implements Serializable {
     @Override
     public String toString() {
         String ret = (this.title + " : " + this.term.toString() + "     Sites:   ");
-        for(SitePage s : this.sitePages) {
+        for (SitePage s : this.sitePages) {
             ret += s.toString() + ";  ";
         }
 

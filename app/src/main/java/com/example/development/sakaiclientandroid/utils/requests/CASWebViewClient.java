@@ -59,7 +59,7 @@ public class CASWebViewClient extends WebViewClient {
     public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
         // We only need to intercept once authentication is complete, as the
         // the cookies do not change afterwards
-        if(url.startsWith("https://sakai.rutgers.edu/portal") && !gotHeaders) {
+        if (url.startsWith("https://sakai.rutgers.edu/portal") && !gotHeaders) {
             return handleRequest(url);
         }
 

@@ -29,20 +29,15 @@ public class Term implements Comparable<Term>, Serializable{
 
     private static String intToTerm(int termInt) {
 
-        if(termInt == 0) {
+        if (termInt == 0) {
             return "General";
-        }
-
-        else if(termInt >= 12) {
+        } else if (termInt >= 12) {
             return "Winter";
-        }
-        else if(termInt >= 9) {
+        } else if (termInt >= 9) {
             return "Fall";
-        }
-        else if(termInt >= 6) {
+        } else if (termInt >= 6) {
             return "Summer";
-        }
-        else {
+        } else {
             return "Spring";
         }
     }
@@ -51,21 +46,19 @@ public class Term implements Comparable<Term>, Serializable{
     @Override
     public int compareTo(Term other) {
 
-        if(other == null) {
+        if (other == null) {
             return 1;
         }
 
-        if(this.year < other.year) {
+        if (this.year < other.year) {
             return -1;
-        }
-        else if(this.year > other.year) {
+        } else if (this.year > other.year) {
             return 1;
         }
 
-        if(this.termInt < other.termInt) {
+        if (this.termInt < other.termInt) {
             return -1;
-        }
-        else if(this.termInt > other.termInt) {
+        } else if (this.termInt > other.termInt) {
             return 1;
         }
 
