@@ -9,15 +9,16 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import com.example.development.sakaiclientandroid.fragments.AllCoursesFragment;
 import com.example.development.sakaiclientandroid.fragments.AllGradesFragment;
@@ -70,7 +71,8 @@ public final class NavActivity extends AppCompatActivity
         this.spinner = findViewById(R.id.nav_activity_progressbar);
         this.spinner.setVisibility(View.VISIBLE);
 
-
+        this.toolbar = findViewById(R.id.my_toolbar);
+        setSupportActionBar(toolbar);
 
 
         BottomNavigationView navigation = findViewById(R.id.navigation);
@@ -89,6 +91,26 @@ public final class NavActivity extends AppCompatActivity
         //refresh since we are loading for the same time
         loadAllCoursesFragment(true);
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.toolbar, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch(item.getItemId()) {
+
+            case R.id.action_settings:
+                SettingsFragment frag = new SettingsFragment();
+                loadFragment(frag, false, true);
+                return true;
+        }
+
+        return false;
     }
 
 
@@ -154,10 +176,6 @@ public final class NavActivity extends AppCompatActivity
                 //set refresh to false since we want to display cached grades
                 loadAllGradesFragment(false);
                 return true;
-
-            case R.id.navigation_settings:
-                fragment = new SettingsFragment();
-                break;
 
         }
 
