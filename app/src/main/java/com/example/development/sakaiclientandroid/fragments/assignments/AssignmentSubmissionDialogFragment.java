@@ -1,29 +1,29 @@
 package com.example.development.sakaiclientandroid.fragments.assignments;
 
 
-import android.app.DownloadManager;
-import android.content.Context;
-import android.net.Uri;
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.CookieManager;
-import android.webkit.DownloadListener;
-import android.widget.Toast;
 
 import com.example.development.sakaiclientandroid.R;
-import com.example.development.sakaiclientandroid.utils.requests.DownloadCompleteReceiver;
 import com.example.development.sakaiclientandroid.utils.ui_components.webview.AttachmentDownloadListener;
 import com.example.development.sakaiclientandroid.utils.ui_components.webview.FileCompatWebView;
+
+import java.lang.ref.WeakReference;
 
 public class AssignmentSubmissionDialogFragment extends BottomSheetDialogFragment {
     public static final String URL_PARAM = "URL_PARAM";
 
     private String url;
+    private WeakReference<FileCompatWebView> webView;
+    private AttachmentDownloadListener attachmentDownloadListener;
 
     public AssignmentSubmissionDialogFragment() {
         // Required empty public constructor
@@ -49,8 +49,35 @@ public class AssignmentSubmissionDialogFragment extends BottomSheetDialogFragmen
         super.onViewCreated(view, savedInstanceState);
 
         FileCompatWebView webView = view.findViewById(R.id.assignment_submission_view);
+        this.webView = new WeakReference<>(webView);
+        this.attachmentDownloadListener = new AttachmentDownloadListener(this);
+
         webView.initialize(this);
-        webView.setDownloadListener(new AttachmentDownloadListener(getActivity()));
+        webView.setDownloadListener(attachmentDownloadListener);
         webView.loadUrl(url);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        if(this.webView != null && this.webView.get() != null) {
+            this.webView.get().onActivityResult(requestCode, resultCode, intent);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if(requestCode != AttachmentDownloadListener.REQUEST_WRITE_PERMISSION_CODE
+                || permissions.length == 0
+                || grantResults.length == 0) {
+            return;
+        }
+
+        if(permissions[0] == Manifest.permission.WRITE_EXTERNAL_STORAGE
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            attachmentDownloadListener.retryDownloadFile();
+        }
     }
 }

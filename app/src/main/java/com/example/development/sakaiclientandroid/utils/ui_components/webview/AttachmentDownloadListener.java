@@ -1,12 +1,13 @@
 package com.example.development.sakaiclientandroid.utils.ui_components.webview;
 
-import android.app.Activity;
+import android.Manifest;
 import android.app.DownloadManager;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Environment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
 import android.widget.Toast;
@@ -22,21 +23,39 @@ import java.lang.ref.WeakReference;
 
 public class AttachmentDownloadListener implements DownloadListener {
 
-    private WeakReference<FragmentActivity> activity;
+    public static final int REQUEST_WRITE_PERMISSION_CODE = 23112;
+    private WeakReference<Fragment> fragment;
+    private String previousUrl;
 
-    public AttachmentDownloadListener(FragmentActivity activity) {
-        this.activity = new WeakReference<>(activity);
+    public AttachmentDownloadListener(Fragment fragment) {
+        this.fragment = new WeakReference<>(fragment);
     }
 
     @Override
     public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
-        downloadFile(url);
+        // Check permission to write to external storage before trying to download the file
+        if(checkAndRequestPermissions()) {
+            downloadFile(url);
+        }
+    }
+
+    /**
+     * Publicly accessible for times when the write external storage permission
+     * needs to be requested and is granted
+     */
+    public void retryDownloadFile() {
+        downloadFile(previousUrl);
     }
 
     private void downloadFile(String url) {
-        // Check if the activity is still alive
-        FragmentActivity activity = this.activity != null ? this.activity.get() : null;
-        if(activity == null) {
+        // Check for invalid url
+        if(url == null || url.isEmpty())
+            return;
+
+        // Check if the fragment is still alive
+        Fragment fragment = this.fragment != null ? this.fragment.get() : null;
+        if(fragment == null) {
+            previousUrl = url;
             return;
         }
 
@@ -51,18 +70,20 @@ public class AttachmentDownloadListener implements DownloadListener {
         request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,
                 downloadUri.getLastPathSegment());
 
-        DownloadManager downloadManager = (DownloadManager) activity.getSystemService(Context.DOWNLOAD_SERVICE);
+        DownloadManager downloadManager = (DownloadManager) fragment.getContext()
+                .getSystemService(Context.DOWNLOAD_SERVICE);
+
         if(downloadManager != null) {
             long downloadId = downloadManager.enqueue(request);
             DownloadCompleteReceiver.addDownloadId(downloadId);
 
             // Indicate that the download has begun
-            Toast successToast = Toast.makeText(activity, "Download started...",
+            Toast successToast = Toast.makeText(fragment.getContext(), "Download started...",
                     Toast.LENGTH_SHORT);
             successToast.show();
         } else {
             // Show a toast with an error
-            Toast errorToast = Toast.makeText(activity, "Download failed, please try again later.",
+            Toast errorToast = Toast.makeText(fragment.getContext(), "Download failed, please try again later.",
                     Toast.LENGTH_SHORT);
             errorToast.show();
         }
@@ -70,12 +91,31 @@ public class AttachmentDownloadListener implements DownloadListener {
         // Detach the fragment because it won;t be displaying any information
         // The WebFragment is always added to the backstack, so we need to pop
         // the backtstack for the back button to function as expected
-        activity.getSupportFragmentManager().popBackStack();
+        fragment.getActivity().getSupportFragmentManager().popBackStack();
+    }
+
+    private boolean checkAndRequestPermissions() {
+        Fragment fragment = this.fragment != null ? this.fragment.get() : null;
+        if(fragment == null) {
+            // No point in checking the permissions if the fragment is no longer
+            // in the foreground anyways
+            return false;
+        }
+
+        if(ContextCompat.checkSelfPermission(fragment.getContext(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+
+            String[] permissions = new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+            fragment.requestPermissions(permissions, REQUEST_WRITE_PERMISSION_CODE);
+            return false;
+        }
+
+        return true;
     }
 
     private String getCookies() {
-        FragmentActivity context = this.activity != null ? this.activity.get() : null;
-        if(context == null) {
+        Fragment fragment = this.fragment != null ? this.fragment.get() : null;
+        if(fragment == null) {
             return null;
         }
 
@@ -84,7 +124,7 @@ public class AttachmentDownloadListener implements DownloadListener {
         // We only need one set of cookies, the Sakai cookies,
         // so this method does not need to parse any extra cookies.
         CookieManager cookieManager = CookieManager.getInstance();
-        String cookieUrl = context.getString(R.string.COOKIE_URL_1);
+        String cookieUrl = fragment.getContext().getString(R.string.COOKIE_URL_1);
         return cookieManager.getCookie(cookieUrl);
     }
 }

@@ -1,11 +1,15 @@
 package com.example.development.sakaiclientandroid.fragments;
 
+import android.Manifest;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,17 +57,20 @@ public class WebFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_web, container, false);
+        return inflater.inflate(R.layout.fragment_web, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         FileCompatWebView webView = view.findViewById(R.id.data_webview);
         this.webView = new WeakReference<>(webView);
+        this.attachmentDownloadListener = new AttachmentDownloadListener(this);
 
         webView.initialize(this);
-        this.attachmentDownloadListener = new AttachmentDownloadListener(getActivity());
         webView.setDownloadListener(this.attachmentDownloadListener);
         webView.loadUrl(URL);
-
-        return view;
     }
 
     @Override
@@ -71,6 +78,22 @@ public class WebFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, intent);
         if(this.webView != null && this.webView.get() != null) {
             this.webView.get().onActivityResult(requestCode, resultCode, intent);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if(requestCode != AttachmentDownloadListener.REQUEST_WRITE_PERMISSION_CODE
+                || permissions.length == 0
+                || grantResults.length == 0) {
+            return;
+        }
+
+        if(permissions[0] == Manifest.permission.WRITE_EXTERNAL_STORAGE
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            attachmentDownloadListener.retryDownloadFile();
         }
     }
 }
