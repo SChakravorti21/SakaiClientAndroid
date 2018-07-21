@@ -2,8 +2,8 @@
     <string name="app_name">SakaiClientAndroid</string>
 
     <!-- Strings related to login -->
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password (optional)</string>
+    <string name="prompt_email">ईमेल</string>
+    <string name="prompt_password">पारण शब्द</string>
     <string name="action_sign_in">Sign in or register</string>
     <string name="action_sign_in_short">Sign in</string>
     <string name="error_invalid_email">This email address is invalid</string>
@@ -14,16 +14,10 @@
         completions."
     </string>
 
-    <string name="all_sites">All Sites</string>
-    <string name="announcements">Announcements</string>
-    <string name="assignments">Assignments</string>
-    <string name="gradebook">Gradebook</string>
-    <string name="none_string">None</string>
-
-    <string name="spring">Spring</string>
-    <string name="summer">Summer</string>
-    <string name="winter">Winter</string>
-    <string name="fall">Fall</string>
+    <string name="spring">वसंत</string>
+    <string name="summer">गर्मी</string>
+    <string name="winter">सर्दी</string>
+    <string name="fall">पतझड़</string>
 
     <string name="home_fragment" translatable="false">HomeFragment</string>
     <string name="class_to_view" translatable="false">ClassToView</string>
@@ -36,15 +30,14 @@
     <string name="COOKIE_URL_3">https://cas.rutgers.edu/login</string>
     <string name="title_activity_nav">NavActivity</string>
 
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_announcements">Announcements</string>
-    <string name="title_assignments">Assignments</string>
-    <string name="title_gradebook">Gradebook</string>
-    <string name="title_settings">Settings</string>
+    <string name="title_home">मुख्य पृष्ठ</string>
+    <string name="title_announcements">घोषणा</string>
+    <string name="title_assignments">कार्य</string>
+    <string name="title_gradebook">अंक तालिका</string>
+    <string name="title_settings">सेटिंग्स</string>
 
-    <string name="no_grades">This course has no grades</string>
-    <string name="network_error">A network error has occurred. Please try again later. </string>
+    <string name="no_grades">इस कक्षा को कोई अंक नहीं है</string>
+    <string name="network_error">आपका कनेक्शन टूट गया है।  बाद में प्रयास करिये </string>
 
     <string name="fetched_grades">Fetched latest grades!</string>
 

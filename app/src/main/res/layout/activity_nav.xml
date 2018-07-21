@@ -9,7 +9,7 @@
 
 
     <android.support.v7.widget.Toolbar
-        app:menu="@menu/toolbar"
+        app:menu="@menu/toolbar_nav_activity"
         android:id="@+id/my_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"

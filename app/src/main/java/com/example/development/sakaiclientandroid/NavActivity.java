@@ -1,5 +1,6 @@
 package com.example.development.sakaiclientandroid;
 
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -24,7 +25,6 @@ import com.example.development.sakaiclientandroid.fragments.AllGradesFragment;
 import com.example.development.sakaiclientandroid.fragments.AnnouncementsFragment;
 import com.example.development.sakaiclientandroid.fragments.AssignmentsFragment;
 import com.example.development.sakaiclientandroid.fragments.CourseSitesFragment;
-import com.example.development.sakaiclientandroid.fragments.SettingsFragment;
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.utils.BottomNavigationViewHelper;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
@@ -96,7 +96,7 @@ public final class NavActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.toolbar, menu);
+        getMenuInflater().inflate(R.menu.toolbar_nav_activity, menu);
         return true;
     }
 
@@ -106,8 +106,8 @@ public final class NavActivity extends AppCompatActivity
         switch(item.getItemId()) {
 
             case R.id.action_settings:
-                SettingsFragment frag = new SettingsFragment();
-                loadFragment(frag, false, true);
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
                 return true;
 
             default:
