@@ -120,4 +120,27 @@ public class FileCompatWebView extends WebView {
         return false;
     }
 
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        if(requestCode != FILE_REQUEST_CODE
+                || resultCode != Activity.RESULT_OK
+                || intent == null) {
+            return;
+        }
+
+        if(valueCallbackCompat != null) {
+            valueCallbackCompat.onReceiveValue(intent.getData());
+            valueCallbackCompat = null;
+        } else if (valueCallback != null) {
+            Uri[] fileUris = null;
+
+            if(intent.getDataString() != null) {
+                try {
+                    fileUris = new Uri[] { Uri.parse(intent.getDataString()) };
+                } catch (Exception exception) { }
+            }
+
+            valueCallback.onReceiveValue(fileUris);
+            valueCallback = null;
+        }
+    }
 }

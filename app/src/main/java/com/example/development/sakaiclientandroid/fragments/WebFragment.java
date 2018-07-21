@@ -70,6 +70,14 @@ public class WebFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        if(this.webView != null && this.webView.get() != null) {
+            this.webView.get().onActivityResult(requestCode, resultCode, intent);
+        }
+    }
+
     // TODO: This functionality is shared by WebFragment and AssignmentSubmissionDialogFragment,
     // refactor it to be usable by both classes.
     private class AttachmentDownloadListener implements DownloadListener {
