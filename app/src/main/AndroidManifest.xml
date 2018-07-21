@@ -14,24 +14,24 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <fragment
+        <activity
             android:name=".LoginActivity"
             android:label="@string/app_name">
 
-        </fragment>
+        </activity>
 
-        <fragment
+        <activity
             android:name=".NavActivity"
             android:label="@string/app_name">
 
-        </fragment>
+        </activity>
 
-        <fragment android:name=".WebViewActivity">
+        <activity android:name=".WebViewActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </fragment>
+        </activity>
 
         <!-- Provider for managing downloaded files -->
         <provider
