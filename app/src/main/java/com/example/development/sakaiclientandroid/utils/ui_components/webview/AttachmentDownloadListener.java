@@ -36,6 +36,8 @@ public class AttachmentDownloadListener implements DownloadListener {
         // Check permission to write to external storage before trying to download the file
         if(checkAndRequestPermissions()) {
             downloadFile(url);
+        } else {
+            previousUrl = url;
         }
     }
 
@@ -55,7 +57,6 @@ public class AttachmentDownloadListener implements DownloadListener {
         // Check if the fragment is still alive
         Fragment fragment = this.fragment != null ? this.fragment.get() : null;
         if(fragment == null) {
-            previousUrl = url;
             return;
         }
 

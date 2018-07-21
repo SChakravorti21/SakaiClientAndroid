@@ -75,7 +75,7 @@ public class AssignmentSubmissionDialogFragment extends BottomSheetDialogFragmen
             return;
         }
 
-        if(permissions[0] == Manifest.permission.WRITE_EXTERNAL_STORAGE
+        if(permissions[0].equals(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             attachmentDownloadListener.retryDownloadFile();
         }
