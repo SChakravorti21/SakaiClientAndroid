@@ -7,8 +7,8 @@
     android:layout_height="match_parent"
     tools:context=".NavActivity">
 
-
     <android.support.v7.widget.Toolbar
+        android:elevation="8dp"
         app:titleTextColor="@color/white"
         app:menu="@menu/toolbar_nav_activity"
         android:id="@+id/my_toolbar"
