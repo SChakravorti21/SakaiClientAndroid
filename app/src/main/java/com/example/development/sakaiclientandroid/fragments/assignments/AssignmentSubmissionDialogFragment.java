@@ -23,7 +23,6 @@ public class AssignmentSubmissionDialogFragment extends BottomSheetDialogFragmen
 
     private String url;
     private WeakReference<FileCompatWebView> webView;
-    private AttachmentDownloadListener attachmentDownloadListener;
 
     public AssignmentSubmissionDialogFragment() {
         // Required empty public constructor
@@ -50,10 +49,8 @@ public class AssignmentSubmissionDialogFragment extends BottomSheetDialogFragmen
 
         FileCompatWebView webView = view.findViewById(R.id.assignment_submission_view);
         this.webView = new WeakReference<>(webView);
-        this.attachmentDownloadListener = new AttachmentDownloadListener(this);
 
         webView.initialize(this);
-        webView.setDownloadListener(attachmentDownloadListener);
         webView.loadUrl(url);
     }
 
@@ -76,8 +73,9 @@ public class AssignmentSubmissionDialogFragment extends BottomSheetDialogFragmen
         }
 
         if(permissions[0].equals(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            attachmentDownloadListener.retryDownloadFile();
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                && this.webView != null && this.webView.get() != null) {
+            this.webView.get().retryDownloadFile();
         }
     }
 }

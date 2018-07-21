@@ -23,6 +23,7 @@ public class FileCompatWebView extends WebView {
 
     private static final int FILE_REQUEST_CODE = 28374; // some random number
 
+    private AttachmentDownloadListener attachmentDownloadListener;
     private WeakReference<Fragment> parentFragment;
     private ValueCallback<Uri> valueCallbackCompat;
     private ValueCallback<Uri[]> valueCallback;
@@ -55,6 +56,8 @@ public class FileCompatWebView extends WebView {
     public void initialize(Fragment fragment) {
         this.initialize();
         this.parentFragment = new WeakReference<>(fragment);
+        this.attachmentDownloadListener = new AttachmentDownloadListener(fragment);
+        this.setDownloadListener(this.attachmentDownloadListener);
     }
 
     private void initializeSettings() {
@@ -158,5 +161,10 @@ public class FileCompatWebView extends WebView {
             valueCallback.onReceiveValue(fileUris);
             valueCallback = null;
         }
+    }
+
+    public void retryDownloadFile() {
+        if(attachmentDownloadListener != null)
+            attachmentDownloadListener.retryDownloadFile();
     }
 }

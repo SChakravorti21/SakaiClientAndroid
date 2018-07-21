@@ -31,7 +31,6 @@ public class WebFragment extends Fragment {
 
     private String URL;
     private WeakReference<FileCompatWebView> webView;
-    private AttachmentDownloadListener attachmentDownloadListener;
 
     public WebFragment() {
         // Required empty public constructor
@@ -66,10 +65,8 @@ public class WebFragment extends Fragment {
 
         FileCompatWebView webView = view.findViewById(R.id.data_webview);
         this.webView = new WeakReference<>(webView);
-        this.attachmentDownloadListener = new AttachmentDownloadListener(this);
 
         webView.initialize(this);
-        webView.setDownloadListener(this.attachmentDownloadListener);
         webView.loadUrl(URL);
     }
 
@@ -92,8 +89,11 @@ public class WebFragment extends Fragment {
         }
 
         if(permissions[0].equals(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            attachmentDownloadListener.retryDownloadFile();
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                && this.webView != null && this.webView.get() != null) {
+
+            this.webView.get().retryDownloadFile();
+
         } else {
             // Pop self off the stack since download cannot be completed
             getActivity().getSupportFragmentManager().popBackStack();
