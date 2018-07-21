@@ -2,6 +2,7 @@ package com.example.development.sakaiclientandroid.utils.ui_components;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -137,6 +138,14 @@ public class FileCompatWebView extends WebView {
                 try {
                     fileUris = new Uri[] { Uri.parse(intent.getDataString()) };
                 } catch (Exception exception) { }
+            } else if(intent.getClipData() != null) {
+                ClipData clipData = intent.getClipData();
+                int numFiles = clipData.getItemCount();
+                fileUris = new Uri[ numFiles ];
+
+                for(int i = 0; i < numFiles; i++) {
+                    fileUris[i] = clipData.getItemAt(i).getUri();
+                }
             }
 
             valueCallback.onReceiveValue(fileUris);
