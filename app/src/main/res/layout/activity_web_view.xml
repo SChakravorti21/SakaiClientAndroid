@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.development.sakaiclientandroid.WebViewActivity">
+    tools:activity="com.example.development.sakaiclientandroid.WebViewActivity">
 
     <WebView
         android:id="@+id/login_web_view"

@@ -1,4 +1,4 @@
-package com.example.development.sakaiclientandroid.utils.ui_components;
+package com.example.development.sakaiclientandroid.utils.ui_components.webview;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -59,15 +59,22 @@ public class FileCompatWebView extends WebView {
 
     private void initializeSettings() {
         WebSettings settings = this.getSettings();
+        settings.setPluginState(WebSettings.PluginState.ON);
         settings.setJavaScriptEnabled(true);
-        settings.setAllowFileAccessFromFileURLs(true);
-        settings.setAllowUniversalAccessFromFileURLs(true);
+        settings.setJavaScriptCanOpenWindowsAutomatically(true);
     }
 
     private void initializeWebViewClient() {
         this.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                // For attachment links, the URLs are often broken by the way
+                // redirects work in this fragment. Intercept the url and adjust it
+                // if the link is broken.
+                if(url.contains("access/null/content")) {
+                    url = url.replaceFirst("/null", "");
+                }
+
                 view.loadUrl(url);
                 return true;
             }

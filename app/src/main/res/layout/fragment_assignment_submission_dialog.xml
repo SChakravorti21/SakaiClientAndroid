@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.development.sakaiclientandroid.fragments.assignments.AssignmentSubmissionDialogFragment">
+    tools:activity="com.example.development.sakaiclientandroid.fragments.assignments.AssignmentSubmissionDialogFragment">
 
     <LinearLayout
         android:orientation="vertical"
@@ -53,7 +53,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <WebView
+            <com.example.development.sakaiclientandroid.utils.ui_components.webview.FileCompatWebView
                 android:id="@+id/assignment_submission_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>

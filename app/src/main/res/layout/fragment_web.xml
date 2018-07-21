@@ -2,13 +2,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.development.sakaiclientandroid.fragments.WebFragment">
+    tools:activity="com.example.development.sakaiclientandroid.fragments.WebFragment">
 
-    <com.example.development.sakaiclientandroid.utils.ui_components.FileCompatWebView
+    <com.example.development.sakaiclientandroid.utils.ui_components.webview.FileCompatWebView
         android:id="@+id/data_webview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    </com.example.development.sakaiclientandroid.utils.ui_components.FileCompatWebView>
+        android:layout_height="match_parent" />
 
 </FrameLayout>
