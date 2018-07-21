@@ -4,11 +4,11 @@
     android:layout_height="match_parent"
     tools:context="com.example.development.sakaiclientandroid.fragments.WebFragment">
 
-    <WebView
+    <com.example.development.sakaiclientandroid.utils.ui_components.FileCompatWebView
         android:id="@+id/data_webview"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    </WebView>
+    </com.example.development.sakaiclientandroid.utils.ui_components.FileCompatWebView>
 
 </FrameLayout>
