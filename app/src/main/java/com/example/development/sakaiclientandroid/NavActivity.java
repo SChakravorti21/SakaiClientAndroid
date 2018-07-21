@@ -7,7 +7,6 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -48,6 +47,8 @@ public final class NavActivity extends AppCompatActivity
     private FrameLayout container;
     private ProgressBar spinner;
     private Toolbar toolbar;
+
+    public boolean isLoadingAllCourses;
 
 
     public void startProgressBar() {
@@ -108,9 +109,11 @@ public final class NavActivity extends AppCompatActivity
                 SettingsFragment frag = new SettingsFragment();
                 loadFragment(frag, false, true);
                 return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
         }
 
-        return false;
     }
 
 
@@ -155,6 +158,9 @@ public final class NavActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
+        //if we are loading all courses, don't allow user to click any navigation item
+        if(isLoadingAllCourses)
+            return false;
 
         Fragment fragment = null;
 
@@ -191,6 +197,7 @@ public final class NavActivity extends AppCompatActivity
     public void loadAllCoursesFragment(boolean refresh) {
         this.container.setVisibility(View.GONE);
         this.spinner.setVisibility(View.VISIBLE);
+        isLoadingAllCourses = true;
 
         DataHandler.requestAllSites(refresh, new RequestCallback() {
 
@@ -208,6 +215,8 @@ public final class NavActivity extends AppCompatActivity
                 container.setVisibility(View.VISIBLE);
 
                 setActionBarTitle(getString(R.string.app_name));
+
+                isLoadingAllCourses = false;
             }
 
             @Override
