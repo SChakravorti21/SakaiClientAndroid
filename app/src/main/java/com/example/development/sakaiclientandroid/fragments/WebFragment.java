@@ -94,6 +94,9 @@ public class WebFragment extends Fragment {
         if(permissions[0].equals(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             attachmentDownloadListener.retryDownloadFile();
+        } else {
+            // Pop self off the stack since download cannot be completed
+            getActivity().getSupportFragmentManager().popBackStack();
         }
     }
 }
