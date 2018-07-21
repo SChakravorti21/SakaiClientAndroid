@@ -17,6 +17,7 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.example.development.sakaiclientandroid.fragments.AllCoursesFragment;
 import com.example.development.sakaiclientandroid.fragments.AllGradesFragment;
@@ -45,6 +46,7 @@ public final class NavActivity extends AppCompatActivity
 
     private FrameLayout container;
     private ProgressBar spinner;
+    private Toolbar toolbar;
 
 
     public void startProgressBar() {
@@ -67,6 +69,8 @@ public final class NavActivity extends AppCompatActivity
         //starts spinner
         this.spinner = findViewById(R.id.nav_activity_progressbar);
         this.spinner.setVisibility(View.VISIBLE);
+
+
 
 
         BottomNavigationView navigation = findViewById(R.id.navigation);
