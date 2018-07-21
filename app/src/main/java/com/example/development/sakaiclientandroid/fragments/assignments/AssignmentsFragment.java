@@ -29,6 +29,7 @@ import static com.example.development.sakaiclientandroid.NavActivity.ASSIGNMENTS
 public class AssignmentsFragment extends BaseFragment {
     public static final String ASSIGNMENTS_SORTED_BY_COURSES = "ASSIGNMENTS_SORTED_BY_COURSES";
 
+    private MenuItem lastChecked;
     private AndroidTreeView treeView;
     private ArrayList<ArrayList<Course>> courses;
     private ArrayList<ArrayList<Assignment>> assignments;

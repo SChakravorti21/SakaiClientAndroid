@@ -6,17 +6,20 @@
         android:icon="@drawable/ic_filter_list_24dp"
         app:showAsAction="ifRoom">
        <menu>
-           <group android:checkableBehavior="single">
-               <!-- Sorting by date -->
-               <item
-                   android:id="@+id/action_sort_by_date"
-                   android:title="Sort By Date" />
-
+           <group
+               android:visible="true">
                <!-- Sorting by course (checked because everything
                     is sorted by courses by default) -->
                <item
                    android:id="@+id/action_sort_by_course"
-                   android:title="Sort By Course" />
+                   android:title="Sort By Course"
+                   android:icon="@drawable/ic_class_black_24dp"/>
+
+               <!-- Sorting by date -->
+               <item
+                   android:id="@+id/action_sort_by_date"
+                   android:title="Sort By Date"
+                   android:icon="@drawable/ic_today_black_24dp"/>
            </group>
        </menu>
     </item>
