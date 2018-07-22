@@ -5,10 +5,10 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:fragment=".NavActivity">
-
+    tools:context=".NavActivity">
 
     <android.support.v7.widget.Toolbar
+        android:elevation="8dp"
         app:titleTextColor="@color/white"
         app:menu="@menu/toolbar_nav_activity"
         android:id="@+id/my_toolbar"
@@ -23,12 +23,14 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         app:layout_constraintBottom_toTopOf="@+id/navigation"
         app:layout_constraintEnd_toEndOf="@+id/fragment_container"
         app:layout_constraintStart_toStartOf="@+id/fragment_container"
-        app:layout_constraintTop_toTopOf="@+id/fragment_container" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <FrameLayout
         android:id="@+id/fragment_container"
@@ -46,9 +48,9 @@
     <View
         android:id="@+id/shadow"
         android:layout_width="0dp"
-        android:layout_height="5dp"
+        android:layout_height="10dp"
         android:layout_above="@id/navigation"
-        android:background="@drawable/card_footer_gradient"
+        android:background="@drawable/shadow"
         app:layout_constraintBottom_toTopOf="@+id/navigation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
