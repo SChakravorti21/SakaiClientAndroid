@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.NestedScrollingChild;
 import android.util.AttributeSet;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
@@ -19,7 +20,7 @@ import java.lang.ref.WeakReference;
  * Created by Development on 7/21/18.
  */
 
-public class FileCompatWebView extends WebView {
+public class FileCompatWebView extends WebView implements NestedScrollingChild {
 
     private static final int FILE_REQUEST_CODE = 28374; // some random number
 
@@ -161,6 +162,18 @@ public class FileCompatWebView extends WebView {
             valueCallback.onReceiveValue(fileUris);
             valueCallback = null;
         }
+    }
+
+    /**
+     * Always returns true so that the WebView can scroll inside other containers.
+     * This is mainly implemented so that scrolling works inside the bottom sheet dialog
+     * for assignment submission, and putting the webview inside a NestedScrollView
+     * breaks page rendering sometimes.
+     * @return true (WebView always behaves like a nested scrolling child)
+     */
+    @Override
+    public boolean isNestedScrollingEnabled() {
+        return true;
     }
 
     public void retryDownloadFile() {
