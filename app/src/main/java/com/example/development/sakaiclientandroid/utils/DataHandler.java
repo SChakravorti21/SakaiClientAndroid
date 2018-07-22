@@ -143,26 +143,35 @@ public class DataHandler {
         // through all courses to get the number of assignments. There are usually
         // roughly 4-5 courses per term, so this will be quick and save any O(n)
         // insert operations when creating the list of assignments.
-        for(ArrayList<Course> courses : coursesSortedByTerm) {
+        int[] termAssignmentCounts = new int[coursesSortedByTerm.size()];
+        for (int i = 0; i < coursesSortedByTerm.size(); i++) {
+            ArrayList<Course> courses = coursesSortedByTerm.get(i);
             int numAssignments = 0;
-            for(Course course : courses) {
+            for (Course course : courses) {
                 numAssignments += course.getNumAssignments();
             }
 
             // Only create a new list is there are assignments that we care about
-            if(numAssignments > 0) {
+            if (numAssignments > 0) {
                 assignmentsSortedByDate.add(new ArrayList<Assignment>(numAssignments));
             }
+
+            termAssignmentCounts[i] = numAssignments;
         }
 
         int termIndex = 0;
-        for(ArrayList<Course> courses : coursesSortedByTerm) {
+        for (int i = 0; i < coursesSortedByTerm.size(); i++) {
+            ArrayList<Course> courses = coursesSortedByTerm.get(i);
+
             // If there are no courses, there will be no assignments
-            if(courses.size() == 0 || termIndex >= assignmentsSortedByDate.size())
+            if (courses.size() == 0
+                    || termIndex >= assignmentsSortedByDate.size()
+                    || termAssignmentCounts[i] == 0) {
                 continue;
+            }
 
             ArrayList<Assignment> termAssignments = assignmentsSortedByDate.get(termIndex);
-            for(Course course : coursesSortedByTerm.get(termIndex)) {
+            for (Course course : courses) {
                 termAssignments.addAll(course.getAssignmentList());
             }
 
