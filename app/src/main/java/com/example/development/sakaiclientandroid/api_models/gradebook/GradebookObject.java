@@ -21,24 +21,12 @@ public class GradebookObject {
         return grade;
     }
 
-    public void setGrade(String grade) {
-        this.grade = grade;
-    }
-
     public String getItemName() {
         return itemName;
     }
 
-    public void setItemName(String itemName) {
-        this.itemName = itemName;
-    }
-
     public Double getPoints() {
         return points;
-    }
-
-    public void setPoints(Double points) {
-        this.points = points;
     }
 
 }

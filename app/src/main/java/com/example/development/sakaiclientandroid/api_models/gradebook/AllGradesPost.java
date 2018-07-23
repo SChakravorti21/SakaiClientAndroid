@@ -18,8 +18,5 @@ public class AllGradesPost {
         return gradebookCollection;
     }
 
-    public void setGradebookCollection(List<GradebookCollectionObject> gradebookCollection) {
-        this.gradebookCollection = gradebookCollection;
-    }
 
 }
