@@ -66,6 +66,11 @@ public class FileCompatWebView extends WebView implements NestedScrollingChild {
         settings.setPluginState(WebSettings.PluginState.ON);
         settings.setJavaScriptEnabled(true);
         settings.setJavaScriptCanOpenWindowsAutomatically(true);
+
+        settings.setAllowUniversalAccessFromFileURLs(true);
+        settings.setAllowFileAccessFromFileURLs(true);
+        settings.setAllowFileAccess(true);
+        settings.setAllowContentAccess(true);
     }
 
     private void initializeWebViewClient() {
