@@ -3,6 +3,8 @@ package com.example.development.sakaiclientandroid.fragments.assignments;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,7 +31,6 @@ import static com.example.development.sakaiclientandroid.NavActivity.ASSIGNMENTS
 public class AssignmentsFragment extends BaseFragment {
     public static final String ASSIGNMENTS_SORTED_BY_COURSES = "ASSIGNMENTS_SORTED_BY_COURSES";
 
-    private MenuItem lastChecked;
     private AndroidTreeView treeView;
     private ArrayList<ArrayList<Course>> courses;
     private ArrayList<ArrayList<Assignment>> assignments;
@@ -59,12 +60,36 @@ public class AssignmentsFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_all_assignments, container, false);
+        SwipeRefreshLayout refreshLayout = view.findViewById(R.id.assignments_container);
+
+        TreeNode root = TreeNode.root();
         if(sortedByCourses) {
-            createTreeViewFromCourses();
+            createTreeViewFromCourses(root);
         } else {
-            createTreeViewFromAssignments();
+            createTreeViewFromAssignments(root);
         }
-        return treeView.getView();
+
+        this.treeView = new AndroidTreeView(getActivity(), root);
+        this.treeView.setDefaultAnimation(true);
+        this.treeView.setDefaultNodeClickListener(new TreeViewItemClickListener(treeView, root));
+
+        refreshLayout.addView(this.treeView.getView());
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                FragmentActivity parentActivity = getActivity();
+
+                //checking if instance to prevent casting errors
+                if (parentActivity instanceof NavActivity) {
+                    //set refresh boolean to true so that the request is made again forcefully
+                    //reloads the current fragment, (which also remakes the request for grades)
+                    ((NavActivity) parentActivity).loadAssignmentsFragment(sortedByCourses);
+                }
+            }
+        });
+
+        return this.treeView.getView();
     }
 
     @Override
@@ -92,9 +117,8 @@ public class AssignmentsFragment extends BaseFragment {
 
     }
 
-    private void createTreeViewFromCourses() {
+    private void createTreeViewFromCourses(TreeNode root) {
         Context currContext = getActivity();
-        TreeNode root = TreeNode.root();
 
         // The courses as returned by the DataHandler are already sorted by term,
         // so we just need to loop through them to create the terms with all
@@ -139,15 +163,10 @@ public class AssignmentsFragment extends BaseFragment {
             if(termNode.getChildren().size() > 0)
                 root.addChild(termNode);
         }
-
-        treeView = new AndroidTreeView(currContext, root);
-        treeView.setDefaultAnimation(true);
-        treeView.setDefaultNodeClickListener(new TreeViewItemClickListener(treeView, root));
     }
 
-    private void createTreeViewFromAssignments() {
+    private void createTreeViewFromAssignments(TreeNode root) {
         Context currContext = getActivity();
-        TreeNode root = TreeNode.root();
 
         // The courses as returned by the DataHandler are already sorted by term,
         // so we just need to loop through them to create the terms with all
@@ -168,9 +187,5 @@ public class AssignmentsFragment extends BaseFragment {
             // Add the term to the root node
             root.addChild(termNode);
         }
-
-        treeView = new AndroidTreeView(currContext, root);
-        treeView.setDefaultAnimation(true);
-        treeView.setDefaultNodeClickListener(new TreeViewItemClickListener(treeView, root));
     }
 }
