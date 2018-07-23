@@ -38,6 +38,9 @@ public class AssignmentCourseViewHolder extends TreeNode.BaseNodeViewHolder<Assi
         final LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.course_with_recycler_view, null, false);
 
+        TextView iconView = view.findViewById(R.id.course_icon);
+        iconView.setText(value.icon);
+
         TextView tvValue = view.findViewById(R.id.course_name);
         tvValue.setText(value.text);
 
@@ -100,8 +103,9 @@ public class AssignmentCourseViewHolder extends TreeNode.BaseNodeViewHolder<Assi
         public String icon;
         public List<Assignment> assignments;
 
-        public CourseHeaderItem(String text, List<Assignment> assignments) {
+        public CourseHeaderItem(String text, String icon, List<Assignment> assignments) {
             this.text = text;
+            this.icon = icon;
             this.assignments = assignments;
         }
     }

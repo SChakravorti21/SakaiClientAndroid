@@ -9,7 +9,7 @@
         <item name="android:fontFamily">@font/lato</item>
     </style>
 
-    <style name="CourseIcons" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="CourseIcon" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="android:textSize">25dp</item>
         <item name="android:paddingLeft">10dp</item>
         <item name="android:fontFamily">@font/course_icons</item>

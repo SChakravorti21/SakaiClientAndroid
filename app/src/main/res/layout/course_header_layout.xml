@@ -9,16 +9,16 @@
 
     <TextView
         android:id="@+id/course_icon"
-        style="@style/CourseIcons"
-        android:layout_width="20dp"
+        style="@style/CourseIcon"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight=".05" />
+        android:layout_weight="1"/>
 
     <TextView
         android:id="@+id/course_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_weight="8"
         android:maxLines="1"
         android:paddingBottom="8dp"
         android:paddingLeft="8dp"

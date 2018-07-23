@@ -18,6 +18,7 @@ import com.example.development.sakaiclientandroid.api_models.assignments.Assignm
 import com.example.development.sakaiclientandroid.fragments.BaseFragment;
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.models.Term;
+import com.example.development.sakaiclientandroid.utils.RutgersSubjectCodes;
 import com.example.development.sakaiclientandroid.utils.custom.TreeViewItemClickListener;
 import com.example.development.sakaiclientandroid.utils.holders.AssignmentCourseViewHolder;
 import com.example.development.sakaiclientandroid.utils.holders.AssignmentTermHeaderViewHolder;
@@ -148,9 +149,14 @@ public class AssignmentsFragment extends BaseFragment {
                 String courseName = course.getTitle();
 
                 // Create a course header item, and make a tree node using it
+                String courseIconCode = RutgersSubjectCodes.mapCourseCodeToIcon
+                        .get(course.getSubjectCode());
                 AssignmentCourseViewHolder.CourseHeaderItem courseHeaderItem =
-                        new AssignmentCourseViewHolder.CourseHeaderItem(courseName,
+                        new AssignmentCourseViewHolder.CourseHeaderItem(
+                                courseName,
+                                courseIconCode,
                                 course.getAssignmentList());
+
                 TreeNode courseNode = new TreeNode(courseHeaderItem);
                 // Set the course header view holder to inflate the appropriate view
                 courseNode.setViewHolder(new AssignmentCourseViewHolder(currContext));

@@ -14,18 +14,22 @@
         android:foreground="?android:attr/selectableItemBackground">
 
         <TextView
+            android:id="@+id/course_icon"
+            style="@style/CourseIcon"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+
+        <TextView
             android:id="@+id/course_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="8"
             android:textColor="@color/sakai_light_black"
             tools:text="Course 2018"
             android:textStyle="bold"
             android:textSize="18sp"
-            android:paddingLeft="32dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:paddingRight="8dp"
-            android:layout_weight="1"
+            android:padding="8dp"
             android:maxLines="1"/>
 
         <TextView
