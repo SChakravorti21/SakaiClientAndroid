@@ -67,8 +67,9 @@ public class DataHandler {
 
 
     public static void requestAllAssignments(final RequestCallback UICallback,
-                                             final boolean sortByCourses) {
-        if(hasRequestedAllAssignments) {
+                                             final boolean sortByCourses,
+                                             boolean shouldRefresh) {
+        if(!shouldRefresh && hasRequestedAllAssignments) {
             if(sortByCourses) {
                 UICallback.onAllAssignmentsByCourseSuccess(coursesSortedByTerm);
             } else {

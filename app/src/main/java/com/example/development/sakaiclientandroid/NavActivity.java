@@ -192,7 +192,7 @@ public final class NavActivity extends AppCompatActivity
                 break;
 
             case R.id.navigation_assignments:
-                loadAssignmentsFragment(true);
+                loadAssignmentsFragment(true, true);
                 return true;
 
             case R.id.navigation_gradebook:
@@ -303,7 +303,8 @@ public final class NavActivity extends AppCompatActivity
     /**
      * Loads all assignments tab
      */
-    public void loadAssignmentsFragment(final boolean sortedByCourses) {
+    public void loadAssignmentsFragment(final boolean sortedByCourses,
+                                        final boolean shouldRefresh) {
         this.container.setVisibility(View.GONE);
         this.spinner.setVisibility(View.VISIBLE);
 
@@ -344,7 +345,7 @@ public final class NavActivity extends AppCompatActivity
                 Log.i("Response", "failure");
                 Log.e("Response error", throwable.getMessage());
             }
-        }, sortedByCourses);
+        }, sortedByCourses, shouldRefresh);
     }
 
     public void setActionBarTitle(String title) {

@@ -84,12 +84,12 @@ public class AssignmentsFragment extends BaseFragment {
                 if (parentActivity instanceof NavActivity) {
                     //set refresh boolean to true so that the request is made again forcefully
                     //reloads the current fragment, (which also remakes the request for grades)
-                    ((NavActivity) parentActivity).loadAssignmentsFragment(sortedByCourses);
+                    ((NavActivity) parentActivity).loadAssignmentsFragment(sortedByCourses, true);
                 }
             }
         });
 
-        return this.treeView.getView();
+        return view;
     }
 
     @Override
@@ -103,12 +103,12 @@ public class AssignmentsFragment extends BaseFragment {
         switch (item.getItemId()) {
             case R.id.action_sort_by_date: {
                 NavActivity activity = (NavActivity) getActivity();
-                activity.loadAssignmentsFragment(false);
+                activity.loadAssignmentsFragment(false, false);
                 return true;
             }
             case R.id.action_sort_by_course: {
                 NavActivity activity = (NavActivity) getActivity();
-                activity.loadAssignmentsFragment(true);
+                activity.loadAssignmentsFragment(true, false);
                 return true;
             }
             default:
