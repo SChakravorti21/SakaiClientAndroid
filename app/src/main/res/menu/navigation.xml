@@ -26,10 +26,4 @@
         android:title="@string/title_gradebook"
         app:showAsAction="withText"/>
 
-    <item
-        android:id="@+id/navigation_settings"
-        android:icon="@drawable/ic_gear"
-        android:title="@string/title_settings"
-        />
-
 </menu>

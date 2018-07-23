@@ -3,6 +3,7 @@ package com.example.development.sakaiclientandroid;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
@@ -17,6 +18,10 @@ public class WebViewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web_view);
+
+        Toolbar toolbar = findViewById(R.id.webview_toolbar);
+        setSupportActionBar(toolbar);
+
 
         // Get the WebView from the main view and attach the custom client
         // to it for keeping track of cookies and login completion

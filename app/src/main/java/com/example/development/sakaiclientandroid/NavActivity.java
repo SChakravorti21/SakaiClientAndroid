@@ -1,5 +1,6 @@
 package com.example.development.sakaiclientandroid;
 
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -8,8 +9,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -22,7 +25,6 @@ import com.example.development.sakaiclientandroid.fragments.AllGradesFragment;
 import com.example.development.sakaiclientandroid.fragments.AnnouncementsFragment;
 import com.example.development.sakaiclientandroid.fragments.AssignmentsFragment;
 import com.example.development.sakaiclientandroid.fragments.CourseSitesFragment;
-import com.example.development.sakaiclientandroid.fragments.SettingsFragment;
 import com.example.development.sakaiclientandroid.models.Course;
 import com.example.development.sakaiclientandroid.utils.BottomNavigationViewHelper;
 import com.example.development.sakaiclientandroid.utils.DataHandler;
@@ -44,6 +46,9 @@ public final class NavActivity extends AppCompatActivity
 
     private FrameLayout container;
     private ProgressBar spinner;
+    private Toolbar toolbar;
+
+    public boolean isLoadingAllCourses;
 
 
     public void startProgressBar() {
@@ -67,6 +72,9 @@ public final class NavActivity extends AppCompatActivity
         this.spinner = findViewById(R.id.nav_activity_progressbar);
         this.spinner.setVisibility(View.VISIBLE);
 
+        this.toolbar = findViewById(R.id.my_toolbar);
+        setSupportActionBar(toolbar);
+
 
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(this);
@@ -83,6 +91,28 @@ public final class NavActivity extends AppCompatActivity
         // Request all site pages for the Home Fragment and then loads the fragment
         //refresh since we are loading for the same time
         loadAllCoursesFragment(true);
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.toolbar_nav_activity, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch(item.getItemId()) {
+
+            case R.id.action_settings:
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
 
     }
 
@@ -128,6 +158,9 @@ public final class NavActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
+        //if we are loading all courses, don't allow user to click any navigation item
+        if(isLoadingAllCourses)
+            return false;
 
         Fragment fragment = null;
 
@@ -150,10 +183,6 @@ public final class NavActivity extends AppCompatActivity
                 loadAllGradesFragment(false);
                 return true;
 
-            case R.id.navigation_settings:
-                fragment = new SettingsFragment();
-                break;
-
         }
 
         return this.loadFragment(fragment, false, false);
@@ -168,6 +197,7 @@ public final class NavActivity extends AppCompatActivity
     public void loadAllCoursesFragment(boolean refresh) {
         this.container.setVisibility(View.GONE);
         this.spinner.setVisibility(View.VISIBLE);
+        isLoadingAllCourses = true;
 
         DataHandler.requestAllCourses(refresh, new RequestCallback() {
 
@@ -185,6 +215,8 @@ public final class NavActivity extends AppCompatActivity
                 container.setVisibility(View.VISIBLE);
 
                 setActionBarTitle(getString(R.string.app_name));
+
+                isLoadingAllCourses = false;
             }
 
             @Override
