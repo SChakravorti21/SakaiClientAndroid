@@ -199,7 +199,7 @@ public final class NavActivity extends AppCompatActivity
         this.spinner.setVisibility(View.VISIBLE);
         isLoadingAllCourses = true;
 
-        DataHandler.requestAllSites(refresh, new RequestCallback() {
+        DataHandler.requestAllCourses(refresh, new RequestCallback() {
 
             @Override
             public void onAllCoursesSuccess(ArrayList<ArrayList<Course>> response) {
@@ -220,9 +220,18 @@ public final class NavActivity extends AppCompatActivity
             }
 
             @Override
-            public void onAllGradesFailure(Throwable t) {
-                //TODO deal with error
-                Log.e("ERROR: ", t.getMessage());
+            public void onAllCoursesEmpty(int msgRscId) {
+
+                spinner.setVisibility(View.GONE);
+                showErrorToast(getString(msgRscId));
+            }
+
+            @Override
+            public void onRequestFailure(int msgRscId, Throwable t) {
+                spinner.setVisibility(View.GONE);
+                showErrorToast(getString(msgRscId));
+
+                t.printStackTrace();
             }
         });
     }
@@ -256,9 +265,19 @@ public final class NavActivity extends AppCompatActivity
             }
 
             @Override
-            public void onAllGradesFailure(Throwable t) {
-                //TODO deal with error
-                Log.e("ERROR: ", t.getMessage());
+            public void onAllGradesEmpty(int msgRscId) {
+
+                spinner.setVisibility(View.GONE);
+                showErrorToast(getString(msgRscId));
+            }
+
+            @Override
+            public void onRequestFailure(int msgRscId, Throwable t) {
+                spinner.setVisibility(View.GONE);
+                showErrorToast(getString(msgRscId));
+
+                t.printStackTrace();
+
             }
         });
     }

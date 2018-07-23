@@ -18,12 +18,7 @@ public class GradebookCollectionObject {
     @SerializedName("siteName")
     @Expose
     private String siteName;
-    @SerializedName("entityReference")
-    @Expose
-    private String entityReference;
-    @SerializedName("entityURL")
-    @Expose
-    private String entityURL;
+
 
     public List<GradebookObject> getAssignments() {
         return assignments;
@@ -37,37 +32,7 @@ public class GradebookCollectionObject {
         return siteId;
     }
 
-    public void setSiteId(String siteId) {
-        this.siteId = siteId;
-    }
+    public String getSiteName() { return siteName; }
 
-    public String getSiteName() {
-        return siteName;
-    }
-
-    public void setSiteName(String siteName) {
-        this.siteName = siteName;
-    }
-
-    public String getEntityReference() {
-        return entityReference;
-    }
-
-    public void setEntityReference(String entityReference) {
-        this.entityReference = entityReference;
-    }
-
-    public String getEntityURL() {
-        return entityURL;
-    }
-
-    public void setEntityURL(String entityURL) {
-        this.entityURL = entityURL;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this).append("assignments", assignments).append("siteId", siteId).append("siteName", siteName).append("entityReference", entityReference).append("entityURL", entityURL).toString();
-    }
 
 }

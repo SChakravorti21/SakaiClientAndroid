@@ -43,7 +43,8 @@
     <string name="title_gradebook">Gradebook</string>
     <string name="title_settings">Settings</string>
 
-    <string name="no_grades">This course has no grades</string>
+    <string name="no_grades">There were no grades found</string>
+    <string name="no_courses">There were no courses found</string>
     <string name="network_error">A network error has occurred. Please try again later. </string>
 
     <string name="fetched_grades">Fetched latest grades!</string>
