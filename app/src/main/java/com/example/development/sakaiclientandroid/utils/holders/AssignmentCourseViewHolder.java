@@ -8,6 +8,9 @@ import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.Transformation;
 import android.widget.TextView;
 
 import com.example.development.sakaiclientandroid.R;
@@ -92,10 +95,61 @@ public class AssignmentCourseViewHolder extends TreeNode.BaseNodeViewHolder<Assi
         if(active) {
             arrowView.setText(CHEVRON_DOWN);
             recyclerView.setVisibility(View.VISIBLE);
+            expandRecyclerView();
         } else {
             arrowView.setText(CHEVRON_RIGHT);
-            recyclerView.setVisibility(View.GONE);
+            collapseRecyclerView();
         }
+    }
+
+    private void expandRecyclerView() {
+        recyclerView.measure(RecyclerView.LayoutParams.MATCH_PARENT,
+                             RecyclerView.LayoutParams.WRAP_CONTENT);
+        final int targetHeight = recyclerView.getMeasuredHeight();
+
+        Animation expansionAnimation = new Animation() {
+            @Override
+            protected void applyTransformation(float interpolatedTime, Transformation transformation) {
+                int newHeight = (interpolatedTime == 1.0)
+                        ? RecyclerView.LayoutParams.WRAP_CONTENT
+                        : (int) ( targetHeight * interpolatedTime );
+                recyclerView.getLayoutParams().height = newHeight;
+                recyclerView.requestLayout();
+            }
+
+            @Override
+            public boolean willChangeBounds() {
+                return true;
+            }
+        };
+
+        expansionAnimation.setDuration(200);
+        recyclerView.startAnimation(expansionAnimation);
+    }
+
+    private void collapseRecyclerView() {
+        final int initialHeight = recyclerView.getMeasuredHeight();
+
+        Animation collapseAnimation = new Animation() {
+            @Override
+            protected void applyTransformation(float interpolatedTime, Transformation transformation) {
+                if(interpolatedTime < 1.0) {
+                    int newHeight = initialHeight - (int) (initialHeight * interpolatedTime);
+                    recyclerView.getLayoutParams().height = newHeight;
+                    recyclerView.requestLayout();
+                } else {
+                    recyclerView.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public boolean willChangeBounds() {
+                return true;
+            }
+        };
+
+        collapseAnimation.setDuration(200);
+        recyclerView.startAnimation(collapseAnimation);
     }
 
     public static class CourseHeaderItem {
