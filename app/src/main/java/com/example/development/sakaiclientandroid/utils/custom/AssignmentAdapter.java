@@ -71,13 +71,12 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
             SiteAssignmentsFragment fragment = new SiteAssignmentsFragment();
             fragment.setArguments(bundle);
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                fragment.setEnterTransition(new Fade());
-                fragment.setExitTransition(new Fade());
-            }
-
             activity.getSupportFragmentManager()
                     .beginTransaction()
+                    .setCustomAnimations(R.anim.anim_fade_in,
+                            R.anim.anim_fade_out,
+                            R.anim.anim_fade_in,
+                            R.anim.anim_fade_out)
                     // Add instead of replacing so that the state of opened assignments
                     // remains the same after returning
                     .add(R.id.fragment_container, fragment)
