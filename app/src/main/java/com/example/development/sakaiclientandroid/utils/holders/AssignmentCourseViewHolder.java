@@ -48,7 +48,7 @@ public class AssignmentCourseViewHolder extends TreeNode.BaseNodeViewHolder<Assi
         tvValue.setText(value.text);
 
         recyclerView = view.findViewById(R.id.assignments_recycler_view);
-        recyclerView.setHasFixedSize(true);
+        //recyclerView.setHasFixedSize(true);
 
         GridLayoutManager layoutManager = new GridLayoutManager(
                 context,
@@ -107,12 +107,13 @@ public class AssignmentCourseViewHolder extends TreeNode.BaseNodeViewHolder<Assi
                              RecyclerView.LayoutParams.WRAP_CONTENT);
         final int targetHeight = recyclerView.getMeasuredHeight();
 
+        // Initial height of 0 causes glitchy animation
+        recyclerView.getLayoutParams().height = 1;
+
         Animation expansionAnimation = new Animation() {
             @Override
             protected void applyTransformation(float interpolatedTime, Transformation transformation) {
-                int newHeight = (interpolatedTime == 1.0)
-                        ? RecyclerView.LayoutParams.WRAP_CONTENT
-                        : (int) ( targetHeight * interpolatedTime );
+                int newHeight = (int) ( targetHeight * interpolatedTime );
                 recyclerView.getLayoutParams().height = newHeight;
                 recyclerView.requestLayout();
             }
