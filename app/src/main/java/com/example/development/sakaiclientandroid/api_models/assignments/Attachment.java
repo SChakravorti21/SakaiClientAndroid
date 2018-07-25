@@ -28,10 +28,6 @@ public class Attachment implements Serializable
         return url;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
     @Override
     public String toString() {
         return new ToStringBuilder(this).append("name", name).append("url", url).toString();

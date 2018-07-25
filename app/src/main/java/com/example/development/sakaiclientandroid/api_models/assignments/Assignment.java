@@ -117,32 +117,16 @@ public class Assignment implements Serializable
         return attachments;
     }
 
-    public void setAttachments(List<Attachment> attachments) {
-        this.attachments = attachments;
-    }
-
     public String getAuthorLastModified() {
         return authorLastModified;
-    }
-
-    public void setAuthorLastModified(String authorLastModified) {
-        this.authorLastModified = authorLastModified;
     }
 
     public CloseTime getCloseTime() {
         return closeTime;
     }
 
-    public void setCloseTime(CloseTime closeTime) {
-        this.closeTime = closeTime;
-    }
-
     public String getCloseTimeString() {
         return closeTimeString;
-    }
-
-    public void setCloseTimeString(String closeTimeString) {
-        this.closeTimeString = closeTimeString;
     }
 
     public String getContext() {
@@ -157,56 +141,28 @@ public class Assignment implements Serializable
         return creator;
     }
 
-    public void setCreator(String creator) {
-        this.creator = creator;
-    }
-
     public DueTime getDueTime() {
         return dueTime;
-    }
-
-    public void setDueTime(DueTime dueTime) {
-        this.dueTime = dueTime;
     }
 
     public String getDueTimeString() {
         return dueTimeString;
     }
 
-    public void setDueTimeString(String dueTimeString) {
-        this.dueTimeString = dueTimeString;
-    }
-
     public String getGradeScale() {
         return gradeScale;
-    }
-
-    public void setGradeScale(String gradeScale) {
-        this.gradeScale = gradeScale;
     }
 
     public String getGradeScaleMaxPoints() {
         return gradeScaleMaxPoints;
     }
 
-    public void setGradeScaleMaxPoints(String gradeScaleMaxPoints) {
-        this.gradeScaleMaxPoints = gradeScaleMaxPoints;
-    }
-
     public Object getGradebookItemId() {
         return gradebookItemId;
     }
 
-    public void setGradebookItemId(Object gradebookItemId) {
-        this.gradebookItemId = gradebookItemId;
-    }
-
     public Object getGradebookItemName() {
         return gradebookItemName;
-    }
-
-    public void setGradebookItemName(Object gradebookItemName) {
-        this.gradebookItemName = gradebookItemName;
     }
 
     public String getId() {
@@ -221,56 +177,28 @@ public class Assignment implements Serializable
         return instructions;
     }
 
-    public void setInstructions(String instructions) {
-        this.instructions = instructions;
-    }
-
     public Object getModelAnswerText() {
         return modelAnswerText;
-    }
-
-    public void setModelAnswerText(Object modelAnswerText) {
-        this.modelAnswerText = modelAnswerText;
     }
 
     public OpenTime getOpenTime() {
         return openTime;
     }
 
-    public void setOpenTime(OpenTime openTime) {
-        this.openTime = openTime;
-    }
-
     public String getOpenTimeString() {
         return openTimeString;
-    }
-
-    public void setOpenTimeString(String openTimeString) {
-        this.openTimeString = openTimeString;
     }
 
     public String getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
     public String getSubmissionType() {
         return submissionType;
     }
 
-    public void setSubmissionType(String submissionType) {
-        this.submissionType = submissionType;
-    }
-
     public TimeLastModified getTimeLastModified() {
         return timeLastModified;
-    }
-
-    public void setTimeLastModified(TimeLastModified timeLastModified) {
-        this.timeLastModified = timeLastModified;
     }
 
     public String getTitle() {
@@ -285,32 +213,16 @@ public class Assignment implements Serializable
         return allowResubmission;
     }
 
-    public void setAllowResubmission(Boolean allowResubmission) {
-        this.allowResubmission = allowResubmission;
-    }
-
     public String getEntityURL() {
         return entityURL;
-    }
-
-    public void setEntityURL(String entityURL) {
-        this.entityURL = entityURL;
     }
 
     public String getEntityId() {
         return entityId;
     }
 
-    public void setEntityId(String entityId) {
-        this.entityId = entityId;
-    }
-
     public String getEntityTitle() {
         return entityTitle;
-    }
-
-    public void setEntityTitle(String entityTitle) {
-        this.entityTitle = entityTitle;
     }
 
     @Override
