@@ -51,9 +51,6 @@ public class Assignment implements Serializable
     @SerializedName("gradebookItemName")
     @Expose
     private Object gradebookItemName;
-    @SerializedName("groups")
-    @Expose
-    private List<Object> groups = new ArrayList<Object>();
     @SerializedName("id")
     @Expose
     private String id;
