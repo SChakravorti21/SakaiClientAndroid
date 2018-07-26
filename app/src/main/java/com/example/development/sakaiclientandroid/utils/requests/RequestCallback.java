@@ -18,6 +18,8 @@ public class RequestCallback {
 
     public void onAllCoursesEmpty(int msgRscId) { }
 
+    public void onAllCoursesFailure(Exception e) { }
+
 
     // grades
     public void onSiteGradesSuccess(Course course) { }
