@@ -192,7 +192,7 @@ public final class NavActivity extends AppCompatActivity
                 break;
 
             case R.id.navigation_assignments:
-                loadAssignmentsFragment(true, true);
+                loadAssignmentsFragment(true, false);
                 return true;
 
             case R.id.navigation_gradebook:

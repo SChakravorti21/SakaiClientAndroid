@@ -70,13 +70,19 @@ public class DataHandler {
                                              final boolean sortByCourses,
                                              boolean shouldRefresh) {
         if(!shouldRefresh && hasRequestedAllAssignments) {
-            if(sortByCourses) {
+            if (sortByCourses) {
                 UICallback.onAllAssignmentsByCourseSuccess(coursesSortedByTerm);
             } else {
                 UICallback.onAllAssignmentsByDateSuccess(assignmentsSortedByDate);
             }
 
             return;
+        }
+
+        for(ArrayList<Course> courses : coursesSortedByTerm) {
+            for(Course course : courses) {
+                course.clearAssignments();
+            }
         }
 
         RequestManager.fetchAllAssignments(new Callback<AllAssignments>() {

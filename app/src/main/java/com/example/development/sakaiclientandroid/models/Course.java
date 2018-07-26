@@ -174,6 +174,10 @@ public class Course implements Serializable {
         assignmentList.add(assignment);
     }
 
+    public void clearAssignments() {
+        assignmentList.clear();
+    }
+
     public int getNumAssignments() {
         return (this.assignmentList != null) ? this.assignmentList.size() : 0;
     }

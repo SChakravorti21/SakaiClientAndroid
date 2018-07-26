@@ -50,6 +50,7 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
             // Set the click listener on the header and footer
             cardView.setOnClickListener(this);
             titleView.setOnClickListener(this);
+            descriptionView.setOnClickListener(this);
             dueDateView.setOnClickListener(this);
             popupView.setOnClickListener(this);
         }

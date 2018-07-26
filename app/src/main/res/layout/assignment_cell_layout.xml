@@ -59,23 +59,16 @@
             android:layout_height="4dp"
             android:background="@drawable/card_header_gradient" />
 
-        <android.support.v4.widget.NestedScrollView
+        <TextView
+            android:id="@+id/assignment_description"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:fadeScrollbars="true">
-
-            <TextView
-                android:id="@+id/assignment_description"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/white"
-                android:textColor="@color/sakai_light_black"
-                android:padding="12dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="4dp"/>
-
-        </android.support.v4.widget.NestedScrollView>
+            android:background="@color/white"
+            android:textColor="@color/sakai_light_black"
+            android:padding="12dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"/>
 
         <!-- Card footer gradient (for elevation effect) -->
         <FrameLayout
