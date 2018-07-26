@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -207,11 +208,26 @@ public final class NavActivity extends AppCompatActivity
     }
 
     /**
+     * Prevents a glitchy UI transition when replacing fragments in the
+     * container by removing all of them ahead of time before the main
+     * transaction is performed.
+     */
+    private void clearContainer() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        for(Fragment fragment : fragmentManager.getFragments()) {
+            if(fragment != null)
+                fragmentManager.beginTransaction().remove(fragment).commit();
+        }
+    }
+
+    /**
      * Loads the all courses fragment (home page)
      *
      * @param refresh whether or not to refresh courses
      */
     public void loadAllCoursesFragment(boolean refresh) {
+        clearContainer();
+
         this.container.setVisibility(View.GONE);
         this.spinner.setVisibility(View.VISIBLE);
         isLoadingAllCourses = true;
@@ -251,6 +267,8 @@ public final class NavActivity extends AppCompatActivity
      * @param refreshGrades whether or not to refresh grades
      */
     public void loadAllGradesFragment(boolean refreshGrades) {
+        clearContainer();
+
         this.container.setVisibility(View.GONE);
         this.spinner.setVisibility(View.VISIBLE);
 
@@ -305,6 +323,8 @@ public final class NavActivity extends AppCompatActivity
      */
     public void loadAssignmentsFragment(final boolean sortedByCourses,
                                         final boolean shouldRefresh) {
+        clearContainer();
+
         this.container.setVisibility(View.GONE);
         this.spinner.setVisibility(View.VISIBLE);
 

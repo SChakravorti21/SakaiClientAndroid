@@ -33,8 +33,7 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
 
     private List<Assignment> assignments;
 
-    public class ViewHolder extends RecyclerView.ViewHolder
-            implements View.OnClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         TextView titleView;
         TextView descriptionView;
