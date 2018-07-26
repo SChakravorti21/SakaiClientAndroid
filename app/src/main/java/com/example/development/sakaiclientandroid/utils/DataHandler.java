@@ -6,7 +6,7 @@ import com.example.development.sakaiclientandroid.R;
 
 import com.example.development.sakaiclientandroid.api_models.assignments.AllAssignments;
 import com.example.development.sakaiclientandroid.api_models.assignments.Assignment;
-import com.example.development.sakaiclientandroid.api_models.gradebook.AllGradesObject;
+import com.example.development.sakaiclientandroid.api_models.gradebook.AllGradesPost;
 import com.example.development.sakaiclientandroid.api_models.gradebook.GradebookObject;
 import com.example.development.sakaiclientandroid.api_models.gradebook.GradebookCollectionObject;
 import com.example.development.sakaiclientandroid.models.Course;
@@ -18,7 +18,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -197,6 +197,12 @@ public class DataHandler {
         }
     }
 
+
+    /**
+     * Requests all the grades for all the courses
+     * @param refreshGrades whether or not we want to refresh all grades
+     * @param UICallback callback to execute after request is done
+     */
     public static void requestAllGrades(boolean refreshGrades, final RequestCallback UICallback) {
 
         if (hasRequestedAllGrades && !refreshGrades) {
@@ -204,15 +210,15 @@ public class DataHandler {
             return;
         }
 
-        RequestManager.fetchAllGrades(new Callback<AllGradesObject>() {
+        RequestManager.fetchAllGrades(new Callback<AllGradesPost>() {
             @Override
-            public void onResponse(@NonNull Call<AllGradesObject> call, @NonNull Response<AllGradesObject> response) {
+            public void onResponse(@NonNull Call<AllGradesPost> call, @NonNull Response<AllGradesPost> response) {
 
-                AllGradesObject allGradesObject = response.body();
+                AllGradesPost allGradesPost = response.body();
 
-                if (allGradesObject != null) {
+                if (allGradesPost != null && allGradesPost.getGradebookCollection() != null && allGradesPost.getGradebookCollection().size() > 0) {
                     //for each course's gradebook
-                    for (GradebookCollectionObject gradebook : allGradesObject.getGradebookCollection()) {
+                    for (GradebookCollectionObject gradebook : allGradesPost.getGradebookCollection()) {
 
                         //set the gradebook's list of assignments to the course's list of assignments
                         List<GradebookObject> assignments = gradebook.getAssignments();
@@ -224,26 +230,35 @@ public class DataHandler {
 
                     }
 
+                    hasRequestedAllGrades = true;
+                    UICallback.onAllGradesSuccess(coursesSortedByTerm);
                 }
-
-                hasRequestedAllGrades = true;
-                UICallback.onAllGradesSuccess(coursesSortedByTerm);
+                //if no grades...
+                else {
+                    UICallback.onAllGradesEmpty(R.string.no_grades);
+                }
 
             }
 
             @Override
-            public void onFailure(@NonNull Call<AllGradesObject> call, @NonNull Throwable t) {
-                UICallback.onAllGradesFailure(t);
+            public void onFailure(@NonNull Call<AllGradesPost> call, @NonNull Throwable t) {
+                UICallback.onRequestFailure(R.string.network_error, t);
             }
         });
     }
 
 
+    /**
+     * Requests all the grades for a specific course
+     * @param siteId id of course
+     * @param refresh whether or not we want to refresh
+     * @param UICallback callback to execute after request is complete
+     */
     public static void requestGradesForSite(final String siteId, boolean refresh, final RequestCallback UICallback) {
 
         //if we don't want to refresh and we have the grades
         //just use the already cached course
-        if(!refresh && gradesRequestedForSite(siteId)) {
+        if (!refresh && gradesRequestedForSite(siteId)) {
             Course course = mapSiteIdToCourse.get(siteId);
             UICallback.onSiteGradesSuccess(course);
             return;
@@ -257,12 +272,11 @@ public class DataHandler {
 
                 GradebookCollectionObject gradebookCollectionObject = response.body();
 
-                if (gradebookCollectionObject != null) {
+                if (gradebookCollectionObject != null && gradebookCollectionObject.getAssignments() != null && gradebookCollectionObject.getAssignments().size() > 0) {
                     Course currCourse = DataHandler.getCourseFromId(siteId);
                     currCourse.setGradebookObjectList(gradebookCollectionObject.getAssignments());
                     UICallback.onSiteGradesSuccess(currCourse);
-                }
-                else {
+                } else {
 
                     UICallback.onSiteGradesEmpty(R.string.no_grades);
                 }
@@ -278,33 +292,44 @@ public class DataHandler {
 
     /**
      * Requests all the sites and their site pages
-     * @param refresh whether or not we want to refresh the sites that are cached
+     * @param refresh    whether or not we want to refresh the sites that are cached
      * @param UICallback call back to be run after the request is done
      */
-    public static void requestAllSites(boolean refresh, final RequestCallback UICallback) {
+    public static void requestAllCourses(boolean refresh, final RequestCallback UICallback) {
 
         //dont do anything if we aren't refreshing
-        if(!refresh) {
+        if (!refresh) {
             UICallback.onAllCoursesSuccess(coursesSortedByTerm);
             return;
         }
 
-        RequestManager.fetchAllSites(new Callback<ResponseBody>() {
+        RequestManager.fetchAllCourses(new Callback<ResponseBody>() {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 try {
-                    String responseBody = response.body().string();
+                    if (response.body() != null) {
+                        String responseBody = response.body().string();
 
-                    ArrayList<Course> allCourses = jsonToCourseObj(responseBody);
-                    organizeByTerm(allCourses);
+                        ArrayList<Course> allCourses = jsonToCourseObj(responseBody);
+                        organizeByTerm(allCourses);
+                    } else {
+                        UICallback.onAllCoursesEmpty(R.string.no_courses);
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    UICallback.onAllCoursesFailure(new ParseException("Failed parsing json response", 0));
+                    UICallback.onRequestFailure(R.string.network_error, e);
+                }
+                //possible IOException with parsing the response body to a string
+                catch (IOException e) {
+                    e.printStackTrace();
+                    UICallback.onRequestFailure(R.string.network_error, e);
                 } catch(Exception e) {
                     e.printStackTrace();
                     UICallback.onAllCoursesFailure(new ParseException("Unable to parse response", 0));
                 }
 
+                //reset the has requested grades booleans so we know to
+                //refresh them next time we want to see the grades or assignments
                 hasRequestedAllGrades = false;
                 hasRequestedAllAssignments = false;
                 UICallback.onAllCoursesSuccess(coursesSortedByTerm);
@@ -312,26 +337,29 @@ public class DataHandler {
 
             @Override
             public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable throwable) {
-                UICallback.onAllCoursesFailure(throwable);
+                UICallback.onRequestFailure(R.string.network_error, throwable);
             }
         });
     }
 
 
-    //get sorted time grades for one class
-
-    //get all grades sorted by term, and then by time.
-
-    // **repeat for assignments, announcements**
-
+    /**
+     * Parses the raw response body into an array list of courses
+     *
+     * @param responseBody raw json response from sakai api
+     * @return array list of parsed courses
+     * @throws JSONException if the response was unable to be parsed
+     */
     private static ArrayList<Course> jsonToCourseObj(String responseBody) throws JSONException {
 
 
         ArrayList<Course> coursesList = new ArrayList<>();
         mapSiteIdToCourse = new HashMap<>();
 
-        JSONObject obj = new JSONObject(responseBody);
-        JSONArray courses = obj.getJSONArray("site_collection");
+
+
+            JSONObject obj = new JSONObject(responseBody);
+            JSONArray courses = obj.getJSONArray("site_collection");
 
         for (int i = 0; i < courses.length(); i++) {
 
@@ -346,15 +374,12 @@ public class DataHandler {
     }
 
 
+    /**
+     * Helper method to get the course from a siteID
+     * @param siteId id of course
+     * @return the corresponding course
+     */
     public static Course getCourseFromId(String siteId) {
-
-        for (ArrayList<Course> courses : coursesSortedByTerm) {
-            for (Course c : courses) {
-                if (c.getId().equals(siteId)) {
-                    return c;
-                }
-            }
-        }
 
         return mapSiteIdToCourse.get(siteId);
     }

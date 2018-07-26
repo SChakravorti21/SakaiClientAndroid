@@ -1,7 +1,7 @@
 package com.example.development.sakaiclientandroid.services;
 
 import com.example.development.sakaiclientandroid.api_models.assignments.AllAssignments;
-import com.example.development.sakaiclientandroid.api_models.gradebook.AllGradesObject;
+import com.example.development.sakaiclientandroid.api_models.gradebook.AllGradesPost;
 import com.example.development.sakaiclientandroid.api_models.gradebook.GradebookCollectionObject;
 
 import okhttp3.ResponseBody;
@@ -19,7 +19,7 @@ public interface SakaiService {
     Call<ResponseBody> getAllSites();
 
     @GET("gradebook/my.json")
-    Call<AllGradesObject> getAllGrades();
+    Call<AllGradesPost> getAllGrades();
 
     @GET("gradebook/site/{site_id}.json")
     Call<GradebookCollectionObject> getGradeForSite(@Path(value = "site_id", encoded = true) String siteId);
