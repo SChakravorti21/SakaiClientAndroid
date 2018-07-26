@@ -26,6 +26,7 @@ import com.example.development.sakaiclientandroid.utils.holders.TermHeaderViewHo
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.example.development.sakaiclientandroid.NavActivity.ASSIGNMENTS_TAG;
 
@@ -74,6 +75,13 @@ public class AssignmentsFragment extends BaseFragment {
         this.treeView = new AndroidTreeView(getActivity(), root);
         this.treeView.setDefaultAnimation(true);
         this.treeView.setDefaultNodeClickListener(new TreeViewItemClickListener(treeView, root));
+
+        // Expand the first term so that user can see their current courses
+        List<TreeNode> rootChildren = root.getChildren();
+        if(rootChildren != null && rootChildren.size() > 0) {
+            this.treeView.expandNode(rootChildren.get(0));
+        }
+
 
         refreshLayout.addView(this.treeView.getView());
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
