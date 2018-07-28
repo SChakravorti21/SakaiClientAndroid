@@ -22,14 +22,36 @@ import java.lang.ref.WeakReference;
 
 public class FileCompatWebView extends WebView implements NestedScrollingChild {
 
-    private static final int FILE_REQUEST_CODE = 28374; // some random number
+    /**
+     * The request code for {@link Intent}s that allow the user to upload
+     * attachments for assignments.
+     */
+    private static final int FILE_REQUEST_CODE = 28374;
 
+    /**
+     * The {@link AttachmentDownloadListener} that handles attachment
+     * downloads in its {@code onDownloadStart} method.
+     */
     private AttachmentDownloadListener attachmentDownloadListener;
+
+    /**
+     * A {@code WeakReference} to he parent {@code Fragment}, necessary
+     * for file uploads to be able to initiate an {@link Intent}.
+     */
     private WeakReference<Fragment> parentFragment;
+
+    /**
+     * Legacy {@link ValueCallback} used for versions below Android 5.0.
+     */
     private ValueCallback<Uri> valueCallbackCompat;
+
+    /**
+     * A {@link ValueCallback} that can be called with a local file URL
+     * to allow file uploads to this {@link WebView}.
+     */
     private ValueCallback<Uri[]> valueCallback;
 
-    // Mandatory constructors
+    // Mandatory constructors for WebView
     public FileCompatWebView(Context context) {
         super(context);
     }
@@ -47,13 +69,24 @@ public class FileCompatWebView extends WebView implements NestedScrollingChild {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    // Separate initialize method to prevent interfering with default constructors
+    /**
+     * Initializes the {@code FileCompatWebView}'s {@link WebSettings},
+     * {@link WebViewClient}, and {@link WebChromeClient}.
+     */
     public void initialize() {
         this.initializeSettings();
         this.initializeWebViewClient();
         this.initializeWebChromeClient();
     }
 
+    /**
+     * An initialization method that has been separated from the mandatory constructors
+     * to ensure proper construction is not affected by introducing a {@link Fragment}
+     * into the method signature.
+     *
+     * Calls the base {@code initialize} method and also initializes the download
+     * listener.
+     */
     public void initialize(Fragment fragment) {
         this.initialize();
         this.parentFragment = new WeakReference<>(fragment);
@@ -61,18 +94,36 @@ public class FileCompatWebView extends WebView implements NestedScrollingChild {
         this.setDownloadListener(this.attachmentDownloadListener);
     }
 
+    /**
+     * Initializes various settings for the {@link WebView} to display
+     * its content properly/allow the expected user interactions.
+     */
     private void initializeSettings() {
         WebSettings settings = this.getSettings();
-        settings.setPluginState(WebSettings.PluginState.ON);
         settings.setJavaScriptEnabled(true);
+
+        // Some links redirect to other sites.
         settings.setJavaScriptCanOpenWindowsAutomatically(true);
 
+        // Plugin setting for playing videos
+        settings.setPluginState(WebSettings.PluginState.ON);
+
+        // Allowing file content access that is necessary for the
+        // WebView to access uploaded attachments for assignments.
         settings.setAllowFileAccess(true);
         settings.setAllowContentAccess(true);
         settings.setAllowFileAccessFromFileURLs(true);
         settings.setAllowUniversalAccessFromFileURLs(true);
     }
 
+    /**
+     * Initializes the {@link WebView}'s {@link WebViewClient},
+     * mainly dictating that the URL loading/redirecting should ALWAYS
+     * be handled by the WebView. This is necessary because only this
+     * application has the cookies necessary for the user to view their
+     * content, so redirecting to an external application would just give
+     * them the Sakai login page.
+     */
     private void initializeWebViewClient() {
         this.setWebViewClient(new WebViewClient() {
             @Override
@@ -90,26 +141,34 @@ public class FileCompatWebView extends WebView implements NestedScrollingChild {
         });
     }
 
+    /**
+     * Initializes the {@link WebChromeClient} of this {@link WebView}.
+     * The {@link WebChromeClient} primarily handles file uploads
+     * to this {@link WebView}.
+     */
     private void initializeWebChromeClient() {
         this.setWebChromeClient(new WebChromeClient() {
 
-            // file upload callback (Android 4.1 (API level 16) -- Android 4.3 (API level 18)) (hidden method)
+            // file upload callback (Android 4.1 (API level 16) -- Android 4.3 (API level 18)) (
+            // hidden method)
             @SuppressWarnings("unused")
-            public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType, String capture) {
+            public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType,
+                                        String capture) {
                 openFileInput(uploadMsg, null);
             }
 
             @Override
-            public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback, FileChooserParams fileChooserParams) {
+            public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback,
+                                             FileChooserParams fileChooserParams) {
                 return openFileInput(null, filePathCallback);
             }
         });
     }
 
     private boolean openFileInput(final ValueCallback<Uri> valueCallbackCompat,
-                               final ValueCallback<Uri[]> valueCallback) {
+                                  final ValueCallback<Uri[]> valueCallback) {
 
-        // Invalidate the value callbacks if any still exist
+        // Invalidate the value callbacks if they still exist
         if(this.valueCallbackCompat != null) {
             this.valueCallbackCompat.onReceiveValue(null);
         }
@@ -120,30 +179,44 @@ public class FileCompatWebView extends WebView implements NestedScrollingChild {
         }
         this.valueCallback = valueCallback;
 
+        // Create an intent for the user to choose a file
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("*/*");
+        intent.setType("*/*"); // user should be able to upload whatever file type they want
 
+        // Create a chooser intent in case the user has multiple applications
+        // that can handle opening files other than the native file chooser).
         Intent chooserIntent = Intent.createChooser(intent, "Choose a file");
 
+        // Start the activity for result to get the file back
         if(parentFragment != null && parentFragment.get() != null) {
             parentFragment.get().startActivityForResult(chooserIntent, FILE_REQUEST_CODE);
-
-            // Intent was handled successfully
-            return true;
+            return true; // Intent was handled successfully
         }
 
-        // Intent could not be handled
+        // Intent could not be handled (parentFragment is no longer active).
         return false;
     }
 
+    /**
+     * Called from the parent
+     *  {@link com.example.development.sakaiclientandroid.fragments.WebFragment}'s
+     *  {@code onActivityResult} to handle file uploads to the {@link WebView}.
+     * @param requestCode The request code
+     * @param resultCode The status of the request
+     * @param intent The {@link Intent} that initiated the request for a file.
+     */
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        // Check if there is any data worth sending to the WebView
         if(requestCode != FILE_REQUEST_CODE
                 || resultCode != Activity.RESULT_OK
                 || intent == null) {
             return;
         }
 
+        // Use whichever valueCallback is not null (only one of them will ever be
+        // non-null because only one of the methods in the WebChromeClient
+        // will be called based on the Android version.
         if(valueCallbackCompat != null) {
             valueCallbackCompat.onReceiveValue(intent.getData());
             valueCallbackCompat = null;
@@ -153,7 +226,9 @@ public class FileCompatWebView extends WebView implements NestedScrollingChild {
             if(intent.getDataString() != null) {
                 try {
                     fileUris = new Uri[] { Uri.parse(intent.getDataString()) };
-                } catch (Exception exception) { }
+                } catch (Exception exception) {
+                    // Exception is ignored, nothing can be done with the URI
+                }
             } else if(intent.getClipData() != null) {
                 ClipData clipData = intent.getClipData();
                 int numFiles = clipData.getItemCount();
@@ -172,8 +247,8 @@ public class FileCompatWebView extends WebView implements NestedScrollingChild {
     /**
      * Always returns true so that the WebView can scroll inside other containers.
      * This is mainly implemented so that scrolling works inside the bottom sheet dialog
-     * for assignment submission, and putting the webview inside a NestedScrollView
-     * breaks page rendering sometimes.
+     * for assignment submission since putting the WebView inside a NestedScrollView
+     * breaks rendering.
      * @return true (WebView always behaves like a nested scrolling child)
      */
     @Override
@@ -181,6 +256,12 @@ public class FileCompatWebView extends WebView implements NestedScrollingChild {
         return true;
     }
 
+    /**
+     * Exposes a method for the parent
+     *  {@link com.example.development.sakaiclientandroid.fragments.WebFragment} to retry
+     *  a download after it fails for the first time due to missing permissions
+     *  (writing to and reading from external storage).
+     */
     public void retryDownloadFile() {
         if(attachmentDownloadListener != null)
             attachmentDownloadListener.retryDownloadFile();

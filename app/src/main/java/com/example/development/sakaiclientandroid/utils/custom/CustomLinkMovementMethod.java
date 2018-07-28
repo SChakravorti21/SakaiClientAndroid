@@ -15,6 +15,8 @@ import android.widget.TextView;
 import com.example.development.sakaiclientandroid.R;
 import com.example.development.sakaiclientandroid.fragments.WebFragment;
 
+import java.lang.ref.WeakReference;
+
 /**
  * Created by Development on 6/23/18.
  */
@@ -27,7 +29,7 @@ public class CustomLinkMovementMethod extends LinkMovementMethod {
      * manager must be kept to allow the MovementMethod to create the
      * WebViews when a link is clicked.
      */
-    private static FragmentManager fragmentManager;
+    private static WeakReference<FragmentManager> fragmentManager;
     private static CustomLinkMovementMethod mInstance;
 
     /**
@@ -49,12 +51,12 @@ public class CustomLinkMovementMethod extends LinkMovementMethod {
      * @param manager The fragment manager
      */
     public static void setFragmentManager(FragmentManager manager) {
-        fragmentManager = manager;
+        fragmentManager = new WeakReference<>(manager);
     }
 
     /**
      * Largely pulled from the Android source code except for the logic
-     * of opening a webview when a link is clicked.
+     * of opening a {@code WebView} when a link is clicked.
      * @param widget TextView in which the clicked span resides
      * @param buffer The touched buffer
      * @param event The type of touch event (eg. up, down, left, right, etc.)
@@ -88,7 +90,7 @@ public class CustomLinkMovementMethod extends LinkMovementMethod {
 
             if (links.length != 0) {
                 if (action == MotionEvent.ACTION_UP) {
-                    createWebView(links[0]);
+                    openWebView(links[0]);
                 } else { // action == MotionEvent.ACTION_DOWN
                     Selection.setSelection(buffer,
                             buffer.getSpanStart(links[0]),
@@ -109,20 +111,23 @@ public class CustomLinkMovementMethod extends LinkMovementMethod {
      * that opens up the given link
      * @param clickedLink The link that was clicked and should be opened
      */
-    private void createWebView(ClickableSpan clickedLink) {
+    private void openWebView(ClickableSpan clickedLink) {
+        // Check that the Clickable link is a URL Link
+        // (A URLSpan is automatically created with 'a' tags from
+        // HTML)
         if( !(clickedLink instanceof URLSpan) )
             return;
 
         URLSpan clicked = (URLSpan) clickedLink;
         String link = clicked.getURL();
-        Log.d("Clicked", link);
 
-        // If a fragment manager is available, create the webview to view the
+        // If a fragment manager is available, create the WebView to view the
         // link
-        if(fragmentManager != null) {
+        if(fragmentManager != null && fragmentManager.get() != null) {
             WebFragment fragment = WebFragment.newInstance(link);
 
-            fragmentManager.beginTransaction()
+            fragmentManager.get()
+                    .beginTransaction()
                     .setCustomAnimations(R.anim.enter, R.anim.exit,
                             R.anim.pop_enter, R.anim.pop_exit)
                     // Add the web fragment so that the previous fragment's
