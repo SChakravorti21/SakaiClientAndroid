@@ -18,16 +18,42 @@ import com.example.development.sakaiclientandroid.utils.requests.DownloadComplet
 import java.lang.ref.WeakReference;
 
 /**
- * Created by Development on 7/21/18.
+ * Created by Shoumyo Chakravorti on 7/21/18.
+ *
+ * An implementation of a {@link android.webkit.WebView}'s {@link DownloadListener}.
+ * Listens for download initiation and requests the parent {@link Fragment}'s
+ * {@link DownloadManager} to download the requested file. Communicates with the
+ * {@link DownloadCompleteReceiver} to ensure that the user can open the file after it is
+ * downloaded.
  */
 
 public class AttachmentDownloadListener implements DownloadListener {
 
+    /**
+     * The request code that is used to request the permission to
+     * write to external storage (required for downloading files).
+     */
     public static final int REQUEST_WRITE_PERMISSION_CODE = 23112;
+
+    /**
+     * A {@code WeakReference} to the parent fragment, necessary to access
+     * the current {@link Context} and the {@link Fragment}'s {@link DownloadManager}.
+     */
     private WeakReference<Fragment> fragment;
+
+    /**
+     * Stores the previous download URL if the permission to write to external storage
+     * did not exist previously, allowing a retry of the download once the permission is
+     * granted.
+     */
     private String previousUrl;
 
-    public AttachmentDownloadListener(Fragment fragment) {
+    /**
+     * Initializes the {@code AttachmentDownloadListener} with the parent
+     * {@link Fragment}.
+     * @param fragment The parent {@link Fragment}.
+     */
+    AttachmentDownloadListener(Fragment fragment) {
         this.fragment = new WeakReference<>(fragment);
     }
 
@@ -37,18 +63,26 @@ public class AttachmentDownloadListener implements DownloadListener {
         if(checkAndRequestPermissions()) {
             downloadFile(url);
         } else {
+            // If download is not possible right now, save the URL so that
+            // the download can be tried again once the permission is granted.
             previousUrl = url;
         }
     }
 
     /**
-     * Publicly accessible for times when the write external storage permission
-     * needs to be requested and is granted
+     * Accessible within the package for times when the write external storage permission
+     * needs to be requested and is subsequently granted.
      */
-    public void retryDownloadFile() {
+    void retryDownloadFile() {
         downloadFile(previousUrl);
     }
 
+    /**
+     * Handles the download of attachments, whether it is initially when the attachment
+     * is clicked (in which case the permission to write to external storage already exists),
+     * or when retrying after being granted the permission to write to storage.
+     * @param url The URL of the file to download
+     */
     private void downloadFile(String url) {
         // Check for invalid url
         if(url == null || url.isEmpty())
@@ -60,17 +94,26 @@ public class AttachmentDownloadListener implements DownloadListener {
             return;
         }
 
+        // Parse the URI and create a download request
         Uri downloadUri = Uri.parse(url);
         DownloadManager.Request request = new DownloadManager.Request(downloadUri);
+
+        // Request header is necessary for the download to be successful, as it indicates
+        // to Sakai that the user has permission to access this document.
         request.addRequestHeader("Cookie", getCookies());
+
+        // Title that will show up in the download manager/notification region
         request.setTitle(downloadUri.getLastPathSegment());
-        request.allowScanningByMediaScanner(); //allows the file to be found by the device
+        // Allows the file to be found by the device
+        request.allowScanningByMediaScanner();
         request.setVisibleInDownloadsUi(true);
+        // Indicates in the notification region that the download is in progress/completed
         request.setShowRunningNotification(true);
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
         request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,
                 downloadUri.getLastPathSegment());
 
+        // Get the DownloadManager and enqueue the request to download this file
         DownloadManager downloadManager = (DownloadManager) fragment.getContext()
                 .getSystemService(Context.DOWNLOAD_SERVICE);
 
@@ -79,22 +122,31 @@ public class AttachmentDownloadListener implements DownloadListener {
             DownloadCompleteReceiver.addDownloadId(downloadId);
 
             // Indicate that the download has begun
-            Toast successToast = Toast.makeText(fragment.getContext(), "Download started...",
+            Toast successToast = Toast.makeText(fragment.getContext(),
+                    "Download started...",
                     Toast.LENGTH_SHORT);
             successToast.show();
         } else {
             // Show a toast with an error
-            Toast errorToast = Toast.makeText(fragment.getContext(), "Download failed, please try again later.",
+            Toast errorToast = Toast.makeText(fragment.getContext(),
+                    "Unable to download file, please try again later.",
                     Toast.LENGTH_SHORT);
             errorToast.show();
         }
 
         // Detach the fragment because it won;t be displaying any information
-        // The WebFragment is always added to the backstack, so we need to pop
-        // the backtstack for the back button to function as expected
+        // The WebFragment is always added to the back stack, so we need to pop
+        // the back stack for the back button to function as expected
         fragment.getActivity().getSupportFragmentManager().popBackStack();
     }
 
+    /**
+     * Checks if this application has the permission to write to external storage,
+     * which is necessary for downloading anything. If the permission does not exist
+     * (i.e. this method returns false), then a request for the permission
+     * is initiated in the meantime.
+     * @return Whether the permission to download a file has already been granted
+     */
     private boolean checkAndRequestPermissions() {
         Fragment fragment = this.fragment != null ? this.fragment.get() : null;
         if(fragment == null) {
@@ -103,6 +155,7 @@ public class AttachmentDownloadListener implements DownloadListener {
             return false;
         }
 
+        // If the permission has not been granted to this application, request it
         if(ContextCompat.checkSelfPermission(fragment.getContext(),
                 Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 
@@ -111,9 +164,17 @@ public class AttachmentDownloadListener implements DownloadListener {
             return false;
         }
 
+        // Permission has already been granted to the application, download can be initiated.
         return true;
     }
 
+    /**
+     * Gets the same cookies that allow the
+     *  {@link com.example.development.sakaiclientandroid.utils.requests.RequestManager} to make
+     *  requests to the Sakai server. These same cookies will provide the permission to download
+     *  files as well.
+     * @return The cookies in a {@link String} format.
+     */
     private String getCookies() {
         Fragment fragment = this.fragment != null ? this.fragment.get() : null;
         if(fragment == null) {
@@ -121,7 +182,7 @@ public class AttachmentDownloadListener implements DownloadListener {
         }
 
         // Since the CookieManager was managed by reference earlier
-        // in the WebViewClient, the cookies should remain updated
+        // in a WebViewClient, the cookies should remain updated
         // We only need one set of cookies, the Sakai cookies,
         // so this method does not need to parse any extra cookies.
         CookieManager cookieManager = CookieManager.getInstance();

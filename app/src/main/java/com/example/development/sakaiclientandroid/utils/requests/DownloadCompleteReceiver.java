@@ -6,32 +6,41 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.drawable.AdaptiveIconDrawable;
 import android.net.Uri;
-import android.support.v4.BuildConfig;
 import android.support.v4.content.FileProvider;
-import android.webkit.DownloadListener;
 
 import java.io.File;
 import java.util.HashSet;
 
-import static android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION;
-
 /**
- * Created by Development on 7/7/18.
+ * Created by Shoumyo Chakravorti on 7/7/18.
+ *
+ * A {@link BroadcastReceiver} that listens for successful file download
+ * completions, and allows the user to open the downloaded file.
  */
 
 public class DownloadCompleteReceiver extends BroadcastReceiver {
 
+    /**
+     * The set of downloaded files to open once download is completed
+     * successfully.
+     */
     private static HashSet<Long> downloads = new HashSet<>();
 
+    /**
+     * Receives all {@link Intent}s broadcasted to the application, and filters
+     * them out to only handle downloaded files. If the file exists, an {@link Intent}
+     * is initiated to allow the user to open the file with the application of their choice.
+     * @param context The context broadcasting the {@link Intent}
+     * @param intent The {@link Intent} being broadcasted
+     */
     @Override
     public void onReceive(Context context, Intent intent) {
         long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID,
                 -1);
 
         // This is a broadcast receiver, so we need to check if the download
-        // actually came from our application
+        // actually came from our application and the intent we anticipate
         if(downloadId == -1 || !downloads.contains(downloadId))
             return;
 
@@ -95,6 +104,12 @@ public class DownloadCompleteReceiver extends BroadcastReceiver {
 
     }
 
+    /**
+     * Allows {@link com.example.development.sakaiclientandroid.utils.ui_components.webview.AttachmentDownloadListener}
+     * to add a {@code downloadId} to this {@code DownloadCompleteListener}'s list of
+     * downloads to watch out for.
+     * @param downloadId The ID of the download to open once the download is complete.
+     */
     public static void addDownloadId(long downloadId) {
         downloads.add(downloadId);
     }

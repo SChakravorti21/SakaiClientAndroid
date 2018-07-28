@@ -1,29 +1,30 @@
 package com.example.development.sakaiclientandroid.fragments;
 
 import android.Manifest;
-import android.app.DownloadManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.CookieManager;
-import android.webkit.DownloadListener;
-import android.widget.Toast;
 
 import com.example.development.sakaiclientandroid.R;
-import com.example.development.sakaiclientandroid.utils.requests.DownloadCompleteReceiver;
 import com.example.development.sakaiclientandroid.utils.ui_components.webview.AttachmentDownloadListener;
 import com.example.development.sakaiclientandroid.utils.ui_components.webview.FileCompatWebView;
 
 import java.lang.ref.WeakReference;
+
+/**
+ * Created by Shoumyo Chakravorti.
+ *
+ * A {@link Fragment} that represents content as a {@link android.webkit.WebView}.
+ * This can be any type of content that can be accessed by a URL, such as
+ * a site page, an assignment submission entity, or an attachment. Automatically
+ * detaches itself from the screen if a download is started.
+ */
 
 public class WebFragment extends Fragment {
     private static final String URL_PARAM = "URL_PARAM";

@@ -8,7 +8,6 @@ import android.text.method.LinkMovementMethod;
 import android.text.method.MovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.TextView;
 
@@ -18,7 +17,10 @@ import com.example.development.sakaiclientandroid.fragments.WebFragment;
 import java.lang.ref.WeakReference;
 
 /**
- * Created by Development on 6/23/18.
+ * Created by Shoumyo Chakravorti on 6/23/18.
+ *
+ * A {@code CustomLinkMovementMethod} that can be set as the {@link MovementMethod}
+ * of {@link TextView}s, allowing them to open any kind of link.
  */
 
 public class CustomLinkMovementMethod extends LinkMovementMethod {
@@ -30,6 +32,13 @@ public class CustomLinkMovementMethod extends LinkMovementMethod {
      * WebViews when a link is clicked.
      */
     private static WeakReference<FragmentManager> fragmentManager;
+
+    /**
+     * Singleton static field that can be reused by all {@link TextView}s
+     * that need to be able to open links/attachments. Since this
+     * single instance is expensive to initialize, and is easily reusable,
+     * implementing the singleton pattern is just natural.
+     */
     private static CustomLinkMovementMethod mInstance;
 
     /**

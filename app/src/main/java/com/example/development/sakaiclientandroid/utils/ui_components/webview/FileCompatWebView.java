@@ -17,7 +17,13 @@ import android.webkit.WebViewClient;
 import java.lang.ref.WeakReference;
 
 /**
- * Created by Development on 7/21/18.
+ * Created by Shoumyo Chakravorti on 7/21/18.
+ *
+ * A custom {@link WebView} implementation that is able to manage
+ * the downloading and uploading of file to and from the {@link WebView}.
+ * This is particularly useful in allowing users to fully interact with
+ * site content, such as downloading attachments or uploading assignments
+ * through the submission dialog.
  */
 
 public class FileCompatWebView extends WebView implements NestedScrollingChild {
