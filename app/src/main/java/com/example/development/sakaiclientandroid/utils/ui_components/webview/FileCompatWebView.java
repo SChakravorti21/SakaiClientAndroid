@@ -107,6 +107,9 @@ public class FileCompatWebView extends WebView implements NestedScrollingChild {
     private void initializeSettings() {
         WebSettings settings = this.getSettings();
         settings.setJavaScriptEnabled(true);
+        settings.setSupportZoom(true);
+        settings.setBuiltInZoomControls(true);
+        settings.setDisplayZoomControls(false);
 
         // Some links redirect to other sites.
         settings.setJavaScriptCanOpenWindowsAutomatically(true);

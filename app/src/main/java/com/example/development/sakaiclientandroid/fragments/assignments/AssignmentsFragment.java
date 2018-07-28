@@ -1,8 +1,10 @@
 package com.example.development.sakaiclientandroid.fragments.assignments;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
@@ -11,6 +13,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.development.sakaiclientandroid.NavActivity;
 import com.example.development.sakaiclientandroid.R;
@@ -30,17 +33,54 @@ import java.util.List;
 
 import static com.example.development.sakaiclientandroid.NavActivity.ASSIGNMENTS_TAG;
 
+/**
+ * Created by Shoumyo Chakravorti.
+ *
+ * The main tab ({@link android.support.v4.app.Fragment}) that shows the user's
+ * assignments. Assignments are always found within their respective term. If assignments
+ * are sorted by date, they are not under any particular course header, but if
+ * assignments are sorted by courses then they show up under their respective
+ * courses (which, in turn, are visible under their respective terms).
+ */
+
 public class AssignmentsFragment extends BaseFragment {
+
+    /**
+     * Tag used to indicate whether the assignments should be shown as being sorted
+     * by date or courses.
+     */
     public static final String ASSIGNMENTS_SORTED_BY_COURSES = "ASSIGNMENTS_SORTED_BY_COURSES";
 
+    /**
+     * The {@link AndroidTreeView} that is represented by this
+     *  {@link android.support.v4.app.Fragment}.
+     */
     private AndroidTreeView treeView;
+
+    /**
+     * If the {@link android.support.v4.app.Fragment} is specified to show assignments
+     * sorted by their courses, this is the non-null list of courses sorted by their terms.
+     */
     private ArrayList<ArrayList<Course>> courses;
+
+    /**
+     * If the {@link android.support.v4.app.Fragment} is specified to show assignments
+     * sorted by date, this is the list of assignments sorted by date within their repsective
+     * terms.
+     */
     private ArrayList<ArrayList<Assignment>> assignments;
+
+    /**
+     * Whether the assignments should be shown as being sorted by course. {@code False} if
+     * assignments should be sorted by term instead.
+     */
     private boolean sortedByCourses;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // This fragment provides the option to sort assignments by course or date.
         setHasOptionsMenu(true);
 
         // Using the bundle arguments, construct the tree to be displayed
@@ -54,8 +94,12 @@ public class AssignmentsFragment extends BaseFragment {
             }
         } catch (ClassCastException exception) {
             // Unable to create the tree, create a dummy tree
-            //TODO: Needs better error handling
             treeView = new AndroidTreeView(getActivity(), TreeNode.root());
+
+            Toast errorToast = Toast.makeText(getContext(),
+                    "An error occurred, please try refreshing.",
+                    Toast.LENGTH_SHORT);
+            errorToast.show();
         }
     }
 
@@ -63,8 +107,8 @@ public class AssignmentsFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_all_assignments, container, false);
-        SwipeRefreshLayout refreshLayout = view.findViewById(R.id.assignments_container);
 
+        // Construct the tree view based on the current sorting preference
         TreeNode root = TreeNode.root();
         if(sortedByCourses) {
             createTreeViewFromCourses(root);
@@ -72,6 +116,7 @@ public class AssignmentsFragment extends BaseFragment {
             createTreeViewFromAssignments(root);
         }
 
+        // Initialize the TreeView with the tree structure
         this.treeView = new AndroidTreeView(getActivity(), root);
         this.treeView.setDefaultAnimation(true);
         this.treeView.setDefaultNodeClickListener(new TreeViewItemClickListener(treeView, root));
@@ -82,7 +127,7 @@ public class AssignmentsFragment extends BaseFragment {
             this.treeView.expandNode(rootChildren.get(0));
         }
 
-
+        SwipeRefreshLayout refreshLayout = view.findViewById(R.id.assignments_container);
         refreshLayout.addView(this.treeView.getView());
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -98,6 +143,7 @@ public class AssignmentsFragment extends BaseFragment {
             }
         });
 
+        // View to ultimately be added to the screen
         return view;
     }
 
@@ -112,11 +158,13 @@ public class AssignmentsFragment extends BaseFragment {
         switch (item.getItemId()) {
             case R.id.action_sort_by_date: {
                 NavActivity activity = (NavActivity) getActivity();
+                // Sort by date (i.e. do not sort by courses) but don't refresh
                 activity.loadAssignmentsFragment(false, false);
                 return true;
             }
             case R.id.action_sort_by_course: {
                 NavActivity activity = (NavActivity) getActivity();
+                // Sort by courses but don't refresh
                 activity.loadAssignmentsFragment(true, false);
                 return true;
             }
@@ -126,6 +174,13 @@ public class AssignmentsFragment extends BaseFragment {
 
     }
 
+    /**
+     * Constructs the {@link AndroidTreeView} with a Term -> Course -> Assignment hierarchy
+     * if the {@link Fragment} is specified to sort by courses. Since the root node is handled
+     * by reference, nothing needs to be returned.
+     *
+     * @param root The root node for making the tree
+     */
     private void createTreeViewFromCourses(TreeNode root) {
         Context currContext = getActivity();
 
@@ -179,6 +234,14 @@ public class AssignmentsFragment extends BaseFragment {
         }
     }
 
+    /**
+     * Constructs the {@link AndroidTreeView} for assignments sorted within their terms
+     * by placing assignments under their respective term header. Similar to
+     * {@code createTreeViewFromCourses}, since the root node is handled by reference,
+     * nothing needs to be returned.
+     *
+     * @param root The root node for making the tree
+     */
     private void createTreeViewFromAssignments(TreeNode root) {
         Context currContext = getActivity();
 

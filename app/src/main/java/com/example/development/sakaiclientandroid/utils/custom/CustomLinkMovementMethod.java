@@ -142,7 +142,7 @@ public class CustomLinkMovementMethod extends LinkMovementMethod {
                     // Add the web fragment so that the previous fragment's
                     // state remains the same after returning
                     .add(R.id.fragment_container, fragment)
-                    .addToBackStack("WebViewFragment")
+                    .addToBackStack(null)
                     .commit();
         }
     }
