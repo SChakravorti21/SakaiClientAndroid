@@ -10,7 +10,13 @@ import retrofit2.http.GET;
 import retrofit2.http.Path;
 
 /**
- * Created by Development on 5/12/18.
+ * Created by Shoumyo Chakravorti on 5/12/18.
+ *
+ * Defines the interface that is used by
+ * {@link com.example.development.sakaiclientandroid.utils.requests.RequestManager} to construct
+ * a {@link retrofit2.Retrofit} instance that can make requests to the Sakai API.
+ * To see all endpoints that the Sakai API offers, and details of the ones used by this
+ * interface, visit the <a href="https://sakai.rutgers.edu/direct/describe" target="_blank">documentation</a>.
  */
 
 public interface SakaiService {

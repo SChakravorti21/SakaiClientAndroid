@@ -13,19 +13,37 @@ import java.util.List;
 import static com.example.development.sakaiclientandroid.NavActivity.ASSIGNMENTS_TAG;
 
 /**
- * Created by Development on 6/30/18.
+ * Created by Shoumyo Chakravorti on 6/30/18.
+ *
+ * The {@link android.support.v7.widget.RecyclerView.Adapter} that instantiates
+ * instances of {@link SingleAssignmentFragment} to populate the
+ * {@link android.support.v4.view.ViewPager} of a
+ * {@link com.example.development.sakaiclientandroid.fragments.assignments.SiteAssignmentsFragment}.
  */
-
 public class AssignmentsPagerAdapter extends FragmentStatePagerAdapter {
 
+    /**
+     * The list of {@link Assignment}s for the current course being viewed.
+     */
     private List<Assignment> assignments;
 
+    /**
+     * Calls the base constructor and also instantiates the {@code assignments} field.
+     * @param fragmentManager the {@link FragmentManager} that will handle creation of
+     *                        {@link SingleAssignmentFragment}s.
+     * @param assignments the list of {@link Assignment} objects for this course
+     */
     public AssignmentsPagerAdapter(FragmentManager fragmentManager,
                                    List<Assignment> assignments) {
         super(fragmentManager);
         this.assignments = assignments;
     }
 
+    /**
+     * Returns a {@link Fragment} for the {@link Assignment} at the current position.
+     * @param position the index of the {@link Assignment} in {@code assignments}.
+     * @return a {@link Fragment} for this {@link Assignment}.
+     */
     @Override
     public Fragment getItem(int position) {
         // Put the assignments in the arguments and instantiate the fragment
@@ -38,6 +56,10 @@ public class AssignmentsPagerAdapter extends FragmentStatePagerAdapter {
         return fragment;
     }
 
+    /**
+     * Returns the number of items (assignments) in this course.
+     * @return the number of items
+     */
     @Override
     public int getCount() {
         return (assignments != null) ? assignments.size() : 0;
