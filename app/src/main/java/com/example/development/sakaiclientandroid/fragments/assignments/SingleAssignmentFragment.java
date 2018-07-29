@@ -26,12 +26,21 @@ import static com.example.development.sakaiclientandroid.NavActivity.ASSIGNMENTS
 import static com.example.development.sakaiclientandroid.fragments.assignments.AssignmentSubmissionDialogFragment.URL_PARAM;
 
 /**
- * A simple {@link Fragment} subclass.
+ * Created by Shoumyo Chakravorti.
+ *
+ * A {@link Fragment} subclass that represents a single
+ * {@link Assignment} as a large {@link android.support.v7.widget.CardView}.
  */
 public class SingleAssignmentFragment extends Fragment implements View.OnClickListener {
 
+    /**
+     * The {@link Assignment} that feeds this {@link Fragment}'s data.
+     */
     Assignment assignment;
 
+    /**
+     * Mandatory empty constructor
+     */
     public SingleAssignmentFragment() {
         // Required empty public constructor
     }
@@ -40,6 +49,7 @@ public class SingleAssignmentFragment extends Fragment implements View.OnClickLi
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Get the assignment for this fragment
         Bundle arguments = getArguments();
         if(arguments != null) {
             this.assignment = (Assignment) arguments.getSerializable(ASSIGNMENTS_TAG);
@@ -73,38 +83,70 @@ public class SingleAssignmentFragment extends Fragment implements View.OnClickLi
         return layout;
     }
 
+    /**
+     * Handles click events, with two main events that are fired:
+     *  1) Opening the submission dialog (with an embeded
+     *      {@link com.example.development.sakaiclientandroid.utils.ui_components.webview.FileCompatWebView})
+     *      for assignment submission
+     *  2) Closing the assignment card when the "X" button is clicked (this also
+     *      has the effect of removing the entire {@link SiteAssignmentsFragment}
+     *      this this {@link SingleAssignmentFragment} resides within to return to the
+     *      screen that directed us to this view.
+     * @param view The {@link View} that is clicked
+     */
     @Override
-    public void onClick(View v) {
-        int viewId = v.getId();
+    public void onClick(View view) {
+        int viewId = view.getId();
 
         switch (viewId) {
             case R.id.assignment_submit_button:
                 showSubmissionSheet();
                 break;
             case R.id.assignment_close_button:
+                // Return to the previous fragment in the back stack
                 AppCompatActivity activity = (AppCompatActivity) getActivity();
                 activity.getSupportFragmentManager().popBackStack();
                 break;
         }
     }
 
+    /**
+     * Shows the assignment submission dialog by instantiating a
+     * {@link AssignmentSubmissionDialogFragment} that behaves like a
+     * {@link android.support.design.widget.BottomSheetDialog} when the
+     * {@link android.support.v4.app.FragmentManager} shows it.
+     */
     private void showSubmissionSheet() {
         Bundle arguments = new Bundle();
         arguments.putString(URL_PARAM, assignment.getEntityURL());
 
+        // Instantiate bottom sheet dialog fragment
         BottomSheetDialogFragment dialogFragment = new AssignmentSubmissionDialogFragment();
         dialogFragment.setArguments(arguments);
 
-        dialogFragment.show(getActivity().getSupportFragmentManager(), "assignment_bottom_sheet");
+        // Inherited method of BottomSheetDialogFragment "show" allows
+        // the sheet to be shown very easily
+        dialogFragment.show(getActivity().getSupportFragmentManager(), null);
     }
 
+    /**
+     * Constructs the attachments {@link TextView} to display the downloadable
+     * {@link Attachment} objects for an {@link Assignment}. A {@link TextView}
+     * can accept a {@link Spanned} object representing some HTML, so {@code a}
+     * tags are used to make the attachments clickable, which in turn opens
+     * a {@link com.example.development.sakaiclientandroid.fragments.WebFragment}
+     * (initiated by the {@link android.text.method.MovementMethod}
+     * {@link CustomLinkMovementMethod}).
+     * @param layout The layout containing the attachments {@link TextView}
+     */
     private void constructAttachmentsView(FrameLayout layout) {
         List<Attachment> attachments = assignment.getAttachments();
         TextView attachmentsView = layout.findViewById(R.id.assignment_attachments);
 
-        Spanned attachmentBody;
+        // If there are no attachments, do not show the attachments view.
+        // Otherwise, construct the HTML and set the TextView's content from that.
         if(attachments == null || attachments.size() == 0) {
-            attachmentBody = getSpannedFromHtml("<p>This assignment has no attachments.</p>");
+            attachmentsView.setVisibility(View.GONE);
         } else {
             StringBuilder attachmentsString = new StringBuilder();
             for (Attachment attachment : attachments) {
@@ -115,13 +157,27 @@ public class SingleAssignmentFragment extends Fragment implements View.OnClickLi
                         .append("</a></p>");
             }
 
-            attachmentBody = getSpannedFromHtml(attachmentsString.toString());
+            Spanned attachmentBody = getSpannedFromHtml(attachmentsString.toString());
+
+            attachmentsView.setText(attachmentBody);
+
+            // The MovementMethod handles creation of a WebFragment
+            // whenever a URLSpan is clicked (the WebFragment handles
+            // download of attachments if it is possible).
+            attachmentsView.setMovementMethod(CustomLinkMovementMethod.getInstance());
         }
 
-        attachmentsView.setText(attachmentBody);
-        attachmentsView.setMovementMethod(CustomLinkMovementMethod.getInstance());
     }
 
+    /**
+     * Constructs the main portion of the card, the description,
+     * with the description of the assignment. Similar to
+     * {@link SingleAssignmentFragment#constructAttachmentsView(FrameLayout)},
+     * this creates an HTML {@link Spanned} object, and clicking on the
+     * description may trigger creation of a {@link com.example.development.sakaiclientandroid.fragments.WebFragment}
+     * if a link is clicked.
+     * @param layout The parent layout containing the descriptions {@link TextView}
+     */
     private void constructDescriptionView(FrameLayout layout) {
         // fromHtml(String) was deprecated in android N, so check the build version
         //before converting the html to text
@@ -133,18 +189,31 @@ public class SingleAssignmentFragment extends Fragment implements View.OnClickLi
         descriptionView.setMovementMethod(CustomLinkMovementMethod.getInstance());
     }
 
-    private Spanned getSpannedFromHtml(String instructions) {
+    /**
+     * Takes an HTML {@link String} and converts it into a {@link Spanned}
+     * object based on the user's build version.
+     * @param text The text to convert
+     * @return The {@link Spanned} object that can be used to set the content of a {@link TextView}.
+     */
+    private Spanned getSpannedFromHtml(String text) {
         Spanned description;
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            description = Html.fromHtml(instructions, Html.FROM_HTML_MODE_LEGACY);
+            description = Html.fromHtml(text, Html.FROM_HTML_MODE_LEGACY);
         } else {
-            description = Html.fromHtml(instructions);
+            description = Html.fromHtml(text);
         }
         return description;
     }
 
-    private void constructTextView(FrameLayout layout, int assignment_name, String text) {
-        TextView textView = layout.findViewById(assignment_name);
+    /**
+     * A helper method that allows for setting the {@code text} of any {@link TextView}
+     * residing within a parent {@code layout}.
+     * @param layout The parent layout containing the {@link TextView}
+     * @param assignmentResourceId The ID of the {@link TextView} inside the parent layout
+     * @param text The text for the view
+     */
+    private void constructTextView(FrameLayout layout, int assignmentResourceId, String text) {
+        TextView textView = layout.findViewById(assignmentResourceId);
         textView.setText(text);
     }
 }
