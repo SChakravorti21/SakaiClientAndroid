@@ -19,7 +19,7 @@ import okhttp3.Response;
 public class CASWebViewClient extends WebViewClient {
 
     public interface SakaiLoadedListener {
-        void onSakaiMainPageLoaded(Headers headers);
+        void onSakaiMainPageLoaded();
     }
 
     // This listener let's our WebViewActivity know that
@@ -121,7 +121,7 @@ public class CASWebViewClient extends WebViewClient {
         // know to fire up a new intent and start the main activity
         if (url.equals(cookieUrl) && gotHeaders
                 && sakaiLoadedListener != null) {
-            sakaiLoadedListener.onSakaiMainPageLoaded(savedHeaders);
+            sakaiLoadedListener.onSakaiMainPageLoaded();
         }
     }
 }
