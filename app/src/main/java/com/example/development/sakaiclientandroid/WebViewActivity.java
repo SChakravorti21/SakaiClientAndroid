@@ -38,9 +38,6 @@ public class WebViewActivity extends AppCompatActivity {
                         // Once the main page loads, we should have all the cookies and
                         // headers necessary to make requests. These headers just
                         // need to be saved for the custom OkHttpClients to be able to access.
-                        SharedPrefsUtil.saveHeaders(getApplicationContext(),
-                                "Headers", savedHeaders);
-
                         Intent intent = new Intent(WebViewActivity.this, NavActivity.class);
                         startActivity(intent);
                     }
