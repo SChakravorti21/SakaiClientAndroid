@@ -10,6 +10,8 @@ import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import com.example.development.sakaiclientandroid.R;
@@ -40,6 +42,11 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
      * The {@link Assignment} objects for this term or course.
      */
     private List<Assignment> assignments;
+
+    /**
+     * The last item in the {@link RecyclerView} that was rendered (and animated)
+     */
+    private int lastRenderedPosition = -1;
 
     /**
      * Constructor to keep instantiate the {@link Assignment} objects to create views.
@@ -116,8 +123,36 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
 
         // Set the assignment due date
         viewHolder.dueDateView.setText("Due: " + assignment.getDueTime().getDisplay());
+
+        // Animate the view if it has not been done already
+        if(position > lastRenderedPosition) {
+            startAnimation(holder.itemView, position);
+        }
     }
 
+    /**
+     * When a view is detached from the window, its animation is cleared
+     * to prevent issues with fast scrolling/flinging.
+     * @param holder
+     */
+    @Override
+    public void onViewDetachedFromWindow(RecyclerView.ViewHolder holder) {
+        super.onViewDetachedFromWindow(holder);
+        holder.itemView.clearAnimation();
+    }
+
+    /**
+     * Animates the given view with the {@code grow_enter} animation.
+     * Called whenever the view is binded for the first time. Updates the
+     * {@code lastPositionRendered} after the animation is dispatched.
+     * @param view The view to animate
+     * @param position The position of the view that is being animated
+     */
+    private void startAnimation(View view, int position) {
+        Animation growAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.grow_enter);
+        view.startAnimation(growAnimation);
+        lastRenderedPosition = position;
+    }
 
     /**
      * Subclasses {@link android.support.v7.widget.RecyclerView.ViewHolder} to manage

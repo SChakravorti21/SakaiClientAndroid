@@ -38,7 +38,7 @@ public class WebViewActivity extends AppCompatActivity {
                 getString(R.string.COOKIE_URL_2),
                 new CASWebViewClient.SakaiLoadedListener() {
                     @Override
-                    public void onSakaiMainPageLoaded(Headers savedHeaders) {
+                    public void onSakaiMainPageLoaded() {
 
                         // Once the main page loads, we should have all the cookies and
                         // headers necessary to make requests. These headers just

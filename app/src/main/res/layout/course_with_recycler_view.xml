@@ -46,7 +46,6 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
-        android:layoutAnimation="@anim/card_assignment_small_animation"
         android:background="@color/white">
 
     </android.support.v7.widget.RecyclerView>

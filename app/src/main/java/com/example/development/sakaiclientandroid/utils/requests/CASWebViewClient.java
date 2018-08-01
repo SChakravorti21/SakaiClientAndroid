@@ -33,7 +33,7 @@ public class CASWebViewClient extends WebViewClient {
     // Sakai
     private OkHttpClient httpClient;
     // Keeping track of receiving headers
-    private boolean gotHeaders;
+    private boolean hasReceivedHeaders;
 
     public CASWebViewClient(String url, SakaiLoadedListener loadedListener) {
         super();
@@ -42,7 +42,7 @@ public class CASWebViewClient extends WebViewClient {
         sakaiLoadedListener = loadedListener;
 
         httpClient = new OkHttpClient();
-        gotHeaders = false;
+        hasReceivedHeaders = false;
     }
 
     @Override
@@ -59,7 +59,7 @@ public class CASWebViewClient extends WebViewClient {
     public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
         // We only need to intercept once authentication is complete, as the
         // the cookies do not change afterwards
-        if (url.startsWith("https://sakai.rutgers.edu/portal") && !gotHeaders) {
+        if (url.startsWith("https://sakai.rutgers.edu/portal") && !hasReceivedHeaders) {
             return handleRequest(url);
         }
 
@@ -83,10 +83,10 @@ public class CASWebViewClient extends WebViewClient {
             // the X-Sakai-Session cookie.
             final Response response = call.execute();
             Headers headers = response.headers();
-            if(headers.get("x-sakai-session") != null && !gotHeaders) {
+            if(headers.get("x-sakai-session") != null && !hasReceivedHeaders) {
                 Log.i("Headers", response.headers().toString());
-                gotHeaders = true;
-                sakaiLoadedListener.onSakaiMainPageLoaded(headers);
+                hasReceivedHeaders = true; // prevent calling onSakaiMainPageLoaded multiple times
+                sakaiLoadedListener.onSakaiMainPageLoaded();
             }
 
             // We need to return a WebResourceResponse, otherwise the
@@ -94,24 +94,13 @@ public class CASWebViewClient extends WebViewClient {
             // renders this response.
             // We do not need to modify the mimeType or encoding of the response.
             return new WebResourceResponse(null, null,
-                    response.body().byteStream()
+                response.body().byteStream()
             );
         } catch (Exception e) {
             Log.e("Exception", e.getMessage());
             // TODO: Handle bad request/response
             // Perhaps by creating a separate method in the listener
             return null;
-        }
-    }
-
-    @Override
-    public void onPageFinished(WebView view, String url) {
-        // Once the main Sakai page loads ("/portal"), we can
-        // fire the listener that will let the WebViewActivity
-        // know to fire up a new intent and start the main activity
-        if (url.equals(cookieUrl) && gotHeaders
-                && sakaiLoadedListener != null) {
-            sakaiLoadedListener.onSakaiMainPageLoaded();
         }
     }
 }
