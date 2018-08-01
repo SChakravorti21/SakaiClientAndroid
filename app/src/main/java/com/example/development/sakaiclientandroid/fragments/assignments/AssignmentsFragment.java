@@ -26,6 +26,7 @@ import com.example.development.sakaiclientandroid.utils.custom.TreeViewItemClick
 import com.example.development.sakaiclientandroid.utils.holders.AssignmentCourseViewHolder;
 import com.example.development.sakaiclientandroid.utils.holders.AssignmentTermHeaderViewHolder;
 import com.example.development.sakaiclientandroid.utils.holders.TermHeaderViewHolder;
+import com.example.development.sakaiclientandroid.utils.requests.SharedPrefsUtil;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 import java.util.ArrayList;
@@ -118,15 +119,18 @@ public class AssignmentsFragment extends BaseFragment {
 
         // Initialize the TreeView with the tree structure
         this.treeView = new AndroidTreeView(getActivity(), root);
-        this.treeView.setDefaultAnimation(true);
         this.treeView.setDefaultNodeClickListener(new TreeViewItemClickListener(treeView, root));
 
-        // Expand the first term so that user can see their current courses
-        List<TreeNode> rootChildren = root.getChildren();
-        if(rootChildren != null && rootChildren.size() > 0) {
-            this.treeView.expandNode(rootChildren.get(0));
-        }
+        // Restore the tree's state from how it was before the user moved away from the
+        // tab the last time, and disable the animation while the state is restored
+        // (otherwise the expansion animation repeating every time the tab is visited gets annoying)
+        this.treeView.setDefaultAnimation(false);
+        String state = SharedPrefsUtil.getTreeState(getContext(), SharedPrefsUtil.ASSIGNMENTS_TREE_TYPE);
+        this.treeView.restoreState(state);
+        this.treeView.setDefaultAnimation(true);
 
+        // Set up refresh layout to make a new network request and re-instantiate the
+        // assignments fragment
         SwipeRefreshLayout refreshLayout = view.findViewById(R.id.assignments_container);
         refreshLayout.addView(this.treeView.getView());
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -172,6 +176,19 @@ public class AssignmentsFragment extends BaseFragment {
                 return super.onOptionsItemSelected(item);
         }
 
+    }
+
+    /**
+     * On top of performing regular functions of {@link Fragment#onDetach()},
+     * saves the expanded state of the tree view so that returning to this tab
+     * restores the same state.
+     */
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        SharedPrefsUtil.saveTreeState(getContext(),
+                treeView,
+                SharedPrefsUtil.ASSIGNMENTS_TREE_TYPE);
     }
 
     /**
