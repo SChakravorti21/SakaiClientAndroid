@@ -35,8 +35,6 @@ public class HeaderInterceptor implements Interceptor {
 
         Request.Builder builder = request.newBuilder()
                 .addHeader("Cookie", cookies);
-        // Add headers that tell Sakai which session to use
-        SharedPrefsUtil.applyHeaders(context, "Headers", builder);
 
         // Add the necessary cookies to the header for Sakai to acknowledge
         // the request
