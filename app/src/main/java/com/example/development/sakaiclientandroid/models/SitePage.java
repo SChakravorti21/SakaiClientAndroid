@@ -32,6 +32,10 @@ public class SitePage {
         return siteId;
     }
 
+    public String getUrl() {
+        return url;
+    }
+
     @Override
     public String toString() {
         return (this.title + ", " + this.siteId);

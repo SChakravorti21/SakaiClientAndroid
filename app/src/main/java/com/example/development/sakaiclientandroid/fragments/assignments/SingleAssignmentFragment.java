@@ -117,8 +117,14 @@ public class SingleAssignmentFragment extends Fragment implements View.OnClickLi
      * {@link android.support.v4.app.FragmentManager} shows it.
      */
     private void showSubmissionSheet() {
+        String assignmentSubmissionUrl =
+                String.format("%s?assignmentReference=%s&sakai_action=doView_submission",
+                        assignment.getAssignmentSitePageUrl(),
+                        assignment.getId()
+                );
+
         Bundle arguments = new Bundle();
-        arguments.putString(URL_PARAM, assignment.getEntityURL());
+        arguments.putString(URL_PARAM, assignmentSubmissionUrl);
 
         // Instantiate bottom sheet dialog fragment
         BottomSheetDialogFragment dialogFragment = new AssignmentSubmissionDialogFragment();

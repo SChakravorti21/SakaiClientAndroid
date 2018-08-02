@@ -24,6 +24,7 @@ public class Course implements Serializable {
     private int subjectCode;
     private List<GradebookObject> gradebookObjectList;
     private List<Assignment> assignmentList;
+    private String assignmentSitePageUrl;
 
     public Course(JSONObject jsonObject) throws JSONException {
         this.assignmentList = new ArrayList<Assignment>();
@@ -71,6 +72,10 @@ public class Course implements Serializable {
             JSONObject pageObj = sitePagesObj.getJSONObject(j);
             SitePage sitePage = new SitePage(pageObj);
             sitePages.add(sitePage);
+
+            if(sitePage.getTitle().toLowerCase().contains("assignment")) {
+                this.assignmentSitePageUrl = sitePage.getUrl();
+            }
         }
         this.sitePages = sitePages;
 
@@ -180,6 +185,10 @@ public class Course implements Serializable {
 
     public int getNumAssignments() {
         return (this.assignmentList != null) ? this.assignmentList.size() : 0;
+    }
+
+    public String getAssignmentSitePageUrl() {
+        return assignmentSitePageUrl;
     }
 
 }

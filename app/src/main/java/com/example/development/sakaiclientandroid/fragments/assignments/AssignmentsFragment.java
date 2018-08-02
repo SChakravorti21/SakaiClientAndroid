@@ -124,10 +124,10 @@ public class AssignmentsFragment extends BaseFragment {
         // Restore the tree's state from how it was before the user moved away from the
         // tab the last time, and disable the animation while the state is restored
         // (otherwise the expansion animation repeating every time the tab is visited gets annoying)
-        //this.treeView.setDefaultAnimation(false);
+        this.treeView.setDefaultAnimation(false);
         String state = SharedPrefsUtil.getTreeState(getContext(), SharedPrefsUtil.ASSIGNMENTS_TREE_TYPE);
         this.treeView.restoreState(state);
-        //this.treeView.setDefaultAnimation(true);
+        this.treeView.setDefaultAnimation(true);
 
         // Set up refresh layout to make a new network request and re-instantiate the
         // assignments fragment

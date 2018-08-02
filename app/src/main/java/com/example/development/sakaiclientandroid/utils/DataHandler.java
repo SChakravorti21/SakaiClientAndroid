@@ -19,6 +19,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -80,6 +81,9 @@ public class DataHandler {
             return;
         }
 
+        // Need to loop through the courses first because the order in which they
+        // are accessed can cause them to be accessed multiple times, which would accidentally
+        // clear assignments that were just fetched
         for(ArrayList<Course> courses : coursesSortedByTerm) {
             for(Course course : courses) {
                 course.clearAssignments();
@@ -100,6 +104,7 @@ public class DataHandler {
                 for(Assignment assignment : allAssignments.getAssignment()) {
                     Course course = mapSiteIdToCourse.get(assignment.getContext());
                     assignment.setTerm(course.getTerm());
+                    assignment.setAssignmentSitePageUrl(course.getAssignmentSitePageUrl());
                     course.addAssignment(assignment);
                 }
 
@@ -130,6 +135,19 @@ public class DataHandler {
                 AllAssignments allAssignments = response.body();
 
                 if(allAssignments != null) {
+                    ArrayList<Assignment> assignments = (ArrayList<Assignment>) allAssignments.getAssignment();
+
+                    String assignmentSitePageUrl = "";
+                    if(assignments.size() > 0) {
+                        String siteId = assignments.get(0).getContext();
+                        Course course = mapSiteIdToCourse.get(siteId);
+                        assignmentSitePageUrl = course.getAssignmentSitePageUrl();
+                    }
+
+                    for(Assignment assignment : assignments) {
+                        assignment.setAssignmentSitePageUrl(assignmentSitePageUrl);
+                    }
+
                     UICallback.onSiteAssignmentsSuccess( (ArrayList<Assignment>) allAssignments.getAssignment() );
                 } else {
                     UICallback.onSiteAssignmentsFailure(new Throwable("No assignments found"));

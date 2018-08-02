@@ -90,6 +90,9 @@ public class Assignment implements Serializable
     @SerializedName("entityTitle")
     @Expose
     private String entityTitle;
+    @SerializedName("entityReference")
+    @Expose
+    private String entityReference;
 
     // Term does not come in the response, but it is used internally
     // for sorting by date
@@ -99,6 +102,9 @@ public class Assignment implements Serializable
     @SerializedName("currentGrade")
     @Expose
     private String currentGrade;
+    @SerializedName("assignmentSitePageUrl")
+    @Expose
+    private String assignmentSitePageUrl;
 
     private final static long serialVersionUID = 835944991348229740L;
 
@@ -222,6 +228,26 @@ public class Assignment implements Serializable
         return entityTitle;
     }
 
+    public String getEntityReference() {
+        return entityReference;
+    }
+
+    public String getCurrentGrade() {
+        return currentGrade;
+    }
+
+    public void setCurrentGrade(String currentGrade) {
+        this.currentGrade = currentGrade;
+    }
+
+    public String getAssignmentSitePageUrl() {
+        return assignmentSitePageUrl;
+    }
+
+    public void setAssignmentSitePageUrl(String assignmentSitePageUrl) {
+        this.assignmentSitePageUrl = assignmentSitePageUrl;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this)
@@ -251,13 +277,5 @@ public class Assignment implements Serializable
                 .append("entityURL", entityURL)
                 .append("entityId", entityId)
                 .append("entityTitle", entityTitle).toString();
-    }
-
-    public String getCurrentGrade() {
-        return currentGrade;
-    }
-
-    public void setCurrentGrade(String currentGrade) {
-        this.currentGrade = currentGrade;
     }
 }
