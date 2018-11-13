@@ -25,4 +25,11 @@ public class Grade {
     public String grade;
     public String itemName;
     public double points;
+
+    public Grade(String siteId, String itemName, String grade, double points) {
+        this.siteId = siteId;
+        this.itemName = itemName;
+        this.grade = grade;
+        this.points = points;
+    }
 }
