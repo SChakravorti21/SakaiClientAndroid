@@ -17,6 +17,7 @@ import android.arch.persistence.room.PrimaryKey;
                                     onUpdate = ForeignKey.CASCADE),
         indices = @Index(value = "siteId"))
 public class Grade {
+    // autogenerates means the id is incremented each time a new grade is added (our own id, not sakai's)
     @PrimaryKey(autoGenerate = true)
     public int id;
 
