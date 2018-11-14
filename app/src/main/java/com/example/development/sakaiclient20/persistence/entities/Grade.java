@@ -10,11 +10,11 @@ import android.arch.persistence.room.PrimaryKey;
  */
 
 @Entity(tableName = "grades",
-        foreignKeys = @ForeignKey(entity = Course.class,
-                                    parentColumns = "siteId",
-                                    childColumns = "siteId",
-                                    onDelete = ForeignKey.CASCADE,
-                                    onUpdate = ForeignKey.CASCADE),
+//        foreignKeys = @ForeignKey(entity = Course.class,
+//                                    parentColumns = "siteId",
+//                                    childColumns = "siteId",
+//                                    onDelete = ForeignKey.CASCADE,
+//                                    onUpdate = ForeignKey.CASCADE),
         indices = @Index(value = "siteId"))
 public class Grade {
     // autogenerates means the id is incremented each time a new grade is added (our own id, not sakai's)

@@ -29,8 +29,16 @@ public class GradesBuilder extends AbstractBuilder<JsonArray, List<Grade>> {
         for(int i = 0; i < source.size(); i++) {
             JsonObject gradeJson = source.get(i).getAsJsonObject();
 
-            String grade = gradeJson.get("grade").getAsString();
-            double points = gradeJson.get("points").getAsDouble();
+            boolean gradeIsNull = gradeJson.get("grade").isJsonNull();
+            boolean pointsIsNull = gradeJson.get("points").isJsonNull();
+
+            String grade = !gradeIsNull
+                    ? gradeJson.get("grade").getAsString()
+                    : "";
+            double points = !pointsIsNull
+                    ? gradeJson.get("points").getAsDouble()
+                    : 0d;
+
             String itemName = gradeJson.get("itemName").getAsString();
 
             result.add(new Grade(siteId, itemName, grade, points));
