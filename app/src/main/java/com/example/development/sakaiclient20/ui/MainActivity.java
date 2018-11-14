@@ -7,13 +7,17 @@ import android.util.Log;
 import com.example.development.sakaiclient20.R;
 import com.example.development.sakaiclient20.networking.services.AssignmentsService;
 import com.example.development.sakaiclient20.networking.services.CoursesService;
+import com.example.development.sakaiclient20.networking.services.GradesService;
 import com.example.development.sakaiclient20.networking.services.ServiceFactory;
 import com.example.development.sakaiclient20.persistence.SakaiDatabase;
 import com.example.development.sakaiclient20.persistence.access.AssignmentDao;
 import com.example.development.sakaiclient20.persistence.access.AttachmentDao;
+import com.example.development.sakaiclient20.persistence.access.GradeDao;
 import com.example.development.sakaiclient20.persistence.entities.Assignment;
 import com.example.development.sakaiclient20.persistence.entities.Course;
+import com.example.development.sakaiclient20.persistence.entities.Grade;
 import com.example.development.sakaiclient20.repositories.AssignmentRepository;
+import com.example.development.sakaiclient20.repositories.GradesRepository;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -49,9 +53,25 @@ public class MainActivity extends AppCompatActivity {
                 .subscribe(
                         sites -> {
                             for(Course site : sites.getCourses())
-                                Log.d("Sit", site.title);
+                                Log.d("Site", site.title);
                         },
                         Throwable::printStackTrace
+                );
+
+
+        GradesService gradesService = ServiceFactory.getService(this, GradesService.class);
+        GradeDao gradeDao = SakaiDatabase.getInstance(this).getGradeDao();
+        GradesRepository gradesRepository = new GradesRepository(gradeDao, gradesService);
+
+        gradesRepository.getGradesForSite("cbc83f22-e436-4e54-b88a-14e6e4dd621b", true)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        grades -> {
+                            for(Grade g : grades) {
+                                System.out.println("grade item: " + g.itemName);
+                            }
+                        }
                 );
 
     }

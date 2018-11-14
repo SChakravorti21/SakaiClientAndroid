@@ -28,7 +28,7 @@ public class SiteGradesBuilder extends AbstractBuilder<JsonObject, SiteGrades> {
 
         // build the list of grades for this site
         GradesBuilder gradesBuilder = new GradesBuilder(assignments, result.siteId);
-        result.assignments = gradesBuilder.build().getResult();
+        result.gradesList = gradesBuilder.build().getResult();
 
         return this;
     }

@@ -8,6 +8,7 @@ import android.content.Context;
 
 import com.example.development.sakaiclient20.persistence.access.AssignmentDao;
 import com.example.development.sakaiclient20.persistence.access.AttachmentDao;
+import com.example.development.sakaiclient20.persistence.access.GradeDao;
 import com.example.development.sakaiclient20.persistence.entities.Assignment;
 import com.example.development.sakaiclient20.persistence.entities.Attachment;
 import com.example.development.sakaiclient20.persistence.entities.Course;
@@ -24,7 +25,7 @@ import com.example.development.sakaiclient20.persistence.typeconverters.TermConv
             Grade.class,
             Assignment.class,
             Attachment.class
-        }, version = 2)
+        }, version = 2, exportSchema = true)
 @TypeConverters({DateConverter.class, TermConverter.class})
 public abstract class SakaiDatabase extends RoomDatabase {
 
@@ -34,6 +35,7 @@ public abstract class SakaiDatabase extends RoomDatabase {
 
     public abstract AssignmentDao getAssignmentDao();
     public abstract AttachmentDao getAttachmentDao();
+    public abstract GradeDao getGradeDao();
 
     public static SakaiDatabase getInstance(Context context) {
         if(mInstance == null) {

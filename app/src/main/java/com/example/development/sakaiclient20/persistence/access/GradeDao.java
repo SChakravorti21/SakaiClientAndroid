@@ -1,5 +1,6 @@
 package com.example.development.sakaiclient20.persistence.access;
 
+import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Transaction;
 
@@ -9,6 +10,7 @@ import java.util.List;
 
 import io.reactivex.Flowable;
 
+@Dao
 public abstract class GradeDao implements BaseDao<Grade>{
 
     @Transaction
@@ -17,7 +19,7 @@ public abstract class GradeDao implements BaseDao<Grade>{
 
     @Transaction
     @Query("DELETE FROM grades WHERE siteId = :siteId")
-    abstract void deleteGradesForSite(String siteId);
+    public abstract void deleteGradesForSite(String siteId);
 
     @Transaction
     public void insertGradesForSite(String siteId, Grade... grades) {

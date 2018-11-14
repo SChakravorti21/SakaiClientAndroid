@@ -8,7 +8,7 @@ import java.util.List;
 
 public class SiteGrades {
 
-    public List<Grade> assignments = null;
+    public List<Grade> gradesList = null;
     public String siteId;
     public String siteName;
 
