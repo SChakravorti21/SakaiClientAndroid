@@ -13,6 +13,7 @@ import com.example.development.sakaiclient20.persistence.entities.Grade;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -49,69 +50,117 @@ public class GradesRepository {
         }
     }
 
+//    term -> (course -> grade list)
 
-    public Single<List<List<Grade>>> getAllGradesSortedByTerm(boolean refresh) {
+    public Single<TreeMap<Term, HashMap<String, List<Grade>>>> getAllGradesSortedByTerm(boolean refresh) {
 
         if (refresh) {
             return this.gradesService
                     .getAllGrades()
                     .map(GradesResponse::getSiteGrades)
-                    .map(this::sortGradesByTerm);
+                    .map(this::sortSiteGradesByTerm);
         } else {
-//            return this.gradesDao
-//                    .getAllGrades()
-//                    .firstOrError();
-            return null;
+            return this.gradesDao
+                    .getAllGrades()
+                    .firstOrError()
+                    .map(this::sortGradesByTerm);
         }
 
     }
 
 
-    private List<List<Grade>> sortGradesByTerm(List<SiteGrades> siteGradesList) {
+    /**
+     * Sorts the grades by term into a tree map
+     * See sortSiteGradesByTerm
+     *
+     * @param allGrades list of grade objects
+     * @return tree map of term -> hashmap of siteID -> list of grades for that course
+     */
+    private TreeMap<Term, HashMap<String, List<Grade>>> sortGradesByTerm(List<Grade> allGrades) {
 
-        TreeMap<Term, List<SiteGrades>> siteGradesByTerm = new TreeMap<>();
+        TreeMap<Term, HashMap<String, List<Grade>>> gradesSortedByTerm = new TreeMap<>();
 
-        // add all sitegrade objects to the treemap, organized by term
-        for (SiteGrades siteGrades : siteGradesList) {
-            String siteId = siteGrades.siteId;
+        for(Grade grade : allGrades) {
+
+            String siteId = grade.siteId;
             Term term = courseDao.getTermForCourse(siteId);
 
-            if (siteGradesByTerm.containsKey(term)) {
-                siteGradesByTerm.get(term).add(siteGrades);
-            } else {
-                List<SiteGrades> siteGradesForTerm = new ArrayList<>();
-                siteGradesForTerm.add(siteGrades);
-                siteGradesByTerm.put(term, siteGradesForTerm);
+            // if the term exists in the tree map...
+            if(gradesSortedByTerm.containsKey(term)) {
+                HashMap<String, List<Grade>> siteIdToGrades = gradesSortedByTerm.get(term);
+
+                // if the siteId exists in the hashmap, add the grade to the list in there
+                if(siteIdToGrades.containsKey(siteId)) {
+                    siteIdToGrades.get(siteId).add(grade);
+                }
+                // if siteid not in hashmap, make a new list and add the grade there
+                else {
+                    ArrayList<Grade> grades = new ArrayList<>();
+                    grades.add(grade);
+                    siteIdToGrades.put(siteId, grades);
+                }
             }
-        }
+            // if term not exist in tree map, make a new hashmap and add a new list of grades there
+            else {
+                HashMap<String, List<Grade>> siteIdToGrades = new HashMap<>();
+                ArrayList<Grade> grades = new ArrayList<>();
+                grades.add(grade);
 
-        // now iterate through the treemap to get it sorted by term
-        List<List<Grade>> gradesSortedByTerm = new ArrayList<>(siteGradesByTerm.size());
-
-        for(Term term : siteGradesByTerm.descendingKeySet()) {
-
-            List<Grade> grades = new ArrayList<>();
-            for(SiteGrades siteGrades : siteGradesByTerm.get(term)) {
-                grades.addAll(siteGrades.gradesList);
+                siteIdToGrades.put(siteId, grades);
+                gradesSortedByTerm.put(term, siteIdToGrades);
             }
 
-            gradesSortedByTerm.add(grades);
-
-        }
-
-
-        for(List<Grade> gradesList : gradesSortedByTerm) {
-            persistGrades(gradesList);
         }
 
         return gradesSortedByTerm;
     }
 
 
+    /**
+     * Sorts the grades by term
+     *
+     * @param siteGradesList site grades list, unordered
+     * @return Treemap which maps from term to a hashmap
+     *          The hashmap maps from siteId to a list of grades
+     *          The return value is sorted by term
+     *          tree map of term -> hashmap of siteID -> list of grades for that course
+     */
+    private TreeMap<Term, HashMap<String, List<Grade>>> sortSiteGradesByTerm(List<SiteGrades> siteGradesList) {
+
+        // term maps to hashmap
+        // then the site id of the course maps to its list of grades
+        TreeMap<Term, HashMap<String, List<Grade>>> siteGradesByTerm = new TreeMap<>();
+
+        // add all sitegrade objects to the treemap, organized by term
+        for (SiteGrades siteGrades : siteGradesList) {
+            String siteId = siteGrades.siteId;
+            Term term = courseDao.getTermForCourse(siteId);
+
+            // persist grades for this site
+            persistGrades(siteGrades.gradesList);
+
+            if (siteGradesByTerm.containsKey(term)) {
+                // for that term, map the siteID to its grade list
+                siteGradesByTerm.get(term).put(siteId, siteGrades.gradesList);
+
+            } else {
+                // map from siteID to grades list
+                HashMap<String, List<Grade>> siteIdToGrades = new HashMap<>();
+                siteIdToGrades.put(siteId, siteGrades.gradesList);
+
+                // map from the term to the siteID
+                siteGradesByTerm.put(term, siteIdToGrades);
+            }
+
+        }
+
+        return siteGradesByTerm;
+    }
+
+
     private List<Grade> persistGrades(List<Grade> grades) {
 
-        // this is valid, since we know all the grades coming in are from
-        // the same site
+        // all of the grades in the given list are of the same course (Same siteId)
         String siteId = grades.get(0).siteId;
         // async task to insert the grades
         InsertGradesTask task = new InsertGradesTask(this.gradesDao, siteId);

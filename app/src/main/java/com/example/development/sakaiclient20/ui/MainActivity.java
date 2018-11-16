@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.example.development.sakaiclient20.R;
+import com.example.development.sakaiclient20.models.Term;
 import com.example.development.sakaiclient20.networking.services.AssignmentsService;
 import com.example.development.sakaiclient20.networking.services.CoursesService;
 import com.example.development.sakaiclient20.networking.services.GradesService;
@@ -62,15 +63,31 @@ public class MainActivity extends AppCompatActivity {
 
         GradesService gradesService = ServiceFactory.getService(this, GradesService.class);
         GradeDao gradeDao = SakaiDatabase.getInstance(this).getGradeDao();
-        GradesRepository gradesRepository = new GradesRepository(gradeDao, null, gradesService);
+        CourseDao courseDao = SakaiDatabase.getInstance(this).getCourseDao();
+        GradesRepository gradesRepository = new GradesRepository(gradeDao, courseDao, gradesService);
 
-        gradesRepository.getGradesForSite("cbc83f22-e436-4e54-b88a-14e6e4dd621b", true)
+//        gradesRepository.getGradesForSite("cbc83f22-e436-4e54-b88a-14e6e4dd621b", true)
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(
+//                        grades -> {
+//                            for(Grade g : grades) {
+//                                System.out.println("grade item: " + g.itemName);
+//                            }
+//                        }
+//                );
+
+        gradesRepository.getAllGradesSortedByTerm(true)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        grades -> {
-                            for(Grade g : grades) {
-                                System.out.println("grade item: " + g.itemName);
+                        treemap -> {
+                            for(Term term : treemap.descendingKeySet()) {
+                                for(String siteId : treemap.get(term).keySet()) {
+                                    for(Grade g : treemap.get(term).get(siteId)) {
+                                        System.out.println(g.itemName);
+                                    }
+                                }
                             }
                         }
                 );
