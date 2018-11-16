@@ -4,6 +4,7 @@ package com.example.development.sakaiclient20.models.sakai.announcements;
  * Created by atharva on 7/7/18
  */
 
+import com.example.development.sakaiclient20.persistence.entities.Announcement;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
