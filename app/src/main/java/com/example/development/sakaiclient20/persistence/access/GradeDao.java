@@ -13,11 +13,12 @@ import io.reactivex.Flowable;
 @Dao
 public abstract class GradeDao implements BaseDao<Grade>{
 
-    @Transaction
+    @Query("SELECT * FROM grades")
+    public abstract Flowable<List<Grade>> getAllGrades();
+
     @Query("SELECT * FROM grades WHERE siteId = :siteId")
     public abstract Flowable<List<Grade>> getGradesForSite(String siteId);
 
-    @Transaction
     @Query("DELETE FROM grades WHERE siteId = :siteId")
     public abstract void deleteGradesForSite(String siteId);
 

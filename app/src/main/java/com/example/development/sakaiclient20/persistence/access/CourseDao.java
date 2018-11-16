@@ -18,9 +18,9 @@ import io.reactivex.Flowable;
 public abstract class CourseDao implements BaseDao<Course> {
 
     @Transaction
-    @Query("SELECT * FROM Course")
+    @Query("SELECT * FROM courses")
     public abstract Flowable<List<CourseWithAllData>> getAllCourses();
 
-    @Query("SELECT term FROM Course where siteId = :siteId")
+    @Query("SELECT term FROM courses where siteId = :siteId")
     public abstract Term getTermForCourse(String siteId);
 }

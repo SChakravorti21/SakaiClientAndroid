@@ -12,6 +12,7 @@ import com.example.development.sakaiclient20.networking.services.ServiceFactory;
 import com.example.development.sakaiclient20.persistence.SakaiDatabase;
 import com.example.development.sakaiclient20.persistence.access.AssignmentDao;
 import com.example.development.sakaiclient20.persistence.access.AttachmentDao;
+import com.example.development.sakaiclient20.persistence.access.CourseDao;
 import com.example.development.sakaiclient20.persistence.access.GradeDao;
 import com.example.development.sakaiclient20.persistence.entities.Assignment;
 import com.example.development.sakaiclient20.persistence.entities.Course;
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
         GradesService gradesService = ServiceFactory.getService(this, GradesService.class);
         GradeDao gradeDao = SakaiDatabase.getInstance(this).getGradeDao();
-        GradesRepository gradesRepository = new GradesRepository(gradeDao, gradesService);
+        GradesRepository gradesRepository = new GradesRepository(gradeDao, null, gradesService);
 
         gradesRepository.getGradesForSite("cbc83f22-e436-4e54-b88a-14e6e4dd621b", true)
                 .subscribeOn(Schedulers.io())
