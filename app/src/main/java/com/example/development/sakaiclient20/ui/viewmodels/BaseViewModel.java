@@ -1,5 +1,6 @@
 package com.example.development.sakaiclient20.ui.viewmodels;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 
@@ -14,7 +15,7 @@ import io.reactivex.schedulers.Schedulers;
 
 abstract class BaseViewModel extends ViewModel {
     CourseRepository courseRepository;
-    MutableLiveData<List<List<Course>>> coursesByTerm;
+    private MutableLiveData<List<List<Course>>> coursesByTerm;
     CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     BaseViewModel(CourseRepository repo) {
@@ -22,6 +23,14 @@ abstract class BaseViewModel extends ViewModel {
     }
 
     abstract void refreshData();
+
+    public LiveData<List<List<Course>>> getCoursesByTerm() {
+        if(this.coursesByTerm == null) {
+            this.coursesByTerm = new MutableLiveData<>();
+            refreshData();
+        }
+        return this.coursesByTerm;
+    }
 
     void loadCourses() {
         this.compositeDisposable.add(

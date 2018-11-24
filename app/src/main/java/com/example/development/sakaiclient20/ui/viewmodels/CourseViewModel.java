@@ -17,14 +17,6 @@ public class CourseViewModel extends BaseViewModel {
         super(repo);
     }
 
-    public LiveData<List<List<Course>>> getCoursesByTerm() {
-        if(this.coursesByTerm == null) {
-            this.coursesByTerm = new MutableLiveData<>();
-            refreshData();
-        }
-        return this.coursesByTerm;
-    }
-
     @Override
     public void refreshData() {
       this.compositeDisposable.add(
