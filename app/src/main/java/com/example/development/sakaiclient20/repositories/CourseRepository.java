@@ -19,6 +19,7 @@ import com.example.development.sakaiclient20.persistence.entities.SitePage;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
 import java.util.TreeMap;
 
 import io.reactivex.Single;
@@ -43,6 +44,7 @@ public class CourseRepository {
         if(refresh) {
             return coursesService.getAllSites()
                     .map(CoursesResponse::getCourses)
+                    .map(this::persistCourses)
                     .map(this::sortCoursesByTerm);
         } else {
             return courseDao.getAllCourses()
@@ -50,7 +52,6 @@ public class CourseRepository {
                     .flatMapIterable(courses -> courses)
                     .map(this::flattenCompositeToEntity)
                     .toList()
-                    .map(this::persistCourses)
                     .map(this::sortCoursesByTerm);
         }
     }
@@ -66,7 +67,7 @@ public class CourseRepository {
         entity.sitePages = courseWithAllData.sitePages;
         entity.grades = courseWithAllData.grades;
         entity.assignments =
-                AssignmentRepository.flattenCompositesToEntities(courseWithAllData.assignments);
+            AssignmentRepository.flattenCompositesToEntities(courseWithAllData.assignments);
         return entity;
     }
 

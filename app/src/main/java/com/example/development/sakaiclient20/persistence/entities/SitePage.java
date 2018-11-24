@@ -4,6 +4,7 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
 
 @Entity(tableName = "site_pages",
         foreignKeys = {
@@ -19,11 +20,14 @@ import android.arch.persistence.room.PrimaryKey;
 public class SitePage {
 
     @PrimaryKey
+    @NonNull
+    public String sitePageId;
+    public String siteId;
     public String url;
     public String title;
-    public String siteId;
 
-    public SitePage(String siteId, String title, String url) {
+    public SitePage(String sitePageId, String siteId, String title, String url) {
+        this.sitePageId = sitePageId;
         this.siteId = siteId;
         this.title = title;
         this.url = url;
