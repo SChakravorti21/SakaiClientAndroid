@@ -1,6 +1,11 @@
 package com.example.development.sakaiclient20.ui;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -17,6 +22,7 @@ import com.example.development.sakaiclient20.persistence.entities.Assignment;
 import com.example.development.sakaiclient20.persistence.entities.Course;
 import com.example.development.sakaiclient20.repositories.AssignmentRepository;
 import com.example.development.sakaiclient20.repositories.CourseRepository;
+import com.example.development.sakaiclient20.ui.viewmodels.CourseViewModel;
 
 import java.util.List;
 
@@ -25,47 +31,45 @@ import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
 
+    LiveData beingObserved;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        AssignmentsService assignmentsService = ServiceFactory.getService(this, AssignmentsService.class);
-        AssignmentDao assignmentDao = SakaiDatabase.getInstance(this).getAssignmentDao();
-        AttachmentDao attachmentDao = SakaiDatabase.getInstance(this).getAttachmentDao();
-        AssignmentRepository repo = new AssignmentRepository(assignmentDao, attachmentDao, assignmentsService);
-
-//        repo.getAllAssignments(true)
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(
-//                        assignments -> {
-//                            for(Assignment assignment : assignments) {
-//                                Log.d("Assignment", assignment.title);
-//                            }
-//                        },
-//                        error -> error.printStackTrace()
-//                );
-
         CourseDao courseDao = SakaiDatabase.getInstance(this).getCourseDao();
         SitePageDao sitePageDao = SakaiDatabase.getInstance(this).getSitePageDao();
         CoursesService coursesService = ServiceFactory.getService(this, CoursesService.class);
         CourseRepository courseRepository = new CourseRepository(courseDao, sitePageDao, coursesService);
-        courseRepository.getCoursesSortedByTerm(false)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        coursesByTerm -> {
-                            for(List<Course> courses : coursesByTerm) {
-                                for(Course course : courses) {
-                                    Log.d("Courses", course.title);
-                                }
-                            }
-                        },
-                        err -> {
-                            err.printStackTrace();
-                        }
-                );
+        CourseViewModel courseViewModel = ViewModelProviders.of(this, new ViewModelProvider.Factory() {
+                @NonNull
+                @Override
+                public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+                    return (T) new CourseViewModel(courseRepository);
+                }
+            }).get(CourseViewModel.class);
 
+
+        courseViewModel.getCoursesByTerm()
+            .observe(this, courses -> {
+                for(List<Course> term : courses) {
+                    for(Course course : term) {
+                        Log.d("Courses", course.title);
+                    }
+                }
+            });
+        beingObserved = courseViewModel.getCoursesByTerm();
+
+        findViewById(R.id.update_courses).setOnClickListener(view -> {
+            courseViewModel.refreshData();
+        });
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        beingObserved.removeObservers(this);
     }
 }
