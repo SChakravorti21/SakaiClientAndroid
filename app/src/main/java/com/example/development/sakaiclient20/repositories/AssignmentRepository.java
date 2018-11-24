@@ -103,8 +103,7 @@ public class AssignmentRepository {
 
             assignmentDao.get().insert(assignments);
             for(Assignment assignment : assignments)
-                for (Attachment attachment : assignment.attachments)
-                    attachmentDao.get().insert(attachment);
+                attachmentDao.get().insert(assignment.attachments);
 
             return null;
         }

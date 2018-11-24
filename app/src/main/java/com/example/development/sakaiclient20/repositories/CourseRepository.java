@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Observable;
 import java.util.TreeMap;
 
+import io.reactivex.Completable;
 import io.reactivex.Single;
 
 public class CourseRepository {
@@ -40,20 +41,20 @@ public class CourseRepository {
         this.coursesService = coursesService;
     }
 
-    public Single<List<List<Course>>> getCoursesSortedByTerm(boolean refresh) {
-        if(refresh) {
-            return coursesService.getAllSites()
-                    .map(CoursesResponse::getCourses)
-                    .map(this::persistCourses)
-                    .map(this::sortCoursesByTerm);
-        } else {
-            return courseDao.getAllCourses()
-                    .toObservable()
-                    .flatMapIterable(courses -> courses)
-                    .map(this::flattenCompositeToEntity)
-                    .toList()
-                    .map(this::sortCoursesByTerm);
-        }
+    public Single<List<List<Course>>> getCoursesSortedByTerm() {
+        return courseDao.getAllCourses()
+                .toObservable()
+                .flatMapIterable(courses -> courses)
+                .map(this::flattenCompositeToEntity)
+                .toList()
+                .map(this::sortCoursesByTerm);
+    }
+
+    public Completable refreshAllCourses() {
+        return coursesService.getAllSites()
+                .map(CoursesResponse::getCourses)
+                .map(this::persistCourses)
+                .toCompletable();
     }
 
     private List<Course> persistCourses(List<Course> courses) {
@@ -112,8 +113,7 @@ public class CourseRepository {
 
             courseDao.get().insert(courses);
             for(Course course : courses)
-                for(SitePage sitePage : course.sitePages)
-                    sitePageDao.get().insert(sitePage);
+                sitePageDao.get().insert(course.sitePages);
 
             return null;
         }
