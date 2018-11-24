@@ -1,14 +1,20 @@
 package com.example.development.sakaiclient20.repositories;
 
+import android.os.AsyncTask;
+
 import com.example.development.sakaiclient20.models.Term;
 import com.example.development.sakaiclient20.models.sakai.courses.CoursesResponse;
 import com.example.development.sakaiclient20.networking.services.CoursesService;
+import com.example.development.sakaiclient20.persistence.access.AssignmentDao;
+import com.example.development.sakaiclient20.persistence.access.AttachmentDao;
 import com.example.development.sakaiclient20.persistence.access.CourseDao;
 import com.example.development.sakaiclient20.persistence.composites.AssignmentWithAttachments;
 import com.example.development.sakaiclient20.persistence.composites.CourseWithAllData;
 import com.example.development.sakaiclient20.persistence.entities.Assignment;
+import com.example.development.sakaiclient20.persistence.entities.Attachment;
 import com.example.development.sakaiclient20.persistence.entities.Course;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
@@ -36,15 +42,21 @@ public class CourseRepository {
                     .flatMapIterable(courses -> courses)
                     .map(this::flattenCompositeToEntity)
                     .toList()
+                    .map(this::persistCourses)
                     .map(this::sortCoursesByTerm);
         }
+    }
+
+    private List<Course> persistCourses(List<Course> courses) {
+        InsertCoursesTask task = new InsertCoursesTask(courseDao);
+        task.execute(courses.toArray(new Course[courses.size()]));
+        return courses;
     }
 
     private Course flattenCompositeToEntity(CourseWithAllData courseWithAllData) {
         Course entity = courseWithAllData.course;
         entity.sitePages = courseWithAllData.sitePages;
         entity.grades = courseWithAllData.grades;
-
         entity.assignments =
                 AssignmentRepository.flattenCompositesToEntities(courseWithAllData.assignments);
         return entity;
@@ -74,4 +86,21 @@ public class CourseRepository {
         return coursesSortedByTerm;
     }
 
+    private static class InsertCoursesTask extends AsyncTask<Course, Void, Void> {
+
+        private WeakReference<CourseDao> courseDao;
+
+        private InsertCoursesTask(CourseDao courseDao) {
+            this.courseDao = new WeakReference<>(courseDao);
+        }
+
+        @Override
+        protected Void doInBackground(Course... courses) {
+            if(courseDao == null || courseDao.get() == null)
+                return null;
+
+            courseDao.get().insert(courses);
+            return null;
+        }
+    }
 }
