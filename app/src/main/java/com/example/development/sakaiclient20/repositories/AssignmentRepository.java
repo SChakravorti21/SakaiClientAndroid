@@ -102,11 +102,9 @@ public class AssignmentRepository {
                 return null;
 
             assignmentDao.get().insert(assignments);
-            for(Assignment assignment : assignments) {
-                attachmentDao.get().deleteAttachmentsForAssignment(assignment.assignmentId);
+            for(Assignment assignment : assignments)
                 for (Attachment attachment : assignment.attachments)
                     attachmentDao.get().insert(attachment);
-            }
 
             return null;
         }

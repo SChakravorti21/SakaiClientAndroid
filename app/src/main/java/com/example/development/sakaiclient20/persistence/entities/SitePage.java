@@ -18,8 +18,7 @@ import android.arch.persistence.room.PrimaryKey;
         })
 public class SitePage {
 
-    @PrimaryKey(autoGenerate = true)
-    public int sitePageId;
+    @PrimaryKey
     public String url;
     public String title;
     public String siteId;

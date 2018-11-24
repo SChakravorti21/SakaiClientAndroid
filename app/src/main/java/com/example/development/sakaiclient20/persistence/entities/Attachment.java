@@ -21,12 +21,8 @@ import android.arch.persistence.room.PrimaryKey;
             @Index(value = "assignmentId")
         })
 public class Attachment {
-    @PrimaryKey(autoGenerate = true)
-    public int id;
-
-    public String name;
+    @PrimaryKey
     public String url;
-
+    public String name;
     public String assignmentId;
-
 }

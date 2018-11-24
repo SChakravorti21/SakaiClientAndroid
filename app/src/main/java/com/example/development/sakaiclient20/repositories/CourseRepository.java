@@ -8,11 +8,13 @@ import com.example.development.sakaiclient20.networking.services.CoursesService;
 import com.example.development.sakaiclient20.persistence.access.AssignmentDao;
 import com.example.development.sakaiclient20.persistence.access.AttachmentDao;
 import com.example.development.sakaiclient20.persistence.access.CourseDao;
+import com.example.development.sakaiclient20.persistence.access.SitePageDao;
 import com.example.development.sakaiclient20.persistence.composites.AssignmentWithAttachments;
 import com.example.development.sakaiclient20.persistence.composites.CourseWithAllData;
 import com.example.development.sakaiclient20.persistence.entities.Assignment;
 import com.example.development.sakaiclient20.persistence.entities.Attachment;
 import com.example.development.sakaiclient20.persistence.entities.Course;
+import com.example.development.sakaiclient20.persistence.entities.SitePage;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -24,10 +26,16 @@ import io.reactivex.Single;
 public class CourseRepository {
 
     private CourseDao courseDao;
+    private SitePageDao sitePageDao;
     private CoursesService coursesService;
 
-    public CourseRepository(CourseDao courseDao, CoursesService coursesService) {
+    public CourseRepository(
+            CourseDao courseDao,
+            SitePageDao sitePageDao,
+            CoursesService coursesService
+    ) {
         this.courseDao = courseDao;
+        this.sitePageDao = sitePageDao;
         this.coursesService = coursesService;
     }
 
@@ -48,7 +56,7 @@ public class CourseRepository {
     }
 
     private List<Course> persistCourses(List<Course> courses) {
-        InsertCoursesTask task = new InsertCoursesTask(courseDao);
+        InsertCoursesTask task = new InsertCoursesTask(courseDao, sitePageDao);
         task.execute(courses.toArray(new Course[courses.size()]));
         return courses;
     }
@@ -89,9 +97,11 @@ public class CourseRepository {
     private static class InsertCoursesTask extends AsyncTask<Course, Void, Void> {
 
         private WeakReference<CourseDao> courseDao;
+        private WeakReference<SitePageDao> sitePageDao;
 
-        private InsertCoursesTask(CourseDao courseDao) {
+        private InsertCoursesTask(CourseDao courseDao, SitePageDao sitePageDao) {
             this.courseDao = new WeakReference<>(courseDao);
+            this.sitePageDao = new WeakReference<>(sitePageDao);
         }
 
         @Override
@@ -100,6 +110,10 @@ public class CourseRepository {
                 return null;
 
             courseDao.get().insert(courses);
+            for(Course course : courses)
+                for(SitePage sitePage : course.sitePages)
+                    sitePageDao.get().insert(sitePage);
+
             return null;
         }
     }
