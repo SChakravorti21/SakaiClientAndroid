@@ -45,14 +45,8 @@ public class CourseRepository {
         entity.sitePages = courseWithAllData.sitePages;
         entity.grades = courseWithAllData.grades;
 
-        List<Assignment> assignmentEntities = new ArrayList<>();
-        for(AssignmentWithAttachments composite : courseWithAllData.assignments) {
-            Assignment assignment = composite.assignment;
-            assignment.attachments = composite.attachments;
-            assignmentEntities.add(assignment);
-        }
-
-        entity.assignments = assignmentEntities;
+        entity.assignments =
+                AssignmentRepository.flattenCompositesToEntities(courseWithAllData.assignments);
         return entity;
     }
 
