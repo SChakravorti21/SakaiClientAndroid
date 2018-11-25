@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         CourseDao courseDao = SakaiDatabase.getInstance(this).getCourseDao();
         SitePageDao sitePageDao = SakaiDatabase.getInstance(this).getSitePageDao();
         CoursesService coursesService = ServiceFactory.getService(this, CoursesService.class);
-        CourseRepository courseRepository = new CourseRepository(courseDao, sitePageDao, coursesService);
+        final CourseRepository courseRepository = new CourseRepository(courseDao, sitePageDao, coursesService);
         CourseViewModel courseViewModel = ViewModelProviders.of(this, new ViewModelProvider.Factory() {
                 @NonNull
                 @Override
