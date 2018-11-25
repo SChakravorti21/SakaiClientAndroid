@@ -26,7 +26,9 @@ public class CourseBuilder extends AbstractBuilder<JsonObject, Course> {
         result.term = parseTerm();
         result.subjectCode = parseSubjectCode();
         result.title = source.get("title").getAsString();
-        result.description = source.get("description").getAsString();
+
+        JsonElement desc = source.get("description");
+        result.description = (desc.isJsonNull()) ? "" : desc.getAsString();
         result.siteOwner = source.getAsJsonObject("siteOwner")
                 .get("userDisplayName")
                 .getAsString();
