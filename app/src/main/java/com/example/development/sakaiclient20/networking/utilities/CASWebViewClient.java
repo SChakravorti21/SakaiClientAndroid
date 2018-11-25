@@ -1,4 +1,4 @@
-package com.example.development.sakaiclient20.utils.requests;
+package com.example.development.sakaiclient20.networking.utilities;
 
 import android.util.Log;
 import android.webkit.CookieManager;

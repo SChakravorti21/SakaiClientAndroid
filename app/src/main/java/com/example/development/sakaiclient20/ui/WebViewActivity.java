@@ -8,7 +8,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.example.development.sakaiclient20.R;
-import com.example.development.sakaiclient20.utils.requests.CASWebViewClient;
+import com.example.development.sakaiclient20.networking.utilities.CASWebViewClient;
 
 public class WebViewActivity extends AppCompatActivity {
 
