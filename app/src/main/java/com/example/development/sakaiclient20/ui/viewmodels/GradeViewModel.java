@@ -18,7 +18,12 @@ public class GradeViewModel extends BaseViewModel {
     private GradesRepository gradesRepository;
     private HashMap<String, MutableLiveData<List<Grade>>> siteIdToGrades;
 
-
+    /**
+     * Grades view model constructor
+     *
+     * @param courseRepository course repository dependency needed for superclass
+     * @param gradesRepository grades repository dependency needed to refresh and get grades
+     */
     public GradeViewModel(CourseRepository courseRepository, GradesRepository gradesRepository) {
         super(courseRepository);
         this.gradesRepository = gradesRepository;
@@ -27,7 +32,6 @@ public class GradeViewModel extends BaseViewModel {
 
     /**
      * Called by UI controller to get grades for a site
-     *
      * if hashmap already has the grades, return that, otherwise
      * refresh the grades and put into hashmap
      *
@@ -36,7 +40,7 @@ public class GradeViewModel extends BaseViewModel {
      */
     public LiveData<List<Grade>> getGradesForSite(String siteId) {
 
-        if(!this.siteIdToGrades.containsKey(siteId)) {
+        if (!this.siteIdToGrades.containsKey(siteId)) {
             this.siteIdToGrades.put(siteId, new MutableLiveData<>());
             refreshSiteGrades(siteId);
         }
@@ -48,17 +52,6 @@ public class GradeViewModel extends BaseViewModel {
         refreshAllGrades();
     }
 
-    public void refreshAllGrades() {
-        this.compositeDisposable.add(
-                this.gradesRepository.refreshAllGrades()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        this::loadCourses,
-                        Throwable::printStackTrace
-                )
-        );
-    }
 
     /**
      * Loads grades for a site from the grades repository into
@@ -69,30 +62,52 @@ public class GradeViewModel extends BaseViewModel {
     public void loadSiteGrades(String siteId) {
         this.compositeDisposable.add(
                 this.gradesRepository.getGradesForSite(siteId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        this.siteIdToGrades.get(siteId)::setValue,
-                        Throwable::printStackTrace
-                )
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                this.siteIdToGrades.get(siteId)::setValue,
+                                Throwable::printStackTrace
+                        )
+        );
+    }
+
+
+    /**
+     * Refreshes all grades by telling the grades repository to make
+     * a network request and then persist them in the database
+     *
+     * Then it calls load courses (now that the new grades are in the database)
+     */
+    public void refreshAllGrades() {
+        this.compositeDisposable.add(
+                this.gradesRepository.refreshAllGrades()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                this::loadCourses,
+                                Throwable::printStackTrace
+                        )
         );
     }
 
     /**
      * Refreshes the grades for a given site
      *
+     * Loads the site grades given that the grades for that site are updated in the database
+     *
      * @param siteId
      */
     public void refreshSiteGrades(String siteId) {
         this.compositeDisposable.add(
                 this.gradesRepository.refreshSiteGrades(siteId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        () -> loadSiteGrades(siteId),
-                        Throwable::printStackTrace
-                )
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                () -> loadSiteGrades(siteId),
+                                Throwable::printStackTrace
+                        )
         );
     }
+
 
 }

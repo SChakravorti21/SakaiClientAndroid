@@ -83,12 +83,12 @@ public class MainActivity extends AppCompatActivity {
             }
         }).get(GradeViewModel.class);
 
-//        gradeViewModel.getGradesForSite("19433b30-2511-40f3-8f74-ff60940decd4")
-//                .observe(this, grades -> {
-//                    for (Grade g : grades) {
-//                        Log.d("GRADES", g.itemName);
-//                    }
-//                });
+        gradeViewModel.getGradesForSite("19433b30-2511-40f3-8f74-ff60940decd4")
+                .observe(this, grades -> {
+                    for (Grade g : grades) {
+                        Log.d("SITE GRADE COMP ARCH", g.itemName);
+                    }
+                });
 
         gradeViewModel.refreshAllGrades();
         gradeViewModel.getCoursesByTerm()
@@ -101,7 +101,9 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
-
+        findViewById(R.id.update_all_grades).setOnClickListener(view -> {
+            gradeViewModel.refreshAllGrades();
+        });
     }
 
     @Override
