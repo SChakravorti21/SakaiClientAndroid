@@ -2,8 +2,11 @@ package com.example.development.sakaiclient20.networking.deserializers.builders.
 
 import com.example.development.sakaiclient20.models.sakai.gradebook.SiteGrades;
 import com.example.development.sakaiclient20.networking.deserializers.builders.AbstractBuilder;
+import com.example.development.sakaiclient20.persistence.entities.Grade;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+
+import java.util.List;
 
 /**
  * We need a builder for site grades.
@@ -20,15 +23,16 @@ public class SiteGradesBuilder extends AbstractBuilder<JsonObject, SiteGrades> {
 
     public SiteGradesBuilder build() {
 
-        result = new SiteGrades();
-        result.siteId = source.get("siteId").getAsString();
-        result.siteName = source.get("siteName").getAsString();
+        String siteId = source.get("siteId").getAsString();
+        String siteName = source.get("siteName").getAsString();
 
         JsonArray assignments = source.get("assignments").getAsJsonArray();
 
         // build the list of grades for this site
         GradesBuilder gradesBuilder = new GradesBuilder(assignments, result.siteId);
-        result.gradesList = gradesBuilder.build().getResult();
+        List<Grade> gradeList = gradesBuilder.build().getResult();
+
+        result = new SiteGrades(siteId, siteName, gradeList);
 
         return this;
     }

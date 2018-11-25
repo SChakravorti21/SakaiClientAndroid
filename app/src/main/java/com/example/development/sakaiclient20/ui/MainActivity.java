@@ -51,6 +51,10 @@ public class MainActivity extends AppCompatActivity {
             }).get(CourseViewModel.class);
 
 
+        CourseViewModel model = ViewModelProviders.of(this).get(CourseViewModel.class);
+
+
+
         courseViewModel.getCoursesByTerm()
             .observe(this, courses -> {
                 for(List<Course> term : courses) {
