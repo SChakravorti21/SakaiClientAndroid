@@ -29,7 +29,7 @@ public class SiteGradesBuilder extends AbstractBuilder<JsonObject, SiteGrades> {
         JsonArray assignments = source.get("assignments").getAsJsonArray();
 
         // build the list of grades for this site
-        GradesBuilder gradesBuilder = new GradesBuilder(assignments, result.siteId);
+        GradesBuilder gradesBuilder = new GradesBuilder(assignments, siteId);
         List<Grade> gradeList = gradesBuilder.build().getResult();
 
         result = new SiteGrades(siteId, siteName, gradeList);

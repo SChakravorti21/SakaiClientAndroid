@@ -18,9 +18,11 @@ public class GradeViewModel extends BaseViewModel {
     private GradesRepository gradesRepository;
     private HashMap<String, MutableLiveData<List<Grade>>> siteIdToGrades;
 
+
     public GradeViewModel(CourseRepository courseRepository, GradesRepository gradesRepository) {
         super(courseRepository);
         this.gradesRepository = gradesRepository;
+        this.siteIdToGrades = new HashMap<>();
     }
 
     /**
@@ -41,9 +43,12 @@ public class GradeViewModel extends BaseViewModel {
         return this.siteIdToGrades.get(siteId);
     }
 
-
     @Override
-    void refreshData() {
+    public void refreshData() {
+        refreshAllGrades();
+    }
+
+    public void refreshAllGrades() {
         this.compositeDisposable.add(
                 this.gradesRepository.refreshAllGrades()
                 .subscribeOn(Schedulers.io())
