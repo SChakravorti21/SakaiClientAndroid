@@ -1,9 +1,6 @@
 package com.example.development.sakaiclient20.repositories;
 
 import android.os.AsyncTask;
-import android.provider.MediaStore;
-
-import com.example.development.sakaiclient20.models.Term;
 import com.example.development.sakaiclient20.models.sakai.gradebook.GradesResponse;
 import com.example.development.sakaiclient20.models.sakai.gradebook.SiteGrades;
 import com.example.development.sakaiclient20.networking.services.GradesService;
@@ -11,10 +8,7 @@ import com.example.development.sakaiclient20.persistence.access.GradeDao;
 import com.example.development.sakaiclient20.persistence.entities.Grade;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.TreeMap;
 
 import io.reactivex.Completable;
 import io.reactivex.Single;
@@ -65,7 +59,7 @@ public class GradesRepository {
         String siteId = grades.get(0).siteId;
         // async task to insert the grades
         InsertGradesTask task = new InsertGradesTask(this.gradesDao, siteId);
-        task.execute(grades.toArray(new Grade[grades.size()]));
+        task.execute(grades.toArray(new Grade[0]));
 
         return grades;
     }
@@ -76,7 +70,7 @@ public class GradesRepository {
         private WeakReference<GradeDao> gradeDao;
         private String siteId;
 
-        public InsertGradesTask(GradeDao dao, String siteId) {
+        InsertGradesTask(GradeDao dao, String siteId) {
             this.gradeDao = new WeakReference<>(dao);
             this.siteId = siteId;
         }
