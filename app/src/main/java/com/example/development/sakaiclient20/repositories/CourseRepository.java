@@ -41,6 +41,11 @@ public class CourseRepository {
         this.coursesService = coursesService;
     }
 
+    public Single<Course> getCourse(String siteId) {
+        return courseDao.getCourse(siteId)
+                .map(this::flattenCompositeToEntity);
+    }
+
     public Single<List<List<Course>>> getCoursesSortedByTerm() {
         return courseDao.getAllCourses()
                 .toObservable()

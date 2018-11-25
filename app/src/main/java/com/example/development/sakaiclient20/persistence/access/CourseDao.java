@@ -23,6 +23,9 @@ public abstract class CourseDao implements BaseDao<Course> {
     @Query("SELECT * FROM courses")
     public abstract Single<List<CourseWithAllData>> getAllCourses();
 
-    @Query("SELECT term FROM courses where siteId = :siteId")
+    @Query("SELECT * FROM courses WHERE siteId = :siteId LIMIT 1")
+    public abstract Single<CourseWithAllData> getCourse(String siteId);
+
+    @Query("SELECT term FROM courses WHERE siteId = :siteId")
     public abstract Term getTermForCourse(String siteId);
 }

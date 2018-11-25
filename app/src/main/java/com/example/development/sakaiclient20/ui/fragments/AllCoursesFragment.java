@@ -2,7 +2,6 @@ package com.example.development.sakaiclient20.ui.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,21 +24,23 @@ import java.util.List;
 
 public class AllCoursesFragment extends BaseFragment {
 
+    public interface OnCourseSelectedListener {
+        void onCourseSelected(String siteId);
+    }
+
+    List<List<Course>> courses;
     private AndroidTreeView treeView;
     private SwipeRefreshLayout swipeRefreshLayout;
-    List<List<Course>> courses;
+    private OnCourseSelectedListener courseSelectedListener;
 
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Bundle bun = getArguments();
-        try {
-            this.courses = (List<List<Course>>) bun.getSerializable(MainActivity.ALL_COURSES_TAG);
-        } catch (ClassCastException exception) {
-            // Unable to create the tree, create a dummy tree
-            //TODO: Needs better error handling
-            this.courses = new ArrayList<>();
-        }
+    public static AllCoursesFragment newInstance(
+            List<List<Course>> courses,
+            OnCourseSelectedListener courseSelectedListener
+    ) {
+        AllCoursesFragment fragment = new AllCoursesFragment();
+        fragment.courses = courses;
+        fragment.courseSelectedListener = courseSelectedListener;
+        return fragment;
     }
 
 
@@ -139,21 +140,9 @@ public class AllCoursesFragment extends BaseFragment {
                         if (value instanceof CourseHeaderViewHolder.CourseHeaderItem) {
                             String courseSiteId = ((CourseHeaderViewHolder.CourseHeaderItem) value).siteId;
 
-                            Bundle bun = new Bundle();
-                            bun.putString(getString(R.string.site_id), courseSiteId);
-                            AllCoursesFragment fragment = new AllCoursesFragment();
-                            fragment.setArguments(bun);
-
-
                             //here we should save tree state
                             SharedPrefsUtil.saveTreeState(mContext, treeView, SharedPrefsUtil.ALL_COURSES_TREE_TYPE);
-
-//                            FragmentActivity activity = getActivity();
-//                            if (activity instanceof MainActivity) {
-//                                ((MainActivity) activity).loadCourseFragment(courseSiteId);
-//                            }
-                            //if its not, dont do anything
-
+                            courseSelectedListener.onCourseSelected(courseSiteId);
                         }
                     }
                 });
