@@ -2,6 +2,7 @@ package com.example.development.sakaiclient20.ui.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +12,7 @@ import android.widget.ListView;
 import com.example.development.sakaiclient20.R;
 import com.example.development.sakaiclient20.persistence.entities.Course;
 
-public class CourseSitesFragment extends BaseFragment {
+public class CourseSitesFragment extends Fragment {
 
     private ListView sitePagesListView;
     private Course courseToView;

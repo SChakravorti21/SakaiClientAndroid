@@ -1,7 +1,9 @@
 package com.example.development.sakaiclient20.ui.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +13,6 @@ import com.example.development.sakaiclient20.R;
 import com.example.development.sakaiclient20.models.Term;
 import com.example.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.example.development.sakaiclient20.persistence.entities.Course;
-import com.example.development.sakaiclient20.ui.MainActivity;
 import com.example.development.sakaiclient20.ui.helpers.RutgersSubjectCodes;
 import com.example.development.sakaiclient20.ui.listeners.TreeViewItemClickListener;
 import com.example.development.sakaiclient20.ui.viewholders.CourseHeaderViewHolder;
@@ -19,18 +20,16 @@ import com.example.development.sakaiclient20.ui.viewholders.TermHeaderViewHolder
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class AllCoursesFragment extends BaseFragment {
+public class AllCoursesFragment extends Fragment {
 
     public interface OnCourseSelectedListener {
         void onCourseSelected(String siteId);
     }
 
-    List<List<Course>> courses;
+    private List<List<Course>> courses;
     private AndroidTreeView treeView;
-    private SwipeRefreshLayout swipeRefreshLayout;
     private OnCourseSelectedListener courseSelectedListener;
 
     public static AllCoursesFragment newInstance(
@@ -58,24 +57,24 @@ public class AllCoursesFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_all_courses, null);
-        this.swipeRefreshLayout = view.findViewById(R.id.swiperefresh);
+        SwipeRefreshLayout swipeRefreshLayout = view.findViewById(R.id.swiperefresh);
 
         //add the treeview to the layout
         createTreeView(this.courses);
-        this.swipeRefreshLayout.addView(treeView.getView());
+        swipeRefreshLayout.addView(treeView.getView());
 
         //temporarily disable animations so the animations don't play when the state
         //is being restored
         treeView.setDefaultAnimation(false);
 
         //state must be restored after the view is added to the layout
-        String state = SharedPrefsUtil.getTreeState(mContext, SharedPrefsUtil.ALL_COURSES_TREE_TYPE);
+        String state = SharedPrefsUtil.getTreeState(getContext(), SharedPrefsUtil.ALL_COURSES_TREE_TYPE);
         treeView.restoreState(state);
 
         //re-enable animations
         treeView.setDefaultAnimation(true);
 
-        this.swipeRefreshLayout.setOnRefreshListener(() -> {
+        swipeRefreshLayout.setOnRefreshListener(() -> {
             // TODO: Implement dependency injection so that refreshing is not a mess
         });
 
@@ -89,7 +88,7 @@ public class AllCoursesFragment extends BaseFragment {
         super.onDetach();
 
         //here we should save tree state
-        SharedPrefsUtil.saveTreeState(mContext, treeView, SharedPrefsUtil.ALL_COURSES_TREE_TYPE);
+        SharedPrefsUtil.saveTreeState(getContext(), treeView, SharedPrefsUtil.ALL_COURSES_TREE_TYPE);
     }
 
 
@@ -101,6 +100,7 @@ public class AllCoursesFragment extends BaseFragment {
      */
     public void createTreeView(List<List<Course>> coursesSorted) {
         TreeNode root = TreeNode.root();
+        Context mContext = getContext();
 
         for (List<Course> coursesInTerm : coursesSorted) {
             Term courseTerm = (coursesSorted.size() > 0) ? coursesInTerm.get(0).term : null;
@@ -112,40 +112,38 @@ public class AllCoursesFragment extends BaseFragment {
                 termString = "General";
 
             //make a term header item, and make a treenode using it
-            TermHeaderViewHolder.TermHeaderItem termNodeItem = new TermHeaderViewHolder.TermHeaderItem(termString);
-            TreeNode termNode = new TreeNode(termNodeItem).setViewHolder(new TermHeaderViewHolder(mContext));
-
+            TermHeaderViewHolder.TermHeaderItem termNodeItem =
+                    new TermHeaderViewHolder.TermHeaderItem(termString);
+            TreeNode termNode =
+                    new TreeNode(termNodeItem).setViewHolder(new TermHeaderViewHolder(mContext));
 
             //for each course, get its grades
             for (Course currCourse : coursesInTerm) {
-
-
                 //create a course header item and make a treenode using it
                 String courseIconCode = RutgersSubjectCodes.mapCourseCodeToIcon.get(currCourse.subjectCode);
-                CourseHeaderViewHolder.CourseHeaderItem courseNodeItem = new CourseHeaderViewHolder.CourseHeaderItem(
-                        currCourse.title,
-                        currCourse.siteId,
-                        courseIconCode
-                );
+                CourseHeaderViewHolder.CourseHeaderItem courseNodeItem =
+                        new CourseHeaderViewHolder.CourseHeaderItem(
+                                currCourse.title,
+                                currCourse.siteId,
+                                courseIconCode
+                        );
 
                 //set the custom view holder
-                TreeNode courseNode = new TreeNode(courseNodeItem).setViewHolder(new CourseHeaderViewHolder(mContext, false));
+                TreeNode courseNode = new TreeNode(courseNodeItem)
+                        .setViewHolder(new CourseHeaderViewHolder(mContext, false));
 
-                courseNode.setClickListener(new TreeNode.TreeNodeClickListener() {
+                //when click a course Node, open the CourseSitesFragment to show
+                //course specific information
+                courseNode.setClickListener((node, value) -> {
+                    if (value instanceof CourseHeaderViewHolder.CourseHeaderItem) {
+                        String courseSiteId = ((CourseHeaderViewHolder.CourseHeaderItem) value).siteId;
 
-                    //when click a course Node, open the CourseSitesFragment to show
-                    //course specific information
-                    @Override
-                    public void onClick(TreeNode node, Object value) {
-                        if (value instanceof CourseHeaderViewHolder.CourseHeaderItem) {
-                            String courseSiteId = ((CourseHeaderViewHolder.CourseHeaderItem) value).siteId;
-
-                            //here we should save tree state
-                            SharedPrefsUtil.saveTreeState(mContext, treeView, SharedPrefsUtil.ALL_COURSES_TREE_TYPE);
-                            courseSelectedListener.onCourseSelected(courseSiteId);
-                        }
+                        //here we should save tree state
+                        SharedPrefsUtil.saveTreeState(mContext, treeView, SharedPrefsUtil.ALL_COURSES_TREE_TYPE);
+                        courseSelectedListener.onCourseSelected(courseSiteId);
                     }
                 });
+
                 termNode.addChild(courseNode);
             }
 
