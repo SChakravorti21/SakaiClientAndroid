@@ -97,6 +97,7 @@ public class CASWebViewClient extends WebViewClient {
                 Log.i("Headers", response.headers().toString());
                 savedHeaders = temp;
                 gotHeaders = true;
+                sakaiLoadedListener.onSakaiMainPageLoaded(null);
             }
 
             // We need to return a WebResourceResponse, otherwise the
@@ -111,17 +112,6 @@ public class CASWebViewClient extends WebViewClient {
             // TODO: Handle bad request/response
             // Perhaps by creating a separate method in the listener
             return null;
-        }
-    }
-
-    @Override
-    public void onPageFinished(WebView view, String url) {
-        // Once the main Sakai page loads ("/portal"), we can
-        // fire the listener that will let the WebViewActivity
-        // know to fire up a new intent and start the main activity
-        if (url.equals(cookieUrl) && gotHeaders
-                && sakaiLoadedListener != null) {
-            sakaiLoadedListener.onSakaiMainPageLoaded(null);
         }
     }
 }
