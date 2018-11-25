@@ -51,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
             }).get(CourseViewModel.class);
 
 
-        CourseViewModel model = ViewModelProviders.of(this).get(CourseViewModel.class);
 
 
 
