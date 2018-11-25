@@ -8,11 +8,14 @@ import android.content.Context;
 
 import com.example.development.sakaiclient20.persistence.access.AssignmentDao;
 import com.example.development.sakaiclient20.persistence.access.AttachmentDao;
+import com.example.development.sakaiclient20.persistence.access.CourseDao;
+import com.example.development.sakaiclient20.persistence.access.SitePageDao;
 import com.example.development.sakaiclient20.persistence.access.GradeDao;
 import com.example.development.sakaiclient20.persistence.entities.Assignment;
 import com.example.development.sakaiclient20.persistence.entities.Attachment;
 import com.example.development.sakaiclient20.persistence.entities.Course;
 import com.example.development.sakaiclient20.persistence.entities.Grade;
+import com.example.development.sakaiclient20.persistence.entities.SitePage;
 import com.example.development.sakaiclient20.persistence.typeconverters.DateConverter;
 import com.example.development.sakaiclient20.persistence.typeconverters.TermConverter;
 
@@ -22,6 +25,7 @@ import com.example.development.sakaiclient20.persistence.typeconverters.TermConv
 
 @Database(entities = {
             Course.class,
+            SitePage.class,
             Grade.class,
             Assignment.class,
             Attachment.class
@@ -33,6 +37,8 @@ public abstract class SakaiDatabase extends RoomDatabase {
     private static volatile SakaiDatabase mInstance;
     private static final String DB_NAME = "Sakai.db";
 
+    public abstract CourseDao getCourseDao();
+    public abstract SitePageDao getSitePageDao();
     public abstract AssignmentDao getAssignmentDao();
     public abstract AttachmentDao getAttachmentDao();
     public abstract GradeDao getGradeDao();

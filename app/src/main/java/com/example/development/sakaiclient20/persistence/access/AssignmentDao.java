@@ -18,12 +18,6 @@ import io.reactivex.Flowable;
 public abstract class AssignmentDao implements BaseDao<Assignment> {
 
     @Transaction
-    public void insertForSite(int courseId, Assignment... assignments) {
-        deleteAllForSite(courseId);
-        insert(assignments);
-    }
-
-    @Transaction
     @Query("SELECT * FROM assignments ORDER BY dueTime")
     public abstract Flowable<List<AssignmentWithAttachments>> getAllAssignments();
 
@@ -31,6 +25,4 @@ public abstract class AssignmentDao implements BaseDao<Assignment> {
     @Query("SELECT * FROM assignments WHERE siteId = :siteId")
     public abstract Flowable<List<AssignmentWithAttachments>> getAssignmentsForSite(String siteId);
 
-    @Query("DELETE FROM assignments WHERE siteId = :siteId")
-    public abstract void deleteAllForSite(int siteId);
 }

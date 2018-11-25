@@ -45,7 +45,7 @@ public class AssignmentRepository {
             return assignmentDao
                     .getAllAssignments()
                     .firstOrError()
-                    .map(this::flattenCompositesToEntities);
+                    .map(AssignmentRepository::flattenCompositesToEntities);
         }
     }
 
@@ -58,7 +58,7 @@ public class AssignmentRepository {
             return assignmentDao
                     .getAssignmentsForSite(siteId)
                     .firstOrError()
-                    .map(this::flattenCompositesToEntities);
+                    .map(AssignmentRepository::flattenCompositesToEntities);
         }
     }
 
@@ -72,7 +72,7 @@ public class AssignmentRepository {
         return assignments;
     }
 
-    private List<Assignment> flattenCompositesToEntities(List<AssignmentWithAttachments> assignmentComposites) {
+    static List<Assignment> flattenCompositesToEntities(List<AssignmentWithAttachments> assignmentComposites) {
         List<Assignment> assignmentEntities = new ArrayList<>(assignmentComposites.size());
 
         for(AssignmentWithAttachments composite : assignmentComposites) {
@@ -103,8 +103,7 @@ public class AssignmentRepository {
 
             assignmentDao.get().insert(assignments);
             for(Assignment assignment : assignments)
-                for(Attachment attachment : assignment.attachments)
-                    attachmentDao.get().insert(attachment);
+                attachmentDao.get().insert(assignment.attachments);
 
             return null;
         }

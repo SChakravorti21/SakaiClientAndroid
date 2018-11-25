@@ -40,6 +40,7 @@ public class SitePagesBuilder extends AbstractBuilder<JsonArray, List<SitePage>>
     private SitePage buildSitePage(JsonObject json) {
         return new SitePage(
                 json.get("id").getAsString(),
+                json.get("siteId").getAsString(),
                 json.get("title").getAsString(),
                 json.get("url").getAsString()
         );
