@@ -6,6 +6,8 @@ import android.arch.lifecycle.MutableLiveData;
 import com.example.development.sakaiclient20.persistence.entities.Course;
 import com.example.development.sakaiclient20.repositories.CourseRepository;
 
+import org.apache.commons.lang3.NotImplementedException;
+
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -18,7 +20,7 @@ public class CourseViewModel extends BaseViewModel {
     }
 
     @Override
-    public void refreshData() {
+    public void refreshAllData() {
       this.compositeDisposable.add(
             this.courseRepository.refreshAllCourses()
             .subscribeOn(Schedulers.io())
@@ -28,5 +30,10 @@ public class CourseViewModel extends BaseViewModel {
                 Throwable::printStackTrace
             )
         );
+    }
+
+    @Override
+    public void refreshSiteData(String siteId) {
+        throw new NotImplementedException("Add functionality to refresh site data");
     }
 }

@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         beingObserved = courseViewModel.getCoursesByTerm();
 
         findViewById(R.id.update_courses).setOnClickListener(view -> {
-            courseViewModel.refreshData();
+            courseViewModel.refreshAllData();
         });
 
 
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-        gradeViewModel.refreshAllGrades();
+        gradeViewModel.refreshAllData();
         gradeViewModel.getCoursesByTerm()
                 .observe(this, courses -> {
                     for (List<Course> term : courses) {
@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
         findViewById(R.id.update_all_grades).setOnClickListener(view -> {
-            gradeViewModel.refreshAllGrades();
+            gradeViewModel.refreshAllData();
         });
     }
 

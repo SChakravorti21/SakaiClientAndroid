@@ -42,14 +42,9 @@ public class GradeViewModel extends BaseViewModel {
 
         if (!this.siteIdToGrades.containsKey(siteId)) {
             this.siteIdToGrades.put(siteId, new MutableLiveData<>());
-            refreshSiteGrades(siteId);
+            refreshSiteData(siteId);
         }
         return this.siteIdToGrades.get(siteId);
-    }
-
-    @Override
-    public void refreshData() {
-        refreshAllGrades();
     }
 
 
@@ -78,7 +73,8 @@ public class GradeViewModel extends BaseViewModel {
      *
      * Then it calls load courses (now that the new grades are in the database)
      */
-    public void refreshAllGrades() {
+    @Override
+    public void refreshAllData() {
         this.compositeDisposable.add(
                 this.gradesRepository.refreshAllGrades()
                         .subscribeOn(Schedulers.io())
@@ -97,7 +93,8 @@ public class GradeViewModel extends BaseViewModel {
      *
      * @param siteId
      */
-    public void refreshSiteGrades(String siteId) {
+    @Override
+    public void refreshSiteData(String siteId) {
         this.compositeDisposable.add(
                 this.gradesRepository.refreshSiteGrades(siteId)
                         .subscribeOn(Schedulers.io())
