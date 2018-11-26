@@ -1,6 +1,8 @@
 package com.example.development.sakaiclient20.repositories;
 
 import android.os.AsyncTask;
+import android.util.Log;
+
 import com.example.development.sakaiclient20.models.sakai.gradebook.GradesResponse;
 import com.example.development.sakaiclient20.models.sakai.gradebook.SiteGrades;
 import com.example.development.sakaiclient20.networking.services.GradesService;
@@ -54,6 +56,9 @@ public class GradesRepository {
     }
 
     private List<Grade> persistGrades(List<Grade> grades) {
+
+        if(grades.size() == 0)
+            return grades;
 
         // all of the grades in the given list are of the same course (Same siteId)
         String siteId = grades.get(0).siteId;
