@@ -34,7 +34,8 @@ public class GradesRepository {
                 .getGradeForSite(siteId)
                 .map(SiteGrades::getGradesList)
                 .map(this::persistGrades)
-                .toCompletable();
+                .toObservable()
+                .ignoreElements();
     }
 
     public Completable refreshAllGrades() {
@@ -49,8 +50,7 @@ public class GradesRepository {
                 .flatMapIterable(siteGrades -> siteGrades)
                 .map(SiteGrades::getGradesList)
                 .map(this::persistGrades)
-                .toList()
-                .toCompletable();
+                .ignoreElements();
     }
 
     private List<Grade> persistGrades(List<Grade> grades) {
