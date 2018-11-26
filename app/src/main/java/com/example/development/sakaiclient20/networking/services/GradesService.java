@@ -1,6 +1,6 @@
 package com.example.development.sakaiclient20.networking.services;
 
-import com.example.development.sakaiclient20.models.sakai.gradebook.GradeCollection;
+import com.example.development.sakaiclient20.models.sakai.gradebook.SiteGrades;
 import com.example.development.sakaiclient20.models.sakai.gradebook.GradesResponse;
 
 import io.reactivex.Single;
@@ -17,6 +17,6 @@ public interface GradesService {
     Single<GradesResponse> getAllGrades();
 
     @GET("gradebook/site/{site_id}.json")
-    Single<GradeCollection> getGradeForSite(@Path(value = "site_id", encoded = true) String siteId);
+    Single<SiteGrades> getGradeForSite(@Path(value = "site_id", encoded = true) String siteId);
 
 }
