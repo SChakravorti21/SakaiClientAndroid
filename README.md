@@ -3,7 +3,7 @@
 **In Progress** A mobile client for Rutgers Sakai on Android (iOS version: https://github.com/PRAN1999/SakaiClientiOS)
 
 ### Note:
-The architecture for this application is being redone over at <a href="https://github.com/SChakravorti21/SakaiClientAndroid2.0" target="_blank">a sister repository</a>. This is mainly because the application backend needs to be a lot more robust and unit-testable, as well as resilient to our changing requirements. Among the changes include:
+The architecture for this application is being redone in the `MVVM-Refactor` branch. This is mainly because the application backend needs to be a lot more robust and unit-testable, as well as resilient to our changing requirements. Among the changes include:
   - A proper method of persisting data with Room
   - Moving over to using RxJava with Retrofit (and Room)
   - Using proper dependency injection with Dagger 2 to simplify management of 
