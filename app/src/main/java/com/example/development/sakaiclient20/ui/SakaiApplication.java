@@ -2,6 +2,7 @@ package com.example.development.sakaiclient20.ui;
 
 import android.app.Activity;
 import android.app.Application;
+import android.support.v4.app.Fragment;
 
 import com.example.development.sakaiclient20.dependency_injection.DaggerSakaiApplicationComponent;
 
@@ -11,9 +12,10 @@ import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasActivityInjector;
 
-public class SakaiApplication extends Application implements HasActivityInjector {
-    @Inject
-    DispatchingAndroidInjector<Activity> dispatchingAndroidInjector;
+public class SakaiApplication extends Application
+        implements HasActivityInjector {
+
+    @Inject DispatchingAndroidInjector<Activity> activityInjector;
 
     @Override
     public void onCreate() {
@@ -26,6 +28,7 @@ public class SakaiApplication extends Application implements HasActivityInjector
 
     @Override
     public AndroidInjector<Activity> activityInjector() {
-        return dispatchingAndroidInjector;
+        return activityInjector;
     }
+
 }

@@ -9,6 +9,8 @@ import com.example.development.sakaiclient20.repositories.CourseRepository;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
@@ -16,6 +18,7 @@ public class CourseViewModel extends BaseViewModel {
 
     private Map<String, MutableLiveData<Course>> siteIdToCourse;
 
+    @Inject
     public CourseViewModel(CourseRepository repo) {
         super(repo);
         siteIdToCourse = new HashMap<>();

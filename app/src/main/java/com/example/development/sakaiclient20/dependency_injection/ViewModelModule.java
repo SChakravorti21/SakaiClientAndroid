@@ -1,19 +1,24 @@
 package com.example.development.sakaiclient20.dependency_injection;
 
-import com.example.development.sakaiclient20.repositories.CourseRepository;
+import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProvider;
+
 import com.example.development.sakaiclient20.ui.viewmodels.CourseViewModel;
+import com.example.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
-import javax.inject.Singleton;
-
+import dagger.Binds;
 import dagger.Module;
-import dagger.Provides;
+import dagger.multibindings.IntoMap;
 
 @Module(includes = { RepositoryModule.class })
-class ViewModelModule {
+abstract class ViewModelModule {
 
-    @Provides
-    static CourseViewModel provideCourseViewModel(CourseRepository courseRepository) {
-        return new CourseViewModel(courseRepository);
-    }
+    @Binds
+    @IntoMap
+    @ViewModelKey(CourseViewModel.class)
+    abstract ViewModel bindCourseViewModel(CourseViewModel userViewModel);
+
+    @Binds
+    abstract ViewModelProvider.Factory bindViewModelFactory(ViewModelFactory factory);
 
 }
