@@ -22,12 +22,12 @@ abstract class BaseViewModel extends ViewModel {
         this.courseRepository = repo;
     }
 
-    abstract void refreshData();
+    abstract void refreshAllData();
 
     public LiveData<List<List<Course>>> getCoursesByTerm() {
         if(this.coursesByTerm == null) {
             this.coursesByTerm = new MutableLiveData<>();
-            refreshData();
+            refreshAllData();
         }
         return this.coursesByTerm;
     }

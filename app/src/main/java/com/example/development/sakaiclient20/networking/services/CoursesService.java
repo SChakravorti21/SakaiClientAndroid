@@ -1,6 +1,7 @@
 package com.example.development.sakaiclient20.networking.services;
 
 import com.example.development.sakaiclient20.models.sakai.courses.CoursesResponse;
+import com.example.development.sakaiclient20.persistence.entities.Course;
 
 import io.reactivex.Single;
 import okhttp3.ResponseBody;
@@ -16,5 +17,5 @@ public interface CoursesService {
     Single<CoursesResponse> getAllSites();
 
     @GET("site/{site_id}.json")
-    Single<ResponseBody> getSingleSite(@Path(value = "site_id", encoded = true) String siteId);
+    Single<Course> getSite(@Path(value = "site_id", encoded = true) String siteId);
 }
