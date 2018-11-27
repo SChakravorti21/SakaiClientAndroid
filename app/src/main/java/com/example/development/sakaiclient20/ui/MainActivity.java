@@ -36,6 +36,10 @@ import com.example.development.sakaiclient20.ui.viewmodels.CourseViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.android.AndroidInjection;
+
 public class MainActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener,
         AllCoursesFragment.OnCourseSelectedListener {
@@ -50,7 +54,7 @@ public class MainActivity extends AppCompatActivity
     private ProgressBar spinner;
     public boolean isLoadingAllCourses;
 
-    private CourseViewModel courseViewModel;
+    @Inject CourseViewModel courseViewModel;
     private List<LiveData> beingObserved;
 
     /******************************\
@@ -59,9 +63,9 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initDependencies();
 
         // Get reference to the container
         this.container = findViewById(R.id.fragment_container);
@@ -161,20 +165,6 @@ public class MainActivity extends AppCompatActivity
     /*******************************\
       LIFECYCLE CONVENIENCE METHODS
     \*******************************/
-
-    private void initDependencies() {
-        CourseDao courseDao = SakaiDatabase.getInstance(this).getCourseDao();
-        SitePageDao sitePageDao = SakaiDatabase.getInstance(this).getSitePageDao();
-        CoursesService coursesService = ServiceFactory.getService(this, CoursesService.class);
-        CourseRepository courseRepository = new CourseRepository(courseDao, sitePageDao, coursesService);
-        courseViewModel = ViewModelProviders.of(this, new ViewModelProvider.Factory() {
-            @NonNull
-            @Override
-            public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-                return (T) new CourseViewModel(courseRepository);
-            }
-        }).get(CourseViewModel.class);
-    }
 
     private void removeObservations() {
         for (LiveData liveData : beingObserved) {
