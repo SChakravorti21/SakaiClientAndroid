@@ -1,5 +1,6 @@
 package com.example.development.sakaiclient20.ui.fragments;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -17,10 +18,17 @@ import com.example.development.sakaiclient20.ui.helpers.RutgersSubjectCodes;
 import com.example.development.sakaiclient20.ui.listeners.TreeViewItemClickListener;
 import com.example.development.sakaiclient20.ui.viewholders.CourseHeaderViewHolder;
 import com.example.development.sakaiclient20.ui.viewholders.TermHeaderViewHolder;
+import com.example.development.sakaiclient20.ui.viewmodels.CourseViewModel;
+import com.example.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
 import java.util.List;
+
+import javax.inject.Inject;
+
+import dagger.android.AndroidInjection;
+import dagger.android.support.AndroidSupportInjection;
 
 public class AllCoursesFragment extends Fragment {
 
@@ -28,6 +36,7 @@ public class AllCoursesFragment extends Fragment {
         void onCourseSelected(String siteId);
     }
 
+    @Inject ViewModelFactory viewModelFactory;
     private List<List<Course>> courses;
     private AndroidTreeView treeView;
     private OnCourseSelectedListener courseSelectedListener;
@@ -42,6 +51,11 @@ public class AllCoursesFragment extends Fragment {
         return fragment;
     }
 
+    @Override
+    public void onAttach(Context context) {
+        AndroidSupportInjection.inject(this);
+        super.onAttach(context);
+    }
 
     /**
      * When the fragment view is created, we want to get the responseBody from the bundle so
@@ -75,7 +89,9 @@ public class AllCoursesFragment extends Fragment {
         treeView.setDefaultAnimation(true);
 
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            // TODO: Implement dependency injection so that refreshing is not a mess
+            ViewModelProviders.of(getActivity(), viewModelFactory)
+                    .get(CourseViewModel.class)
+                    .refreshAllData();
         });
 
         return view;
