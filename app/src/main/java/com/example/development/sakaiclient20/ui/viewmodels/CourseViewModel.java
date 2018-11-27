@@ -26,9 +26,25 @@ public class CourseViewModel extends BaseViewModel {
         // contain stale data
         if(!siteIdToCourse.containsKey(siteId)) {
             siteIdToCourse.put(siteId, new MutableLiveData<>());
-            refreshSiteData(siteId);
+            // Load course from DB (no need for API call since `getCourse()`
+            // could not be called unless all courses were already loaded into
+            // the database).
+            loadCourse(siteId);
         }
         return siteIdToCourse.get(siteId);
+    }
+
+    @Override
+    public void refreshAllData() {
+        this.compositeDisposable.add(
+            this.courseRepository.refreshAllCourses()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    this::loadCourses,
+                    Throwable::printStackTrace
+                )
+        );
     }
 
     private void loadCourse(String siteId) {
@@ -55,16 +71,4 @@ public class CourseViewModel extends BaseViewModel {
         );
     }
 
-    @Override
-    public void refreshAllData() {
-        this.compositeDisposable.add(
-            this.courseRepository.refreshAllCourses()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    this::loadCourses,
-                    Throwable::printStackTrace
-                )
-        );
-    }
 }

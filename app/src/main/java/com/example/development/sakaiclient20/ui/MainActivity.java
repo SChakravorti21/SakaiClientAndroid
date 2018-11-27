@@ -33,6 +33,9 @@ import com.example.development.sakaiclient20.ui.fragments.CourseSitesFragment;
 import com.example.development.sakaiclient20.ui.helpers.BottomNavigationViewHelper;
 import com.example.development.sakaiclient20.ui.viewmodels.CourseViewModel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener,
         AllCoursesFragment.OnCourseSelectedListener {
@@ -48,7 +51,7 @@ public class MainActivity extends AppCompatActivity
     public boolean isLoadingAllCourses;
 
     private CourseViewModel courseViewModel;
-    private LiveData beingObserved;
+    private List<LiveData> beingObserved;
 
     /******************************\
        LIFECYCLE/INTERFACE METHODS
@@ -79,13 +82,14 @@ public class MainActivity extends AppCompatActivity
 
         // Request all site pages for the Home Fragment and then loads the fragment
         //refresh since we are loading for the same time
+        beingObserved = new ArrayList<>();
         loadHomeFragment();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        removeObservation();
+        removeObservations();
     }
 
     @Override
@@ -133,7 +137,7 @@ public class MainActivity extends AppCompatActivity
 
         // To be safe, remove any observations that might be active for the previous tab
         // since that might trigger an unwanted fragment transaction
-        removeObservation();
+        removeObservations();
         switch (item.getItemId()) {
             case R.id.navigation_home:
                 loadHomeFragment();
@@ -146,14 +150,11 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onCourseSelected(String siteId) {
         LiveData<Course> courseLiveData = courseViewModel.getCourse(siteId);
+        beingObserved.add(courseLiveData);
         courseLiveData.observe(this, course -> {
             CourseSitesFragment fragment = CourseSitesFragment.newInstance(course);
             loadFragment(fragment, true, true);
             setActionBarTitle(course.title);
-
-            // Once the course fragment is loaded, we don't need to listen
-            // for changes anymore.
-            courseLiveData.removeObservers(this);
         });
     }
 
@@ -175,10 +176,9 @@ public class MainActivity extends AppCompatActivity
         }).get(CourseViewModel.class);
     }
 
-    private void removeObservation() {
-        if(beingObserved != null) {
-            beingObserved.removeObservers(this);
-            beingObserved = null;
+    private void removeObservations() {
+        for (LiveData liveData : beingObserved) {
+            liveData.removeObservers(this);
         }
     }
 
@@ -215,18 +215,18 @@ public class MainActivity extends AppCompatActivity
         startProgressBar();
         isLoadingAllCourses = true;
 
-        courseViewModel.getCoursesByTerm()
-            .observe(this, courses -> {
-                stopProgressBar();
+        LiveData<List<List<Course>>> courseLiveData = courseViewModel.getCoursesByTerm();
+        beingObserved.add(courseLiveData);
+        courseLiveData.observe(this, courses -> {
+            stopProgressBar();
 
-                AllCoursesFragment coursesFragment = AllCoursesFragment.newInstance(courses, this);
-                loadFragment(coursesFragment, false, false);
-                container.setVisibility(View.VISIBLE);
+            AllCoursesFragment coursesFragment = AllCoursesFragment.newInstance(courses, this);
+            loadFragment(coursesFragment, false, false);
+            container.setVisibility(View.VISIBLE);
 
-                setActionBarTitle(getString(R.string.app_name));
-                isLoadingAllCourses = false;
-            });
-        beingObserved = courseViewModel.getCoursesByTerm();
+            setActionBarTitle(getString(R.string.app_name));
+            isLoadingAllCourses = false;
+        });
     }
 
     /******************************\
