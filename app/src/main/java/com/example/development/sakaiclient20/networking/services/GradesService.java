@@ -1,7 +1,7 @@
 package com.example.development.sakaiclient20.networking.services;
 
-import com.example.development.sakaiclient20.models.sakai.gradebook.SiteGrades;
 import com.example.development.sakaiclient20.models.sakai.gradebook.GradesResponse;
+import com.example.development.sakaiclient20.models.sakai.gradebook.SiteGrades;
 
 import io.reactivex.Single;
 import retrofit2.http.GET;

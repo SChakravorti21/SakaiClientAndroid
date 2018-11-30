@@ -8,7 +8,6 @@ import com.example.development.sakaiclient20.persistence.access.AssignmentDao;
 import com.example.development.sakaiclient20.persistence.access.AttachmentDao;
 import com.example.development.sakaiclient20.persistence.composites.AssignmentWithAttachments;
 import com.example.development.sakaiclient20.persistence.entities.Assignment;
-import com.example.development.sakaiclient20.persistence.entities.Attachment;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;

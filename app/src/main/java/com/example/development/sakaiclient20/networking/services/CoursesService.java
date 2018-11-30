@@ -4,7 +4,6 @@ import com.example.development.sakaiclient20.models.sakai.courses.CoursesRespons
 import com.example.development.sakaiclient20.persistence.entities.Course;
 
 import io.reactivex.Single;
-import okhttp3.ResponseBody;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 

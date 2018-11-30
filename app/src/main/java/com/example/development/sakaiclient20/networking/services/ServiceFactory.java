@@ -12,7 +12,6 @@ import com.example.development.sakaiclient20.networking.utilities.HeaderIntercep
 import com.example.development.sakaiclient20.persistence.entities.Assignment;
 import com.example.development.sakaiclient20.persistence.entities.Attachment;
 import com.example.development.sakaiclient20.persistence.entities.Course;
-import com.example.development.sakaiclient20.persistence.entities.Grade;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;

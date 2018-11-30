@@ -1,7 +1,6 @@
 package com.example.development.sakaiclient20.repositories;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.example.development.sakaiclient20.models.sakai.gradebook.GradesResponse;
 import com.example.development.sakaiclient20.models.sakai.gradebook.SiteGrades;

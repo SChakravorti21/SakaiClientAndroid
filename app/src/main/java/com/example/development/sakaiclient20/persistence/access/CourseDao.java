@@ -4,14 +4,12 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Transaction;
 
-import com.example.development.sakaiclient20.models.Term;
 import com.example.development.sakaiclient20.persistence.composites.CourseWithAllData;
 import com.example.development.sakaiclient20.persistence.entities.Course;
 
 import java.util.List;
 
 import io.reactivex.Flowable;
-import io.reactivex.Single;
 
 /**
  * Created by Development on 8/11/18.
