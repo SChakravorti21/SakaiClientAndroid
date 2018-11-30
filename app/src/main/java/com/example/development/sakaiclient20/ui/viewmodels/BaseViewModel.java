@@ -22,7 +22,9 @@ abstract class BaseViewModel extends ViewModel {
         this.courseRepository = repo;
     }
 
+    // all view models must be able to refresh all data and site data
     abstract void refreshAllData();
+    abstract void refreshSiteData(String siteId);
 
     public LiveData<List<List<Course>>> getCoursesByTerm() {
         if(this.coursesByTerm == null) {

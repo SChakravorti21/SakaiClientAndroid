@@ -21,10 +21,12 @@ import android.widget.ProgressBar;
 
 import com.example.development.sakaiclient20.R;
 import com.example.development.sakaiclient20.networking.services.CoursesService;
+import com.example.development.sakaiclient20.networking.services.GradesService;
 import com.example.development.sakaiclient20.networking.services.ServiceFactory;
 import com.example.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.example.development.sakaiclient20.persistence.SakaiDatabase;
 import com.example.development.sakaiclient20.persistence.access.CourseDao;
+import com.example.development.sakaiclient20.persistence.access.GradeDao;
 import com.example.development.sakaiclient20.persistence.access.SitePageDao;
 import com.example.development.sakaiclient20.persistence.entities.Course;
 import com.example.development.sakaiclient20.repositories.CourseRepository;
@@ -33,6 +35,12 @@ import com.example.development.sakaiclient20.ui.fragments.CourseSitesFragment;
 import com.example.development.sakaiclient20.ui.helpers.BottomNavigationViewHelper;
 import com.example.development.sakaiclient20.ui.viewmodels.CourseViewModel;
 import com.example.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
+import com.example.development.sakaiclient20.persistence.entities.Grade;
+import com.example.development.sakaiclient20.repositories.AssignmentRepository;
+import com.example.development.sakaiclient20.repositories.CourseRepository;
+import com.example.development.sakaiclient20.repositories.GradesRepository;
+import com.example.development.sakaiclient20.ui.viewmodels.CourseViewModel;
+import com.example.development.sakaiclient20.ui.viewmodels.GradeViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
