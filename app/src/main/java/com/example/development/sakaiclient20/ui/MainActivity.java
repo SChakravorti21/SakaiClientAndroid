@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity
                 loadCoursesFragment(false);
                 return true;
             case R.id.navigation_assignments:
-                loadAssignmentsFragment(true, true);
+                loadAssignmentsFragment(true, false);
                 return true;
             default:
                 return false;
@@ -251,22 +251,17 @@ public class MainActivity extends AppCompatActivity
 
             setActionBarTitle(getString(R.string.app_name));
             isLoadingAllCourses = false;
-
             courseLiveData.removeObservers(this);
+
             if(refresh)
-                Toast.makeText(
-                        this,
-                        "Successfully refreshed courses",
-                        Toast.LENGTH_SHORT
-                ).show();
+                makeToast("Successfully refreshed courses", Toast.LENGTH_SHORT);
         });
     }
 
     /**
      * Loads all assignments tab
      */
-    public void loadAssignmentsFragment(final boolean sortedByCourses,
-                                        final boolean shouldRefresh) {
+    public void loadAssignmentsFragment(boolean sortedByCourses, boolean refresh) {
 
         this.container.setVisibility(View.GONE);
         this.spinner.setVisibility(View.VISIBLE);
@@ -274,8 +269,7 @@ public class MainActivity extends AppCompatActivity
         LiveData<List<List<Course>>> coursesLiveData =
                 ViewModelProviders.of(this, viewModelFactory)
                         .get(AssignmentViewModel.class)
-                        .getCoursesByTerm();
-        beingObserved.add(coursesLiveData);
+                        .getCoursesByTerm(refresh);
         coursesLiveData.observe(this, courses -> {
             spinner.setVisibility(View.GONE);
 
@@ -288,6 +282,10 @@ public class MainActivity extends AppCompatActivity
             loadFragment(fragment, false, false);
 
             container.setVisibility(View.VISIBLE);
+            coursesLiveData.removeObservers(this);
+
+            if(refresh)
+                makeToast("Successfully refreshed assignments", Toast.LENGTH_SHORT);
         });
     }
 
@@ -305,5 +303,9 @@ public class MainActivity extends AppCompatActivity
 
     public void stopProgressBar() {
         spinner.setVisibility(View.GONE);
+    }
+
+    public void makeToast(String message, int duration) {
+        Toast.makeText(this, message, duration).show();
     }
 }

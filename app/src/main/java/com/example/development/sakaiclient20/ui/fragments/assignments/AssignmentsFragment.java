@@ -20,6 +20,7 @@ import com.example.development.sakaiclient20.persistence.entities.Assignment;
 import com.example.development.sakaiclient20.persistence.entities.Course;
 import com.example.development.sakaiclient20.ui.MainActivity;
 import com.example.development.sakaiclient20.ui.helpers.RutgersSubjectCodes;
+import com.example.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
 import com.example.development.sakaiclient20.ui.listeners.TreeViewItemClickListener;
 import com.example.development.sakaiclient20.ui.viewholders.AssignmentCourseViewHolder;
 import com.example.development.sakaiclient20.ui.viewholders.AssignmentTermHeaderViewHolder;
@@ -28,6 +29,7 @@ import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.example.development.sakaiclient20.ui.MainActivity.ASSIGNMENTS_TAG;
 
@@ -59,14 +61,14 @@ public class AssignmentsFragment extends Fragment {
      * If the {@link android.support.v4.app.Fragment} is specified to show assignments
      * sorted by their courses, this is the non-null list of courses sorted by their terms.
      */
-    private ArrayList<ArrayList<Course>> courses;
+    private List<List<Course>> courses;
 
     /**
      * If the {@link android.support.v4.app.Fragment} is specified to show assignments
      * sorted by date, this is the list of assignments sorted by date within their repsective
      * terms.
      */
-    private ArrayList<ArrayList<Assignment>> assignments;
+    private List<List<Assignment>> assignments;
 
     /**
      * Whether the assignments should be shown as being sorted by course. {@code False} if
@@ -74,21 +76,23 @@ public class AssignmentsFragment extends Fragment {
      */
     private boolean sortedByCourses;
 
+    private OnActionPerformedListener actionPerformedListener;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         // This fragment provides the option to sort assignments by course or date.
         setHasOptionsMenu(true);
+        this.actionPerformedListener = (OnActionPerformedListener) getActivity();
 
         // Using the bundle arguments, construct the tree to be displayed
         Bundle arguments = getArguments();
         sortedByCourses = arguments.getBoolean(ASSIGNMENTS_SORTED_BY_COURSES);
         try {
             if(sortedByCourses) {
-                courses = (ArrayList<ArrayList<Course>>) arguments.getSerializable(ASSIGNMENTS_TAG);
+                courses = (List<List<Course>>) arguments.getSerializable(ASSIGNMENTS_TAG);
             } else {
-                assignments = (ArrayList<ArrayList<Assignment>>) arguments.getSerializable(ASSIGNMENTS_TAG);
+                assignments = (List<List<Assignment>>) arguments.getSerializable(ASSIGNMENTS_TAG);
             }
         } catch (ClassCastException exception) {
             // Unable to create the tree, create a dummy tree
@@ -131,7 +135,7 @@ public class AssignmentsFragment extends Fragment {
         SwipeRefreshLayout refreshLayout = view.findViewById(R.id.assignments_container);
         refreshLayout.addView(this.treeView.getView());
         refreshLayout.setOnRefreshListener(() -> {
-
+            this.actionPerformedListener.loadAssignmentsFragment(sortedByCourses, true);
         });
 
         // View to ultimately be added to the screen
@@ -191,7 +195,7 @@ public class AssignmentsFragment extends Fragment {
         // The courses as returned by the DataHandler are already sorted by term,
         // so we just need to loop through them to create the terms with all
         // courses and their assignments
-        for(ArrayList<Course> courseList : courses) {
+        for(List<Course> courseList : courses) {
             // Get the term name
             Term courseTerm = (courses.size() > 0) ? courseList.get(0).term : null;
             String termName = (courseTerm != null) ?
@@ -252,7 +256,7 @@ public class AssignmentsFragment extends Fragment {
         // The courses as returned by the DataHandler are already sorted by term,
         // so we just need to loop through them to create the terms with all
         // courses and their assignments
-        for(ArrayList<Assignment> termAssignments : assignments) {
+        for(List<Assignment> termAssignments : assignments) {
             // Get the term name
             Term courseTerm = (termAssignments.size() > 0) ? termAssignments.get(0).term : null;
             String termName = (courseTerm != null) ?
