@@ -112,12 +112,7 @@ public class AllCoursesFragment extends Fragment {
 
         for (List<Course> coursesInTerm : coursesSorted) {
             Term courseTerm = (coursesSorted.size() > 0) ? coursesInTerm.get(0).term : null;
-
-            String termString = (courseTerm != null) ?
-                    courseTerm.getTermString() + " " + courseTerm.getYear() : "General";
-
-            if (termString.contains("General"))
-                termString = "General";
+            String termString = courseTerm.toString();
 
             //make a term header item, and make a treenode using it
             TermHeaderViewHolder.TermHeaderItem termNodeItem =

@@ -79,7 +79,10 @@ public class Term implements Comparable<Term>, Serializable{
 
     @Override
     public String toString() {
-        return this.termString + "  " + this.termInt;
+        if(this.termInt == 0)
+            return this.termString;
+
+        return this.termString + "  " + this.year;
     }
 
 }

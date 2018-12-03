@@ -198,8 +198,7 @@ public class AssignmentsFragment extends Fragment {
         for(List<Course> courseList : courses) {
             // Get the term name
             Term courseTerm = (courses.size() > 0) ? courseList.get(0).term : null;
-            String termName = (courseTerm != null) ?
-                    courseTerm.getTermString() + " " + courseTerm.getYear() : "General";
+            String termName = courseTerm.toString();
 
             // Create a term header item, and make a tree node using it
             TermHeaderViewHolder.TermHeaderItem termHeaderItem =
