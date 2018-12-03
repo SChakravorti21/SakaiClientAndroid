@@ -1,11 +1,14 @@
 package com.example.development.sakaiclient20.dependency_injection;
 
+import com.example.development.sakaiclient20.models.sakai.gradebook.SiteGrades;
 import com.example.development.sakaiclient20.networking.deserializers.AssignmentDeserializer;
 import com.example.development.sakaiclient20.networking.deserializers.AttachmentDeserializer;
 import com.example.development.sakaiclient20.networking.deserializers.CourseDeserializer;
+import com.example.development.sakaiclient20.networking.deserializers.SiteGradesDeserializer;
 import com.example.development.sakaiclient20.persistence.entities.Assignment;
 import com.example.development.sakaiclient20.persistence.entities.Attachment;
 import com.example.development.sakaiclient20.persistence.entities.Course;
+import com.example.development.sakaiclient20.persistence.entities.Grade;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -38,6 +41,14 @@ class DeserializerModule {
         return new GsonBuilder()
                 .setLenient()
                 .registerTypeAdapter(Attachment.class, new AttachmentDeserializer())
+                .create();
+    }
+
+    @Named("grades_deserializer")
+    @Provides Gson gradesDeserializer() {
+        return new GsonBuilder()
+                .setLenient()
+                .registerTypeAdapter(SiteGrades.class, new SiteGradesDeserializer())
                 .create();
     }
 

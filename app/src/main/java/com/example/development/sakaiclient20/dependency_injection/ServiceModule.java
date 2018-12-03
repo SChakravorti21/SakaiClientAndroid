@@ -6,6 +6,7 @@ import com.example.development.sakaiclient20.R;
 import com.example.development.sakaiclient20.networking.deserializers.CourseDeserializer;
 import com.example.development.sakaiclient20.networking.services.AssignmentsService;
 import com.example.development.sakaiclient20.networking.services.CoursesService;
+import com.example.development.sakaiclient20.networking.services.GradesService;
 import com.example.development.sakaiclient20.networking.services.ServiceFactory;
 import com.example.development.sakaiclient20.networking.utilities.HeaderInterceptor;
 import com.example.development.sakaiclient20.persistence.entities.Assignment;
@@ -34,6 +35,11 @@ class ServiceModule {
     @Provides
     static AssignmentsService assignmentsService(@Named("assignment_retrofit") Retrofit retrofit) {
         return retrofit.create(AssignmentsService.class);
+    }
+
+    @Provides
+    static GradesService gradesService(@Named("grades_retrofit") Retrofit retrofit) {
+        return retrofit.create(GradesService.class);
     }
 
 }

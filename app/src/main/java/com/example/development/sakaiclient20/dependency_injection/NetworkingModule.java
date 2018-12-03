@@ -43,6 +43,13 @@ class NetworkingModule {
     }
 
 
+    @Named("grades_retrofit")
+    @Provides
+    Retrofit gradesRetrofit(Retrofit.Builder builder, @Named("grades_deserializer") Gson gradesDeserializer) {
+        return builder
+                .addConverterFactory(GsonConverterFactory.create(gradesDeserializer))
+                .build();
+    }
 
 
     @Provides

@@ -6,6 +6,7 @@ import com.example.development.sakaiclient20.persistence.SakaiDatabase;
 import com.example.development.sakaiclient20.persistence.access.AssignmentDao;
 import com.example.development.sakaiclient20.persistence.access.AttachmentDao;
 import com.example.development.sakaiclient20.persistence.access.CourseDao;
+import com.example.development.sakaiclient20.persistence.access.GradeDao;
 import com.example.development.sakaiclient20.persistence.access.SitePageDao;
 
 import dagger.Module;
@@ -28,6 +29,10 @@ class DaoModule {
 
     @Provides static AttachmentDao provideAttachmentDao(Context context) {
         return SakaiDatabase.getInstance(context).getAttachmentDao();
+    }
+
+    @Provides static GradeDao provideGradeDao(Context context) {
+        return SakaiDatabase.getInstance(context).getGradeDao();
     }
 
 }
