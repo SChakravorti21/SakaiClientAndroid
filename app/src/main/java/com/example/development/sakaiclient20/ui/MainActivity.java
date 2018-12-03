@@ -1,8 +1,10 @@
 package com.example.development.sakaiclient20.ui;
 
+import android.app.DownloadManager;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -11,6 +13,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,13 +23,17 @@ import android.widget.ProgressBar;
 import com.example.development.sakaiclient20.R;
 import com.example.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.example.development.sakaiclient20.persistence.entities.Course;
+import com.example.development.sakaiclient20.ui.custom_components.DownloadCompleteReceiver;
 import com.example.development.sakaiclient20.ui.fragments.AllCoursesFragment;
 import com.example.development.sakaiclient20.ui.fragments.CourseSitesFragment;
+import com.example.development.sakaiclient20.ui.fragments.assignments.AssignmentsFragment;
 import com.example.development.sakaiclient20.ui.helpers.BottomNavigationViewHelper;
 import com.example.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
+import com.example.development.sakaiclient20.ui.viewmodels.AssignmentViewModel;
 import com.example.development.sakaiclient20.ui.viewmodels.CourseViewModel;
 import com.example.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,6 +74,7 @@ public class MainActivity extends AppCompatActivity
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        registerDownloadReceiver();
 
         // Get reference to the container
         this.container = findViewById(R.id.fragment_container);
@@ -152,6 +160,9 @@ public class MainActivity extends AppCompatActivity
             case R.id.navigation_home:
                 loadHomeFragment();
                 return true;
+            case R.id.navigation_assignments:
+                loadAssignmentsFragment(true, true);
+                return true;
             default:
                 return false;
         }
@@ -173,6 +184,12 @@ public class MainActivity extends AppCompatActivity
     /*******************************\
       LIFECYCLE CONVENIENCE METHODS
     \*******************************/
+
+    public void registerDownloadReceiver() {
+        IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
+        DownloadCompleteReceiver receiver = new DownloadCompleteReceiver();
+        registerReceiver(receiver, filter);
+    }
 
     private void removeObservations() {
         for (LiveData liveData : beingObserved) {
@@ -217,7 +234,7 @@ public class MainActivity extends AppCompatActivity
                 ViewModelProviders.of(this, viewModelFactory)
                         .get(CourseViewModel.class)
                         .getCoursesByTerm();
-                beingObserved.add(courseLiveData);
+        beingObserved.add(courseLiveData);
         courseLiveData.observe(this, courses -> {
             stopProgressBar();
 
@@ -227,6 +244,35 @@ public class MainActivity extends AppCompatActivity
 
             setActionBarTitle(getString(R.string.app_name));
             isLoadingAllCourses = false;
+        });
+    }
+
+    /**
+     * Loads all assignments tab
+     */
+    public void loadAssignmentsFragment(final boolean sortedByCourses,
+                                        final boolean shouldRefresh) {
+
+        this.container.setVisibility(View.GONE);
+        this.spinner.setVisibility(View.VISIBLE);
+
+        LiveData<List<List<Course>>> coursesLiveData =
+                ViewModelProviders.of(this, viewModelFactory)
+                        .get(AssignmentViewModel.class)
+                        .getCoursesByTerm();
+        beingObserved.add(coursesLiveData);
+        coursesLiveData.observe(this, courses -> {
+            spinner.setVisibility(View.GONE);
+
+            Bundle bundle = new Bundle();
+            bundle.putSerializable(ASSIGNMENTS_TAG, (Serializable) courses);
+            bundle.putBoolean(AssignmentsFragment.ASSIGNMENTS_SORTED_BY_COURSES, sortedByCourses);
+
+            AssignmentsFragment fragment = new AssignmentsFragment();
+            fragment.setArguments(bundle);
+            loadFragment(fragment, false, false);
+
+            container.setVisibility(View.VISIBLE);
         });
     }
 
