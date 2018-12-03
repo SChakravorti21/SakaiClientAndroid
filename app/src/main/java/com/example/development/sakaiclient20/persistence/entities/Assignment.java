@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 
 import com.example.development.sakaiclient20.models.Term;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,7 +26,7 @@ import java.util.List;
         indices = { @Index(value = "siteId"),
                     @Index(value = "assignmentId")
         })
-public class Assignment {
+public class Assignment implements Serializable {
 
     @NonNull
     @PrimaryKey
@@ -41,6 +42,7 @@ public class Assignment {
     public String entityURL;
     public String entityTitle;
     public String entityReference;
+    public String assignmentSitePageUrl;
 
     // Information regarding the submission of assignment
     public String status;
