@@ -1,7 +1,6 @@
 package com.example.development.sakaiclient20.persistence.composites;
 
 import android.arch.persistence.room.Embedded;
-import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Relation;
 
 import com.example.development.sakaiclient20.persistence.entities.Assignment;
