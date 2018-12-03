@@ -3,6 +3,7 @@ package com.example.development.sakaiclient20.dependency_injection;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 
+import com.example.development.sakaiclient20.ui.viewmodels.AssignmentViewModel;
 import com.example.development.sakaiclient20.ui.viewmodels.CourseViewModel;
 import com.example.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
@@ -17,6 +18,11 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(CourseViewModel.class)
     abstract ViewModel bindCourseViewModel(CourseViewModel userViewModel);
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(AssignmentViewModel.class)
+    abstract ViewModel bindAssignmentViewModel(AssignmentViewModel assignmentViewModel);
 
     @Binds
     abstract ViewModelProvider.Factory bindViewModelFactory(ViewModelFactory factory);

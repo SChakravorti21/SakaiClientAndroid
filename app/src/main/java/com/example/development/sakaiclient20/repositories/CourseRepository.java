@@ -8,6 +8,7 @@ import com.example.development.sakaiclient20.networking.services.CoursesService;
 import com.example.development.sakaiclient20.persistence.access.CourseDao;
 import com.example.development.sakaiclient20.persistence.access.SitePageDao;
 import com.example.development.sakaiclient20.persistence.composites.CourseWithAllData;
+import com.example.development.sakaiclient20.persistence.entities.Assignment;
 import com.example.development.sakaiclient20.persistence.entities.Course;
 
 import java.lang.ref.WeakReference;
@@ -57,14 +58,14 @@ public class CourseRepository {
                 // for a single element
                 .map(Collections::singletonList)
                 .map(this::persistCourses)
-                .toCompletable();
+                .ignoreElement();
     }
 
     public Completable refreshAllCourses() {
         return coursesService.getAllSites()
                 .map(CoursesResponse::getCourses)
                 .map(this::persistCourses)
-                .toCompletable();
+                .ignoreElement();
     }
 
     private List<Course> persistCourses(List<Course> courses) {
@@ -79,6 +80,12 @@ public class CourseRepository {
         entity.grades = courseWithAllData.grades;
         entity.assignments =
             AssignmentRepository.flattenCompositesToEntities(courseWithAllData.assignments);
+
+        // Make sure to add the assignment site page url for the submission page to
+        // be accessible
+        for(Assignment assignment : entity.assignments)
+            assignment.assignmentSitePageUrl = entity.assignmentSitePageUrl;
+
         return entity;
     }
 

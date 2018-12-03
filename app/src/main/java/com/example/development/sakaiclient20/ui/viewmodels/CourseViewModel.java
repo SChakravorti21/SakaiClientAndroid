@@ -63,7 +63,7 @@ public class CourseViewModel extends BaseViewModel {
         return siteIdToCourse.get(siteId);
     }
 
-    private void loadCourse(String siteId) {
+    void loadCourse(String siteId) {
         this.compositeDisposable.add(
             this.courseRepository.getCourse(siteId)
                 .subscribeOn(Schedulers.io())

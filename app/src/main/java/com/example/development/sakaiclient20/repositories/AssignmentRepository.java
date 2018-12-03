@@ -13,6 +13,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Completable;
 import io.reactivex.Single;
 
 /**
@@ -35,34 +36,37 @@ public class AssignmentRepository {
         this.assignmentsService = service;
     }
 
-    public Single<List<Assignment>> getAllAssignments(boolean refresh) {
-        if(refresh) {
-            return assignmentsService
-                    .getAllAssignments()
-                    .map(this::persistAssignments);
-        } else {
-            return assignmentDao
-                    .getAllAssignments()
-                    .firstOrError()
-                    .map(AssignmentRepository::flattenCompositesToEntities);
-        }
+    public Single<List<Assignment>> getSiteAssignments(String siteId) {
+        return assignmentDao
+                .getSiteAssignments(siteId)
+                .firstOrError()
+                .map(AssignmentRepository::flattenCompositesToEntities);
     }
 
-    public Single<List<Assignment>> getAssignmentsForSite(String siteId, boolean refresh) {
-        if(refresh) {
-            return assignmentsService
-                    .getSiteAssignments(siteId)
-                    .map(this::persistAssignments);
-        } else {
-            return assignmentDao
-                    .getAssignmentsForSite(siteId)
-                    .firstOrError()
-                    .map(AssignmentRepository::flattenCompositesToEntities);
-        }
+    public Single<List<Assignment>> getAllAssignments() {
+        return assignmentDao
+                .getAllAssignments()
+                .firstOrError()
+                .map(AssignmentRepository::flattenCompositesToEntities);
     }
 
-    private List<Assignment> persistAssignments(AssignmentsResponse response) {
-        List<Assignment> assignments = response.getAssignments();
+    public Completable refreshAllAssignments() {
+        return assignmentsService
+                .getAllAssignments()
+                .map(AssignmentsResponse::getAssignments)
+                .map(this::persistAssignments)
+                .ignoreElement();
+    }
+
+    public Completable refreshSiteAssignments(String siteId) {
+        return assignmentsService
+                .getSiteAssignments(siteId)
+                .map(AssignmentsResponse::getAssignments)
+                .map(this::persistAssignments)
+                .ignoreElement();
+    }
+
+    private List<Assignment> persistAssignments(List<Assignment> assignments) {
         InsertAssignmentsTask task = new InsertAssignmentsTask(assignmentDao, attachmentDao);
 
         // Using generic varargs can supposedly pollute the heap,
