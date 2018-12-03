@@ -42,7 +42,7 @@ public class Assignment implements Serializable {
     public String entityURL;
     public String entityTitle;
     public String entityReference;
-
+    public String assignmentSitePageUrl;
 
     // Information regarding the submission of assignment
     public String status;
