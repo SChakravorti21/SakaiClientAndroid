@@ -15,6 +15,7 @@ import com.example.development.sakaiclient20.models.Term;
 import com.example.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.example.development.sakaiclient20.persistence.entities.Course;
 import com.example.development.sakaiclient20.ui.helpers.RutgersSubjectCodes;
+import com.example.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
 import com.example.development.sakaiclient20.ui.listeners.TreeViewItemClickListener;
 import com.example.development.sakaiclient20.ui.viewholders.CourseHeaderViewHolder;
 import com.example.development.sakaiclient20.ui.viewholders.TermHeaderViewHolder;
@@ -31,18 +32,14 @@ import dagger.android.support.AndroidSupportInjection;
 
 public class AllCoursesFragment extends Fragment {
 
-    public interface OnCourseSelectedListener {
-        void onCourseSelected(String siteId);
-    }
-
     @Inject ViewModelFactory viewModelFactory;
     private List<List<Course>> courses;
     private AndroidTreeView treeView;
-    private OnCourseSelectedListener courseSelectedListener;
+    private OnActionPerformedListener courseSelectedListener;
 
     public static AllCoursesFragment newInstance(
             List<List<Course>> courses,
-            OnCourseSelectedListener courseSelectedListener
+            OnActionPerformedListener courseSelectedListener
     ) {
         AllCoursesFragment fragment = new AllCoursesFragment();
         fragment.courses = courses;

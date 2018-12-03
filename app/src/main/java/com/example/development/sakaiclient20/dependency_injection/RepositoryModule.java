@@ -1,8 +1,12 @@
 package com.example.development.sakaiclient20.dependency_injection;
 
+import com.example.development.sakaiclient20.networking.services.AssignmentsService;
 import com.example.development.sakaiclient20.networking.services.CoursesService;
+import com.example.development.sakaiclient20.persistence.access.AssignmentDao;
+import com.example.development.sakaiclient20.persistence.access.AttachmentDao;
 import com.example.development.sakaiclient20.persistence.access.CourseDao;
 import com.example.development.sakaiclient20.persistence.access.SitePageDao;
+import com.example.development.sakaiclient20.repositories.AssignmentRepository;
 import com.example.development.sakaiclient20.repositories.CourseRepository;
 
 import dagger.Module;
@@ -17,6 +21,14 @@ class RepositoryModule {
             CoursesService coursesService
     ) {
         return new CourseRepository(courseDao, sitePageDao, coursesService);
+    }
+
+    @Provides static AssignmentRepository provideAssignmentRepository(
+            AssignmentDao assignmentDao,
+            AttachmentDao attachmentDao,
+            AssignmentsService assignmentsService
+    ) {
+        return new AssignmentRepository(assignmentDao, attachmentDao, assignmentsService);
     }
 
 }

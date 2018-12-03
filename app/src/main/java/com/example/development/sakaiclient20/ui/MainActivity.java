@@ -23,6 +23,7 @@ import com.example.development.sakaiclient20.persistence.entities.Course;
 import com.example.development.sakaiclient20.ui.fragments.AllCoursesFragment;
 import com.example.development.sakaiclient20.ui.fragments.CourseSitesFragment;
 import com.example.development.sakaiclient20.ui.helpers.BottomNavigationViewHelper;
+import com.example.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
 import com.example.development.sakaiclient20.ui.viewmodels.CourseViewModel;
 import com.example.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
@@ -38,7 +39,7 @@ import dagger.android.support.HasSupportFragmentInjector;
 
 public class MainActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener,
-        AllCoursesFragment.OnCourseSelectedListener, HasSupportFragmentInjector {
+        HasSupportFragmentInjector, OnActionPerformedListener {
 
     @Inject DispatchingAndroidInjector<Fragment> supportFragmentInjector;
 
@@ -51,6 +52,8 @@ public class MainActivity extends AppCompatActivity
     private FrameLayout container;
     private ProgressBar spinner;
     public boolean isLoadingAllCourses;
+
+    @Inject CourseViewModel courseViewModel;
 
     @Inject ViewModelFactory viewModelFactory;
     private List<LiveData> beingObserved;
@@ -214,7 +217,7 @@ public class MainActivity extends AppCompatActivity
                 ViewModelProviders.of(this, viewModelFactory)
                         .get(CourseViewModel.class)
                         .getCoursesByTerm();
-        beingObserved.add(courseLiveData);
+                beingObserved.add(courseLiveData);
         courseLiveData.observe(this, courses -> {
             stopProgressBar();
 
