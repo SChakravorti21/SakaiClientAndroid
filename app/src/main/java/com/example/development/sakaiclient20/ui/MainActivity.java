@@ -23,6 +23,7 @@ import android.widget.ProgressBar;
 import com.example.development.sakaiclient20.R;
 import com.example.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.example.development.sakaiclient20.persistence.entities.Course;
+import com.example.development.sakaiclient20.ui.custom_components.CustomLinkMovementMethod;
 import com.example.development.sakaiclient20.ui.custom_components.DownloadCompleteReceiver;
 import com.example.development.sakaiclient20.ui.fragments.AllCoursesFragment;
 import com.example.development.sakaiclient20.ui.fragments.CourseSitesFragment;
@@ -102,6 +103,12 @@ public class MainActivity extends AppCompatActivity
     @Override
     public AndroidInjector<Fragment> supportFragmentInjector() {
         return supportFragmentInjector;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        CustomLinkMovementMethod.setFragmentManager(getSupportFragmentManager());
     }
 
     @Override

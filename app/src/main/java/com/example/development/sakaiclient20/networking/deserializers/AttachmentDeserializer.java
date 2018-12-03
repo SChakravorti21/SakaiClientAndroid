@@ -18,9 +18,9 @@ public class AttachmentDeserializer implements JsonDeserializer<Attachment> {
 
         JsonObject json = raw.getAsJsonObject();
 
-        Attachment attachment = new Attachment();
+        String url = json.get("url").getAsString();
+        Attachment attachment = new Attachment(url);
         attachment.name = json.get("name").getAsString();
-        attachment.url = json.get("url").getAsString();
 
         return attachment;
     }

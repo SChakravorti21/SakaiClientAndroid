@@ -67,11 +67,11 @@ public class AssignmentRepository {
     }
 
     private List<Assignment> persistAssignments(List<Assignment> assignments) {
-        InsertAssignmentsTask task = new InsertAssignmentsTask(assignmentDao, attachmentDao);
+        // Insert all assignments and their attachments into the database
+        assignmentDao.insert(assignments);
+        for(Assignment assignment : assignments)
+            attachmentDao.insert(assignment.attachments);
 
-        // Using generic varargs can supposedly pollute the heap,
-        // so convert to array before passing as task argument
-        task.execute(assignments.toArray(new Assignment[assignments.size()]));
         return assignments;
     }
 
@@ -85,31 +85,6 @@ public class AssignmentRepository {
         }
 
         return assignmentEntities;
-    }
-
-    private static class InsertAssignmentsTask extends AsyncTask<Assignment, Void, Void> {
-
-        private WeakReference<AssignmentDao> assignmentDao;
-        private WeakReference<AttachmentDao> attachmentDao;
-
-        private InsertAssignmentsTask(AssignmentDao assignmentDao, AttachmentDao attachmentDao) {
-            this.assignmentDao = new WeakReference<>(assignmentDao);
-            this.attachmentDao = new WeakReference<>(attachmentDao);
-        }
-
-        @Override
-        protected Void doInBackground(Assignment... assignments) {
-            if(assignmentDao == null || assignmentDao.get() == null)
-                return null;
-            if(attachmentDao == null || attachmentDao.get() == null)
-                return null;
-
-            assignmentDao.get().insert(assignments);
-            for(Assignment assignment : assignments)
-                attachmentDao.get().insert(assignment.attachments);
-
-            return null;
-        }
     }
 
 }
