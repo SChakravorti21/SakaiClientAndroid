@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity
         // Request all site pages for the Home Fragment and then loads the fragment
         //refresh since we are loading for the same time
         beingObserved = new ArrayList<>();
-        loadHomeFragment();
+        loadCoursesFragment(true);
     }
 
     @Override
@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity
         removeObservations();
         switch (item.getItemId()) {
             case R.id.navigation_home:
-                loadHomeFragment();
+                loadCoursesFragment(false);
                 return true;
             default:
                 return false;
@@ -208,7 +208,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * Loads the all courses fragment (home page)
      */
-    public void loadHomeFragment() {
+    public void loadCoursesFragment(boolean refresh) {
         this.container.setVisibility(View.GONE);
         startProgressBar();
         isLoadingAllCourses = true;
@@ -216,8 +216,7 @@ public class MainActivity extends AppCompatActivity
         LiveData<List<List<Course>>> courseLiveData =
                 ViewModelProviders.of(this, viewModelFactory)
                         .get(CourseViewModel.class)
-                        .getCoursesByTerm();
-                beingObserved.add(courseLiveData);
+                        .getCoursesByTerm(refresh);
         courseLiveData.observe(this, courses -> {
             stopProgressBar();
 
@@ -227,6 +226,8 @@ public class MainActivity extends AppCompatActivity
 
             setActionBarTitle(getString(R.string.app_name));
             isLoadingAllCourses = false;
+
+            courseLiveData.removeObservers(this);
         });
     }
 
