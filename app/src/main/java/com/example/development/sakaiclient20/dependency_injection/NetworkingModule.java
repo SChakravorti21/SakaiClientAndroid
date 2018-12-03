@@ -24,12 +24,25 @@ class NetworkingModule {
     @Named("course_retrofit")
     @Provides
     Retrofit courseRetrofit(Retrofit.Builder builder,
-                            @Named("course_deserializer") Gson courseDeserializer
-    ) {
+                            @Named("course_deserializer") Gson courseDeserializer) {
         return builder
                 .addConverterFactory(GsonConverterFactory.create(courseDeserializer))
                 .build();
     }
+
+
+    @Named("assignment_retrofit")
+    @Provides
+    Retrofit assignmentRetrofit(Retrofit.Builder builder,
+                                @Named("assignment_deserializer") Gson assignmentDeserializer,
+                                @Named("attachment_deserializer") Gson attachmentDeserializer) {
+        return builder
+                .addConverterFactory(GsonConverterFactory.create(assignmentDeserializer))
+                .addConverterFactory(GsonConverterFactory.create(attachmentDeserializer))
+                .build();
+    }
+
+
 
 
     @Provides
