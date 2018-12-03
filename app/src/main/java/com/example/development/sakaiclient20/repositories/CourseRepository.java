@@ -57,19 +57,21 @@ public class CourseRepository {
                 // for a single element
                 .map(Collections::singletonList)
                 .map(this::persistCourses)
-                .toCompletable();
+                .ignoreElement();
     }
 
     public Completable refreshAllCourses() {
         return coursesService.getAllSites()
                 .map(CoursesResponse::getCourses)
                 .map(this::persistCourses)
-                .toCompletable();
+                .ignoreElement();
     }
 
     private List<Course> persistCourses(List<Course> courses) {
-        InsertCoursesTask task = new InsertCoursesTask(courseDao, sitePageDao);
-        task.execute(courses.toArray(new Course[0]));
+        courseDao.insert(courses);
+        for(Course course : courses)
+            sitePageDao.insert(course.sitePages);
+
         return courses;
     }
 
@@ -104,28 +106,5 @@ public class CourseRepository {
         }
 
         return coursesSortedByTerm;
-    }
-
-    private static class InsertCoursesTask extends AsyncTask<Course, Void, Void> {
-
-        private WeakReference<CourseDao> courseDao;
-        private WeakReference<SitePageDao> sitePageDao;
-
-        private InsertCoursesTask(CourseDao courseDao, SitePageDao sitePageDao) {
-            this.courseDao = new WeakReference<>(courseDao);
-            this.sitePageDao = new WeakReference<>(sitePageDao);
-        }
-
-        @Override
-        protected Void doInBackground(Course... courses) {
-            if(courseDao == null || courseDao.get() == null)
-                return null;
-
-            courseDao.get().insert(courses);
-            for(Course course : courses)
-                sitePageDao.get().insert(course.sitePages);
-
-            return null;
-        }
     }
 }

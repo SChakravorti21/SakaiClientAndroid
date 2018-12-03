@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.example.development.sakaiclient20.R;
 import com.example.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
@@ -228,6 +229,12 @@ public class MainActivity extends AppCompatActivity
             isLoadingAllCourses = false;
 
             courseLiveData.removeObservers(this);
+            if(refresh)
+                Toast.makeText(
+                        this,
+                        "Successfully refreshed courses",
+                        Toast.LENGTH_SHORT
+                ).show();
         });
     }
 
