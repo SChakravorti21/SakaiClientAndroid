@@ -21,10 +21,12 @@ import com.example.development.sakaiclient20.R;
 import com.example.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.example.development.sakaiclient20.persistence.entities.Course;
 import com.example.development.sakaiclient20.ui.fragments.AllCoursesFragment;
+import com.example.development.sakaiclient20.ui.fragments.AllGradesFragment;
 import com.example.development.sakaiclient20.ui.fragments.CourseSitesFragment;
 import com.example.development.sakaiclient20.ui.helpers.BottomNavigationViewHelper;
 import com.example.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
 import com.example.development.sakaiclient20.ui.viewmodels.CourseViewModel;
+import com.example.development.sakaiclient20.ui.viewmodels.GradeViewModel;
 import com.example.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
 import java.util.ArrayList;
@@ -36,6 +38,7 @@ import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.HasSupportFragmentInjector;
+import dagger.multibindings.IntoMap;
 
 public class MainActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener,
@@ -54,6 +57,8 @@ public class MainActivity extends AppCompatActivity
     public boolean isLoadingAllCourses;
 
     @Inject CourseViewModel courseViewModel;
+    @Inject GradeViewModel gradeViewModel;
+
 
     @Inject ViewModelFactory viewModelFactory;
     private List<LiveData> beingObserved;
@@ -152,6 +157,9 @@ public class MainActivity extends AppCompatActivity
             case R.id.navigation_home:
                 loadHomeFragment();
                 return true;
+            case R.id.navigation_gradebook:
+                loadGradesFragment();
+                return true;
             default:
                 return false;
         }
@@ -227,6 +235,32 @@ public class MainActivity extends AppCompatActivity
 
             setActionBarTitle(getString(R.string.app_name));
             isLoadingAllCourses = false;
+        });
+    }
+
+
+    /**
+     * Loads the all grades fragment
+     *
+     */
+    public void loadGradesFragment() {
+        this.container.setVisibility(View.GONE);
+        startProgressBar();
+
+        LiveData<List<List<Course>>> courseLiveData =
+                ViewModelProviders.of(this, viewModelFactory)
+                .get(GradeViewModel.class)
+                .getCoursesByTerm();
+        beingObserved.add(courseLiveData);
+
+        courseLiveData.observe(this, courses -> {
+            stopProgressBar();
+
+            AllGradesFragment gradesFragment = AllGradesFragment.newInstance(courses);
+            loadFragment(gradesFragment, false, false);
+            container.setVisibility(View.VISIBLE);
+
+            setActionBarTitle(getString(R.string.app_name));
         });
     }
 

@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.example.development.sakaiclient20.networking.services.AssignmentsService;
 import com.example.development.sakaiclient20.networking.services.CoursesService;
+import com.example.development.sakaiclient20.networking.services.GradesService;
 import com.example.development.sakaiclient20.networking.services.ServiceFactory;
 
 import dagger.Module;
@@ -18,6 +19,10 @@ class ServiceModule {
 
     @Provides static AssignmentsService assignmentsService(Context context) {
         return ServiceFactory.getService(context, AssignmentsService.class);
+    }
+
+    @Provides static GradesService gradesService(Context context) {
+        return ServiceFactory.getService(context, GradesService.class);
     }
 
 }

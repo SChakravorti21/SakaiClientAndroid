@@ -10,6 +10,8 @@ import com.example.development.sakaiclient20.repositories.GradesRepository;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
@@ -24,6 +26,7 @@ public class GradeViewModel extends BaseViewModel {
      * @param courseRepository course repository dependency needed for superclass
      * @param gradesRepository grades repository dependency needed to refresh and get grades
      */
+    @Inject
     public GradeViewModel(CourseRepository courseRepository, GradesRepository gradesRepository) {
         super(courseRepository);
         this.gradesRepository = gradesRepository;
@@ -70,7 +73,7 @@ public class GradeViewModel extends BaseViewModel {
     /**
      * Refreshes all grades by telling the grades repository to make
      * a network request and then persist them in the database
-     *
+     * <p>
      * Then it calls load courses (now that the new grades are in the database)
      */
     @Override
@@ -88,7 +91,7 @@ public class GradeViewModel extends BaseViewModel {
 
     /**
      * Refreshes the grades for a given site
-     *
+     * <p>
      * Loads the site grades given that the grades for that site are updated in the database
      *
      * @param siteId
