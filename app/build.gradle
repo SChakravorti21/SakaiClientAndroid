@@ -35,7 +35,7 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
@@ -59,6 +59,7 @@ dependencies {
     def dagger_version = "2.11"
     implementation "com.google.dagger:dagger:$dagger_version"
     annotationProcessor "com.google.dagger:dagger-compiler:$dagger_version"
+
     // Android-specific Dagger libraries
     implementation "com.google.dagger:dagger-android:$dagger_version"
     implementation "com.google.dagger:dagger-android-support:$dagger_version"
@@ -67,17 +68,22 @@ dependencies {
     // RxJava2 and RxAndroid
     api 'io.reactivex.rxjava2:rxjava:2.2.0'
     api 'io.reactivex.rxjava2:rxandroid:2.0.1'
+
     //Retrofit is used for network requests
     api 'com.squareup.retrofit2:retrofit:2.4.0'
     api 'com.squareup.retrofit2:converter-gson:2.3.0'
     api 'com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0'
+
     //OkHttp allows us to create interceptors for the requests
     api 'com.squareup.okhttp3:okhttp:3.10.0'
+
     //Using the Gson converter factory to convert JSON to POJOs
     api 'com.google.code.gson:gson:2.8.4'
     api 'com.squareup.retrofit2:converter-gson:2.3.0'
+
     //Common-Lang3 is used for toString of POJOs
     api 'org.apache.commons:commons-lang3:3.6'
+
     //Android TreeView library for generating tree-like structures
     api 'com.github.bmelnychuk:atv:1.2.9'
 
@@ -85,8 +91,10 @@ dependencies {
     def room_version = "1.1.1"
     implementation "android.arch.persistence.room:runtime:$room_version"
     annotationProcessor "android.arch.persistence.room:compiler:$room_version"
+
     // optional - RxJava support for Room
     implementation "android.arch.persistence.room:rxjava2:$room_version"
+
     // Test helpers for Room
     testImplementation "android.arch.persistence.room:testing:$room_version"
 }
