@@ -34,7 +34,10 @@ class RepositoryModule {
         return new AssignmentRepository(assignmentDao, attachmentDao, assignmentsService);
     }
 
-    @Provides static GradesRepository provideGradesRepository(GradeDao gradeDao, GradesService gradesService) {
+    @Provides static GradesRepository provideGradesRepository(
+            GradeDao gradeDao,
+            GradesService gradesService
+    ) {
         return new GradesRepository(gradeDao, gradesService);
     }
 
