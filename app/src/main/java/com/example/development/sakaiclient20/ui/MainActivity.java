@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -49,22 +50,14 @@ public class MainActivity extends AppCompatActivity
 
     @Inject DispatchingAndroidInjector<Fragment> supportFragmentInjector;
 
-    public static final String ALL_COURSES_TAG = "ALL_COURSES";
-    public static final String COURSE_TAG = "COURSE";
-    public static final String ALL_GRADES_TAG = "GRADES";
-    public static final String ASSIGNMENTS_TAG = "ASSIGNMENTS";
-    public static final String SITE_GRADES_TAG = "SITE_GRADES";
-
     private FrameLayout container;
     private ProgressBar spinner;
-    public boolean isLoadingAllCourses;
-
-    @Inject CourseViewModel courseViewModel;
-    @Inject GradeViewModel gradeViewModel;
+    private boolean isLoadingAllCourses;
 
 
     @Inject ViewModelFactory viewModelFactory;
     private List<LiveData> beingObserved;
+    private Fragment displayingFragment;
 
     /******************************\
        LIFECYCLE/INTERFACE METHODS
@@ -192,7 +185,17 @@ public class MainActivity extends AppCompatActivity
 
         gradesLiveData.observe(this, grades -> {
             SiteGradesFragment fragment = SiteGradesFragment.newInstance(grades, course.siteId);
+
+            // if the displaying fragment is already site grades fragment, (refreshing)
+            // dont show animations or add to backstack
+
+
+            if(this.displayingFragment instanceof SiteGradesFragment)
+                popBackStackUntil(this.displayingFragment.getClass().getCanonicalName());
+
             loadFragment(fragment, true, true);
+
+
             setActionBarTitle(String.format("Gradebook: %s", course.title));
         });
     }
@@ -218,19 +221,30 @@ public class MainActivity extends AppCompatActivity
      * @param fragment
      * @return boolean whether the fragment was successfully loaded
      */
-    public boolean loadFragment(Fragment fragment, boolean showAnimations, boolean addToBackStack) {
+    private boolean loadFragment(Fragment fragment, boolean showAnimations, boolean addToBackStack) {
         if (fragment != null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             if (showAnimations)
                 transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
             if (addToBackStack)
-                transaction.addToBackStack(null);
+                transaction.addToBackStack(fragment.getClass().getCanonicalName());
 
             transaction.replace(R.id.fragment_container, fragment).commit();
+            displayingFragment = fragment;
             return true;
         }
 
         return false;
+    }
+
+
+    /**
+     * pops the fragment backstacak until a given fragment
+     *
+     * @param name name of fragment to pop until
+     */
+    private void popBackStackUntil(String name) {
+        getSupportFragmentManager().popBackStack(name, FragmentManager.POP_BACK_STACK_INCLUSIVE);
     }
 
     /**
