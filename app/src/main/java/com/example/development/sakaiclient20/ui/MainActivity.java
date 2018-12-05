@@ -18,11 +18,14 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
 import com.example.development.sakaiclient20.R;
+import com.example.development.sakaiclient20.models.sakai.gradebook.SiteGrades;
 import com.example.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.example.development.sakaiclient20.persistence.entities.Course;
+import com.example.development.sakaiclient20.persistence.entities.Grade;
 import com.example.development.sakaiclient20.ui.fragments.AllCoursesFragment;
 import com.example.development.sakaiclient20.ui.fragments.AllGradesFragment;
 import com.example.development.sakaiclient20.ui.fragments.CourseSitesFragment;
+import com.example.development.sakaiclient20.ui.fragments.SiteGradesFragment;
 import com.example.development.sakaiclient20.ui.helpers.BottomNavigationViewHelper;
 import com.example.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
 import com.example.development.sakaiclient20.ui.viewmodels.CourseViewModel;
@@ -172,11 +175,28 @@ public class MainActivity extends AppCompatActivity
                 .getCourse(siteId);
         beingObserved.add(courseLiveData);
         courseLiveData.observe(this, course -> {
-            CourseSitesFragment fragment = CourseSitesFragment.newInstance(course);
+            CourseSitesFragment fragment = CourseSitesFragment.newInstance(course, this);
             loadFragment(fragment, true, true);
             setActionBarTitle(course.title);
         });
     }
+
+
+    @Override
+    public void onSiteGradesSelected(Course course) {
+        LiveData<List<Grade>> gradesLiveData = ViewModelProviders.of(this, viewModelFactory)
+                .get(GradeViewModel.class)
+                .getGradesForSite(course.siteId);
+
+        beingObserved.add(gradesLiveData);
+
+        gradesLiveData.observe(this, grades -> {
+            SiteGradesFragment fragment = SiteGradesFragment.newInstance(grades, course.siteId);
+            loadFragment(fragment, true, true);
+            setActionBarTitle(String.format("Gradebook: %s", course.title));
+        });
+    }
+
 
     /*******************************\
       LIFECYCLE CONVENIENCE METHODS

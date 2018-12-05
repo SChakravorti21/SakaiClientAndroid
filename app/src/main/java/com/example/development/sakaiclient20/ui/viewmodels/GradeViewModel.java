@@ -27,7 +27,7 @@ public class GradeViewModel extends BaseViewModel {
      * @param gradesRepository grades repository dependency needed to refresh and get grades
      */
     @Inject
-    public GradeViewModel(CourseRepository courseRepository, GradesRepository gradesRepository) {
+    GradeViewModel(CourseRepository courseRepository, GradesRepository gradesRepository) {
         super(courseRepository);
         this.gradesRepository = gradesRepository;
         this.siteIdToGrades = new HashMap<>();
