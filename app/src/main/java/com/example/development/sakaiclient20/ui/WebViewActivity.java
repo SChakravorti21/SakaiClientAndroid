@@ -8,7 +8,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.example.development.sakaiclient20.R;
-import com.example.development.sakaiclient20.utils.requests.CASWebViewClient;
+import com.example.development.sakaiclient20.networking.utilities.CASWebViewClient;
 
 public class WebViewActivity extends AppCompatActivity {
 
@@ -35,6 +35,11 @@ public class WebViewActivity extends AppCompatActivity {
                     // need to be saved for the custom OkHttpClients to be able to access.
                     Intent intent = new Intent(WebViewActivity.this, MainActivity.class);
                     startActivity(intent);
+
+                    // If the user presses the back button from the MainActivity,
+                    // the app should exit entirely instead of returning to this
+                    // WebView screen since the login page will no longer be active
+                    finish();
                 }
         );
         loginWebView.setWebViewClient(webViewClient);

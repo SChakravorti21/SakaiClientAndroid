@@ -12,7 +12,6 @@ import java.util.List;
  * Created by Development on 8/5/18.
  */
 
-
 public class AssignmentWithAttachments {
     @Embedded
     public final Assignment assignment;
