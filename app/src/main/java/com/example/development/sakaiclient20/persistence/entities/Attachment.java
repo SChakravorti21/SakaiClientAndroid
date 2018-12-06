@@ -17,6 +17,11 @@ import android.support.annotation.NonNull;
                         parentColumns = "assignmentId",
                         childColumns = "assignmentId",
                         onDelete = ForeignKey.CASCADE,
+                        onUpdate = ForeignKey.CASCADE),
+                @ForeignKey(entity = Announcement.class,
+                        parentColumns = "announcementId",
+                        childColumns = "announcementId",
+                        onDelete = ForeignKey.CASCADE,
                         onUpdate = ForeignKey.CASCADE)
         },
         indices = {
