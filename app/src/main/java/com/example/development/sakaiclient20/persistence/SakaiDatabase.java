@@ -6,11 +6,13 @@ import android.arch.persistence.room.RoomDatabase;
 import android.arch.persistence.room.TypeConverters;
 import android.content.Context;
 
+import com.example.development.sakaiclient20.persistence.access.AnnouncementDao;
 import com.example.development.sakaiclient20.persistence.access.AssignmentDao;
 import com.example.development.sakaiclient20.persistence.access.AttachmentDao;
 import com.example.development.sakaiclient20.persistence.access.CourseDao;
 import com.example.development.sakaiclient20.persistence.access.GradeDao;
 import com.example.development.sakaiclient20.persistence.access.SitePageDao;
+import com.example.development.sakaiclient20.persistence.entities.Announcement;
 import com.example.development.sakaiclient20.persistence.entities.Assignment;
 import com.example.development.sakaiclient20.persistence.entities.Attachment;
 import com.example.development.sakaiclient20.persistence.entities.Course;
@@ -24,12 +26,13 @@ import com.example.development.sakaiclient20.persistence.typeconverters.TermConv
  */
 
 @Database(entities = {
-            Course.class,
-            SitePage.class,
-            Grade.class,
-            Assignment.class,
-            Attachment.class
-        }, version = 3, exportSchema = true)
+        Course.class,
+        SitePage.class,
+        Grade.class,
+        Assignment.class,
+        Attachment.class,
+        Announcement.class
+}, version = 3)
 @TypeConverters({DateConverter.class, TermConverter.class})
 public abstract class SakaiDatabase extends RoomDatabase {
 
@@ -42,11 +45,13 @@ public abstract class SakaiDatabase extends RoomDatabase {
     public abstract AssignmentDao getAssignmentDao();
     public abstract AttachmentDao getAttachmentDao();
     public abstract GradeDao getGradeDao();
+    public abstract AnnouncementDao getAnnouncementDao();
+
 
     public static SakaiDatabase getInstance(Context context) {
-        if(mInstance == null) {
+        if (mInstance == null) {
             synchronized (lock) {
-                if(mInstance == null) {
+                if (mInstance == null) {
                     mInstance = Room
                             .databaseBuilder(context, SakaiDatabase.class, DB_NAME)
                             .fallbackToDestructiveMigration()

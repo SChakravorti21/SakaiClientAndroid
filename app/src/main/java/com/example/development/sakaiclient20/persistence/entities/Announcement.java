@@ -29,7 +29,7 @@ public class Announcement {
     public final String announcementId;
 
     @Ignore
-    public List<Attachment> attachments;
+    public List<Attachment> attachments = new ArrayList<>();
 
     public String body;
     public String title;
@@ -37,8 +37,7 @@ public class Announcement {
     public String createdBy;
     public long createdOn;
 
-    public Announcement(@NonNull String id) {
-        this.announcementId = id;
-        this.attachments = new ArrayList<>();
+    public Announcement(@NonNull String announcementId) {
+        this.announcementId = announcementId;
     }
 }
