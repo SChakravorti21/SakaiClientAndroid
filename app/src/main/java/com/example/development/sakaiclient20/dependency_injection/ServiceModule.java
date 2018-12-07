@@ -2,7 +2,7 @@ package com.example.development.sakaiclient20.dependency_injection;
 
 import com.example.development.sakaiclient20.networking.services.AssignmentsService;
 import com.example.development.sakaiclient20.networking.services.CoursesService;
-import com.example.development.sakaiclient20.networking.services.GradesService;
+import com.example.development.sakaiclient20.networking.services.GradeService;
 
 import javax.inject.Named;
 
@@ -24,8 +24,8 @@ class ServiceModule {
     }
 
     @Provides
-    static GradesService gradesService(@Named("grades_retrofit") Retrofit retrofit) {
-        return retrofit.create(GradesService.class);
+    static GradeService gradesService(@Named("grades_retrofit") Retrofit retrofit) {
+        return retrofit.create(GradeService.class);
     }
 
 }

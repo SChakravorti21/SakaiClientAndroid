@@ -5,7 +5,7 @@ import android.arch.lifecycle.MutableLiveData;
 
 import com.example.development.sakaiclient20.persistence.entities.Grade;
 import com.example.development.sakaiclient20.repositories.CourseRepository;
-import com.example.development.sakaiclient20.repositories.GradesRepository;
+import com.example.development.sakaiclient20.repositories.GradeRepository;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,19 +17,19 @@ import io.reactivex.schedulers.Schedulers;
 
 public class GradeViewModel extends BaseViewModel {
 
-    private GradesRepository gradesRepository;
+    private GradeRepository gradeRepository;
     private HashMap<String, MutableLiveData<List<Grade>>> siteIdToGrades;
 
     /**
      * Grades view model constructor
      *
      * @param courseRepository course repository dependency needed for superclass
-     * @param gradesRepository grades repository dependency needed to refresh and get grades
+     * @param gradeRepository grades repository dependency needed to refresh and get grades
      */
     @Inject
-    GradeViewModel(CourseRepository courseRepository, GradesRepository gradesRepository) {
+    GradeViewModel(CourseRepository courseRepository, GradeRepository gradeRepository) {
         super(courseRepository);
-        this.gradesRepository = gradesRepository;
+        this.gradeRepository = gradeRepository;
         this.siteIdToGrades = new HashMap<>();
     }
 
@@ -59,7 +59,7 @@ public class GradeViewModel extends BaseViewModel {
      */
     public void loadSiteGrades(String siteId) {
         this.compositeDisposable.add(
-                this.gradesRepository.getGradesForSite(siteId)
+                this.gradeRepository.getGradesForSite(siteId)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -79,7 +79,7 @@ public class GradeViewModel extends BaseViewModel {
     @Override
     public void refreshAllData() {
         this.compositeDisposable.add(
-                this.gradesRepository.refreshAllGrades()
+                this.gradeRepository.refreshAllGrades()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -99,7 +99,7 @@ public class GradeViewModel extends BaseViewModel {
     @Override
     public void refreshSiteData(String siteId) {
         this.compositeDisposable.add(
-                this.gradesRepository.refreshSiteGrades(siteId)
+                this.gradeRepository.refreshSiteGrades(siteId)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
