@@ -13,13 +13,13 @@ import java.util.List;
 import io.reactivex.Completable;
 import io.reactivex.Single;
 
-public class AnnouncementsRepository {
+public class AnnouncementRepository {
 
     private AnnouncementDao announcementDao;
     private AttachmentDao attachmentDao;
     private AnnouncementsService announcementsService;
 
-    public AnnouncementsRepository(AnnouncementDao announcementDao, AttachmentDao attachmentDao, AnnouncementsService announcementsService) {
+    public AnnouncementRepository(AnnouncementDao announcementDao, AttachmentDao attachmentDao, AnnouncementsService announcementsService) {
         this.announcementDao = announcementDao;
         this.attachmentDao = attachmentDao;
         this.announcementsService = announcementsService;

@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.example.development.sakaiclient20.R;
 import com.example.development.sakaiclient20.networking.deserializers.CourseDeserializer;
+import com.example.development.sakaiclient20.networking.services.AnnouncementsService;
 import com.example.development.sakaiclient20.networking.services.AssignmentsService;
 import com.example.development.sakaiclient20.networking.services.CoursesService;
 import com.example.development.sakaiclient20.networking.services.GradesService;
@@ -35,6 +36,11 @@ class ServiceModule {
     @Provides
     static AssignmentsService assignmentsService(@Named("assignment_retrofit") Retrofit retrofit) {
         return retrofit.create(AssignmentsService.class);
+    }
+
+    @Provides
+    static AnnouncementsService announcementsService(@Named("announcement_retrofit") Retrofit retrofit) {
+        return retrofit.create(AnnouncementsService.class);
     }
 
     @Provides

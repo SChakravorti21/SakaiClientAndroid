@@ -54,7 +54,7 @@ class DeserializerModule {
                 .create();
     }
 
-    @Named("attachment_deserializer")
+    @Named("announcement_deserializer")
     @Provides Gson announcementDeserializer() {
         return new GsonBuilder()
                 .setLenient()

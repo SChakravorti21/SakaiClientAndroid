@@ -16,9 +16,11 @@ import io.reactivex.Flowable;
 @Dao
 public abstract class AnnouncementDao implements BaseDao<Announcement> {
 
+    @Transaction
     @Query("SELECT * FROM announcements ORDER BY createdOn DESC")
     public abstract Flowable<List<AnnouncementWithAttachments>> getAllAnnouncements();
 
+    @Transaction
     @Query("SELECT * FROM announcements WHERE siteId = :siteId ORDER BY createdOn DESC")
     public abstract Flowable<List<AnnouncementWithAttachments>> getAnnouncementsForSite(String siteId);
 
