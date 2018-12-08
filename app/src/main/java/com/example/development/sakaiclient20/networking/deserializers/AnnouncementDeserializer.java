@@ -22,7 +22,11 @@ public class AnnouncementDeserializer implements JsonDeserializer<Announcement> 
         Announcement announcement = new Announcement(id);
 
         announcement.createdOn = jsonObject.get("createdOn").getAsLong();
-        announcement.createdBy = jsonObject.get("createdBy").getAsString();
+
+        JsonElement createdByElement = jsonObject.get("createdByDisplayName");
+        announcement.createdBy = createdByElement.isJsonNull() ?
+                "" : createdByElement.getAsString();
+
         announcement.body = jsonObject.get("body").getAsString();
         announcement.title = jsonObject.get("title").getAsString();
         announcement.siteId = jsonObject.get("siteId").getAsString();

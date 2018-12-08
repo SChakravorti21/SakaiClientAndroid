@@ -13,10 +13,10 @@ import android.widget.TextView;
 import com.example.development.sakaiclient20.R;
 import com.example.development.sakaiclient20.persistence.entities.Announcement;
 import com.example.development.sakaiclient20.ui.fragments.AnnouncementsFragment;
-import com.example.development.sakaiclient20.ui.helpers.RutgersSubjectCodes;
 import com.example.development.sakaiclient20.ui.listeners.LoadMoreListener;
+import com.example.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by atharva on 7/8/18
@@ -35,9 +35,9 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<RecyclerView.View
     private static final int END_OFFSET_BEFORE_RELOAD = 5;
 
     // list of announcements to display
-    private ArrayList<Announcement> announcements;
+    private List<Announcement> announcements;
     // click listener for each announcement card
-    private AnnouncementItemClickListener clickListener;
+    private OnActionPerformedListener announcementclickListener;
 
     // number of total announcements displaying
     private int numItems;
@@ -49,7 +49,7 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<RecyclerView.View
     private LoadMoreListener loadMoreListener;
 
 
-    public AnnouncementsAdapter(ArrayList<Announcement> announcementCollections,
+    public AnnouncementsAdapter(List<Announcement> announcementCollections,
                                 RecyclerView announcementsRecycler,
                                 int type) {
 
@@ -112,7 +112,9 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<RecyclerView.View
 
         @Override
         public void onClick(View v) {
-            clickListener.onClickAnnouncement(v, getAdapterPosition());
+            int pos = getAdapterPosition();
+            Announcement announcementToExpand = announcements.get(pos);
+            announcementclickListener.onAnnouncementSelected(announcementToExpand);
         }
     }
 
@@ -161,17 +163,20 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<RecyclerView.View
 
             announcementHolder.authorTxt.setText(currAnnouncement.createdBy);
 
-            int subjCode = DataHandler.getSubjectCodeFromId(currAnnouncement.getSiteId());
-            announcementHolder.courseIcon.setText(RutgersSubjectCodes.mapCourseCodeToIcon.get(subjCode));
+            // TODO do icon stuff
+//            int subjCode = DataHandler.getSubjectCodeFromId(currAnnouncement.siteId);
+//            announcementHolder.courseIcon.setText(RutgersSubjectCodes.mapCourseCodeToIcon.get(subjCode));
 
-            announcementHolder.date.setText(currAnnouncement.getShortFormattedDate());
 
+//            announcementHolder.date.setText(currAnnouncement.getShortFormattedDate());
+            announcementHolder.date.setText("SHORT DATE");
 
             //check to see the announcement type
             if(announcementType == AnnouncementsFragment.ALL_ANNOUNCEMENTS) {
 
                 // if all announcements, show course title, then announcement title
-                announcementHolder.cardHeading2.setText(DataHandler.getTitleFromId(currAnnouncement.siteId));
+//                announcementHolder.cardHeading2.setText(DataHandler.getTitleFromId(currAnnouncement.siteId));
+                announcementHolder.cardHeading2.setText("SITE TITLE");
                 announcementHolder.cardHeading3.setText(currAnnouncement.title);
 
             }
@@ -212,8 +217,8 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<RecyclerView.View
     }
 
 
-    public void setClickListener(AnnouncementItemClickListener assignmentClickListener) {
-        this.clickListener = assignmentClickListener;
+    public void setClickListener(OnActionPerformedListener announcementclickListener) {
+        this.announcementclickListener = announcementclickListener;
     }
 
     public void setLoadMoreListener(LoadMoreListener listener) {

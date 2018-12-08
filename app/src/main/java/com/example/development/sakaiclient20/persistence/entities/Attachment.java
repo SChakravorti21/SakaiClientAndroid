@@ -12,18 +12,18 @@ import android.support.annotation.NonNull;
  */
 
 @Entity(tableName = "attachments",
-        foreignKeys = {
-                @ForeignKey(entity = Assignment.class,
-                        parentColumns = "assignmentId",
-                        childColumns = "assignmentId",
-                        onDelete = ForeignKey.CASCADE,
-                        onUpdate = ForeignKey.CASCADE),
-                @ForeignKey(entity = Announcement.class,
-                        parentColumns = "announcementId",
-                        childColumns = "announcementId",
-                        onDelete = ForeignKey.CASCADE,
-                        onUpdate = ForeignKey.CASCADE)
-        },
+//        foreignKeys = {
+//                @ForeignKey(entity = Assignment.class,
+//                        parentColumns = "assignmentId",
+//                        childColumns = "assignmentId",
+//                        onDelete = ForeignKey.CASCADE,
+//                        onUpdate = ForeignKey.CASCADE),
+//                @ForeignKey(entity = Announcement.class,
+//                        parentColumns = "announcementId",
+//                        childColumns = "announcementId",
+//                        onDelete = ForeignKey.CASCADE,
+//                        onUpdate = ForeignKey.CASCADE)
+//        },
         indices = {
                 @Index(value = "assignmentId"),
                 @Index(value = "announcementId")
