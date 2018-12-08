@@ -57,14 +57,14 @@ public class CourseRepository {
                 // for a single element
                 .map(Collections::singletonList)
                 .map(this::persistCourses)
-                .toCompletable();
+                .ignoreElement();
     }
 
     public Completable refreshAllCourses() {
         return coursesService.getAllSites()
                 .map(CoursesResponse::getCourses)
                 .map(this::persistCourses)
-                .toCompletable();
+                .ignoreElement();
     }
 
     private List<Course> persistCourses(List<Course> courses) {

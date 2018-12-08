@@ -17,12 +17,14 @@ import android.view.animation.LayoutAnimationController;
 
 import com.example.development.sakaiclient20.R;
 import com.example.development.sakaiclient20.persistence.entities.Announcement;
+import com.example.development.sakaiclient20.persistence.entities.Course;
 import com.example.development.sakaiclient20.ui.adapters.AnnouncementsAdapter;
 import com.example.development.sakaiclient20.ui.listeners.LoadMoreListener;
 import com.example.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
 import com.example.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -38,6 +40,8 @@ public class AnnouncementsFragment extends Fragment {
 
     // announcements to display
     private List<Announcement> allAnnouncements;
+    private Map<String, Course> siteIdToCourse;
+
     private SwipeRefreshLayout swipeRefreshLayout;
 
     // recycler view displaying announcements
@@ -61,10 +65,11 @@ public class AnnouncementsFragment extends Fragment {
 
 
     // TODO remove new instance method
-    public static AnnouncementsFragment newInstance(List<Announcement> announcements, OnActionPerformedListener onActionPerformedListener) {
+    public static AnnouncementsFragment newInstance(List<Announcement> announcements, Map<String, Course> siteIdToCourse, OnActionPerformedListener onActionPerformedListener) {
 
         AnnouncementsFragment fragment = new AnnouncementsFragment();
         fragment.allAnnouncements = announcements;
+        fragment.siteIdToCourse = siteIdToCourse;
         fragment.onActionPerformedListener = onActionPerformedListener;
         return fragment;
     }
@@ -96,7 +101,6 @@ public class AnnouncementsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-
         View view = inflater.inflate(R.layout.fragment_announcements, null);
         announcementRecycler = view.findViewById(R.id.announcements_recycler);
         swipeRefreshLayout = view.findViewById(R.id.swiperefresh);
@@ -121,7 +125,7 @@ public class AnnouncementsFragment extends Fragment {
         announcementRecycler.setLayoutManager(layoutManager);
         announcementRecycler.setItemAnimator(new DefaultItemAnimator());
 
-        adapter = new AnnouncementsAdapter(allAnnouncements, announcementRecycler, announcementType);
+        adapter = new AnnouncementsAdapter(allAnnouncements, siteIdToCourse, announcementRecycler, announcementType);
         adapter.setClickListener(onActionPerformedListener);
         adapter.setLoadMoreListener(loadMoreListener);
 

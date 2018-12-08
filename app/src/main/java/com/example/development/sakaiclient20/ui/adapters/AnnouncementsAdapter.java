@@ -12,12 +12,14 @@ import android.widget.TextView;
 
 import com.example.development.sakaiclient20.R;
 import com.example.development.sakaiclient20.persistence.entities.Announcement;
+import com.example.development.sakaiclient20.persistence.entities.Course;
 import com.example.development.sakaiclient20.ui.fragments.AnnouncementsFragment;
+import com.example.development.sakaiclient20.ui.helpers.RutgersSubjectCodes;
 import com.example.development.sakaiclient20.ui.listeners.LoadMoreListener;
 import com.example.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by atharva on 7/8/18
@@ -37,6 +39,8 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     // list of announcements to display
     private List<Announcement> announcements;
+    // mapping siteIdToCourse, needed to get subject code and course title
+    private Map<String, Course> siteIdToCourse;
     // click listener for each announcement card
     private OnActionPerformedListener announcementclickListener;
 
@@ -51,11 +55,13 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<RecyclerView.View
 
 
     public AnnouncementsAdapter(List<Announcement> announcements,
+                                Map<String, Course> siteIdToCourse,
                                 RecyclerView announcementsRecycler,
                                 int type) {
 
         this.announcements = announcements;
         this.announcementType = type;
+        this.siteIdToCourse = siteIdToCourse;
 
 
 //        final LinearLayoutManager manager = (LinearLayoutManager)announcementsRecycler.getLayoutManager();
@@ -114,8 +120,8 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<RecyclerView.View
         @Override
         public void onClick(View v) {
             int pos = getAdapterPosition();
-//            Announcement announcementToExpand = announcements.get(pos);
-//            announcementclickListener.onAnnouncementSelected(announcementToExpand);
+            Announcement announcementToExpand = announcements.get(pos);
+            announcementclickListener.onAnnouncementSelected(announcementToExpand);
         }
     }
 
@@ -164,20 +170,16 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<RecyclerView.View
 
             announcementHolder.authorTxt.setText(currAnnouncement.createdBy);
 
-            // TODO do icon stuff
-//            int subjCode = DataHandler.getSubjectCodeFromId(currAnnouncement.siteId);
-//            announcementHolder.courseIcon.setText(RutgersSubjectCodes.mapCourseCodeToIcon.get(subjCode));
+            int subjCode = siteIdToCourse.get(currAnnouncement.siteId).subjectCode;
+            announcementHolder.courseIcon.setText(RutgersSubjectCodes.mapCourseCodeToIcon.get(subjCode));
 
-
-//            announcementHolder.date.setText(currAnnouncement.getShortFormattedDate());
-            announcementHolder.date.setText("SHORT DATE");
+            announcementHolder.date.setText(currAnnouncement.getShortFormattedDate());
 
             //check to see the announcement type
             if(announcementType == AnnouncementsFragment.ALL_ANNOUNCEMENTS) {
 
                 // if all announcements, show course title, then announcement title
-//                announcementHolder.cardHeading2.setText(DataHandler.getTitleFromId(currAnnouncement.siteId));
-                announcementHolder.cardHeading2.setText("SITE TITLE");
+                announcementHolder.cardHeading2.setText(siteIdToCourse.get(currAnnouncement.siteId).title);
                 announcementHolder.cardHeading3.setText(currAnnouncement.title);
 
             }

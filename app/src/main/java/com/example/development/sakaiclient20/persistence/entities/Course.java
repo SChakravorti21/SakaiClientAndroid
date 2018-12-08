@@ -37,6 +37,7 @@ public class Course implements Serializable {
     @Ignore
     public List<Assignment> assignments;
 
+    //TODO add announcements
 
     public Course(@NonNull String siteId) {
         this.siteId = siteId;

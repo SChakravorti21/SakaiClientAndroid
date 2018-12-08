@@ -32,7 +32,9 @@ import com.example.development.sakaiclient20.ui.viewmodels.CourseViewModel;
 import com.example.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -278,30 +280,60 @@ public class MainActivity extends AppCompatActivity
         this.container.setVisibility(View.GONE);
         startProgressBar();
 
+        // get the announcements to show
         LiveData<List<Announcement>> announcementsLiveData =
                 ViewModelProviders.of(this, viewModelFactory)
                 .get(AnnouncementViewModel.class)
                 .getAnnouncements(null);
 
+        // get our courses so we can create a map from siteId to course
+        // which the announcement adapter needs
+        LiveData<List<List<Course>>> coursesLiveData =
+                ViewModelProviders.of(this, viewModelFactory)
+                .get(CourseViewModel.class)
+                .getCoursesByTerm();
+
         beingObserved.add(announcementsLiveData);
+        beingObserved.add(coursesLiveData);
+
+        // TODO : make it so that both are concurrent
         announcementsLiveData.observe(this, announcements -> {
-            stopProgressBar();
+            coursesLiveData.observe(this, courses -> {
+                Map<String, Course> siteIdToCourse = createSiteIdToCourseMap(courses);
 
-            AnnouncementsFragment announcementsFragment = AnnouncementsFragment.newInstance(announcements, this);
-            Bundle b = new Bundle();
-            b.putInt(getString(R.string.announcement_type), AnnouncementsFragment.ALL_ANNOUNCEMENTS);
-            announcementsFragment.setArguments(b);
+                stopProgressBar();
 
-            loadFragment(announcementsFragment, false, false);
-            container.setVisibility(View.VISIBLE);
-            setActionBarTitle(getString(R.string.announcements));
+                AnnouncementsFragment announcementsFragment = AnnouncementsFragment.newInstance(announcements, siteIdToCourse, this);
+                Bundle b = new Bundle();
+                b.putInt(getString(R.string.announcement_type), AnnouncementsFragment.ALL_ANNOUNCEMENTS);
+                announcementsFragment.setArguments(b);
 
+                loadFragment(announcementsFragment, false, false);
+                container.setVisibility(View.VISIBLE);
+                setActionBarTitle(getString(R.string.announcements));
+            });
         });
+
+
+
     }
+
 
     /******************************\
      CONVENIENCE METHODS
      \******************************/
+
+    private Map<String, Course> createSiteIdToCourseMap(List<List<Course>> courses) {
+
+        Map<String, Course> siteIdToCourse = new HashMap<>();
+
+        for(List<Course> term : courses) {
+            for(Course course : term) {
+                siteIdToCourse.put(course.siteId, course);
+            }
+        }
+        return siteIdToCourse;
+    }
 
     public void setActionBarTitle(String title) {
         getSupportActionBar().setTitle(title);
