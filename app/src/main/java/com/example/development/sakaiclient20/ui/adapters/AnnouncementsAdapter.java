@@ -159,7 +159,7 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<RecyclerView.View
 
             AnnouncementItemViewHolder announcementHolder = (AnnouncementItemViewHolder) holder;
 
-            announcementHolder.authorTxt.setText(currAnnouncement.getCreatedByDisplayName());
+            announcementHolder.authorTxt.setText(currAnnouncement.createdBy);
 
             int subjCode = DataHandler.getSubjectCodeFromId(currAnnouncement.getSiteId());
             announcementHolder.courseIcon.setText(RutgersSubjectCodes.mapCourseCodeToIcon.get(subjCode));

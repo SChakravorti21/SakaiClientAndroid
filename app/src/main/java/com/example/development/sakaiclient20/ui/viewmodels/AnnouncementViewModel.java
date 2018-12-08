@@ -1,11 +1,13 @@
 package com.example.development.sakaiclient20.ui.viewmodels;
 
 
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 
 import com.example.development.sakaiclient20.persistence.entities.Announcement;
 import com.example.development.sakaiclient20.repositories.AnnouncementRepository;
 import com.example.development.sakaiclient20.repositories.CourseRepository;
+import com.example.development.sakaiclient20.ui.fragments.AnnouncementsFragment;
 
 import java.util.List;
 
@@ -23,8 +25,29 @@ public class AnnouncementViewModel extends BaseViewModel {
     public AnnouncementViewModel(CourseRepository courseRepository, AnnouncementRepository announcementRepository) {
         super(courseRepository);
         this.announcementRepository = announcementRepository;
-        this.announcements = new MutableLiveData<>();
     }
+
+
+    public LiveData<List<Announcement>> getAnnouncements(String siteId) {
+        // get all announcements
+        if(siteId == null) {
+            if(announcements == null) {
+                announcements = new MutableLiveData<>();
+                refreshAllData();
+            }
+            loadAllAnnouncements();
+        }
+        else {
+            if(announcements == null) {
+                announcements = new MutableLiveData<>();
+                refreshSiteData(siteId);
+            }
+            loadSiteAnnouncements(siteId);
+        }
+
+        return announcements;
+    }
+
 
     private void loadAllAnnouncements() {
         compositeDisposable.add(

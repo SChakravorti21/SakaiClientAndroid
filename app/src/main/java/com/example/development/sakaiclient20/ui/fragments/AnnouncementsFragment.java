@@ -21,15 +21,17 @@ import com.example.development.sakaiclient20.R;
 import com.example.development.sakaiclient20.persistence.entities.Announcement;
 import com.example.development.sakaiclient20.ui.adapters.AnnouncementsAdapter;
 import com.example.development.sakaiclient20.ui.listeners.LoadMoreListener;
+import com.example.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class AnnouncementsFragment extends Fragment implements AnnouncementItemClickListener {
+public class AnnouncementsFragment extends Fragment {
 
     public static final int ALL_ANNOUNCEMENTS = 0;
     public static final int SITE_ANNOUNCEMENTS = 1;
 
-    private ArrayList<Announcement> allAnnouncements;
+    private List<Announcement> allAnnouncements;
     private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView announcementRecycler;
     private AnnouncementsAdapter adapter;
@@ -44,12 +46,20 @@ public class AnnouncementsFragment extends Fragment implements AnnouncementItemC
     private static final int ANNOUNCEMENTS_TO_GET_PER_REQUEST = 10;
 
 
+    // TODO remove new instance method
+    public static AnnouncementsFragment newInstance(List<Announcement> announcements, OnActionPerformedListener onActionPerformedListener) {
+
+        AnnouncementsFragment fragment = new AnnouncementsFragment();
+        fragment.allAnnouncements = announcements;
+        return fragment;
+    }
+
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Bundle bun = getArguments();
-        allAnnouncements = (ArrayList) bun.getSerializable(getString(R.string.all_announcements_tag));
         announcementType =  bun.getInt(getString(R.string.announcement_type));
 
         if (announcementType == ALL_ANNOUNCEMENTS) {
@@ -58,9 +68,7 @@ public class AnnouncementsFragment extends Fragment implements AnnouncementItemC
             loadMoreListener = new LoadsSiteAnnouncements();
         }
 
-
         hasLoadedAllAnnouncements = false;
-
     }
 
     @Nullable
@@ -76,11 +84,8 @@ public class AnnouncementsFragment extends Fragment implements AnnouncementItemC
         createAdapterAndFillRecyclerView();
 
 
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                loadMoreListener.refresh();
-            }
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            loadMoreListener.refresh();
         });
 
 

@@ -22,10 +22,12 @@ import com.example.development.sakaiclient20.networking.utilities.SharedPrefsUti
 import com.example.development.sakaiclient20.persistence.entities.Announcement;
 import com.example.development.sakaiclient20.persistence.entities.Course;
 import com.example.development.sakaiclient20.ui.fragments.AllCoursesFragment;
+import com.example.development.sakaiclient20.ui.fragments.AnnouncementsFragment;
 import com.example.development.sakaiclient20.ui.fragments.CourseSitesFragment;
 import com.example.development.sakaiclient20.ui.fragments.SingleAnnouncementFragment;
 import com.example.development.sakaiclient20.ui.helpers.BottomNavigationViewHelper;
 import com.example.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
+import com.example.development.sakaiclient20.ui.viewmodels.AnnouncementViewModel;
 import com.example.development.sakaiclient20.ui.viewmodels.CourseViewModel;
 import com.example.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
@@ -157,6 +159,8 @@ public class MainActivity extends AppCompatActivity
             case R.id.navigation_home:
                 loadHomeFragment();
                 return true;
+            case R.id.navigation_announcements:
+                loadAnnouncementsFragment();
             default:
                 return false;
         }
@@ -259,6 +263,37 @@ public class MainActivity extends AppCompatActivity
 
             setActionBarTitle(getString(R.string.app_name));
             isLoadingAllCourses = false;
+        });
+    }
+
+    /**
+     * Loads the all announcements fragment by observing on the live data from the
+     * announcements view model
+     *
+     * whenever an update is detected in the live data, recreate the fragment
+     * TODO: possibly dont recreate the fragment, just recreate the view
+     */
+    public void loadAnnouncementsFragment() {
+        this.container.setVisibility(View.GONE);
+        startProgressBar();
+
+        LiveData<List<Announcement>> announcementsLiveData =
+                ViewModelProviders.of(this, viewModelFactory)
+                .get(AnnouncementViewModel.class)
+                .getAnnouncements(null);
+
+        beingObserved.add(announcementsLiveData);
+        announcementsLiveData.observe(this, announcements -> {
+            stopProgressBar();
+
+            AnnouncementsFragment announcementsFragment = AnnouncementsFragment.newInstance(announcements, this);
+            Bundle b = new Bundle();
+            b.putInt(getString(R.string.announcement_type), AnnouncementsFragment.ALL_ANNOUNCEMENTS);
+            announcementsFragment.setArguments(b);
+
+            loadFragment(announcementsFragment, true, true);
+            setActionBarTitle(getString(R.string.announcements));
+
         });
     }
 
