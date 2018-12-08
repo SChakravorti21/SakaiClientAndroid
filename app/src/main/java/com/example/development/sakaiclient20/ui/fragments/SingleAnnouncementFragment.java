@@ -63,8 +63,7 @@ public class SingleAnnouncementFragment extends Fragment {
         authorTxt.setHorizontallyScrolling(true);
         authorTxt.setMovementMethod(new ScrollingMovementMethod());
 
-        courseTxt.setText("TEST TITLE");
-//        courseTxt.setText(DataHandler.getTitleFromId(currAnnouncement.siteId));
+        courseTxt.setText(siteIdToCourse.get(currAnnouncement.siteId).title);
         courseTxt.setHorizontallyScrolling(true);
         courseTxt.setMovementMethod(new ScrollingMovementMethod());
 
@@ -77,8 +76,7 @@ public class SingleAnnouncementFragment extends Fragment {
             contentTxt.setText(Html.fromHtml(currAnnouncement.body));
         }
 
-        dateTxt.setText("TEST DATA");
-//        dateTxt.setText(currAnnouncement.getLongFormattedDate());
+        dateTxt.setText(currAnnouncement.getLongFormattedDate());
 
         return view;
 
