@@ -28,7 +28,7 @@ public class AnnouncementRepository {
     public Single<List<Announcement>> getAllAnnouncements() {
         return announcementDao
                 .getAllAnnouncements()
-                .map(this::flattenCompositesToEntities)
+                .map(AnnouncementRepository::flattenCompositesToEntities)
                 .firstOrError();
     }
 
@@ -44,7 +44,7 @@ public class AnnouncementRepository {
     public Single<List<Announcement>> getSiteAnnouncements(String siteId) {
         return announcementDao
                 .getAnnouncementsForSite(siteId)
-                .map(this::flattenCompositesToEntities)
+                .map(AnnouncementRepository::flattenCompositesToEntities)
                 .firstOrError();
     }
 
@@ -58,7 +58,7 @@ public class AnnouncementRepository {
 
 
 
-    private List<Announcement> flattenCompositesToEntities(List<AnnouncementWithAttachments> announcementWithAttachments) {
+    static List<Announcement> flattenCompositesToEntities(List<AnnouncementWithAttachments> announcementWithAttachments) {
 
         List<Announcement> announcements = new ArrayList<>(announcementWithAttachments.size());
 

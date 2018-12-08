@@ -79,6 +79,9 @@ public class CourseRepository {
         entity.grades = courseWithAllData.grades;
         entity.assignments =
             AssignmentRepository.flattenCompositesToEntities(courseWithAllData.assignments);
+        entity.announcements =
+                AnnouncementRepository.flattenCompositesToEntities(courseWithAllData.announcements);
+
         return entity;
     }
 

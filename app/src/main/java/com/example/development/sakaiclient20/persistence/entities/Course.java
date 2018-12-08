@@ -37,7 +37,8 @@ public class Course implements Serializable {
     @Ignore
     public List<Assignment> assignments;
 
-    //TODO add announcements
+    @Ignore
+    public List<Announcement> announcements;
 
     public Course(@NonNull String siteId) {
         this.siteId = siteId;
@@ -50,6 +51,7 @@ public class Course implements Serializable {
     private void readObject(java.io.ObjectInputStream in)
             throws IOException, ClassNotFoundException {
         Course course = (Course) in.readObject();
+        this.announcements = course.announcements;
         this.assignments = course.assignments;
         this.title = course.title;
         this.term = course.term;

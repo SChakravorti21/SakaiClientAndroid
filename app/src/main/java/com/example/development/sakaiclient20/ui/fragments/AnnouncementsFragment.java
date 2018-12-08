@@ -1,5 +1,6 @@
 package com.example.development.sakaiclient20.ui.fragments;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -21,6 +22,7 @@ import com.example.development.sakaiclient20.persistence.entities.Course;
 import com.example.development.sakaiclient20.ui.adapters.AnnouncementsAdapter;
 import com.example.development.sakaiclient20.ui.listeners.LoadMoreListener;
 import com.example.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
+import com.example.development.sakaiclient20.ui.viewmodels.AnnouncementViewModel;
 import com.example.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
 import java.util.List;
@@ -234,39 +236,14 @@ public class AnnouncementsFragment extends Fragment {
         @Override
         public void refresh() {
 
+            //TODO
 //            // requests the default number of announcements
 //            int numAnnouncementsToRequest = NavActivity.NUM_ANNOUNCEMENTS_TO_REQUEST;
-//
-//            DataHandler.requestAllAnnouncements(true, numAnnouncementsToRequest, new RequestCallback() {
-//
-//                @Override
-//                public void onAllAnnouncementsSuccess(ArrayList<AnnouncementCollection> response) {
-//
-//                    allAnnouncements = response;
-//                    createAdapterAndFillRecyclerView();
-//
-//                    swipeRefreshLayout.setRefreshing(false);
-//
-//                }
-//
-//                @Override
-//                public void onAllAnnouncementsEmpty(int msgRscId) {
-//                    NavActivity activity = (NavActivity) getActivity();
-//                    activity.showErrorToast(getString(msgRscId));
-//
-//                    swipeRefreshLayout.setRefreshing(false);
-//                }
-//
-//                @Override
-//                public void onRequestFailure(int msgRscId, Throwable t) {
-//                    t.printStackTrace();
-//                    NavActivity activity = (NavActivity) getActivity();
-//                    activity.showErrorToast(getString(msgRscId));
-//
-//                    swipeRefreshLayout.setRefreshing(false);
-//                }
-//
-//            });
+
+            ViewModelProviders.of(getActivity(), viewModelFactory)
+                    .get(AnnouncementViewModel.class)
+                    .refreshAllData();
+
         }
 
 
@@ -333,40 +310,11 @@ public class AnnouncementsFragment extends Fragment {
         @Override
         public void refresh() {
 
-//            String siteId = allAnnouncements.get(0).getSiteId();
-//
-//            // when refreshing, requests the default amount of announcements again
-//            int numAnnouncementsToRequest = NavActivity.NUM_ANNOUNCEMENTS_TO_REQUEST;
-//
-//            DataHandler.requestSiteAnnouncements(true, siteId, numAnnouncementsToRequest, new RequestCallback() {
-//
-//                @Override
-//                public void onSiteAnnouncementsSuccess(ArrayList<AnnouncementCollection> response) {
-//
-//                    allAnnouncements = response;
-//                    createAdapterAndFillRecyclerView();
-//
-//                    swipeRefreshLayout.setRefreshing(false);
-//                }
-//
-//                @Override
-//                public void onSiteAnnouncementsEmpty(int msgRscId) {
-//                    NavActivity activity = (NavActivity) getActivity();
-//                    activity.showErrorToast(getString(msgRscId));
-//
-//                    swipeRefreshLayout.setRefreshing(false);
-//                }
-//
-//                @Override
-//                public void onRequestFailure(int msgRscId, Throwable t) {
-//                    t.printStackTrace();
-//                    NavActivity activity = (NavActivity) getActivity();
-//                    activity.showErrorToast(getString(msgRscId));
-//
-//                    swipeRefreshLayout.setRefreshing(false);
-//                }
-//
-//            });
+            String siteId = allAnnouncements.get(0).siteId;
+
+            ViewModelProviders.of(getActivity(), viewModelFactory)
+                    .get(AnnouncementViewModel.class)
+                    .refreshSiteData(siteId);
         }
 
     }

@@ -62,7 +62,7 @@ public class AnnouncementViewModel extends BaseViewModel {
     }
 
     @Override
-    void refreshAllData() {
+    public void refreshAllData() {
         compositeDisposable.add(
                 announcementRepository.refreshAllAnnouncements()
                         .subscribeOn(Schedulers.io())
@@ -111,7 +111,7 @@ public class AnnouncementViewModel extends BaseViewModel {
 
 
     @Override
-    void refreshSiteData(String siteId) {
+    public void refreshSiteData(String siteId) {
         compositeDisposable.add(
                 announcementRepository.refreshSiteAnnouncements(siteId)
                         .subscribeOn(Schedulers.io())

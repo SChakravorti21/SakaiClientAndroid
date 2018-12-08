@@ -3,6 +3,7 @@ package com.example.development.sakaiclient20.persistence.composites;
 import android.arch.persistence.room.Embedded;
 import android.arch.persistence.room.Relation;
 
+import com.example.development.sakaiclient20.persistence.entities.Announcement;
 import com.example.development.sakaiclient20.persistence.entities.Assignment;
 import com.example.development.sakaiclient20.persistence.entities.Course;
 import com.example.development.sakaiclient20.persistence.entities.Grade;
@@ -26,6 +27,9 @@ public class CourseWithAllData {
 
     @Relation(parentColumn = "siteId", entityColumn = "siteId", entity = Assignment.class)
     public List<AssignmentWithAttachments> assignments;
+
+    @Relation(parentColumn = "siteId", entityColumn = "siteId", entity = Announcement.class)
+    public List<AnnouncementWithAttachments> announcements;
 
     public CourseWithAllData(Course course) {
         this.course = course;

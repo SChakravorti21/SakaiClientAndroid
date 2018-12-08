@@ -180,7 +180,7 @@ public class MainActivity extends AppCompatActivity
                 .getCourse(siteId);
         beingObserved.add(courseLiveData);
         courseLiveData.observe(this, course -> {
-            CourseSitesFragment fragment = CourseSitesFragment.newInstance(course);
+            CourseSitesFragment fragment = CourseSitesFragment.newInstance(course, this);
             loadFragment(fragment, FRAGMENT_REPLACE, true, true);
             setActionBarTitle(course.title);
         });
@@ -198,6 +198,23 @@ public class MainActivity extends AppCompatActivity
 //        //put the clicked announcement into the fragment's bundle
 //        SingleAnnouncementFragment frag = new SingleAnnouncementFragment();
 //        frag.setArguments(b);
+    }
+
+    @Override
+    public void onSiteAnnouncementsSelected(Course course) {
+        Map<String, Course> siteIdToCourse = new HashMap<>();
+        siteIdToCourse.put(course.siteId, course);
+
+        AnnouncementsFragment announcementsFragment = AnnouncementsFragment.newInstance(course.announcements, siteIdToCourse, this);
+        Bundle b = new Bundle();
+        b.putInt(getString(R.string.announcement_type), AnnouncementsFragment.SITE_ANNOUNCEMENTS);
+        announcementsFragment.setArguments(b);
+
+        loadFragment(announcementsFragment, FRAGMENT_REPLACE, true, true);
+        container.setVisibility(View.VISIBLE);
+
+        String actionBarTitle = String.format("%s: %s", getString(R.string.announcements_site), course.title);
+        setActionBarTitle(actionBarTitle);
     }
 
     /*******************************\
