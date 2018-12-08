@@ -121,7 +121,7 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<RecyclerView.View
         public void onClick(View v) {
             int pos = getAdapterPosition();
             Announcement announcementToExpand = announcements.get(pos);
-            announcementclickListener.onAnnouncementSelected(announcementToExpand);
+            announcementclickListener.onAnnouncementSelected(announcementToExpand, siteIdToCourse);
         }
     }
 

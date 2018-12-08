@@ -56,6 +56,10 @@ public class MainActivity extends AppCompatActivity
     public static final String ASSIGNMENTS_TAG = "ASSIGNMENTS";
     public static final String SITE_GRADES_TAG = "SITE_GRADES";
 
+    private static final short FRAGMENT_REPLACE = 0;
+    private static final short FRAGMENT_ADD = 1;
+
+
     private FrameLayout container;
     private ProgressBar spinner;
     public boolean isLoadingAllCourses;
@@ -177,16 +181,17 @@ public class MainActivity extends AppCompatActivity
         beingObserved.add(courseLiveData);
         courseLiveData.observe(this, course -> {
             CourseSitesFragment fragment = CourseSitesFragment.newInstance(course);
-            loadFragment(fragment, true, true);
+            loadFragment(fragment, FRAGMENT_REPLACE, true, true);
             setActionBarTitle(course.title);
         });
     }
 
 
     @Override
-    public void onAnnouncementSelected(Announcement announcement) {
-        SingleAnnouncementFragment singleAnnouncementFragment = SingleAnnouncementFragment.newInstance(announcement);
-        loadFragment(singleAnnouncementFragment, true, R.anim.grow_enter, R.anim.pop_exit);
+    public void onAnnouncementSelected(Announcement announcement, Map<String, Course> siteIdToCourse) {
+        SingleAnnouncementFragment singleAnnouncementFragment = SingleAnnouncementFragment.newInstance(announcement, siteIdToCourse);
+        loadFragment(singleAnnouncementFragment, FRAGMENT_ADD, true, R.anim.grow_enter, R.anim.pop_exit);
+
         //        Bundle b = new Bundle();
 //        b.putSerializable(getString(R.string.single_announcement_tag), announcement);
 //
@@ -215,11 +220,11 @@ public class MainActivity extends AppCompatActivity
      * @param fragment
      * @return boolean whether the fragment was successfully loaded
      */
-    private boolean loadFragment(Fragment fragment, boolean addToBackStack, boolean showAnimations) {
+    private boolean loadFragment(Fragment fragment, int replace, boolean addToBackStack, boolean showAnimations) {
         if (showAnimations)
-            return loadFragment(fragment, addToBackStack, R.anim.enter, R.anim.exit);
+            return loadFragment(fragment, replace, addToBackStack, R.anim.enter, R.anim.exit);
         else
-            return loadFragment(fragment, addToBackStack, -1, -1);
+            return loadFragment(fragment, replace, addToBackStack, -1, -1);
     }
 
     /**
@@ -228,7 +233,7 @@ public class MainActivity extends AppCompatActivity
      * @param fragment
      * @return boolean whether the fragment was successfully loaded
      */
-    private boolean loadFragment(Fragment fragment, boolean addToBackStack, int animEnter, int animExit) {
+    private boolean loadFragment(Fragment fragment, int replace, boolean addToBackStack, int animEnter, int animExit) {
         if (fragment != null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
@@ -237,7 +242,13 @@ public class MainActivity extends AppCompatActivity
             if (addToBackStack)
                 transaction.addToBackStack(null);
 
-            transaction.replace(R.id.fragment_container, fragment).commit();
+            if(replace == FRAGMENT_REPLACE)
+                transaction.replace(R.id.fragment_container, fragment).commit();
+            else if(replace == FRAGMENT_ADD)
+                transaction.add(R.id.fragment_container, fragment).commit();
+            else
+                return false;
+
             return true;
         }
 
@@ -261,7 +272,7 @@ public class MainActivity extends AppCompatActivity
             stopProgressBar();
 
             AllCoursesFragment coursesFragment = AllCoursesFragment.newInstance(courses, this);
-            loadFragment(coursesFragment, false, false);
+            loadFragment(coursesFragment, FRAGMENT_REPLACE, false, false);
             container.setVisibility(View.VISIBLE);
 
             setActionBarTitle(getString(R.string.app_name));
@@ -308,7 +319,7 @@ public class MainActivity extends AppCompatActivity
                 b.putInt(getString(R.string.announcement_type), AnnouncementsFragment.ALL_ANNOUNCEMENTS);
                 announcementsFragment.setArguments(b);
 
-                loadFragment(announcementsFragment, false, false);
+                loadFragment(announcementsFragment, FRAGMENT_REPLACE, false, false);
                 container.setVisibility(View.VISIBLE);
                 setActionBarTitle(getString(R.string.announcements));
             });

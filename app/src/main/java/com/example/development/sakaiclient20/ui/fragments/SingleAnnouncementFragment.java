@@ -13,6 +13,9 @@ import android.widget.TextView;
 
 import com.example.development.sakaiclient20.R;
 import com.example.development.sakaiclient20.persistence.entities.Announcement;
+import com.example.development.sakaiclient20.persistence.entities.Course;
+
+import java.util.Map;
 
 
 /**
@@ -20,11 +23,13 @@ import com.example.development.sakaiclient20.persistence.entities.Announcement;
  */
 public class SingleAnnouncementFragment extends Fragment {
 
-    Announcement currAnnouncement;
+    private Announcement currAnnouncement;
+    private Map<String, Course> siteIdToCourse;
 
     // TODO don't use this
-    public static SingleAnnouncementFragment newInstance(Announcement announcement) {
+    public static SingleAnnouncementFragment newInstance(Announcement announcement, Map<String, Course> siteIdToCourse) {
         SingleAnnouncementFragment fragment = new SingleAnnouncementFragment();
+        fragment.siteIdToCourse = siteIdToCourse;
         fragment.currAnnouncement = announcement;
         return fragment;
     }
@@ -33,8 +38,8 @@ public class SingleAnnouncementFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle b = getArguments();
-        currAnnouncement = (Announcement) b.getSerializable(getString(R.string.single_announcement_tag));
+//        Bundle b = getArguments();
+//        currAnnouncement = (Announcement) b.getSerializable(getString(R.string.single_announcement_tag));
     }
 
     @Nullable
