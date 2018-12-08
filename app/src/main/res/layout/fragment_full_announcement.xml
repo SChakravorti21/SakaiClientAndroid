@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@android:color/transparent"
+    android:clickable="true"
+    android:focusable="true">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="15dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="15dp"
+        app:cardCornerRadius="15dp"
+        app:cardElevation="20dp">
+
+        <!-- holds the three sections, header, body, footer-->
+        <LinearLayout
+            android:id="@+id/outer_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+
+            <!--header-->
+            <LinearLayout
+                android:id="@+id/header_container"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="2"
+                android:background="@color/colorPrimaryDark"
+                android:orientation="vertical"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:paddingTop="15dp">
+
+                <TextView
+                    android:maxLines="1"
+                    android:focusableInTouchMode="true"
+                    android:id="@+id/announcement_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="2"
+                    android:text="ANNOUNCEMENT TITLE"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:scrollbars="horizontal"/>
+
+
+                <TextView
+                    android:maxLines="1"
+                    android:id="@+id/course_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1.5"
+                    android:text="course name here"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"
+                    android:scrollbars="horizontal"/>
+
+                <TextView
+                    android:maxLines="1"
+                    android:id="@+id/author_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1.5"
+                    android:text="author name here"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    android:scrollbars="horizontal"/>
+
+
+
+
+            </LinearLayout>
+
+            <!-- body-->
+            <LinearLayout
+                android:id="@+id/body_container"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="7"
+                android:background="@color/white"
+                android:paddingLeft="15dp"
+                android:paddingBottom="10dp"
+                android:paddingRight="15dp"
+                android:paddingTop="10dp"
+                >
+
+                <TextView
+                    android:id="@+id/announcement_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque mollis, lectus id dictum blandit, elit elit auctor metus, in ultrices velit justo in odio. Maecenas metus nibh, elementum quis orci sit amet, sodales tincidunt est. Nam mollis aliquet lorem ac sodales. Pellentesque posuere convallis tellus, vitae dignissim felis fermentum sit.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque mollis, lectus id dictum blandit, elit elit auctor metus, in ultrices velit justo in odio. Maecenas metus nibh, elementum quis orci sit amet, sodales tincidunt est. Nam mollis aliquet lorem ac sodales. Pellentesque posuere convallis tellus, vitae dignissim felis fermentum sit."
+                    android:textSize="15sp" />
+
+
+            </LinearLayout>
+
+
+            <!--footer-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:background="@color/colorPrimaryDark"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp">
+
+                <TextView
+                    android:id="@+id/date_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_horizontal|center_vertical"
+                    android:text="DATE POSTED"
+                    android:textColor="@color/white"
+                    android:textSize="15sp" />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+    </android.support.v7.widget.CardView>
+
+</FrameLayout>

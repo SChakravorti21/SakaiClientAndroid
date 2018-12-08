@@ -1,0 +1,388 @@
+package com.example.development.sakaiclient20.ui.fragments;
+
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
+import android.widget.Toast;
+
+
+import com.example.development.sakaiclient20.R;
+import com.example.development.sakaiclient20.persistence.entities.Announcement;
+import com.example.development.sakaiclient20.ui.adapters.AnnouncementsAdapter;
+
+import java.util.ArrayList;
+
+public class AnnouncementsFragment extends Fragment implements AnnouncementItemClickListener {
+
+    public static final int ALL_ANNOUNCEMENTS = 0;
+    public static final int SITE_ANNOUNCEMENTS = 1;
+
+    private ArrayList<Announcement> allAnnouncements;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private RecyclerView announcementRecycler;
+    private AnnouncementsAdapter adapter;
+
+    // loads more annoncements and refreshes
+    private LoadMoreListener loadMoreListener;
+
+    private int announcementType;
+
+    private boolean hasLoadedAllAnnouncements;
+
+    private static final int ANNOUNCEMENTS_TO_GET_PER_REQUEST = 10;
+
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Bundle bun = getArguments();
+        allAnnouncements = (ArrayList) bun.getSerializable(getString(R.string.all_announcements_tag));
+        announcementType =  bun.getInt(getString(R.string.announcement_type));
+
+        if (announcementType == ALL_ANNOUNCEMENTS) {
+            loadMoreListener = new LoadsAllAnnouncements();
+        } else if (announcementType == SITE_ANNOUNCEMENTS) {
+            loadMoreListener = new LoadsSiteAnnouncements();
+        }
+
+
+        hasLoadedAllAnnouncements = false;
+
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+
+        View view = inflater.inflate(R.layout.fragment_announcements, null);
+        announcementRecycler = view.findViewById(R.id.announcements_recycler);
+        swipeRefreshLayout = view.findViewById(R.id.swiperefresh);
+
+
+        createAdapterAndFillRecyclerView();
+
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                loadMoreListener.refresh();
+            }
+        });
+
+
+        return view;
+
+    }
+
+
+    /**
+     * From implmenting annoucement item click listener
+     * Is called from the announcements adapter when you click an announcement card
+     * we want to load the single announcement fragment from here
+     *
+     * @param v   clicked view
+     * @param pos position of clicked view
+     */
+    @Override
+    public void onClickAnnouncement(View v, int pos) {
+
+        FragmentActivity activity = getActivity();
+        if (activity instanceof NavActivity) {
+
+            AnnouncementCollection clickedAnnouncement = allAnnouncements.get(pos);
+
+            Bundle b = new Bundle();
+            b.putSerializable(getString(R.string.single_announcement_tag), clickedAnnouncement);
+
+            //put the clicked announcement into the fragment's bundle
+            SingleAnnouncementFragment frag = new SingleAnnouncementFragment();
+            frag.setArguments(b);
+
+
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.setCustomAnimations(R.anim.grow_enter, R.anim.pop_exit, R.anim.pop_enter, R.anim.pop_exit)
+                    .add(R.id.fragment_container, frag)
+                    .addToBackStack(null)
+                    .commit();
+
+
+        } else {
+            //TODO: error handling
+        }
+
+    }
+
+    /**
+     * Creates a new adapter and fills the recycler view with our announcements data
+     * also sets the animations for the card entry
+     */
+    private void createAdapterAndFillRecyclerView() {
+        LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
+        announcementRecycler.setLayoutManager(layoutManager);
+        announcementRecycler.setItemAnimator(new DefaultItemAnimator());
+
+        adapter = new AnnouncementsAdapter(allAnnouncements, announcementRecycler, announcementType);
+        adapter.setClickListener(this);
+        adapter.setLoadMoreListener(loadMoreListener);
+        announcementRecycler.setAdapter(adapter);
+
+
+        //rerun animations for card entry
+        final LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(mContext, R.anim.layout_anim_enter);
+        announcementRecycler.setLayoutAnimation(controller);
+
+        announcementRecycler.scheduleLayoutAnimation();
+
+    }
+
+
+    /**
+     * Adds the newly requested announcements to the adapter and notifies that
+     * they were loaded
+     *
+     * @param newAnnouncements announcements to add
+     */
+    private void addNewAnnouncementsToAdapter(ArrayList<AnnouncementCollection> newAnnouncements) {
+
+        //remove the null element we had added to signify a loading item
+        allAnnouncements.remove(allAnnouncements.size() - 1);
+
+        int initialSize = allAnnouncements.size();
+
+        // if there are no more new announcements to display
+        // mark as finished loading, remove the loading bar, then return
+        if (initialSize == newAnnouncements.size()) {
+
+            adapter.finishedLoading();
+            adapter.notifyItemRemoved(allAnnouncements.size());
+            Toast.makeText(mContext, getString(R.string.no_announcements), Toast.LENGTH_SHORT).show();
+            hasLoadedAllAnnouncements = true;
+            return;
+        }
+
+        // add the new annoncements to our list of all announcements
+        for (int i = initialSize; i < newAnnouncements.size(); i++) {
+            //add the new items into all announcements
+            allAnnouncements.add(newAnnouncements.get(i));
+        }
+
+        // notify the adapter that we added some new items, so it can display
+        adapter.notifyItemRangeChanged(initialSize, newAnnouncements.size() - initialSize);
+        adapter.finishedLoading();
+    }
+
+
+    /**
+     * private class which holds the load more method to load more all announcements
+     * also holds refreshing all announcements
+     */
+    private class LoadsAllAnnouncements implements LoadMoreListener {
+
+        @Override
+        public void loadMore() {
+
+            //if we have already loaded them all, don't do anything
+            if (hasLoadedAllAnnouncements) {
+                adapter.finishedLoading();
+                return;
+            }
+
+            //add the null so we can display a loading bar while we request
+            allAnnouncements.add(null);
+
+            //tell the adapter we added an item, so that it will actually show the loading bar
+            // was throwing a recycler view error, without the post
+            announcementRecycler.post(new Runnable() {
+                @Override
+                public void run() {
+                    adapter.notifyItemInserted(allAnnouncements.size() - 1);
+                }
+            });
+
+            // get the number of announcements we have to request now,
+            // based on the current number showing and the number of additional ones
+            // we want
+            int numAnnouncementsToRequest = allAnnouncements.size() + ANNOUNCEMENTS_TO_GET_PER_REQUEST;
+
+            DataHandler.requestAllAnnouncements(true, numAnnouncementsToRequest, new RequestCallback() {
+
+                @Override
+                public void onAllAnnouncementsSuccess(ArrayList<AnnouncementCollection> response) {
+
+                    addNewAnnouncementsToAdapter(response);
+
+                }
+
+                @Override
+                public void onAllAnnouncementsEmpty(int msgRscId) {
+                    NavActivity activity = (NavActivity) getActivity();
+                    activity.showErrorToast(getString(msgRscId));
+                }
+
+                @Override
+                public void onRequestFailure(int msgRscId, Throwable t) {
+                    t.printStackTrace();
+                    NavActivity activity = (NavActivity) getActivity();
+                    activity.showErrorToast(getString(msgRscId));
+                }
+
+            });
+        }
+
+        @Override
+        public void refresh() {
+
+            // requests the default number of announcements
+            int numAnnouncementsToRequest = NavActivity.NUM_ANNOUNCEMENTS_TO_REQUEST;
+
+            DataHandler.requestAllAnnouncements(true, numAnnouncementsToRequest, new RequestCallback() {
+
+                @Override
+                public void onAllAnnouncementsSuccess(ArrayList<AnnouncementCollection> response) {
+
+                    allAnnouncements = response;
+                    createAdapterAndFillRecyclerView();
+
+                    swipeRefreshLayout.setRefreshing(false);
+
+                }
+
+                @Override
+                public void onAllAnnouncementsEmpty(int msgRscId) {
+                    NavActivity activity = (NavActivity) getActivity();
+                    activity.showErrorToast(getString(msgRscId));
+
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+
+                @Override
+                public void onRequestFailure(int msgRscId, Throwable t) {
+                    t.printStackTrace();
+                    NavActivity activity = (NavActivity) getActivity();
+                    activity.showErrorToast(getString(msgRscId));
+
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+
+            });
+        }
+
+
+    }
+
+    /**
+     * private class which holds the load more method to load more site announcements
+     */
+    private class LoadsSiteAnnouncements implements LoadMoreListener {
+
+
+        @Override
+        public void loadMore() {
+
+            //if we have already loaded them all, don't do anything
+            if (hasLoadedAllAnnouncements) {
+                adapter.finishedLoading();
+                return;
+            }
+
+
+            //add the null show we can display a loading bar while we request
+            allAnnouncements.add(null);
+
+            //tell the adapter we added an item
+            // was throwing a recycler view error, without the post
+            announcementRecycler.post(new Runnable() {
+                @Override
+                public void run() {
+                    adapter.notifyItemInserted(allAnnouncements.size() - 1);
+                }
+            });
+
+
+            int numAnnouncementsToRequest = allAnnouncements.size() - 1 + ANNOUNCEMENTS_TO_GET_PER_REQUEST;
+
+            String siteId = allAnnouncements.get(0).getSiteId();
+
+            DataHandler.requestSiteAnnouncements(true, siteId, numAnnouncementsToRequest, new RequestCallback() {
+
+                @Override
+                public void onSiteAnnouncementsSuccess(ArrayList<AnnouncementCollection> response) {
+
+                    addNewAnnouncementsToAdapter(response);
+                }
+
+                @Override
+                public void onSiteAnnouncementsEmpty(int msgRscId) {
+                    NavActivity activity = (NavActivity) getActivity();
+                    activity.showErrorToast(getString(msgRscId));
+                }
+
+                @Override
+                public void onRequestFailure(int msgRscId, Throwable t) {
+                    t.printStackTrace();
+                    NavActivity activity = (NavActivity) getActivity();
+                    activity.showErrorToast(getString(msgRscId));
+                }
+
+            });
+        }
+
+
+        @Override
+        public void refresh() {
+
+            String siteId = allAnnouncements.get(0).getSiteId();
+
+            // when refreshing, requests the default amount of announcements again
+            int numAnnouncementsToRequest = NavActivity.NUM_ANNOUNCEMENTS_TO_REQUEST;
+
+            DataHandler.requestSiteAnnouncements(true, siteId, numAnnouncementsToRequest, new RequestCallback() {
+
+                @Override
+                public void onSiteAnnouncementsSuccess(ArrayList<AnnouncementCollection> response) {
+
+                    allAnnouncements = response;
+                    createAdapterAndFillRecyclerView();
+
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+
+                @Override
+                public void onSiteAnnouncementsEmpty(int msgRscId) {
+                    NavActivity activity = (NavActivity) getActivity();
+                    activity.showErrorToast(getString(msgRscId));
+
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+
+                @Override
+                public void onRequestFailure(int msgRscId, Throwable t) {
+                    t.printStackTrace();
+                    NavActivity activity = (NavActivity) getActivity();
+                    activity.showErrorToast(getString(msgRscId));
+
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+
+            });
+        }
+
+    }
+
+
+}
+
+
