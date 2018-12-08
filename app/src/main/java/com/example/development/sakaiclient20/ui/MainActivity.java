@@ -202,19 +202,32 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onSiteAnnouncementsSelected(Course course) {
-        Map<String, Course> siteIdToCourse = new HashMap<>();
-        siteIdToCourse.put(course.siteId, course);
 
-        AnnouncementsFragment announcementsFragment = AnnouncementsFragment.newInstance(course.announcements, siteIdToCourse, this);
-        Bundle b = new Bundle();
-        b.putInt(getString(R.string.announcement_type), AnnouncementsFragment.SITE_ANNOUNCEMENTS);
-        announcementsFragment.setArguments(b);
+        LiveData<List<Announcement>> siteAnnouncementsLiveData =
+                ViewModelProviders.of(this, viewModelFactory)
+                .get(AnnouncementViewModel.class)
+                .getSiteAnnouncements(course.siteId);
 
-        loadFragment(announcementsFragment, FRAGMENT_REPLACE, true, true);
-        container.setVisibility(View.VISIBLE);
+        beingObserved.add(siteAnnouncementsLiveData);
+        // observe the site announcements list,
+        // make new fragment if it is updated.
+        siteAnnouncementsLiveData.observe(this, siteAnnouncements -> {
 
-        String actionBarTitle = String.format("%s: %s", getString(R.string.announcements_site), course.title);
-        setActionBarTitle(actionBarTitle);
+            Map<String, Course> siteIdToCourse = new HashMap<>();
+            siteIdToCourse.put(course.siteId, course);
+
+            AnnouncementsFragment announcementsFragment = AnnouncementsFragment.newInstance(course.announcements, siteIdToCourse, this);
+            Bundle b = new Bundle();
+            b.putInt(getString(R.string.announcement_type), AnnouncementsFragment.SITE_ANNOUNCEMENTS);
+            announcementsFragment.setArguments(b);
+
+            loadFragment(announcementsFragment, FRAGMENT_REPLACE, true, true);
+            container.setVisibility(View.VISIBLE);
+
+            String actionBarTitle = String.format("%s: %s", getString(R.string.announcements_site), course.title);
+            setActionBarTitle(actionBarTitle);
+        });
+
     }
 
     /*******************************\
@@ -312,7 +325,7 @@ public class MainActivity extends AppCompatActivity
         LiveData<List<Announcement>> announcementsLiveData =
                 ViewModelProviders.of(this, viewModelFactory)
                 .get(AnnouncementViewModel.class)
-                .getAnnouncements(null);
+                .getAllAnnouncements();
 
         // get our courses so we can create a map from siteId to course
         // which the announcement adapter needs
