@@ -41,7 +41,8 @@ public class MainActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener,
         HasSupportFragmentInjector, OnActionPerformedListener {
 
-    @Inject DispatchingAndroidInjector<Fragment> supportFragmentInjector;
+    @Inject
+    DispatchingAndroidInjector<Fragment> supportFragmentInjector;
 
     public static final String ALL_COURSES_TAG = "ALL_COURSES";
     public static final String COURSE_TAG = "COURSE";
@@ -53,14 +54,16 @@ public class MainActivity extends AppCompatActivity
     private ProgressBar spinner;
     public boolean isLoadingAllCourses;
 
-    @Inject CourseViewModel courseViewModel;
+    @Inject
+    CourseViewModel courseViewModel;
 
-    @Inject ViewModelFactory viewModelFactory;
+    @Inject
+    ViewModelFactory viewModelFactory;
     private List<LiveData> beingObserved;
 
     /******************************\
-       LIFECYCLE/INTERFACE METHODS
-    \******************************/
+     LIFECYCLE/INTERFACE METHODS
+     \******************************/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,7 +109,7 @@ public class MainActivity extends AppCompatActivity
     public void onBackPressed() {
         super.onBackPressed();
         FragmentManager fragmentManager = getSupportFragmentManager();
-        if(fragmentManager.getBackStackEntryCount() == 0) {
+        if (fragmentManager.getBackStackEntryCount() == 0) {
             setActionBarTitle(getString(R.string.app_name));
         }
     }
@@ -119,7 +122,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
             case R.id.action_settings:
                 Intent intent = new Intent(this, SettingsActivity.class);
                 startActivity(intent);
@@ -142,7 +145,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
         //if we are loading all courses, don't allow user to click any navigation item
-        if(isLoadingAllCourses)
+        if (isLoadingAllCourses)
             return false;
 
         // To be safe, remove any observations that might be active for the previous tab
@@ -171,8 +174,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     /*******************************\
-      LIFECYCLE CONVENIENCE METHODS
-    \*******************************/
+     LIFECYCLE CONVENIENCE METHODS
+     \*******************************/
 
     private void removeObservations() {
         for (LiveData liveData : beingObserved) {
@@ -181,8 +184,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     /******************************\
-          FRAGMENT MANAGEMENT
-    \******************************/
+     FRAGMENT MANAGEMENT
+     \******************************/
 
     /**
      * Loads a given fragment into the fragment container in the NavActivity layout
@@ -217,7 +220,7 @@ public class MainActivity extends AppCompatActivity
                 ViewModelProviders.of(this, viewModelFactory)
                         .get(CourseViewModel.class)
                         .getCoursesByTerm();
-                beingObserved.add(courseLiveData);
+        beingObserved.add(courseLiveData);
         courseLiveData.observe(this, courses -> {
             stopProgressBar();
 
@@ -231,8 +234,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     /******************************\
-           CONVENIENCE METHODS
-    \******************************/
+     CONVENIENCE METHODS
+     \******************************/
 
     public void setActionBarTitle(String title) {
         getSupportActionBar().setTitle(title);
