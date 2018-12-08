@@ -19,9 +19,11 @@ import android.widget.ProgressBar;
 
 import com.example.development.sakaiclient20.R;
 import com.example.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
+import com.example.development.sakaiclient20.persistence.entities.Announcement;
 import com.example.development.sakaiclient20.persistence.entities.Course;
 import com.example.development.sakaiclient20.ui.fragments.AllCoursesFragment;
 import com.example.development.sakaiclient20.ui.fragments.CourseSitesFragment;
+import com.example.development.sakaiclient20.ui.fragments.SingleAnnouncementFragment;
 import com.example.development.sakaiclient20.ui.helpers.BottomNavigationViewHelper;
 import com.example.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
 import com.example.development.sakaiclient20.ui.viewmodels.CourseViewModel;
@@ -173,6 +175,19 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
+
+    @Override
+    public void onAnnouncementSelected(Announcement announcement) {
+        SingleAnnouncementFragment singleAnnouncementFragment = SingleAnnouncementFragment.newInstance(announcement);
+        loadFragment(singleAnnouncementFragment, true, R.anim.grow_enter, R.anim.pop_exit);
+        //        Bundle b = new Bundle();
+//        b.putSerializable(getString(R.string.single_announcement_tag), announcement);
+//
+//        //put the clicked announcement into the fragment's bundle
+//        SingleAnnouncementFragment frag = new SingleAnnouncementFragment();
+//        frag.setArguments(b);
+    }
+
     /*******************************\
      LIFECYCLE CONVENIENCE METHODS
      \*******************************/
@@ -193,11 +208,25 @@ public class MainActivity extends AppCompatActivity
      * @param fragment
      * @return boolean whether the fragment was successfully loaded
      */
-    public boolean loadFragment(Fragment fragment, boolean showAnimations, boolean addToBackStack) {
+    private boolean loadFragment(Fragment fragment, boolean addToBackStack, boolean showAnimations) {
+        if (showAnimations)
+            return loadFragment(fragment, addToBackStack, R.anim.enter, R.anim.exit);
+        else
+            return loadFragment(fragment, addToBackStack, -1, -1);
+    }
+
+    /**
+     * Loads a given fragment into the fragment container in the NavActivity layout
+     *
+     * @param fragment
+     * @return boolean whether the fragment was successfully loaded
+     */
+    private boolean loadFragment(Fragment fragment, boolean addToBackStack, int animEnter, int animExit) {
         if (fragment != null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            if (showAnimations)
-                transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
+
+            if (animEnter > 0 && animExit > 0)
+                transaction.setCustomAnimations(animEnter, animExit, R.anim.pop_enter, R.anim.pop_exit);
             if (addToBackStack)
                 transaction.addToBackStack(null);
 

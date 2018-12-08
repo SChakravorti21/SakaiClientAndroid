@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.example.development.sakaiclient20.R;
 import com.example.development.sakaiclient20.persistence.entities.Announcement;
 import com.example.development.sakaiclient20.ui.adapters.AnnouncementsAdapter;
+import com.example.development.sakaiclient20.ui.listeners.LoadMoreListener;
 
 import java.util.ArrayList;
 
@@ -102,7 +103,7 @@ public class AnnouncementsFragment extends Fragment implements AnnouncementItemC
         FragmentActivity activity = getActivity();
         if (activity instanceof NavActivity) {
 
-            AnnouncementCollection clickedAnnouncement = allAnnouncements.get(pos);
+            Announcement clickedAnnouncement = allAnnouncements.get(pos);
 
             Bundle b = new Bundle();
             b.putSerializable(getString(R.string.single_announcement_tag), clickedAnnouncement);

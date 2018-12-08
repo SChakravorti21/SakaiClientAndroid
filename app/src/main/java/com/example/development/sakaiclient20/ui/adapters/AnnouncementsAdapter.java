@@ -14,7 +14,6 @@ import com.example.development.sakaiclient20.R;
 import com.example.development.sakaiclient20.persistence.entities.Announcement;
 import com.example.development.sakaiclient20.ui.fragments.AnnouncementsFragment;
 import com.example.development.sakaiclient20.ui.helpers.RutgersSubjectCodes;
-import com.example.development.sakaiclient20.ui.listeners.AnnouncementItemClickListener;
 import com.example.development.sakaiclient20.ui.listeners.LoadMoreListener;
 
 import java.util.ArrayList;

@@ -6,6 +6,8 @@ import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
@@ -22,7 +24,8 @@ import java.util.List;
                 @Index(value = "announcementId")
         }
 )
-public class Announcement {
+// TODO: implement parcelable
+public class Announcement  {
 
     @NonNull
     @PrimaryKey
@@ -40,4 +43,20 @@ public class Announcement {
     public Announcement(@NonNull String announcementId) {
         this.announcementId = announcementId;
     }
+
+//    @Override
+//    public int describeContents() {
+//        return 0;
+//    }
+//
+//    @Override
+//    public void writeToParcel(Parcel parcel, int i) {
+//        parcel.writeString(announcementId);
+//        parcel.writeString(body);
+//        parcel.writeString(title);
+//        parcel.writeString(siteId);
+//        parcel.writeString(createdBy);
+//        parcel.writeLong(createdOn);
+//        parcel.writeList(attachments);
+//    }
 }
