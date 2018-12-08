@@ -16,6 +16,7 @@ import com.example.development.sakaiclient20.ui.fragments.AnnouncementsFragment;
 import com.example.development.sakaiclient20.ui.listeners.LoadMoreListener;
 import com.example.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -49,53 +50,53 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<RecyclerView.View
     private LoadMoreListener loadMoreListener;
 
 
-    public AnnouncementsAdapter(List<Announcement> announcementCollections,
+    public AnnouncementsAdapter(List<Announcement> announcements,
                                 RecyclerView announcementsRecycler,
                                 int type) {
 
-        announcements = announcementCollections;
-        announcementType = type;
+        this.announcements = announcements;
+        this.announcementType = type;
 
 
-        final LinearLayoutManager manager = (LinearLayoutManager)announcementsRecycler.getLayoutManager();
-        announcementsRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-
-                numItems = manager.getItemCount();
-                lastVisibleItemPos = manager.findLastCompletelyVisibleItemPosition();
-
-                // load more if:
-                //      we aren't already loading
-                //      if the last visible item position is within our end offset
-                //      if the last visible item isn't the last item in our list
-                //          this one is needed b/c otherwise, if there are only two
-                //          announcements in the list, it will try to request more
-                if(!isLoading && lastVisibleItemPos >= numItems - END_OFFSET_BEFORE_RELOAD
-                        && lastVisibleItemPos < numItems - 1) {
-                    isLoading = true;
-                    loadMoreListener.loadMore();
-                }
-            }
-        });
+//        final LinearLayoutManager manager = (LinearLayoutManager)announcementsRecycler.getLayoutManager();
+//        announcementsRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//            @Override
+//            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//                super.onScrolled(recyclerView, dx, dy);
+//
+//                numItems = manager.getItemCount();
+//                lastVisibleItemPos = manager.findLastCompletelyVisibleItemPosition();
+//
+//                // load more if:
+//                //      we aren't already loading
+//                //      if the last visible item position is within our end offset
+//                //      if the last visible item isn't the last item in our list
+//                //          this one is needed b/c otherwise, if there are only two
+//                //          announcements in the list, it will try to request more
+//                if(!isLoading && lastVisibleItemPos >= numItems - END_OFFSET_BEFORE_RELOAD
+//                        && lastVisibleItemPos < numItems - 1) {
+//                    isLoading = true;
+//                    loadMoreListener.loadMore();
+//                }
+//            }
+//        });
 
     }
 
     /**
      * View holder for each announcement card
      */
-    public class AnnouncementItemViewHolder extends RecyclerView.ViewHolder
+    class AnnouncementItemViewHolder extends RecyclerView.ViewHolder
             implements View.OnClickListener {
 
-        public TextView courseIcon;
-        public TextView authorTxt;
-        public TextView date;
-        public TextView cardHeading2;
-        public TextView cardHeading3;
+        TextView courseIcon;
+        TextView authorTxt;
+        TextView date;
+        TextView cardHeading2;
+        TextView cardHeading3;
 
 
-        public AnnouncementItemViewHolder(View cardView) {
+        AnnouncementItemViewHolder(View cardView) {
             //give this card view to the reycler view's view holder
             super(cardView);
 
@@ -113,8 +114,8 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<RecyclerView.View
         @Override
         public void onClick(View v) {
             int pos = getAdapterPosition();
-            Announcement announcementToExpand = announcements.get(pos);
-            announcementclickListener.onAnnouncementSelected(announcementToExpand);
+//            Announcement announcementToExpand = announcements.get(pos);
+//            announcementclickListener.onAnnouncementSelected(announcementToExpand);
         }
     }
 
@@ -122,11 +123,11 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<RecyclerView.View
     /**
      * View holder for the loading spinner
      */
-    public class LoadingViewHolder extends RecyclerView.ViewHolder {
+    class LoadingViewHolder extends RecyclerView.ViewHolder {
 
-        public ProgressBar progressBar;
+        ProgressBar progressBar;
 
-        public LoadingViewHolder(View itemView) {
+        LoadingViewHolder(View itemView) {
             super(itemView);
 
             progressBar = itemView.findViewById(R.id.loadMoreProgressBar);

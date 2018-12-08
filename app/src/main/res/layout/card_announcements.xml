@@ -44,7 +44,7 @@
                 android:id="@+id/date_text"
                 android:layout_width="100dp"
                 android:layout_height="30dp"
-                android:gravity="right"
+                android:gravity="end"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
                 android:textSize="15sp" />

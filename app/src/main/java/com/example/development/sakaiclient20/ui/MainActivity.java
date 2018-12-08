@@ -161,6 +161,7 @@ public class MainActivity extends AppCompatActivity
                 return true;
             case R.id.navigation_announcements:
                 loadAnnouncementsFragment();
+                return true;
             default:
                 return false;
         }
@@ -291,7 +292,8 @@ public class MainActivity extends AppCompatActivity
             b.putInt(getString(R.string.announcement_type), AnnouncementsFragment.ALL_ANNOUNCEMENTS);
             announcementsFragment.setArguments(b);
 
-            loadFragment(announcementsFragment, true, true);
+            loadFragment(announcementsFragment, false, false);
+            container.setVisibility(View.VISIBLE);
             setActionBarTitle(getString(R.string.announcements));
 
         });

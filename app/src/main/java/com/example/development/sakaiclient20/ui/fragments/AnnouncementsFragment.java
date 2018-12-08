@@ -1,5 +1,6 @@
 package com.example.development.sakaiclient20.ui.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
-import android.widget.Toast;
 
 
 import com.example.development.sakaiclient20.R;
@@ -20,12 +20,18 @@ import com.example.development.sakaiclient20.persistence.entities.Announcement;
 import com.example.development.sakaiclient20.ui.adapters.AnnouncementsAdapter;
 import com.example.development.sakaiclient20.ui.listeners.LoadMoreListener;
 import com.example.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
+import com.example.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.android.support.AndroidSupportInjection;
+
 public class AnnouncementsFragment extends Fragment {
+
+    @Inject
+    ViewModelFactory viewModelFactory;
 
     public static final int ALL_ANNOUNCEMENTS = 0;
     public static final int SITE_ANNOUNCEMENTS = 1;
@@ -80,6 +86,12 @@ public class AnnouncementsFragment extends Fragment {
         hasLoadedAllAnnouncements = false;
     }
 
+    @Override
+    public void onAttach(Context context) {
+        AndroidSupportInjection.inject(this);
+        super.onAttach(context);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -105,12 +117,14 @@ public class AnnouncementsFragment extends Fragment {
      */
     private void createAdapterAndFillRecyclerView() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         announcementRecycler.setLayoutManager(layoutManager);
         announcementRecycler.setItemAnimator(new DefaultItemAnimator());
 
         adapter = new AnnouncementsAdapter(allAnnouncements, announcementRecycler, announcementType);
         adapter.setClickListener(onActionPerformedListener);
         adapter.setLoadMoreListener(loadMoreListener);
+
         announcementRecycler.setAdapter(adapter);
 
 
@@ -128,34 +142,34 @@ public class AnnouncementsFragment extends Fragment {
      *
      * @param newAnnouncements announcements to add
      */
-    private void addNewAnnouncementsToAdapter(List<Announcement> newAnnouncements) {
-
-        //remove the null element we had added to signify a loading item
-        allAnnouncements.remove(allAnnouncements.size() - 1);
-
-        int initialSize = allAnnouncements.size();
-
-        // if there are no more new announcements to display
-        // mark as finished loading, remove the loading bar, then return
-        if (initialSize == newAnnouncements.size()) {
-
-            adapter.finishedLoading();
-            adapter.notifyItemRemoved(allAnnouncements.size());
-            Toast.makeText(getContext(), getString(R.string.no_announcements), Toast.LENGTH_SHORT).show();
-            hasLoadedAllAnnouncements = true;
-            return;
-        }
-
-        // add the new annoncements to our list of all announcements
-        for (int i = initialSize; i < newAnnouncements.size(); i++) {
-            //add the new items into all announcements
-            allAnnouncements.add(newAnnouncements.get(i));
-        }
-
-        // notify the adapter that we added some new items, so it can display
-        adapter.notifyItemRangeChanged(initialSize, newAnnouncements.size() - initialSize);
-        adapter.finishedLoading();
-    }
+//    private void addNewAnnouncementsToAdapter(List<Announcement> newAnnouncements) {
+//
+//        //remove the null element we had added to signify a loading item
+//        allAnnouncements.remove(allAnnouncements.size() - 1);
+//
+//        int initialSize = allAnnouncements.size();
+//
+//        // if there are no more new announcements to display
+//        // mark as finished loading, remove the loading bar, then return
+//        if (initialSize == newAnnouncements.size()) {
+//
+//            adapter.finishedLoading();
+//            adapter.notifyItemRemoved(allAnnouncements.size());
+//            Toast.makeText(getContext(), getString(R.string.no_announcements), Toast.LENGTH_SHORT).show();
+//            hasLoadedAllAnnouncements = true;
+//            return;
+//        }
+//
+//        // add the new annoncements to our list of all announcements
+//        for (int i = initialSize; i < newAnnouncements.size(); i++) {
+//            //add the new items into all announcements
+//            allAnnouncements.add(newAnnouncements.get(i));
+//        }
+//
+//        // notify the adapter that we added some new items, so it can display
+//        adapter.notifyItemRangeChanged(initialSize, newAnnouncements.size() - initialSize);
+//        adapter.finishedLoading();
+//    }
 
 
     /**
