@@ -64,28 +64,28 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<RecyclerView.View
         this.siteIdToCourse = siteIdToCourse;
 
 
-//        final LinearLayoutManager manager = (LinearLayoutManager)announcementsRecycler.getLayoutManager();
-//        announcementsRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
-//            @Override
-//            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-//                super.onScrolled(recyclerView, dx, dy);
-//
-//                numItems = manager.getItemCount();
-//                lastVisibleItemPos = manager.findLastCompletelyVisibleItemPosition();
-//
-//                // load more if:
-//                //      we aren't already loading
-//                //      if the last visible item position is within our end offset
-//                //      if the last visible item isn't the last item in our list
-//                //          this one is needed b/c otherwise, if there are only two
-//                //          announcements in the list, it will try to request more
-//                if(!isLoading && lastVisibleItemPos >= numItems - END_OFFSET_BEFORE_RELOAD
-//                        && lastVisibleItemPos < numItems - 1) {
-//                    isLoading = true;
-//                    loadMoreListener.loadMore();
-//                }
-//            }
-//        });
+        final LinearLayoutManager manager = (LinearLayoutManager)announcementsRecycler.getLayoutManager();
+        announcementsRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                numItems = manager.getItemCount();
+                lastVisibleItemPos = manager.findLastCompletelyVisibleItemPosition();
+
+                // load more if:
+                //      we aren't already loading
+                //      if the last visible item position is within our end offset
+                //      if the last visible item isn't the last item in our list
+                //          this one is needed b/c otherwise, if there are only two
+                //          announcements in the list, it will try to request more
+                if(!isLoading && lastVisibleItemPos >= numItems - END_OFFSET_BEFORE_RELOAD
+                        && lastVisibleItemPos < numItems - 1) {
+                    isLoading = true;
+                    loadMoreListener.loadMore();
+                }
+            }
+        });
 
     }
 

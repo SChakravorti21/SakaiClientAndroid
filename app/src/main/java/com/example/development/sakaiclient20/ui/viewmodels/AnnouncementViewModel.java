@@ -4,10 +4,10 @@ package com.example.development.sakaiclient20.ui.viewmodels;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
+import android.util.Log;
 
 import com.example.development.sakaiclient20.persistence.entities.Announcement;
 import com.example.development.sakaiclient20.repositories.AnnouncementRepository;
-import com.example.development.sakaiclient20.repositories.CourseRepository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +31,7 @@ public class AnnouncementViewModel extends ViewModel {
     private MutableLiveData<List<Announcement>> allAnnouncements;
     private Map<String, MutableLiveData<List<Announcement>>> siteIdToAnnouncements;
 
+
     @Inject
     AnnouncementViewModel(AnnouncementRepository repo) {
         announcementRepository = repo;
@@ -38,20 +39,20 @@ public class AnnouncementViewModel extends ViewModel {
     }
 
 
-    public LiveData<List<Announcement>>  getAllAnnouncements() {
+    public LiveData<List<Announcement>>  getAllAnnouncements(int num) {
         if(allAnnouncements == null) {
             allAnnouncements = new MutableLiveData<>();
-            refreshAllData();
+            refreshAllData(num);
         }
 
         return allAnnouncements;
     }
 
-    public LiveData<List<Announcement>> getSiteAnnouncements(String siteId) {
+    public LiveData<List<Announcement>> getSiteAnnouncements(String siteId, int num) {
 
         if(!siteIdToAnnouncements.containsKey(siteId)) {
             siteIdToAnnouncements.put(siteId, new MutableLiveData<>());
-            refreshSiteData(siteId);
+            refreshSiteData(siteId, num);
         }
 
         return siteIdToAnnouncements.get(siteId);
@@ -80,9 +81,11 @@ public class AnnouncementViewModel extends ViewModel {
     /**
      * Refresh all announcements
      */
-    public void refreshAllData() {
+    public void refreshAllData(int num) {
+
+        Log.d("YOLO", "view model refreshing all " + num);
         compositeDisposable.add(
-                announcementRepository.refreshAllAnnouncements()
+                announcementRepository.refreshAllAnnouncements(num)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -119,9 +122,9 @@ public class AnnouncementViewModel extends ViewModel {
      * Refresh all site announcements
      * @param siteId
      */
-    public void refreshSiteData(String siteId) {
+    public void refreshSiteData(String siteId, int num) {
         compositeDisposable.add(
-                announcementRepository.refreshSiteAnnouncements(siteId)
+                announcementRepository.refreshSiteAnnouncements(siteId, num)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(

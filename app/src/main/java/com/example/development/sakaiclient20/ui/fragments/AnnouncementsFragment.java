@@ -14,11 +14,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
+import android.widget.Toast;
 
 
 import com.example.development.sakaiclient20.R;
 import com.example.development.sakaiclient20.persistence.entities.Announcement;
 import com.example.development.sakaiclient20.persistence.entities.Course;
+import com.example.development.sakaiclient20.ui.MainActivity;
 import com.example.development.sakaiclient20.ui.adapters.AnnouncementsAdapter;
 import com.example.development.sakaiclient20.ui.listeners.LoadMoreListener;
 import com.example.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
@@ -43,8 +45,6 @@ public class AnnouncementsFragment extends Fragment {
     // announcements to display
     private List<Announcement> allAnnouncements;
     private HashMap<String, Course> siteIdToCourse;
-
-    private SwipeRefreshLayout swipeRefreshLayout;
 
     // recycler view displaying announcements
     private RecyclerView announcementRecycler;
@@ -103,7 +103,7 @@ public class AnnouncementsFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_announcements, null);
         announcementRecycler = view.findViewById(R.id.announcements_recycler);
-        swipeRefreshLayout = view.findViewById(R.id.swiperefresh);
+        SwipeRefreshLayout swipeRefreshLayout = view.findViewById(R.id.swiperefresh);
 
         createAdapterAndFillRecyclerView();
 
@@ -148,34 +148,34 @@ public class AnnouncementsFragment extends Fragment {
      *
      * @param newAnnouncements announcements to add
      */
-//    private void addNewAnnouncementsToAdapter(List<Announcement> newAnnouncements) {
-//
-//        //remove the null element we had added to signify a loading item
-//        allAnnouncements.remove(allAnnouncements.size() - 1);
-//
-//        int initialSize = allAnnouncements.size();
-//
-//        // if there are no more new announcements to display
-//        // mark as finished loading, remove the loading bar, then return
-//        if (initialSize == newAnnouncements.size()) {
-//
-//            adapter.finishedLoading();
-//            adapter.notifyItemRemoved(allAnnouncements.size());
-//            Toast.makeText(getContext(), getString(R.string.no_announcements), Toast.LENGTH_SHORT).show();
-//            hasLoadedAllAnnouncements = true;
-//            return;
-//        }
-//
-//        // add the new annoncements to our list of all announcements
-//        for (int i = initialSize; i < newAnnouncements.size(); i++) {
-//            //add the new items into all announcements
-//            allAnnouncements.add(newAnnouncements.get(i));
-//        }
-//
-//        // notify the adapter that we added some new items, so it can display
-//        adapter.notifyItemRangeChanged(initialSize, newAnnouncements.size() - initialSize);
-//        adapter.finishedLoading();
-//    }
+    private void addNewAnnouncementsToAdapter(List<Announcement> newAnnouncements) {
+
+        //remove the null element we had added to signify a loading item
+        allAnnouncements.remove(allAnnouncements.size() - 1);
+
+        int initialSize = allAnnouncements.size();
+
+        // if there are no more new announcements to display
+        // mark as finished loading, remove the loading bar, then return
+        if (initialSize == newAnnouncements.size()) {
+
+            adapter.finishedLoading();
+            adapter.notifyItemRemoved(allAnnouncements.size());
+            Toast.makeText(getContext(), getString(R.string.no_announcements), Toast.LENGTH_SHORT).show();
+            hasLoadedAllAnnouncements = true;
+            return;
+        }
+
+        // add the new announcements to our list of all announcements
+        for (int i = initialSize; i < newAnnouncements.size(); i++) {
+            //add the new items into all announcements
+            allAnnouncements.add(newAnnouncements.get(i));
+        }
+
+        // notify the adapter that we added some new items, so it can display
+        adapter.notifyItemRangeChanged(initialSize, newAnnouncements.size() - initialSize);
+        adapter.finishedLoading();
+    }
 
 
     /**
@@ -202,50 +202,23 @@ public class AnnouncementsFragment extends Fragment {
                 adapter.notifyItemInserted(allAnnouncements.size() - 1);
             });
 
-            //TODO implement load more
             // get the number of announcements we have to request now,
             // based on the current number showing and the number of additional ones
             // we want
-            int numAnnouncementsToRequest = allAnnouncements.size() + ANNOUNCEMENTS_TO_GET_PER_REQUEST;
+            int numAnnouncementsToRequest = allAnnouncements.size() -1 + ANNOUNCEMENTS_TO_GET_PER_REQUEST;
 
+            ViewModelProviders.of(getActivity(), viewModelFactory)
+                    .get(AnnouncementViewModel.class)
+                    .refreshAllData(numAnnouncementsToRequest);
 
-
-//            DataHandler.requestAllAnnouncements(true, numAnnouncementsToRequest, new RequestCallback() {
-//
-//                @Override
-//                public void onAllAnnouncementsSuccess(ArrayList<AnnouncementCollection> response) {
-//
-//                    addNewAnnouncementsToAdapter(response);
-//
-//                }
-//
-//                @Override
-//                public void onAllAnnouncementsEmpty(int msgRscId) {
-//                    NavActivity activity = (NavActivity) getActivity();
-//                    activity.showErrorToast(getString(msgRscId));
-//                }
-//
-//                @Override
-//                public void onRequestFailure(int msgRscId, Throwable t) {
-//                    t.printStackTrace();
-//                    NavActivity activity = (NavActivity) getActivity();
-//                    activity.showErrorToast(getString(msgRscId));
-//                }
-//
-//            });
         }
 
         @Override
         public void refresh() {
 
-            //TODO
-//            // requests the default number of announcements
-//            int numAnnouncementsToRequest = NavActivity.NUM_ANNOUNCEMENTS_TO_REQUEST;
-
             ViewModelProviders.of(getActivity(), viewModelFactory)
                     .get(AnnouncementViewModel.class)
-                    .refreshAllData();
-
+                    .refreshAllData(MainActivity.NUM_ANNOUNCEMENTS_DEFAULT);
         }
 
 
@@ -280,32 +253,15 @@ public class AnnouncementsFragment extends Fragment {
             });
 
 
-//            int numAnnouncementsToRequest = allAnnouncements.size() - 1 + ANNOUNCEMENTS_TO_GET_PER_REQUEST;
-//
-//            String siteId = allAnnouncements.get(0).getSiteId();
-//
-//            DataHandler.requestSiteAnnouncements(true, siteId, numAnnouncementsToRequest, new RequestCallback() {
-//
-//                @Override
-//                public void onSiteAnnouncementsSuccess(ArrayList<AnnouncementCollection> response) {
-//
-//                    addNewAnnouncementsToAdapter(response);
-//                }
-//
-//                @Override
-//                public void onSiteAnnouncementsEmpty(int msgRscId) {
-//                    NavActivity activity = (NavActivity) getActivity();
-//                    activity.showErrorToast(getString(msgRscId));
-//                }
-//
-//                @Override
-//                public void onRequestFailure(int msgRscId, Throwable t) {
-//                    t.printStackTrace();
-//                    NavActivity activity = (NavActivity) getActivity();
-//                    activity.showErrorToast(getString(msgRscId));
-//                }
-//
-//            });
+            int numAnnouncementsToRequest = allAnnouncements.size() - 1 + ANNOUNCEMENTS_TO_GET_PER_REQUEST;
+
+            String siteId = allAnnouncements.get(0).siteId;
+
+            ViewModelProviders.of(getActivity(),  viewModelFactory)
+                    .get(AnnouncementViewModel.class)
+                    .refreshSiteData(siteId, numAnnouncementsToRequest);
+
+            // TODO observe add new announcements to adapter
         }
 
 
@@ -316,7 +272,7 @@ public class AnnouncementsFragment extends Fragment {
 
             ViewModelProviders.of(getActivity(), viewModelFactory)
                     .get(AnnouncementViewModel.class)
-                    .refreshSiteData(siteId);
+                    .refreshSiteData(siteId, MainActivity.NUM_ANNOUNCEMENTS_DEFAULT);
         }
 
     }

@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -55,6 +56,8 @@ public class MainActivity extends AppCompatActivity
     public static final String ALL_GRADES_TAG = "GRADES";
     public static final String ASSIGNMENTS_TAG = "ASSIGNMENTS";
     public static final String SITE_GRADES_TAG = "SITE_GRADES";
+
+    public static final int NUM_ANNOUNCEMENTS_DEFAULT = 5;
 
     private static final short FRAGMENT_REPLACE = 0;
     private static final short FRAGMENT_ADD = 1;
@@ -187,12 +190,14 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    // for some reason map isn't serializable, so i had to use hashmap
     @Override
-    public void onAnnouncementSelected(Announcement announcement, HashMap<String, Course> siteIdToCourse) {
+    public void onAnnouncementSelected(Announcement announcement, Map<String, Course> siteIdToCourse) {
         Bundle b = new Bundle();
         b.putSerializable(getString(R.string.single_announcement_tag), announcement);
-        b.putSerializable(getString(R.string.siteid_to_course_map), siteIdToCourse);
+        // for some reason map isn't serializable, so i had to cast to hashmap
+        //TODO check before casting
+        b.putSerializable(getString(R.string.siteid_to_course_map), (HashMap)siteIdToCourse);
+        b.putSerializable(getString(R.string.siteid_to_course_map), (HashMap)siteIdToCourse);
 
         SingleAnnouncementFragment fragment = new SingleAnnouncementFragment();
         fragment.setArguments(b);
@@ -206,7 +211,7 @@ public class MainActivity extends AppCompatActivity
         LiveData<List<Announcement>> siteAnnouncementsLiveData =
                 ViewModelProviders.of(this, viewModelFactory)
                 .get(AnnouncementViewModel.class)
-                .getSiteAnnouncements(course.siteId);
+                .getSiteAnnouncements(course.siteId, NUM_ANNOUNCEMENTS_DEFAULT);
 
         beingObserved.add(siteAnnouncementsLiveData);
         // observe the site announcements list,
@@ -333,7 +338,9 @@ public class MainActivity extends AppCompatActivity
         LiveData<List<Announcement>> announcementsLiveData =
                 ViewModelProviders.of(this, viewModelFactory)
                 .get(AnnouncementViewModel.class)
-                .getAllAnnouncements();
+                .getAllAnnouncements(NUM_ANNOUNCEMENTS_DEFAULT);
+
+        Log.d("YOLO", "num default = " + NUM_ANNOUNCEMENTS_DEFAULT);
 
         // get our courses so we can create a map from siteId to course
         // which the announcement adapter needs
@@ -348,6 +355,9 @@ public class MainActivity extends AppCompatActivity
         // TODO : make it so that both are concurrent
         announcementsLiveData.observe(this, announcements -> {
             coursesLiveData.observe(this, courses -> {
+
+                Log.d("YOLO", "requested announcements " + announcements.size());
+
                 HashMap<String, Course> siteIdToCourse = createSiteIdToCourseMap(courses);
 
                 stopProgressBar();

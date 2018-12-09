@@ -1,5 +1,7 @@
 package com.example.development.sakaiclient20.repositories;
 
+import android.util.Log;
+
 import com.example.development.sakaiclient20.models.sakai.announcements.AnnouncementsResponse;
 import com.example.development.sakaiclient20.networking.services.AnnouncementsService;
 import com.example.development.sakaiclient20.persistence.access.AnnouncementDao;
@@ -32,9 +34,10 @@ public class AnnouncementRepository {
                 .firstOrError();
     }
 
-    public Completable refreshAllAnnouncements() {
+    public Completable refreshAllAnnouncements(int num) {
+        Log.d("YOLO", "repository, refreshing all " + num);
         return announcementsService
-                .getAllAnnouncements(10000, 10000)
+                .getAllAnnouncements(10000, num)
                 .map(AnnouncementsResponse::getAnnouncements)
                 .map(this::persistAnnouncements)
                 .ignoreElement();
@@ -48,9 +51,9 @@ public class AnnouncementRepository {
                 .firstOrError();
     }
 
-    public Completable refreshSiteAnnouncements(String siteId) {
+    public Completable refreshSiteAnnouncements(String siteId, int num) {
         return announcementsService
-                .getAnnouncementsForSite(siteId, 10000, 10000)
+                .getAnnouncementsForSite(siteId, 10000, num)
                 .map(AnnouncementsResponse::getAnnouncements)
                 .map(this::persistAnnouncements)
                 .ignoreElement();
@@ -72,6 +75,8 @@ public class AnnouncementRepository {
     }
 
     private List<Announcement> persistAnnouncements(List<Announcement> announcements) {
+
+//        announcementDao.deleteAllAnnouncements();
 
         announcementDao.insert(announcements);
         for(Announcement announcement : announcements) {

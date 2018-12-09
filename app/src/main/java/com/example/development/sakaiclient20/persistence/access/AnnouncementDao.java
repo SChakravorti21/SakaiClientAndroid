@@ -16,6 +16,9 @@ import io.reactivex.Flowable;
 @Dao
 public abstract class AnnouncementDao implements BaseDao<Announcement> {
 
+    @Query("DELETE FROM announcements")
+    public abstract void deleteAllAnnouncements();
+
     @Transaction
     @Query("SELECT * FROM announcements ORDER BY createdOn DESC")
     public abstract Flowable<List<AnnouncementWithAttachments>> getAllAnnouncements();
