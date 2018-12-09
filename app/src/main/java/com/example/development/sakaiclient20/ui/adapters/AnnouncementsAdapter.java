@@ -4,6 +4,7 @@ import android.os.Build;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -188,12 +189,19 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<RecyclerView.View
                 //if site announcements, show announcement title, then announcement body
                 announcementHolder.cardHeading2.setText(currAnnouncement.title);
 
-                //if its after android N, use this method for setting the html
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    announcementHolder.cardHeading3.setText(Html.fromHtml(currAnnouncement.body, Html.FROM_HTML_MODE_COMPACT));
-                } else {
-                    announcementHolder.cardHeading3.setText(Html.fromHtml(currAnnouncement.body));
+                try {
+                    //if its after android N, use this method for setting the html
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        announcementHolder.cardHeading3.setText(Html.fromHtml(currAnnouncement.body, Html.FROM_HTML_MODE_COMPACT));
+                    } else {
+                        announcementHolder.cardHeading3.setText(Html.fromHtml(currAnnouncement.body));
+                    }
+                } catch(RuntimeException e) {
+//                    java.lang.RuntimeException: PARAGRAPH span must start at paragraph boundary (832 follows  )
+                    announcementHolder.cardHeading3.setText("");
+                    e.printStackTrace();
                 }
+
             }
 
 
