@@ -6,6 +6,8 @@ import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
+import java.io.Serializable;
+
 @Entity(tableName = "site_pages",
         foreignKeys = {
             @ForeignKey(entity = Course.class,
@@ -17,7 +19,7 @@ import android.support.annotation.NonNull;
         indices = {
             @Index(value = "siteId")
         })
-public class SitePage {
+public class SitePage implements Serializable {
 
     @PrimaryKey
     @NonNull

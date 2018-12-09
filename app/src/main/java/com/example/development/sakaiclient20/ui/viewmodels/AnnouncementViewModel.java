@@ -83,7 +83,6 @@ public class AnnouncementViewModel extends ViewModel {
      */
     public void refreshAllData(int num) {
 
-        Log.d("YOLO", "view model refreshing all " + num);
         compositeDisposable.add(
                 announcementRepository.refreshAllAnnouncements(num)
                         .subscribeOn(Schedulers.io())

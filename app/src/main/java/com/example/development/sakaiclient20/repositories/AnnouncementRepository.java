@@ -35,7 +35,6 @@ public class AnnouncementRepository {
     }
 
     public Completable refreshAllAnnouncements(int num) {
-        Log.d("YOLO", "repository, refreshing all " + num);
         return announcementsService
                 .getAllAnnouncements(10000, num)
                 .map(AnnouncementsResponse::getAnnouncements)

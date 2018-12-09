@@ -77,6 +77,7 @@ public class AnnouncementsFragment extends Fragment {
         // TODO check before cast
         allAnnouncements = (List<Announcement>) bun.getSerializable(getString(R.string.all_announcements_tag));
         siteIdToCourse = (HashMap<String, Course>) bun.getSerializable(getString(R.string.siteid_to_course_map));
+        onActionPerformedListener = (OnActionPerformedListener) bun.getSerializable(getString(R.string.BASE_URL));
 
         if (announcementType == ALL_ANNOUNCEMENTS) {
             loadMoreListener = new LoadsAllAnnouncements();
@@ -85,10 +86,6 @@ public class AnnouncementsFragment extends Fragment {
         }
 
         hasLoadedAllAnnouncements = false;
-    }
-
-    public void setOnActionPerformedListener(OnActionPerformedListener listener) {
-        this.onActionPerformedListener = listener;
     }
 
     @Override

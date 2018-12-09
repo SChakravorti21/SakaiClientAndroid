@@ -221,21 +221,13 @@ public class MainActivity extends AppCompatActivity
             HashMap<String, Course> siteIdToCourse = new HashMap<>();
             siteIdToCourse.put(course.siteId, course);
 
-            // create the fragment and set its arguments
-            AnnouncementsFragment announcementsFragment = new AnnouncementsFragment();
-            announcementsFragment.setOnActionPerformedListener(this);
+            AnnouncementsFragment frag =
+                    prepareAnnouncementsFragment(siteAnnouncements, siteIdToCourse, AnnouncementsFragment.SITE_ANNOUNCEMENTS);
 
-            Bundle b = new Bundle();
-            b.putInt(getString(R.string.announcement_type), AnnouncementsFragment.SITE_ANNOUNCEMENTS);
-            // TODO check before cast
-            b.putSerializable(getString(R.string.all_announcements_tag), (ArrayList)siteAnnouncements);
-            b.putSerializable(getString(R.string.siteid_to_course_map), siteIdToCourse);
-
-            announcementsFragment.setArguments(b);
-
-            loadFragment(announcementsFragment, FRAGMENT_REPLACE, true, true);
+            loadFragment(frag, FRAGMENT_REPLACE, true, true);
             container.setVisibility(View.VISIBLE);
 
+            // TODO use proper string resource
             String actionBarTitle = String.format("%s: %s", getString(R.string.announcements_site), course.title);
             setActionBarTitle(actionBarTitle);
         });
@@ -340,8 +332,6 @@ public class MainActivity extends AppCompatActivity
                 .get(AnnouncementViewModel.class)
                 .getAllAnnouncements(NUM_ANNOUNCEMENTS_DEFAULT);
 
-        Log.d("YOLO", "num default = " + NUM_ANNOUNCEMENTS_DEFAULT);
-
         // get our courses so we can create a map from siteId to course
         // which the announcement adapter needs
         LiveData<List<List<Course>>> coursesLiveData =
@@ -356,26 +346,15 @@ public class MainActivity extends AppCompatActivity
         announcementsLiveData.observe(this, announcements -> {
             coursesLiveData.observe(this, courses -> {
 
-                Log.d("YOLO", "requested announcements " + announcements.size());
-
                 HashMap<String, Course> siteIdToCourse = createSiteIdToCourseMap(courses);
 
                 stopProgressBar();
 
-                // create the fragment and set its arguments
-                AnnouncementsFragment announcementsFragment = new AnnouncementsFragment();
-                announcementsFragment.setOnActionPerformedListener(this);
-
-                Bundle b = new Bundle();
-                b.putInt(getString(R.string.announcement_type), AnnouncementsFragment.ALL_ANNOUNCEMENTS);
-
-                //TODO check before casting to arraylist
-                b.putSerializable(getString(R.string.all_announcements_tag), (ArrayList)announcements);
-                b.putSerializable(getString(R.string.siteid_to_course_map), siteIdToCourse);
-                announcementsFragment.setArguments(b);
+               AnnouncementsFragment frag =
+                       prepareAnnouncementsFragment(announcements, siteIdToCourse, AnnouncementsFragment.ALL_ANNOUNCEMENTS);
 
                 // load the fragment onto the screen with a replace
-                loadFragment(announcementsFragment, FRAGMENT_REPLACE, false, false);
+                loadFragment(frag, FRAGMENT_REPLACE, false, false);
                 container.setVisibility(View.VISIBLE);
                 setActionBarTitle(getString(R.string.announcements));
             });
@@ -389,6 +368,33 @@ public class MainActivity extends AppCompatActivity
     /******************************\
      CONVENIENCE METHODS
      \******************************/
+
+    /**
+     * Prepares an announcements fragment for all announcements or site announcements
+     * @param announcements list of announcements to show in frag
+     * @param siteIdToCourse hashmap mapping from siteIdToCourses, needed in the adapter
+     * @param announcementType type of announcement to show, all or site
+     * @return created announcements fragment
+     */
+    private AnnouncementsFragment prepareAnnouncementsFragment(
+            List<Announcement> announcements,
+            HashMap<String, Course> siteIdToCourse,
+            int announcementType) {
+
+        // create the fragment and set its arguments
+        AnnouncementsFragment announcementsFragment = new AnnouncementsFragment();
+
+        Bundle b = new Bundle();
+        b.putInt(getString(R.string.announcement_type), announcementType);
+
+        //TODO check before casting to arraylist
+        b.putSerializable(getString(R.string.all_announcements_tag), (ArrayList)announcements);
+        b.putSerializable(getString(R.string.siteid_to_course_map), siteIdToCourse);
+        b.putSerializable(getString(R.string.action_listener_tag), this);
+        announcementsFragment.setArguments(b);
+
+        return announcementsFragment;
+    }
 
     private HashMap<String, Course> createSiteIdToCourseMap(List<List<Course>> courses) {
 

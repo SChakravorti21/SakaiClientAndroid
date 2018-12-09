@@ -61,6 +61,8 @@
     <string name="site_announcements_tag">SITE_ANNOUNCEMENTS</string>
     <string name="siteid_to_course_map">SITEIDTOCOURSE</string>
     <string name="single_announcement_tag">SINGLE_ANNOUNCEMENT</string>
+    <string name="action_listener_tag">ACTION_LISTENER</string>
+
     <string name="no_announcements">There are no announcements available.</string>
 </resources>
 

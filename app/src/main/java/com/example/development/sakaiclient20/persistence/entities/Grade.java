@@ -4,6 +4,8 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 
+import java.io.Serializable;
+
 /**
  * Created by Development on 8/5/18.
  */
@@ -15,7 +17,7 @@ import android.arch.persistence.room.PrimaryKey;
 //                                    onDelete = ForeignKey.CASCADE,
 //                                    onUpdate = ForeignKey.CASCADE),
         indices = @Index(value = "siteId"))
-public class Grade {
+public class Grade implements Serializable {
     // autogenerates means the id is incremented each time a new grade is added (our own id, not sakai's)
     @PrimaryKey(autoGenerate = true)
     public int id;
