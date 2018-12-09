@@ -45,6 +45,8 @@ import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.HasSupportFragmentInjector;
 
+import static com.example.development.sakaiclient20.ui.fragments.AnnouncementsFragment.NUM_ANNOUNCEMENTS_DEFAULT;
+
 public class MainActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener,
         HasSupportFragmentInjector, OnActionPerformedListener, OnFinishedLoadingListener {
@@ -57,8 +59,6 @@ public class MainActivity extends AppCompatActivity
     public static final String ALL_GRADES_TAG = "GRADES";
     public static final String ASSIGNMENTS_TAG = "ASSIGNMENTS";
     public static final String SITE_GRADES_TAG = "SITE_GRADES";
-
-    public static final int NUM_ANNOUNCEMENTS_DEFAULT = 15;
 
     private static final short FRAGMENT_REPLACE = 0;
     private static final short FRAGMENT_ADD = 1;
@@ -215,29 +215,33 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onSiteAnnouncementsSelected(Course course) {
 
+        startProgressBar();
+
         LiveData<List<Announcement>> siteAnnouncementsLiveData =
                 ViewModelProviders.of(this, viewModelFactory)
                 .get(AnnouncementViewModel.class)
                 .getSiteAnnouncements(course.siteId, NUM_ANNOUNCEMENTS_DEFAULT);
 
         beingObserved.add(siteAnnouncementsLiveData);
-        // observe the site announcements list,
-        // make new fragment if it is updated.
-        siteAnnouncementsLiveData.observe(this, siteAnnouncements -> {
 
-            HashMap<String, Course> siteIdToCourse = new HashMap<>();
-            siteIdToCourse.put(course.siteId, course);
 
-//            AnnouncementsFragment frag =
-//                    prepareAnnouncementsFragment(siteAnnouncements, siteIdToCourse, AnnouncementsFragment.SITE_ANNOUNCEMENTS);
-//
-//            loadFragment(frag, FRAGMENT_REPLACE, true, true);
-//            container.setVisibility(View.VISIBLE);
-//
-//            // TODO use proper string resource
-//            String actionBarTitle = String.format("%s: %s", getString(R.string.announcements_site), course.title);
-//            setActionBarTitle(actionBarTitle);
-        });
+        HashMap<String, Course> siteIdToCourse = new HashMap<>();
+        siteIdToCourse.put(course.siteId, course);
+
+        Bundle b = new Bundle();
+        b.putString(getString(R.string.siteid_tag), course.siteId);
+        b.putSerializable(getString(R.string.siteid_to_course_map), siteIdToCourse);
+
+        AnnouncementsFragment frag = new AnnouncementsFragment();
+        frag.setArguments(b);
+
+
+        loadFragment(frag, FRAGMENT_REPLACE, true, true);
+        container.setVisibility(View.VISIBLE);
+
+        // TODO use proper string resource
+        String actionBarTitle = String.format("%s: %s", getString(R.string.announcements_site), course.title);
+        setActionBarTitle(actionBarTitle);
     }
 
     @Override
@@ -363,7 +367,7 @@ public class MainActivity extends AppCompatActivity
 
             // create fragment arguments
             Bundle b = new Bundle();
-            b.putInt(getString(R.string.announcement_type), AnnouncementsFragment.ALL_ANNOUNCEMENTS);
+            b.putString(getString(R.string.siteid_tag), null);
             b.putSerializable(getString(R.string.siteid_to_course_map), map);
 
             // create and load the fragment

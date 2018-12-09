@@ -38,12 +38,12 @@ import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
 
-import static com.example.development.sakaiclient20.ui.MainActivity.NUM_ANNOUNCEMENTS_DEFAULT;
-
 public class AnnouncementsFragment extends Fragment {
 
     @Inject
     ViewModelFactory viewModelFactory;
+
+    public static final int NUM_ANNOUNCEMENTS_DEFAULT = 10;
 
     public static final int ALL_ANNOUNCEMENTS = 0;
     public static final int SITE_ANNOUNCEMENTS = 1;
@@ -80,21 +80,27 @@ public class AnnouncementsFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         Bundle bun = getArguments();
-        announcementType = bun.getInt(getString(R.string.announcement_type));
+        String siteId = (String) bun.getString(getString(R.string.siteid_tag));
+        announcementType = siteId == null ? ALL_ANNOUNCEMENTS : SITE_ANNOUNCEMENTS;
 
-        siteIdToCourseMap = (HashMap)bun.getSerializable(getString(R.string.siteid_to_course_map));
+        siteIdToCourseMap = (HashMap) bun.getSerializable(getString(R.string.siteid_to_course_map));
 
-        if (announcementType == ALL_ANNOUNCEMENTS) {
+
+        LiveData<List<Announcement>> announcementsLiveData;
+
+        if (siteId == null) {
             loadMoreListener = new LoadsAllAnnouncements();
-        } else if (announcementType == SITE_ANNOUNCEMENTS) {
-            loadMoreListener = new LoadsSiteAnnouncements();
-        }
+            announcementsLiveData = ViewModelProviders.of(getActivity(), viewModelFactory)
+                    .get(AnnouncementViewModel.class)
+                    .getAllAnnouncements(NUM_ANNOUNCEMENTS_DEFAULT);
 
-        // get the announcements to show
-        LiveData<List<Announcement>> announcementsLiveData =
-                ViewModelProviders.of(getActivity(), viewModelFactory)
-                        .get(AnnouncementViewModel.class)
-                        .getAllAnnouncements(NUM_ANNOUNCEMENTS_DEFAULT);
+        } else {
+            loadMoreListener = new LoadsSiteAnnouncements();
+
+            announcementsLiveData = ViewModelProviders.of(getActivity(), viewModelFactory)
+                    .get(AnnouncementViewModel.class)
+                    .getSiteAnnouncements(siteId, NUM_ANNOUNCEMENTS_DEFAULT);
+        }
 
         announcementsLiveData.observe(getActivity(), announcements -> {
             // add the newly gotten announcements to the adapter
@@ -123,7 +129,6 @@ public class AnnouncementsFragment extends Fragment {
 
         return view;
     }
-
 
 
     /**
@@ -165,7 +170,7 @@ public class AnnouncementsFragment extends Fragment {
     private void addNewAnnouncementsToAdapter(List<Announcement> newAnnouncements) {
 
         //remove the null element we had added to signify a loading item
-        if(allAnnouncements.size() > 0)
+        if (allAnnouncements.size() > 0)
             allAnnouncements.remove(allAnnouncements.size() - 1);
 
         int initialSize = allAnnouncements.size();
@@ -239,8 +244,9 @@ public class AnnouncementsFragment extends Fragment {
 
     }
 
-    /**            // TODO observe add new announcements to adapter
-
+    /**
+     * // TODO observe add new announcements to adapter
+     * <p>
      * private class which holds the load more method to load more site announcements
      */
     private class LoadsSiteAnnouncements implements LoadMoreListener {
@@ -290,7 +296,6 @@ public class AnnouncementsFragment extends Fragment {
     }
 
 
-
     @Override
     public void onAttach(Context context) {
         AndroidSupportInjection.inject(this);
@@ -326,7 +331,6 @@ public class AnnouncementsFragment extends Fragment {
 
         return null;
     }
-
 
 
 }

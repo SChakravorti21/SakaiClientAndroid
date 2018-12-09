@@ -28,9 +28,7 @@
     <string name="winter">Winter</string>
     <string name="fall">Fall</string>
 
-    <string name="home_fragment" translatable="false">HomeFragment</string>
-    <string name="class_to_view" translatable="false">ClassToView</string>
-    <string name="site_id" translatable="false">SiteId</string>
+
 
     <string name="BASE_URL">https://sakai.rutgers.edu/direct/</string>
     <string name="CAS_BASE_URL">https://cas.rutgers.edu/login?service=https%3A%2F%2Fsakai.rutgers.edu%2Fsakai-login-tool%2Fcontainer</string>
@@ -56,11 +54,11 @@
     <string name="grade_item_null">/%1$.2f</string>
     <string name="title_activity_settings">SettingsActivity</string>
 
-    <string name="announcement_type">ANNOUNCEMENT_TYPE</string>
-    <string name="all_announcements_tag">ALL_ANNOUNCEMENTS</string>
-    <string name="site_announcements_tag">SITE_ANNOUNCEMENTS</string>
-    <string name="siteid_to_course_map">SITEIDTOCOURSE</string>
-    <string name="single_announcement_tag">SINGLE_ANNOUNCEMENT</string>
+    <string name="siteid_tag" translatable="false">SITEID</string>
+    <string name="all_announcements_tag" translatable="false">ALL_ANNOUNCEMENTS</string>
+    <string name="site_announcements_tag" translatable="false">SITE_ANNOUNCEMENTS</string>
+    <string name="siteid_to_course_map" translatable="false">SITEIDTOCOURSE</string>
+    <string name="single_announcement_tag" translatable="false">SINGLE_ANNOUNCEMENT</string>
 
     <string name="no_announcements">There are no announcements available.</string>
 </resources>
