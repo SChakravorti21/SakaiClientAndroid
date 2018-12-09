@@ -76,7 +76,9 @@ public class AnnouncementRepository {
 
     private List<Announcement> persistAnnouncements(List<Announcement> announcements) {
 
-//        announcementDao.deleteAllAnnouncements();
+        // delete all announcements from the previous session
+        // they are outdated!!!!!!!!!
+        announcementDao.deleteAllAnnouncements();
 
         announcementDao.insert(announcements);
         for(Announcement announcement : announcements) {
