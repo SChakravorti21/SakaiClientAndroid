@@ -3,6 +3,7 @@ package com.example.development.sakaiclient20.ui.viewmodels;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.ViewModel;
 
 import com.example.development.sakaiclient20.persistence.entities.Announcement;
 import com.example.development.sakaiclient20.repositories.AnnouncementRepository;
@@ -16,11 +17,14 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class AnnouncementViewModel extends BaseViewModel {
+public class AnnouncementViewModel extends ViewModel {
 
     private AnnouncementRepository announcementRepository;
+
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     // need to have two seperate ones, must observe on all announcements (When refresh all announcements tab)
     // and must observe on siteIdToAnnouncements when refresh site announcements
@@ -28,8 +32,7 @@ public class AnnouncementViewModel extends BaseViewModel {
     private Map<String, MutableLiveData<List<Announcement>>> siteIdToAnnouncements;
 
     @Inject
-    public AnnouncementViewModel(CourseRepository courseRepository, AnnouncementRepository repo) {
-        super(courseRepository);
+    AnnouncementViewModel(AnnouncementRepository repo) {
         announcementRepository = repo;
         siteIdToAnnouncements = new HashMap<>();
     }
@@ -74,7 +77,9 @@ public class AnnouncementViewModel extends BaseViewModel {
         );
     }
 
-    @Override
+    /**
+     * Refresh all announcements
+     */
     public void refreshAllData() {
         compositeDisposable.add(
                 announcementRepository.refreshAllAnnouncements()
@@ -110,8 +115,10 @@ public class AnnouncementViewModel extends BaseViewModel {
         );
     }
 
-
-    @Override
+    /**
+     * Refresh all site announcements
+     * @param siteId
+     */
     public void refreshSiteData(String siteId) {
         compositeDisposable.add(
                 announcementRepository.refreshSiteAnnouncements(siteId)
@@ -176,5 +183,12 @@ public class AnnouncementViewModel extends BaseViewModel {
 
         // set the new value of the mutable live data
         allAnnouncements.setValue(allAnnouncementsList);
+    }
+
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        compositeDisposable.clear();
     }
 }

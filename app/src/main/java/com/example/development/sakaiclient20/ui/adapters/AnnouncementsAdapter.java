@@ -18,8 +18,8 @@ import com.example.development.sakaiclient20.ui.helpers.RutgersSubjectCodes;
 import com.example.development.sakaiclient20.ui.listeners.LoadMoreListener;
 import com.example.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
 
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by atharva on 7/8/18
@@ -40,7 +40,7 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<RecyclerView.View
     // list of announcements to display
     private List<Announcement> announcements;
     // mapping siteIdToCourse, needed to get subject code and course title
-    private Map<String, Course> siteIdToCourse;
+    private HashMap<String, Course> siteIdToCourse;
     // click listener for each announcement card
     private OnActionPerformedListener announcementclickListener;
 
@@ -55,7 +55,7 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<RecyclerView.View
 
 
     public AnnouncementsAdapter(List<Announcement> announcements,
-                                Map<String, Course> siteIdToCourse,
+                                HashMap<String, Course> siteIdToCourse,
                                 RecyclerView announcementsRecycler,
                                 int type) {
 

@@ -25,8 +25,8 @@ import com.example.development.sakaiclient20.ui.listeners.OnActionPerformedListe
 import com.example.development.sakaiclient20.ui.viewmodels.AnnouncementViewModel;
 import com.example.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -42,7 +42,7 @@ public class AnnouncementsFragment extends Fragment {
 
     // announcements to display
     private List<Announcement> allAnnouncements;
-    private Map<String, Course> siteIdToCourse;
+    private HashMap<String, Course> siteIdToCourse;
 
     private SwipeRefreshLayout swipeRefreshLayout;
 
@@ -66,23 +66,17 @@ public class AnnouncementsFragment extends Fragment {
     private OnActionPerformedListener onActionPerformedListener;
 
 
-    // TODO remove new instance method
-    public static AnnouncementsFragment newInstance(List<Announcement> announcements, Map<String, Course> siteIdToCourse, OnActionPerformedListener onActionPerformedListener) {
-
-        AnnouncementsFragment fragment = new AnnouncementsFragment();
-        fragment.allAnnouncements = announcements;
-        fragment.siteIdToCourse = siteIdToCourse;
-        fragment.onActionPerformedListener = onActionPerformedListener;
-        return fragment;
-    }
-
-
+    @SuppressWarnings("unchecked")
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Bundle bun = getArguments();
         announcementType =  bun.getInt(getString(R.string.announcement_type));
+
+        // TODO check before cast
+        allAnnouncements = (List<Announcement>) bun.getSerializable(getString(R.string.all_announcements_tag));
+        siteIdToCourse = (HashMap<String, Course>) bun.getSerializable(getString(R.string.siteid_to_course_map));
 
         if (announcementType == ALL_ANNOUNCEMENTS) {
             loadMoreListener = new LoadsAllAnnouncements();
@@ -91,6 +85,10 @@ public class AnnouncementsFragment extends Fragment {
         }
 
         hasLoadedAllAnnouncements = false;
+    }
+
+    public void setOnActionPerformedListener(OnActionPerformedListener listener) {
+        this.onActionPerformedListener = listener;
     }
 
     @Override
@@ -109,11 +107,13 @@ public class AnnouncementsFragment extends Fragment {
 
         createAdapterAndFillRecyclerView();
 
-        swipeRefreshLayout.setOnRefreshListener(loadMoreListener::refresh);
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            loadMoreListener.refresh();
+//            swipeRefreshLayout.setRefreshing(false);
+        });
 
 
         return view;
-
     }
 
 
@@ -203,11 +203,13 @@ public class AnnouncementsFragment extends Fragment {
             });
 
             //TODO implement load more
-//            // get the number of announcements we have to request now,
-//            // based on the current number showing and the number of additional ones
-//            // we want
-//            int numAnnouncementsToRequest = allAnnouncements.size() + ANNOUNCEMENTS_TO_GET_PER_REQUEST;
-//
+            // get the number of announcements we have to request now,
+            // based on the current number showing and the number of additional ones
+            // we want
+            int numAnnouncementsToRequest = allAnnouncements.size() + ANNOUNCEMENTS_TO_GET_PER_REQUEST;
+
+
+
 //            DataHandler.requestAllAnnouncements(true, numAnnouncementsToRequest, new RequestCallback() {
 //
 //                @Override

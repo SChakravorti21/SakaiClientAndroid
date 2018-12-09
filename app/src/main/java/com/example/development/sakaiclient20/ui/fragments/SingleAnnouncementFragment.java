@@ -26,21 +26,16 @@ public class SingleAnnouncementFragment extends Fragment {
     private Announcement currAnnouncement;
     private Map<String, Course> siteIdToCourse;
 
-    // TODO don't use this
-    public static SingleAnnouncementFragment newInstance(Announcement announcement, Map<String, Course> siteIdToCourse) {
-        SingleAnnouncementFragment fragment = new SingleAnnouncementFragment();
-        fragment.siteIdToCourse = siteIdToCourse;
-        fragment.currAnnouncement = announcement;
-        return fragment;
-    }
-
+    @SuppressWarnings("unchecked")
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        Bundle b = getArguments();
-//        currAnnouncement = (Announcement) b.getSerializable(getString(R.string.single_announcement_tag));
+        Bundle b = getArguments();
+        currAnnouncement = (Announcement) b.getSerializable(getString(R.string.single_announcement_tag));
+        siteIdToCourse = (Map<String, Course>) b.getSerializable(getString(R.string.siteid_to_course_map));
     }
+
 
     @Nullable
     @Override

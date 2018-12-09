@@ -187,17 +187,17 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    // for some reason map isn't serializable, so i had to use hashmap
     @Override
-    public void onAnnouncementSelected(Announcement announcement, Map<String, Course> siteIdToCourse) {
-        SingleAnnouncementFragment singleAnnouncementFragment = SingleAnnouncementFragment.newInstance(announcement, siteIdToCourse);
-        loadFragment(singleAnnouncementFragment, FRAGMENT_ADD, true, R.anim.grow_enter, R.anim.pop_exit);
+    public void onAnnouncementSelected(Announcement announcement, HashMap<String, Course> siteIdToCourse) {
+        Bundle b = new Bundle();
+        b.putSerializable(getString(R.string.single_announcement_tag), announcement);
+        b.putSerializable(getString(R.string.siteid_to_course_map), siteIdToCourse);
 
-        //        Bundle b = new Bundle();
-//        b.putSerializable(getString(R.string.single_announcement_tag), announcement);
-//
-//        //put the clicked announcement into the fragment's bundle
-//        SingleAnnouncementFragment frag = new SingleAnnouncementFragment();
-//        frag.setArguments(b);
+        SingleAnnouncementFragment fragment = new SingleAnnouncementFragment();
+        fragment.setArguments(b);
+
+        loadFragment(fragment, FRAGMENT_ADD, true, R.anim.grow_enter, R.anim.pop_exit);
     }
 
     @Override
@@ -213,12 +213,19 @@ public class MainActivity extends AppCompatActivity
         // make new fragment if it is updated.
         siteAnnouncementsLiveData.observe(this, siteAnnouncements -> {
 
-            Map<String, Course> siteIdToCourse = new HashMap<>();
+            HashMap<String, Course> siteIdToCourse = new HashMap<>();
             siteIdToCourse.put(course.siteId, course);
 
-            AnnouncementsFragment announcementsFragment = AnnouncementsFragment.newInstance(course.announcements, siteIdToCourse, this);
+            // create the fragment and set its arguments
+            AnnouncementsFragment announcementsFragment = new AnnouncementsFragment();
+            announcementsFragment.setOnActionPerformedListener(this);
+
             Bundle b = new Bundle();
             b.putInt(getString(R.string.announcement_type), AnnouncementsFragment.SITE_ANNOUNCEMENTS);
+            // TODO check before cast
+            b.putSerializable(getString(R.string.all_announcements_tag), (ArrayList)siteAnnouncements);
+            b.putSerializable(getString(R.string.siteid_to_course_map), siteIdToCourse);
+
             announcementsFragment.setArguments(b);
 
             loadFragment(announcementsFragment, FRAGMENT_REPLACE, true, true);
@@ -311,7 +318,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * Loads the all announcements fragment by observing on the live data from the
+     * Loads the all announcements fragment by obser
+     * ving on the live data from the
      * announcements view model
      *
      * whenever an update is detected in the live data, recreate the fragment
@@ -340,15 +348,23 @@ public class MainActivity extends AppCompatActivity
         // TODO : make it so that both are concurrent
         announcementsLiveData.observe(this, announcements -> {
             coursesLiveData.observe(this, courses -> {
-                Map<String, Course> siteIdToCourse = createSiteIdToCourseMap(courses);
+                HashMap<String, Course> siteIdToCourse = createSiteIdToCourseMap(courses);
 
                 stopProgressBar();
 
-                AnnouncementsFragment announcementsFragment = AnnouncementsFragment.newInstance(announcements, siteIdToCourse, this);
+                // create the fragment and set its arguments
+                AnnouncementsFragment announcementsFragment = new AnnouncementsFragment();
+                announcementsFragment.setOnActionPerformedListener(this);
+
                 Bundle b = new Bundle();
                 b.putInt(getString(R.string.announcement_type), AnnouncementsFragment.ALL_ANNOUNCEMENTS);
+
+                //TODO check before casting to arraylist
+                b.putSerializable(getString(R.string.all_announcements_tag), (ArrayList)announcements);
+                b.putSerializable(getString(R.string.siteid_to_course_map), siteIdToCourse);
                 announcementsFragment.setArguments(b);
 
+                // load the fragment onto the screen with a replace
                 loadFragment(announcementsFragment, FRAGMENT_REPLACE, false, false);
                 container.setVisibility(View.VISIBLE);
                 setActionBarTitle(getString(R.string.announcements));
@@ -364,9 +380,9 @@ public class MainActivity extends AppCompatActivity
      CONVENIENCE METHODS
      \******************************/
 
-    private Map<String, Course> createSiteIdToCourseMap(List<List<Course>> courses) {
+    private HashMap<String, Course> createSiteIdToCourseMap(List<List<Course>> courses) {
 
-        Map<String, Course> siteIdToCourse = new HashMap<>();
+        HashMap<String, Course> siteIdToCourse = new HashMap<>();
 
         for(List<Course> term : courses) {
             for(Course course : term) {

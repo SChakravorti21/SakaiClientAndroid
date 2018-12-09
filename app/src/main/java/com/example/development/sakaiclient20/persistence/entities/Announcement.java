@@ -10,6 +10,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,7 +28,10 @@ import java.util.List;
         }
 )
 // TODO: implement parcelable
-public class Announcement  {
+public class Announcement implements Serializable {
+
+    @Ignore
+    private static final long serialVersionUID = 7526472295622776147L;
 
     @NonNull
     @PrimaryKey
@@ -50,23 +54,6 @@ public class Announcement  {
     public Announcement(@NonNull String announcementId) {
         this.announcementId = announcementId;
     }
-
-//    @Override
-//    public int describeContents() {
-//        return 0;
-//    }
-//
-//    @Override
-//    public void writeToParcel(Parcel parcel, int i) {
-//        parcel.writeString(announcementId);
-//        parcel.writeString(body);
-//        parcel.writeString(title);
-//        parcel.writeString(siteId);
-//        parcel.writeString(createdBy);
-//        parcel.writeLong(createdOn);
-//        parcel.writeList(attachments);
-//    }
-
 
     /**
      * Formats a millisecond time into a Date string to be shown to the user.

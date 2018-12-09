@@ -59,6 +59,7 @@
     <string name="announcement_type">ANNOUNCEMENT_TYPE</string>
     <string name="all_announcements_tag">ALL_ANNOUNCEMENTS</string>
     <string name="site_announcements_tag">SITE_ANNOUNCEMENTS</string>
+    <string name="siteid_to_course_map">SITEIDTOCOURSE</string>
     <string name="single_announcement_tag">SINGLE_ANNOUNCEMENT</string>
     <string name="no_announcements">There are no announcements available.</string>
 </resources>

@@ -18,6 +18,9 @@ import java.util.List;
 @Entity(tableName = "courses")
 public class Course implements Serializable {
 
+    @Ignore
+    private static final long serialVersionUID = 2381568326523856L;
+
     @NonNull
     @PrimaryKey
     public final String siteId;
@@ -44,16 +47,4 @@ public class Course implements Serializable {
         this.siteId = siteId;
     }
 
-    private void writeObject(java.io.ObjectOutputStream out) throws IOException {
-        out.writeObject(this);
-    }
-
-    private void readObject(java.io.ObjectInputStream in)
-            throws IOException, ClassNotFoundException {
-        Course course = (Course) in.readObject();
-        this.announcements = course.announcements;
-        this.assignments = course.assignments;
-        this.title = course.title;
-        this.term = course.term;
-    }
 }
