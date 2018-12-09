@@ -1,7 +1,9 @@
 package com.example.development.sakaiclient20.ui.fragments;
 
+import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -77,7 +79,6 @@ public class AnnouncementsFragment extends Fragment {
         // TODO check before cast
         allAnnouncements = (List<Announcement>) bun.getSerializable(getString(R.string.all_announcements_tag));
         siteIdToCourse = (HashMap<String, Course>) bun.getSerializable(getString(R.string.siteid_to_course_map));
-        onActionPerformedListener = (OnActionPerformedListener) bun.getSerializable(getString(R.string.BASE_URL));
 
         if (announcementType == ALL_ANNOUNCEMENTS) {
             loadMoreListener = new LoadsAllAnnouncements();
@@ -92,6 +93,37 @@ public class AnnouncementsFragment extends Fragment {
     public void onAttach(Context context) {
         AndroidSupportInjection.inject(this);
         super.onAttach(context);
+
+        if(context instanceof Activity) {
+            Activity activity = getActivity(context);
+
+            try {
+                onActionPerformedListener = (OnActionPerformedListener) activity;
+            } catch(ClassCastException e) {
+                throw new ClassCastException(activity.toString() + " must implement OnActionPerformedListener");
+            }
+        }
+    }
+
+    public Activity getActivity(Context context)
+    {
+        if (context == null)
+        {
+            return null;
+        }
+        else if (context instanceof ContextWrapper)
+        {
+            if (context instanceof Activity)
+            {
+                return (Activity) context;
+            }
+            else
+            {
+                return getActivity(((ContextWrapper) context).getBaseContext());
+            }
+        }
+
+        return null;
     }
 
     @Nullable

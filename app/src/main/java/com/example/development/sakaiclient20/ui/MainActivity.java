@@ -390,7 +390,6 @@ public class MainActivity extends AppCompatActivity
         //TODO check before casting to arraylist
         b.putSerializable(getString(R.string.all_announcements_tag), (ArrayList)announcements);
         b.putSerializable(getString(R.string.siteid_to_course_map), siteIdToCourse);
-        b.putSerializable(getString(R.string.action_listener_tag), this);
         announcementsFragment.setArguments(b);
 
         return announcementsFragment;
