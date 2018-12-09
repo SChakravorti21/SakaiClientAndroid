@@ -42,7 +42,7 @@ public class AnnouncementViewModel extends ViewModel {
     public LiveData<List<Announcement>>  getAllAnnouncements(int num) {
         if(allAnnouncements == null) {
             allAnnouncements = new MutableLiveData<>();
-            refreshAllData(num);
+            refreshAllAnnouncements(num);
         }
 
         return allAnnouncements;
@@ -70,6 +70,7 @@ public class AnnouncementViewModel extends ViewModel {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         (announcements) -> {
+                            Log.d("YOLO", "num announcements from db" + announcements.size());
                             allAnnouncements.setValue(announcements);
                             updateSiteAnnouncementsMap(announcements);
                         },
@@ -81,8 +82,8 @@ public class AnnouncementViewModel extends ViewModel {
     /**
      * Refresh all announcements
      */
-    public void refreshAllData(int num) {
-
+    public void refreshAllAnnouncements(int num) {
+        Log.d("YOLO", "refreshing " + num);
         compositeDisposable.add(
                 announcementRepository.refreshAllAnnouncements(num)
                         .subscribeOn(Schedulers.io())

@@ -6,7 +6,7 @@ import com.example.development.sakaiclient20.persistence.entities.Course;
 import java.io.Serializable;
 import java.util.Map;
 
-public interface OnActionPerformedListener extends Serializable {
+public interface OnActionPerformedListener {
     void onCourseSelected(String siteId);
     void onSiteAnnouncementsSelected(Course course);
     void onAnnouncementSelected(Announcement announcement, Map<String,Course> siteIdToCourse);

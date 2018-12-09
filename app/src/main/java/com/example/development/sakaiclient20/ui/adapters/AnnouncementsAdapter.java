@@ -56,8 +56,8 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<RecyclerView.View
 
 
     public AnnouncementsAdapter(List<Announcement> announcements,
-                                HashMap<String, Course> siteIdToCourse,
                                 RecyclerView announcementsRecycler,
+                                HashMap<String, Course> siteIdToCourse,
                                 int type) {
 
         this.announcements = announcements;
@@ -224,7 +224,7 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     @Override
     public int getItemCount() {
-        return announcements.size();
+        return announcements == null ? 0 : announcements.size();
     }
 
 
@@ -239,6 +239,5 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<RecyclerView.View
     public void finishedLoading() {
         this.isLoading = false;
     }
-
 
 }

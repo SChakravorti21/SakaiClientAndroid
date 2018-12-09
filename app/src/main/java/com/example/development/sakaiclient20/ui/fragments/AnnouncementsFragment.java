@@ -1,6 +1,7 @@
 package com.example.development.sakaiclient20.ui.fragments;
 
 import android.app.Activity;
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -22,19 +23,22 @@ import android.widget.Toast;
 import com.example.development.sakaiclient20.R;
 import com.example.development.sakaiclient20.persistence.entities.Announcement;
 import com.example.development.sakaiclient20.persistence.entities.Course;
-import com.example.development.sakaiclient20.ui.MainActivity;
 import com.example.development.sakaiclient20.ui.adapters.AnnouncementsAdapter;
 import com.example.development.sakaiclient20.ui.listeners.LoadMoreListener;
 import com.example.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
+import com.example.development.sakaiclient20.ui.listeners.OnFinishedLoadingListener;
 import com.example.development.sakaiclient20.ui.viewmodels.AnnouncementViewModel;
 import com.example.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
+
+import static com.example.development.sakaiclient20.ui.MainActivity.NUM_ANNOUNCEMENTS_DEFAULT;
 
 public class AnnouncementsFragment extends Fragment {
 
@@ -45,8 +49,9 @@ public class AnnouncementsFragment extends Fragment {
     public static final int SITE_ANNOUNCEMENTS = 1;
 
     // announcements to display
-    private List<Announcement> allAnnouncements;
-    private HashMap<String, Course> siteIdToCourse;
+    private List<Announcement> allAnnouncements = new ArrayList<>();
+
+    private HashMap<String, Course> siteIdToCourseMap;
 
     // recycler view displaying announcements
     private RecyclerView announcementRecycler;
@@ -60,12 +65,13 @@ public class AnnouncementsFragment extends Fragment {
     private int announcementType;
 
     // whether or not there are more announcements to load
-    private boolean hasLoadedAllAnnouncements;
+    private boolean hasLoadedAllAnnouncements = false;
 
     private static final int ANNOUNCEMENTS_TO_GET_PER_REQUEST = 10;
 
     // listener for clicking on an announcement
     private OnActionPerformedListener onActionPerformedListener;
+    private OnFinishedLoadingListener onFinishedLoadingListener;
 
 
     @SuppressWarnings("unchecked")
@@ -74,11 +80,9 @@ public class AnnouncementsFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         Bundle bun = getArguments();
-        announcementType =  bun.getInt(getString(R.string.announcement_type));
+        announcementType = bun.getInt(getString(R.string.announcement_type));
 
-        // TODO check before cast
-        allAnnouncements = (List<Announcement>) bun.getSerializable(getString(R.string.all_announcements_tag));
-        siteIdToCourse = (HashMap<String, Course>) bun.getSerializable(getString(R.string.siteid_to_course_map));
+        siteIdToCourseMap = (HashMap)bun.getSerializable(getString(R.string.siteid_to_course_map));
 
         if (announcementType == ALL_ANNOUNCEMENTS) {
             loadMoreListener = new LoadsAllAnnouncements();
@@ -86,44 +90,19 @@ public class AnnouncementsFragment extends Fragment {
             loadMoreListener = new LoadsSiteAnnouncements();
         }
 
-        hasLoadedAllAnnouncements = false;
-    }
+        // get the announcements to show
+        LiveData<List<Announcement>> announcementsLiveData =
+                ViewModelProviders.of(getActivity(), viewModelFactory)
+                        .get(AnnouncementViewModel.class)
+                        .getAllAnnouncements(NUM_ANNOUNCEMENTS_DEFAULT);
 
-    @Override
-    public void onAttach(Context context) {
-        AndroidSupportInjection.inject(this);
-        super.onAttach(context);
+        announcementsLiveData.observe(getActivity(), announcements -> {
+            // add the newly gotten announcements to the adapter
+            addNewAnnouncementsToAdapter(announcements);
 
-        if(context instanceof Activity) {
-            Activity activity = getActivity(context);
-
-            try {
-                onActionPerformedListener = (OnActionPerformedListener) activity;
-            } catch(ClassCastException e) {
-                throw new ClassCastException(activity.toString() + " must implement OnActionPerformedListener");
-            }
-        }
-    }
-
-    public Activity getActivity(Context context)
-    {
-        if (context == null)
-        {
-            return null;
-        }
-        else if (context instanceof ContextWrapper)
-        {
-            if (context instanceof Activity)
-            {
-                return (Activity) context;
-            }
-            else
-            {
-                return getActivity(((ContextWrapper) context).getBaseContext());
-            }
-        }
-
-        return null;
+            // notify the activity that the announcements are finished loading
+            onFinishedLoadingListener.onFinishedLoadingAllAnnouncements();
+        });
     }
 
     @Nullable
@@ -138,12 +117,13 @@ public class AnnouncementsFragment extends Fragment {
 
         swipeRefreshLayout.setOnRefreshListener(() -> {
             loadMoreListener.refresh();
-//            swipeRefreshLayout.setRefreshing(false);
+            swipeRefreshLayout.setRefreshing(false);
         });
 
 
         return view;
     }
+
 
 
     /**
@@ -156,7 +136,12 @@ public class AnnouncementsFragment extends Fragment {
         announcementRecycler.setLayoutManager(layoutManager);
         announcementRecycler.setItemAnimator(new DefaultItemAnimator());
 
-        adapter = new AnnouncementsAdapter(allAnnouncements, siteIdToCourse, announcementRecycler, announcementType);
+        adapter = new AnnouncementsAdapter(
+                allAnnouncements,
+                announcementRecycler,
+                siteIdToCourseMap,
+                announcementType
+        );
         adapter.setClickListener(onActionPerformedListener);
         adapter.setLoadMoreListener(loadMoreListener);
 
@@ -180,7 +165,8 @@ public class AnnouncementsFragment extends Fragment {
     private void addNewAnnouncementsToAdapter(List<Announcement> newAnnouncements) {
 
         //remove the null element we had added to signify a loading item
-        allAnnouncements.remove(allAnnouncements.size() - 1);
+        if(allAnnouncements.size() > 0)
+            allAnnouncements.remove(allAnnouncements.size() - 1);
 
         int initialSize = allAnnouncements.size();
 
@@ -234,11 +220,11 @@ public class AnnouncementsFragment extends Fragment {
             // get the number of announcements we have to request now,
             // based on the current number showing and the number of additional ones
             // we want
-            int numAnnouncementsToRequest = allAnnouncements.size() -1 + ANNOUNCEMENTS_TO_GET_PER_REQUEST;
+            int numAnnouncementsToRequest = allAnnouncements.size() - 1 + ANNOUNCEMENTS_TO_GET_PER_REQUEST;
 
             ViewModelProviders.of(getActivity(), viewModelFactory)
                     .get(AnnouncementViewModel.class)
-                    .refreshAllData(numAnnouncementsToRequest);
+                    .refreshAllAnnouncements(numAnnouncementsToRequest);
 
         }
 
@@ -247,13 +233,14 @@ public class AnnouncementsFragment extends Fragment {
 
             ViewModelProviders.of(getActivity(), viewModelFactory)
                     .get(AnnouncementViewModel.class)
-                    .refreshAllData(MainActivity.NUM_ANNOUNCEMENTS_DEFAULT);
+                    .refreshAllAnnouncements(NUM_ANNOUNCEMENTS_DEFAULT);
         }
 
 
     }
 
-    /**
+    /**            // TODO observe add new announcements to adapter
+
      * private class which holds the load more method to load more site announcements
      */
     private class LoadsSiteAnnouncements implements LoadMoreListener {
@@ -274,23 +261,19 @@ public class AnnouncementsFragment extends Fragment {
 
             //tell the adapter we added an item
             // was throwing a recycler view error, without the post
-            announcementRecycler.post(new Runnable() {
-                @Override
-                public void run() {
-                    adapter.notifyItemInserted(allAnnouncements.size() - 1);
-                }
-            });
+            announcementRecycler.post(() ->
+                    adapter.notifyItemInserted(allAnnouncements.size() - 1)
+            );
 
 
             int numAnnouncementsToRequest = allAnnouncements.size() - 1 + ANNOUNCEMENTS_TO_GET_PER_REQUEST;
 
             String siteId = allAnnouncements.get(0).siteId;
 
-            ViewModelProviders.of(getActivity(),  viewModelFactory)
+            ViewModelProviders.of(getActivity(), viewModelFactory)
                     .get(AnnouncementViewModel.class)
                     .refreshSiteData(siteId, numAnnouncementsToRequest);
 
-            // TODO observe add new announcements to adapter
         }
 
 
@@ -301,10 +284,49 @@ public class AnnouncementsFragment extends Fragment {
 
             ViewModelProviders.of(getActivity(), viewModelFactory)
                     .get(AnnouncementViewModel.class)
-                    .refreshSiteData(siteId, MainActivity.NUM_ANNOUNCEMENTS_DEFAULT);
+                    .refreshSiteData(siteId, NUM_ANNOUNCEMENTS_DEFAULT);
         }
 
     }
+
+
+
+    @Override
+    public void onAttach(Context context) {
+        AndroidSupportInjection.inject(this);
+        super.onAttach(context);
+
+        if (context instanceof Activity) {
+            Activity activity = getActivity(context);
+
+            try {
+                onActionPerformedListener = (OnActionPerformedListener) activity;
+            } catch (ClassCastException e) {
+                throw new ClassCastException(activity.toString() + " must implement OnActionPerformedListener");
+            }
+
+            try {
+                onFinishedLoadingListener = (OnFinishedLoadingListener) activity;
+            } catch (ClassCastException e) {
+                throw new ClassCastException(activity.toString() + " must implement OnFinishedLoadingListener");
+            }
+        }
+    }
+
+    public Activity getActivity(Context context) {
+        if (context == null) {
+            return null;
+        } else if (context instanceof ContextWrapper) {
+            if (context instanceof Activity) {
+                return (Activity) context;
+            } else {
+                return getActivity(((ContextWrapper) context).getBaseContext());
+            }
+        }
+
+        return null;
+    }
+
 
 
 }

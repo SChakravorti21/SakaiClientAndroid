@@ -28,6 +28,7 @@ import com.example.development.sakaiclient20.ui.fragments.CourseSitesFragment;
 import com.example.development.sakaiclient20.ui.fragments.SingleAnnouncementFragment;
 import com.example.development.sakaiclient20.ui.helpers.BottomNavigationViewHelper;
 import com.example.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
+import com.example.development.sakaiclient20.ui.listeners.OnFinishedLoadingListener;
 import com.example.development.sakaiclient20.ui.viewmodels.AnnouncementViewModel;
 import com.example.development.sakaiclient20.ui.viewmodels.CourseViewModel;
 import com.example.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
@@ -46,7 +47,7 @@ import dagger.android.support.HasSupportFragmentInjector;
 
 public class MainActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener,
-        HasSupportFragmentInjector, OnActionPerformedListener {
+        HasSupportFragmentInjector, OnActionPerformedListener, OnFinishedLoadingListener {
 
     @Inject
     DispatchingAndroidInjector<Fragment> supportFragmentInjector;
@@ -57,7 +58,7 @@ public class MainActivity extends AppCompatActivity
     public static final String ASSIGNMENTS_TAG = "ASSIGNMENTS";
     public static final String SITE_GRADES_TAG = "SITE_GRADES";
 
-    public static final int NUM_ANNOUNCEMENTS_DEFAULT = 5;
+    public static final int NUM_ANNOUNCEMENTS_DEFAULT = 15;
 
     private static final short FRAGMENT_REPLACE = 0;
     private static final short FRAGMENT_ADD = 1;
@@ -176,6 +177,12 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+
+    /******************************\
+      INTERFACE IMPLEMENTATIONS
+     \******************************/
+
+
     @Override
     public void onCourseSelected(String siteId) {
         LiveData<Course> courseLiveData = ViewModelProviders.of(this, viewModelFactory)
@@ -221,18 +228,26 @@ public class MainActivity extends AppCompatActivity
             HashMap<String, Course> siteIdToCourse = new HashMap<>();
             siteIdToCourse.put(course.siteId, course);
 
-            AnnouncementsFragment frag =
-                    prepareAnnouncementsFragment(siteAnnouncements, siteIdToCourse, AnnouncementsFragment.SITE_ANNOUNCEMENTS);
-
-            loadFragment(frag, FRAGMENT_REPLACE, true, true);
-            container.setVisibility(View.VISIBLE);
-
-            // TODO use proper string resource
-            String actionBarTitle = String.format("%s: %s", getString(R.string.announcements_site), course.title);
-            setActionBarTitle(actionBarTitle);
+//            AnnouncementsFragment frag =
+//                    prepareAnnouncementsFragment(siteAnnouncements, siteIdToCourse, AnnouncementsFragment.SITE_ANNOUNCEMENTS);
+//
+//            loadFragment(frag, FRAGMENT_REPLACE, true, true);
+//            container.setVisibility(View.VISIBLE);
+//
+//            // TODO use proper string resource
+//            String actionBarTitle = String.format("%s: %s", getString(R.string.announcements_site), course.title);
+//            setActionBarTitle(actionBarTitle);
         });
-
     }
+
+    @Override
+    public void onFinishedLoadingAllAnnouncements() {
+        stopProgressBar();
+        container.setVisibility(View.VISIBLE);
+        setActionBarTitle(getString(R.string.announcements));
+    }
+
+
 
     /*******************************\
      LIFECYCLE CONVENIENCE METHODS
@@ -326,40 +341,37 @@ public class MainActivity extends AppCompatActivity
         this.container.setVisibility(View.GONE);
         startProgressBar();
 
-        // get the announcements to show
         LiveData<List<Announcement>> announcementsLiveData =
                 ViewModelProviders.of(this, viewModelFactory)
                 .get(AnnouncementViewModel.class)
                 .getAllAnnouncements(NUM_ANNOUNCEMENTS_DEFAULT);
 
-        // get our courses so we can create a map from siteId to course
-        // which the announcement adapter needs
         LiveData<List<List<Course>>> coursesLiveData =
                 ViewModelProviders.of(this, viewModelFactory)
                 .get(CourseViewModel.class)
                 .getCoursesByTerm();
 
+
+        // announcements fragment will be observing on announcement live data
+        // here we are observing on courselivedata
         beingObserved.add(announcementsLiveData);
         beingObserved.add(coursesLiveData);
 
-        // TODO : make it so that both are concurrent
-        announcementsLiveData.observe(this, announcements -> {
-            coursesLiveData.observe(this, courses -> {
+        coursesLiveData.observe(this, courses -> {
 
-                HashMap<String, Course> siteIdToCourse = createSiteIdToCourseMap(courses);
+            HashMap<String, Course> map = createSiteIdToCourseMap(courses);
 
-                stopProgressBar();
+            // create fragment arguments
+            Bundle b = new Bundle();
+            b.putInt(getString(R.string.announcement_type), AnnouncementsFragment.ALL_ANNOUNCEMENTS);
+            b.putSerializable(getString(R.string.siteid_to_course_map), map);
 
-               AnnouncementsFragment frag =
-                       prepareAnnouncementsFragment(announcements, siteIdToCourse, AnnouncementsFragment.ALL_ANNOUNCEMENTS);
+            // create and load the fragment
+            AnnouncementsFragment frag = new AnnouncementsFragment();
+            frag.setArguments(b);
 
-                // load the fragment onto the screen with a replace
-                loadFragment(frag, FRAGMENT_REPLACE, false, false);
-                container.setVisibility(View.VISIBLE);
-                setActionBarTitle(getString(R.string.announcements));
-            });
+            loadFragment(frag, FRAGMENT_REPLACE, false, false);
         });
-
 
 
     }
@@ -368,32 +380,6 @@ public class MainActivity extends AppCompatActivity
     /******************************\
      CONVENIENCE METHODS
      \******************************/
-
-    /**
-     * Prepares an announcements fragment for all announcements or site announcements
-     * @param announcements list of announcements to show in frag
-     * @param siteIdToCourse hashmap mapping from siteIdToCourses, needed in the adapter
-     * @param announcementType type of announcement to show, all or site
-     * @return created announcements fragment
-     */
-    private AnnouncementsFragment prepareAnnouncementsFragment(
-            List<Announcement> announcements,
-            HashMap<String, Course> siteIdToCourse,
-            int announcementType) {
-
-        // create the fragment and set its arguments
-        AnnouncementsFragment announcementsFragment = new AnnouncementsFragment();
-
-        Bundle b = new Bundle();
-        b.putInt(getString(R.string.announcement_type), announcementType);
-
-        //TODO check before casting to arraylist
-        b.putSerializable(getString(R.string.all_announcements_tag), (ArrayList)announcements);
-        b.putSerializable(getString(R.string.siteid_to_course_map), siteIdToCourse);
-        announcementsFragment.setArguments(b);
-
-        return announcementsFragment;
-    }
 
     private HashMap<String, Course> createSiteIdToCourseMap(List<List<Course>> courses) {
 
