@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.development.sakaiclient20.ui.WebViewActivity">
+    tools:context="com.sakaimobile.development.sakaiclient20.ui.WebViewActivity">
 
 
     <android.support.v7.widget.Toolbar
