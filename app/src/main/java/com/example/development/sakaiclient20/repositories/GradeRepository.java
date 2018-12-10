@@ -61,31 +61,16 @@ public class GradeRepository {
 
         // all of the grades in the given list are of the same course (Same siteId)
         String siteId = grades.get(0).siteId;
+
+        // TODO figure out better way of converting to array
+        Grade[] gradesArray = new Grade[grades.size()];
+        for(int i = 0; i < grades.size(); i++) {
+            gradesArray[i] = grades.get(i);
+        }
         // insert the grades
-        gradeDao.insertGradesForSite(siteId, (Grade[]) grades.toArray());
+        gradeDao.insertGradesForSite(siteId, gradesArray);
 
         return grades;
-    }
-
-    private static class InsertGradesTask extends AsyncTask<Grade, Void, Void> {
-
-        private WeakReference<GradeDao> gradeDao;
-        private String siteId;
-
-        InsertGradesTask(GradeDao dao, String siteId) {
-            this.gradeDao = new WeakReference<>(dao);
-            this.siteId = siteId;
-        }
-
-        @Override
-        protected Void doInBackground(Grade... grades) {
-
-            if (gradeDao == null || gradeDao.get() == null)
-                return null;
-
-            gradeDao.get().insertGradesForSite(siteId, grades);
-            return null;
-        }
     }
 
 }
