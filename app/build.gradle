@@ -46,8 +46,9 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled true
+            debuggable true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
     }
     buildToolsVersion '28.0.3'
