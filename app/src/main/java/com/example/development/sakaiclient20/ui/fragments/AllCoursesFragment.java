@@ -1,6 +1,5 @@
 package com.example.development.sakaiclient20.ui.fragments;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -19,7 +18,6 @@ import com.example.development.sakaiclient20.ui.listeners.OnActionPerformedListe
 import com.example.development.sakaiclient20.ui.listeners.TreeViewItemClickListener;
 import com.example.development.sakaiclient20.ui.viewholders.CourseHeaderViewHolder;
 import com.example.development.sakaiclient20.ui.viewholders.TermHeaderViewHolder;
-import com.example.development.sakaiclient20.ui.viewmodels.CourseViewModel;
 import com.example.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
@@ -35,15 +33,15 @@ public class AllCoursesFragment extends Fragment {
     @Inject ViewModelFactory viewModelFactory;
     private List<List<Course>> courses;
     private AndroidTreeView treeView;
-    private OnActionPerformedListener courseSelectedListener;
+    private OnActionPerformedListener actionPerformedListener;
 
     public static AllCoursesFragment newInstance(
             List<List<Course>> courses,
-            OnActionPerformedListener courseSelectedListener
+            OnActionPerformedListener actionPerformedListener
     ) {
         AllCoursesFragment fragment = new AllCoursesFragment();
         fragment.courses = courses;
-        fragment.courseSelectedListener = courseSelectedListener;
+        fragment.actionPerformedListener = actionPerformedListener;
         return fragment;
     }
 
@@ -85,9 +83,7 @@ public class AllCoursesFragment extends Fragment {
         treeView.setDefaultAnimation(true);
 
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            ViewModelProviders.of(getActivity(), viewModelFactory)
-                    .get(CourseViewModel.class)
-                    .refreshAllData();
+            this.actionPerformedListener.loadCoursesFragment(true);
         });
 
         return view;
@@ -116,12 +112,7 @@ public class AllCoursesFragment extends Fragment {
 
         for (List<Course> coursesInTerm : coursesSorted) {
             Term courseTerm = (coursesSorted.size() > 0) ? coursesInTerm.get(0).term : null;
-
-            String termString = (courseTerm != null) ?
-                    courseTerm.getTermString() + " " + courseTerm.getYear() : "General";
-
-            if (termString.contains("General"))
-                termString = "General";
+            String termString = courseTerm.toString();
 
             //make a term header item, and make a treenode using it
             TermHeaderViewHolder.TermHeaderItem termNodeItem =
@@ -152,7 +143,7 @@ public class AllCoursesFragment extends Fragment {
 
                         //here we should save tree state
                         SharedPrefsUtil.saveTreeState(mContext, treeView, SharedPrefsUtil.ALL_COURSES_TREE_TYPE);
-                        courseSelectedListener.onCourseSelected(courseSiteId);
+                        actionPerformedListener.onCourseSelected(courseSiteId);
                     }
                 });
 

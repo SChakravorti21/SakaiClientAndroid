@@ -13,6 +13,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Completable;
 import io.reactivex.Single;
 
 /**
@@ -35,39 +36,42 @@ public class AssignmentRepository {
         this.assignmentsService = service;
     }
 
-    public Single<List<Assignment>> getAllAssignments(boolean refresh) {
-        if(refresh) {
-            return assignmentsService
-                    .getAllAssignments()
-                    .map(this::persistAssignments);
-        } else {
-            return assignmentDao
-                    .getAllAssignments()
-                    .firstOrError()
-                    .map(AssignmentRepository::flattenCompositesToEntities);
-        }
+    public Single<List<Assignment>> getSiteAssignments(String siteId) {
+        return assignmentDao
+                .getSiteAssignments(siteId)
+                .firstOrError()
+                .map(AssignmentRepository::flattenCompositesToEntities);
     }
 
-    public Single<List<Assignment>> getAssignmentsForSite(String siteId, boolean refresh) {
-        if(refresh) {
-            return assignmentsService
-                    .getSiteAssignments(siteId)
-                    .map(this::persistAssignments);
-        } else {
-            return assignmentDao
-                    .getAssignmentsForSite(siteId)
-                    .firstOrError()
-                    .map(AssignmentRepository::flattenCompositesToEntities);
-        }
+    public Single<List<Assignment>> getAllAssignments() {
+        return assignmentDao
+                .getAllAssignments()
+                .firstOrError()
+                .map(AssignmentRepository::flattenCompositesToEntities);
     }
 
-    private List<Assignment> persistAssignments(AssignmentsResponse response) {
-        List<Assignment> assignments = response.getAssignments();
-        InsertAssignmentsTask task = new InsertAssignmentsTask(assignmentDao, attachmentDao);
+    public Completable refreshAllAssignments() {
+        return assignmentsService
+                .getAllAssignments()
+                .map(AssignmentsResponse::getAssignments)
+                .map(this::persistAssignments)
+                .ignoreElement();
+    }
 
-        // Using generic varargs can supposedly pollute the heap,
-        // so convert to array before passing as task argument
-        task.execute(assignments.toArray(new Assignment[assignments.size()]));
+    public Completable refreshSiteAssignments(String siteId) {
+        return assignmentsService
+                .getSiteAssignments(siteId)
+                .map(AssignmentsResponse::getAssignments)
+                .map(this::persistAssignments)
+                .ignoreElement();
+    }
+
+    private List<Assignment> persistAssignments(List<Assignment> assignments) {
+        // Insert all assignments and their attachments into the database
+        assignmentDao.insert(assignments);
+        for(Assignment assignment : assignments)
+            attachmentDao.insert(assignment.attachments);
+
         return assignments;
     }
 
@@ -81,31 +85,6 @@ public class AssignmentRepository {
         }
 
         return assignmentEntities;
-    }
-
-    private static class InsertAssignmentsTask extends AsyncTask<Assignment, Void, Void> {
-
-        private WeakReference<AssignmentDao> assignmentDao;
-        private WeakReference<AttachmentDao> attachmentDao;
-
-        private InsertAssignmentsTask(AssignmentDao assignmentDao, AttachmentDao attachmentDao) {
-            this.assignmentDao = new WeakReference<>(assignmentDao);
-            this.attachmentDao = new WeakReference<>(attachmentDao);
-        }
-
-        @Override
-        protected Void doInBackground(Assignment... assignments) {
-            if(assignmentDao == null || assignmentDao.get() == null)
-                return null;
-            if(attachmentDao == null || attachmentDao.get() == null)
-                return null;
-
-            assignmentDao.get().insert(assignments);
-            for(Assignment assignment : assignments)
-                attachmentDao.get().insert(assignment.attachments);
-
-            return null;
-        }
     }
 
 }

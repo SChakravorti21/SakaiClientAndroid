@@ -1,8 +1,10 @@
 package com.example.development.sakaiclient20.ui;
 
+import android.app.DownloadManager;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -17,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.example.development.sakaiclient20.R;
 import com.example.development.sakaiclient20.models.sakai.gradebook.SiteGrades;
@@ -24,22 +27,25 @@ import com.example.development.sakaiclient20.networking.utilities.SharedPrefsUti
 import com.example.development.sakaiclient20.persistence.entities.Announcement;
 import com.example.development.sakaiclient20.persistence.entities.Course;
 import com.example.development.sakaiclient20.persistence.entities.Grade;
+import com.example.development.sakaiclient20.ui.custom_components.CustomLinkMovementMethod;
+import com.example.development.sakaiclient20.ui.custom_components.DownloadCompleteReceiver;
 import com.example.development.sakaiclient20.ui.fragments.AllCoursesFragment;
 import com.example.development.sakaiclient20.ui.fragments.AnnouncementsFragment;
 import com.example.development.sakaiclient20.ui.fragments.CourseSitesFragment;
 import com.example.development.sakaiclient20.ui.fragments.SingleAnnouncementFragment;
 import com.example.development.sakaiclient20.ui.fragments.AllGradesFragment;
 import com.example.development.sakaiclient20.ui.fragments.CourseSitesFragment;
-import com.example.development.sakaiclient20.ui.fragments.SiteGradesFragment;
+import com.example.development.sakaiclient20.ui.fragments.assignments.AssignmentsFragment;
 import com.example.development.sakaiclient20.ui.helpers.BottomNavigationViewHelper;
 import com.example.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
-import com.example.development.sakaiclient20.ui.listeners.OnFinishedLoadingListener;
 import com.example.development.sakaiclient20.ui.viewmodels.AnnouncementViewModel;
+import com.example.development.sakaiclient20.ui.viewmodels.AssignmentViewModel;
 import com.example.development.sakaiclient20.ui.viewmodels.CourseViewModel;
+import com.example.development.sakaiclient20.ui.viewmodels.GradeViewModel;
 import com.example.development.sakaiclient20.ui.viewmodels.GradeViewModel;
 import com.example.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -95,6 +101,7 @@ public class MainActivity extends AppCompatActivity
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        registerDownloadReceiver();
 
         // Get reference to the container
         this.container = findViewById(R.id.fragment_container);
@@ -116,12 +123,18 @@ public class MainActivity extends AppCompatActivity
         // Request all site pages for the Home Fragment and then loads the fragment
         //refresh since we are loading for the same time
         beingObserved = new HashSet<>();
-        loadHomeFragment();
+        loadCoursesFragment(true);
     }
 
     @Override
     public AndroidInjector<Fragment> supportFragmentInjector() {
         return supportFragmentInjector;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        CustomLinkMovementMethod.setFragmentManager(getSupportFragmentManager());
     }
 
     @Override
@@ -178,7 +191,10 @@ public class MainActivity extends AppCompatActivity
         removeObservations();
         switch (item.getItemId()) {
             case R.id.navigation_home:
-                loadHomeFragment();
+                loadCoursesFragment(false);
+                return true;
+            case R.id.navigation_assignments:
+                loadAssignmentsFragment(true, false);
                 return true;
             case R.id.navigation_announcements:
                 loadAnnouncementsFragment();
@@ -302,6 +318,12 @@ public class MainActivity extends AppCompatActivity
      LIFECYCLE CONVENIENCE METHODS
      \*******************************/
 
+    public void registerDownloadReceiver() {
+        IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
+        DownloadCompleteReceiver receiver = new DownloadCompleteReceiver();
+        registerReceiver(receiver, filter);
+    }
+
     private void removeObservations() {
         for (LiveData liveData : beingObserved) {
             liveData.removeObservers(this);
@@ -347,7 +369,7 @@ public class MainActivity extends AppCompatActivity
                 transaction.add(R.id.fragment_container, fragment).commit();
             else
                 return false;
-          
+
             displayingFragment = fragment;
             return true;
         }
@@ -368,7 +390,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * Loads the all courses fragment (home page)
      */
-    public void loadHomeFragment() {
+    public void loadCoursesFragment(boolean refresh) {
         this.container.setVisibility(View.GONE);
         startProgressBar();
         isLoadingAllCourses = true;
@@ -376,8 +398,7 @@ public class MainActivity extends AppCompatActivity
         LiveData<List<List<Course>>> courseLiveData =
                 ViewModelProviders.of(this, viewModelFactory)
                         .get(CourseViewModel.class)
-                        .getCoursesByTerm();
-        beingObserved.add(courseLiveData);
+                        .getCoursesByTerm(refresh);
         courseLiveData.observe(this, courses -> {
             stopProgressBar();
 
@@ -387,6 +408,41 @@ public class MainActivity extends AppCompatActivity
 
             setActionBarTitle(getString(R.string.app_name));
             isLoadingAllCourses = false;
+            courseLiveData.removeObservers(this);
+
+            if(refresh)
+                makeToast("Successfully refreshed courses", Toast.LENGTH_SHORT);
+        });
+    }
+
+    /**
+     * Loads all assignments tab
+     */
+    public void loadAssignmentsFragment(boolean sortedByCourses, boolean refresh) {
+
+        this.container.setVisibility(View.GONE);
+        this.spinner.setVisibility(View.VISIBLE);
+
+        LiveData<List<List<Course>>> coursesLiveData =
+                ViewModelProviders.of(this, viewModelFactory)
+                        .get(AssignmentViewModel.class)
+                        .getCoursesByTerm(refresh);
+        coursesLiveData.observe(this, courses -> {
+            spinner.setVisibility(View.GONE);
+
+            Bundle bundle = new Bundle();
+            bundle.putSerializable(ASSIGNMENTS_TAG, (Serializable) courses);
+            bundle.putBoolean(AssignmentsFragment.ASSIGNMENTS_SORTED_BY_COURSES, sortedByCourses);
+
+            AssignmentsFragment fragment = new AssignmentsFragment();
+            fragment.setArguments(bundle);
+            loadFragment(fragment, false, false);
+
+            container.setVisibility(View.VISIBLE);
+            coursesLiveData.removeObservers(this);
+
+            if(refresh)
+                makeToast("Successfully refreshed assignments", Toast.LENGTH_SHORT);
         });
     }
 
@@ -410,7 +466,7 @@ public class MainActivity extends AppCompatActivity
         LiveData<List<List<Course>>> coursesLiveData =
                 ViewModelProviders.of(this, viewModelFactory)
                 .get(CourseViewModel.class)
-                .getCoursesByTerm();
+                .getCoursesByTerm(false);
 
 
         // announcements fragment will be observing on announcement live data
@@ -449,7 +505,7 @@ public class MainActivity extends AppCompatActivity
         LiveData<List<List<Course>>> courseLiveData =
                 ViewModelProviders.of(this, viewModelFactory)
                 .get(GradeViewModel.class)
-                .getCoursesByTerm();
+                .getCoursesByTerm(false);
         beingObserved.add(courseLiveData);
 
         courseLiveData.observe(this, courses -> {
@@ -490,5 +546,9 @@ public class MainActivity extends AppCompatActivity
 
     public void stopProgressBar() {
         spinner.setVisibility(View.GONE);
+    }
+
+    public void makeToast(String message, int duration) {
+        Toast.makeText(this, message, duration).show();
     }
 }

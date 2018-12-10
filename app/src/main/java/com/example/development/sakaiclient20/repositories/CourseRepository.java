@@ -8,6 +8,8 @@ import com.example.development.sakaiclient20.networking.services.CoursesService;
 import com.example.development.sakaiclient20.persistence.access.CourseDao;
 import com.example.development.sakaiclient20.persistence.access.SitePageDao;
 import com.example.development.sakaiclient20.persistence.composites.CourseWithAllData;
+import com.example.development.sakaiclient20.persistence.entities.Announcement;
+import com.example.development.sakaiclient20.persistence.entities.Assignment;
 import com.example.development.sakaiclient20.persistence.entities.Course;
 
 import java.lang.ref.WeakReference;
@@ -68,8 +70,10 @@ public class CourseRepository {
     }
 
     private List<Course> persistCourses(List<Course> courses) {
-        InsertCoursesTask task = new InsertCoursesTask(courseDao, sitePageDao);
-        task.execute(courses.toArray(new Course[0]));
+        courseDao.insert(courses);
+        for(Course course : courses)
+            sitePageDao.insert(course.sitePages);
+
         return courses;
     }
 
@@ -79,8 +83,14 @@ public class CourseRepository {
         entity.grades = courseWithAllData.grades;
         entity.assignments =
             AssignmentRepository.flattenCompositesToEntities(courseWithAllData.assignments);
+
         entity.announcements =
                 AnnouncementRepository.flattenCompositesToEntities(courseWithAllData.announcements);
+
+        // Make sure to add the assignment site page url for the submission page to
+        // be accessible
+        for(Assignment assignment : entity.assignments)
+            assignment.assignmentSitePageUrl = entity.assignmentSitePageUrl;
 
         return entity;
     }
@@ -107,28 +117,5 @@ public class CourseRepository {
         }
 
         return coursesSortedByTerm;
-    }
-
-    private static class InsertCoursesTask extends AsyncTask<Course, Void, Void> {
-
-        private WeakReference<CourseDao> courseDao;
-        private WeakReference<SitePageDao> sitePageDao;
-
-        private InsertCoursesTask(CourseDao courseDao, SitePageDao sitePageDao) {
-            this.courseDao = new WeakReference<>(courseDao);
-            this.sitePageDao = new WeakReference<>(sitePageDao);
-        }
-
-        @Override
-        protected Void doInBackground(Course... courses) {
-            if(courseDao == null || courseDao.get() == null)
-                return null;
-
-            courseDao.get().insert(courses);
-            for(Course course : courses)
-                sitePageDao.get().insert(course.sitePages);
-
-            return null;
-        }
     }
 }

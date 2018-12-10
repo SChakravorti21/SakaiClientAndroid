@@ -25,11 +25,16 @@ abstract class BaseViewModel extends ViewModel {
     abstract void refreshAllData();
     abstract void refreshSiteData(String siteId);
 
-    public LiveData<List<List<Course>>> getCoursesByTerm() {
+    public LiveData<List<List<Course>>> getCoursesByTerm(boolean refresh) {
         if(this.coursesByTerm == null) {
             this.coursesByTerm = new MutableLiveData<>();
-            refreshAllData();
         }
+
+        if(refresh)
+            refreshAllData();
+        else
+            loadCourses();
+
         return this.coursesByTerm;
     }
 

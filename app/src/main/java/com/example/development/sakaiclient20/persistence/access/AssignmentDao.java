@@ -23,6 +23,6 @@ public abstract class AssignmentDao implements BaseDao<Assignment> {
 
     @Transaction //Wrap in transaction since Room technically performs multiple transactions
     @Query("SELECT * FROM assignments WHERE siteId = :siteId")
-    public abstract Flowable<List<AssignmentWithAttachments>> getAssignmentsForSite(String siteId);
+    public abstract Flowable<List<AssignmentWithAttachments>> getSiteAssignments(String siteId);
 
 }

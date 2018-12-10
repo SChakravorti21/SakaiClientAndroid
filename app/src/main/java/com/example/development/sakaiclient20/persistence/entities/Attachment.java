@@ -1,11 +1,11 @@
 package com.example.development.sakaiclient20.persistence.entities;
 
 import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.ForeignKey;
-import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
+
+import java.io.Serializable;
 
 /**
  * Created by Development on 8/5/18.
@@ -28,11 +28,15 @@ import android.support.annotation.NonNull;
                 @Index(value = "assignmentId"),
                 @Index(value = "announcementId")
         })
-public class Attachment {
+public class Attachment implements Serializable {
     @PrimaryKey
     @NonNull
     public String url;
     public String name;
     public String assignmentId;
     public String announcementId;
+
+    public Attachment(String url) {
+        this.url = url;
+    }
 }
