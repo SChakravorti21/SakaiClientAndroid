@@ -12,6 +12,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,7 +50,7 @@ public class AnnouncementsFragment extends Fragment {
     public static final int SITE_ANNOUNCEMENTS = 1;
 
     // announcements to display
-    private List<Announcement> allAnnouncements = new ArrayList<>();
+    private List<Announcement> allAnnouncements;
 
     private HashMap<String, Course> siteIdToCourseMap;
 
@@ -73,6 +74,10 @@ public class AnnouncementsFragment extends Fragment {
     private OnActionPerformedListener onActionPerformedListener;
     private OnFinishedLoadingListener onFinishedLoadingListener;
 
+    private SwipeRefreshLayout swipeRefreshLayout;
+
+    LiveData<List<Announcement>> liveData;
+
 
     @SuppressWarnings("unchecked")
     @Override
@@ -80,35 +85,28 @@ public class AnnouncementsFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         Bundle bun = getArguments();
-        String siteId = (String) bun.getString(getString(R.string.siteid_tag));
+        String siteId = bun.getString(getString(R.string.siteid_tag));
         announcementType = siteId == null ? ALL_ANNOUNCEMENTS : SITE_ANNOUNCEMENTS;
-
         siteIdToCourseMap = (HashMap) bun.getSerializable(getString(R.string.siteid_to_course_map));
+        allAnnouncements = new ArrayList<>();
 
-
-        LiveData<List<Announcement>> announcementsLiveData;
 
         if (siteId == null) {
             loadMoreListener = new LoadsAllAnnouncements();
-            announcementsLiveData = ViewModelProviders.of(getActivity(), viewModelFactory)
+            liveData = ViewModelProviders.of(getActivity(), viewModelFactory)
                     .get(AnnouncementViewModel.class)
                     .getAllAnnouncements(NUM_ANNOUNCEMENTS_DEFAULT);
 
         } else {
             loadMoreListener = new LoadsSiteAnnouncements();
 
-            announcementsLiveData = ViewModelProviders.of(getActivity(), viewModelFactory)
+            liveData = ViewModelProviders.of(getActivity(), viewModelFactory)
                     .get(AnnouncementViewModel.class)
                     .getSiteAnnouncements(siteId, NUM_ANNOUNCEMENTS_DEFAULT);
         }
 
-        announcementsLiveData.observe(getActivity(), announcements -> {
-            // add the newly gotten announcements to the adapter
-            addNewAnnouncementsToAdapter(announcements);
 
-            // notify the activity that the announcements are finished loading
-            onFinishedLoadingListener.onFinishedLoadingAllAnnouncements();
-        });
+
     }
 
     @Nullable
@@ -117,29 +115,31 @@ public class AnnouncementsFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_announcements, null);
         announcementRecycler = view.findViewById(R.id.announcements_recycler);
-        SwipeRefreshLayout swipeRefreshLayout = view.findViewById(R.id.swiperefresh);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        announcementRecycler.setLayoutManager(layoutManager);
+        announcementRecycler.setItemAnimator(new DefaultItemAnimator());
 
-        createAdapterAndFillRecyclerView();
+        swipeRefreshLayout = view.findViewById(R.id.swiperefresh);
 
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            loadMoreListener.refresh();
+
+        createAdapter();
+
+
+        liveData.observe(getActivity(), announcements -> {
+
+            addNewAnnouncementsToAdapter(announcements);
+
+            // notify the activity that the announcements are finished loading
+            onFinishedLoadingListener.onFinishedLoadingAllAnnouncements();
             swipeRefreshLayout.setRefreshing(false);
         });
-
 
         return view;
     }
 
 
-    /**
-     * Creates a new adapter and fills the recycler view with our announcements data
-     * also sets the animations for the card entry
-     */
-    private void createAdapterAndFillRecyclerView() {
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        announcementRecycler.setLayoutManager(layoutManager);
-        announcementRecycler.setItemAnimator(new DefaultItemAnimator());
+    private void createAdapter() {
 
         adapter = new AnnouncementsAdapter(
                 allAnnouncements,
@@ -158,6 +158,9 @@ public class AnnouncementsFragment extends Fragment {
         announcementRecycler.setLayoutAnimation(controller);
 
         announcementRecycler.scheduleLayoutAnimation();
+
+
+        swipeRefreshLayout.setOnRefreshListener(loadMoreListener::refresh);
     }
 
 

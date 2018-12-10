@@ -28,7 +28,6 @@ abstract class BaseViewModel extends ViewModel {
     public LiveData<List<List<Course>>> getCoursesByTerm() {
         if(this.coursesByTerm == null) {
             this.coursesByTerm = new MutableLiveData<>();
-            // TODO remove this, since the subclass's refresh all data method may not necessary refresh all courses (any view model other than courseviewmodel lol)
             refreshAllData();
         }
         return this.coursesByTerm;

@@ -35,8 +35,10 @@ import com.example.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -73,7 +75,7 @@ public class MainActivity extends AppCompatActivity
 
     @Inject
     ViewModelFactory viewModelFactory;
-    private List<LiveData> beingObserved;
+    private Set<LiveData> beingObserved;
 
     /******************************\
      LIFECYCLE/INTERFACE METHODS
@@ -104,7 +106,7 @@ public class MainActivity extends AppCompatActivity
 
         // Request all site pages for the Home Fragment and then loads the fragment
         //refresh since we are loading for the same time
-        beingObserved = new ArrayList<>();
+        beingObserved = new HashSet<>();
         loadHomeFragment();
     }
 
@@ -261,6 +263,7 @@ public class MainActivity extends AppCompatActivity
         for (LiveData liveData : beingObserved) {
             liveData.removeObservers(this);
         }
+        beingObserved.clear();
     }
 
     /******************************\
