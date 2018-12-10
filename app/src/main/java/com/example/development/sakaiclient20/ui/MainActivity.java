@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,13 +19,18 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
 import com.example.development.sakaiclient20.R;
+import com.example.development.sakaiclient20.models.sakai.gradebook.SiteGrades;
 import com.example.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.example.development.sakaiclient20.persistence.entities.Course;
+import com.example.development.sakaiclient20.persistence.entities.Grade;
 import com.example.development.sakaiclient20.ui.fragments.AllCoursesFragment;
+import com.example.development.sakaiclient20.ui.fragments.AllGradesFragment;
 import com.example.development.sakaiclient20.ui.fragments.CourseSitesFragment;
+import com.example.development.sakaiclient20.ui.fragments.SiteGradesFragment;
 import com.example.development.sakaiclient20.ui.helpers.BottomNavigationViewHelper;
 import com.example.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
 import com.example.development.sakaiclient20.ui.viewmodels.CourseViewModel;
+import com.example.development.sakaiclient20.ui.viewmodels.GradeViewModel;
 import com.example.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
 import java.util.ArrayList;
@@ -36,6 +42,7 @@ import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.HasSupportFragmentInjector;
+import dagger.multibindings.IntoMap;
 
 public class MainActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener,
@@ -43,20 +50,14 @@ public class MainActivity extends AppCompatActivity
 
     @Inject DispatchingAndroidInjector<Fragment> supportFragmentInjector;
 
-    public static final String ALL_COURSES_TAG = "ALL_COURSES";
-    public static final String COURSE_TAG = "COURSE";
-    public static final String ALL_GRADES_TAG = "GRADES";
-    public static final String ASSIGNMENTS_TAG = "ASSIGNMENTS";
-    public static final String SITE_GRADES_TAG = "SITE_GRADES";
-
     private FrameLayout container;
     private ProgressBar spinner;
-    public boolean isLoadingAllCourses;
+    private boolean isLoadingAllCourses;
 
-    @Inject CourseViewModel courseViewModel;
 
     @Inject ViewModelFactory viewModelFactory;
     private List<LiveData> beingObserved;
+    private Fragment displayingFragment;
 
     /******************************\
        LIFECYCLE/INTERFACE METHODS
@@ -152,6 +153,9 @@ public class MainActivity extends AppCompatActivity
             case R.id.navigation_home:
                 loadHomeFragment();
                 return true;
+            case R.id.navigation_gradebook:
+                loadGradesFragment();
+                return true;
             default:
                 return false;
         }
@@ -164,11 +168,38 @@ public class MainActivity extends AppCompatActivity
                 .getCourse(siteId);
         beingObserved.add(courseLiveData);
         courseLiveData.observe(this, course -> {
-            CourseSitesFragment fragment = CourseSitesFragment.newInstance(course);
+            CourseSitesFragment fragment = CourseSitesFragment.newInstance(course, this);
             loadFragment(fragment, true, true);
             setActionBarTitle(course.title);
         });
     }
+
+
+    @Override
+    public void onSiteGradesSelected(Course course) {
+        LiveData<List<Grade>> gradesLiveData = ViewModelProviders.of(this, viewModelFactory)
+                .get(GradeViewModel.class)
+                .getGradesForSite(course.siteId);
+
+        beingObserved.add(gradesLiveData);
+
+        gradesLiveData.observe(this, grades -> {
+            SiteGradesFragment fragment = SiteGradesFragment.newInstance(grades, course.siteId);
+
+            // if the displaying fragment is already site grades fragment, (refreshing)
+            // dont show animations or add to backstack
+
+
+            if(this.displayingFragment instanceof SiteGradesFragment)
+                popBackStackUntil(this.displayingFragment.getClass().getCanonicalName());
+
+            loadFragment(fragment, true, true);
+
+
+            setActionBarTitle(String.format("Gradebook: %s", course.title));
+        });
+    }
+
 
     /*******************************\
       LIFECYCLE CONVENIENCE METHODS
@@ -190,19 +221,30 @@ public class MainActivity extends AppCompatActivity
      * @param fragment
      * @return boolean whether the fragment was successfully loaded
      */
-    public boolean loadFragment(Fragment fragment, boolean showAnimations, boolean addToBackStack) {
+    private boolean loadFragment(Fragment fragment, boolean showAnimations, boolean addToBackStack) {
         if (fragment != null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             if (showAnimations)
                 transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
             if (addToBackStack)
-                transaction.addToBackStack(null);
+                transaction.addToBackStack(fragment.getClass().getCanonicalName());
 
             transaction.replace(R.id.fragment_container, fragment).commit();
+            displayingFragment = fragment;
             return true;
         }
 
         return false;
+    }
+
+
+    /**
+     * pops the fragment backstacak until a given fragment
+     *
+     * @param name name of fragment to pop until
+     */
+    private void popBackStackUntil(String name) {
+        getSupportFragmentManager().popBackStack(name, FragmentManager.POP_BACK_STACK_INCLUSIVE);
     }
 
     /**
@@ -227,6 +269,32 @@ public class MainActivity extends AppCompatActivity
 
             setActionBarTitle(getString(R.string.app_name));
             isLoadingAllCourses = false;
+        });
+    }
+
+
+    /**
+     * Loads the all grades fragment
+     *
+     */
+    public void loadGradesFragment() {
+        this.container.setVisibility(View.GONE);
+        startProgressBar();
+
+        LiveData<List<List<Course>>> courseLiveData =
+                ViewModelProviders.of(this, viewModelFactory)
+                .get(GradeViewModel.class)
+                .getCoursesByTerm();
+        beingObserved.add(courseLiveData);
+
+        courseLiveData.observe(this, courses -> {
+            stopProgressBar();
+
+            AllGradesFragment gradesFragment = AllGradesFragment.newInstance(courses);
+            loadFragment(gradesFragment, false, false);
+            container.setVisibility(View.VISIBLE);
+
+            setActionBarTitle(getString(R.string.app_name));
         });
     }
 

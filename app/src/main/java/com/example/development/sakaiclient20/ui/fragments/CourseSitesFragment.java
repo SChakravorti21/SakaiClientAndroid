@@ -11,18 +11,21 @@ import android.widget.ListView;
 
 import com.example.development.sakaiclient20.R;
 import com.example.development.sakaiclient20.persistence.entities.Course;
+import com.example.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
 
 public class CourseSitesFragment extends Fragment {
 
     private ListView sitePagesListView;
     private Course courseToView;
+    private OnActionPerformedListener onSiteGradesSelected;
 
-    public static CourseSitesFragment newInstance(Course course) {
+    public static CourseSitesFragment newInstance(Course course, OnActionPerformedListener onSiteGradesSelected) {
         if(course == null)
             throw new IllegalArgumentException("Course cannot be null!");
 
         CourseSitesFragment fragment = new CourseSitesFragment();
         fragment.courseToView = course;
+        fragment.onSiteGradesSelected = onSiteGradesSelected;
         return fragment;
     }
 
@@ -45,8 +48,7 @@ public class CourseSitesFragment extends Fragment {
             String siteName = (String) sitePagesListView.getItemAtPosition(pos);
 
             if (siteName.equals(getString(R.string.gradebook))) {
-                final String siteId = courseToView.siteId;
-                // loadSiteGradesFragment(siteId);
+                onSiteGradesSelected.onSiteGradesSelected(this.courseToView);
             }
         });
 
