@@ -5,6 +5,7 @@ import com.example.development.sakaiclient20.networking.services.AssignmentsServ
 import com.example.development.sakaiclient20.networking.services.CoursesService;
 import com.example.development.sakaiclient20.networking.services.GradesService;
 import com.example.development.sakaiclient20.persistence.access.AnnouncementDao;
+import com.example.development.sakaiclient20.networking.services.GradeService;
 import com.example.development.sakaiclient20.persistence.access.AssignmentDao;
 import com.example.development.sakaiclient20.persistence.access.AttachmentDao;
 import com.example.development.sakaiclient20.persistence.access.CourseDao;
@@ -13,7 +14,7 @@ import com.example.development.sakaiclient20.persistence.access.SitePageDao;
 import com.example.development.sakaiclient20.repositories.AnnouncementRepository;
 import com.example.development.sakaiclient20.repositories.AssignmentRepository;
 import com.example.development.sakaiclient20.repositories.CourseRepository;
-import com.example.development.sakaiclient20.repositories.GradesRepository;
+import com.example.development.sakaiclient20.repositories.GradeRepository;
 
 import dagger.Module;
 import dagger.Provides;

@@ -47,9 +47,8 @@ public class CourseSitesFragment extends Fragment {
         this.sitePagesListView.setOnItemClickListener((adapterView, view, pos, id) -> {
             String siteName = (String) sitePagesListView.getItemAtPosition(pos);
 
-            if (siteName.equals(getString(R.string.gradebook_site))) {
-                final String siteId = courseToView.siteId;
-                // loadSiteGradesFragment(siteId);
+            if (siteName.equals(getString(R.string.gradebook))) {
+                siteClickedListener.onSiteGradesSelected(courseToView);
             }
             else if(siteName.equals(getString(R.string.announcements_site))) {
                 siteClickedListener.onSiteAnnouncementsSelected(courseToView);

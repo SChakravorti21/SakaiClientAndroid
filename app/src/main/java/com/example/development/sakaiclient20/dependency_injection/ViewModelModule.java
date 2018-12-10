@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModelProvider;
 
 import com.example.development.sakaiclient20.ui.viewmodels.AnnouncementViewModel;
 import com.example.development.sakaiclient20.ui.viewmodels.CourseViewModel;
+import com.example.development.sakaiclient20.ui.viewmodels.GradeViewModel;
 import com.example.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
 import dagger.Binds;
@@ -23,6 +24,11 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(AnnouncementViewModel.class)
     abstract ViewModel bindAnnouncementViewModel(AnnouncementViewModel announcementViewModel);
+  
+    @Binds
+    @IntoMap
+    @ViewModelKey(GradeViewModel.class)
+    abstract ViewModel bindGradeViewModel(GradeViewModel gradeViewModel);
 
     @Binds
     abstract ViewModelProvider.Factory bindViewModelFactory(ViewModelFactory factory);

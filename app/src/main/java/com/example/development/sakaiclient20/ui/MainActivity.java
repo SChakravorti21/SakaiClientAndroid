@@ -19,18 +19,24 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
 import com.example.development.sakaiclient20.R;
+import com.example.development.sakaiclient20.models.sakai.gradebook.SiteGrades;
 import com.example.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.example.development.sakaiclient20.persistence.entities.Announcement;
 import com.example.development.sakaiclient20.persistence.entities.Course;
+import com.example.development.sakaiclient20.persistence.entities.Grade;
 import com.example.development.sakaiclient20.ui.fragments.AllCoursesFragment;
 import com.example.development.sakaiclient20.ui.fragments.AnnouncementsFragment;
 import com.example.development.sakaiclient20.ui.fragments.CourseSitesFragment;
 import com.example.development.sakaiclient20.ui.fragments.SingleAnnouncementFragment;
+import com.example.development.sakaiclient20.ui.fragments.AllGradesFragment;
+import com.example.development.sakaiclient20.ui.fragments.CourseSitesFragment;
+import com.example.development.sakaiclient20.ui.fragments.SiteGradesFragment;
 import com.example.development.sakaiclient20.ui.helpers.BottomNavigationViewHelper;
 import com.example.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
 import com.example.development.sakaiclient20.ui.listeners.OnFinishedLoadingListener;
 import com.example.development.sakaiclient20.ui.viewmodels.AnnouncementViewModel;
 import com.example.development.sakaiclient20.ui.viewmodels.CourseViewModel;
+import com.example.development.sakaiclient20.ui.viewmodels.GradeViewModel;
 import com.example.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
 import java.util.ArrayList;
@@ -46,6 +52,7 @@ import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.HasSupportFragmentInjector;
+import dagger.multibindings.IntoMap;
 
 import static com.example.development.sakaiclient20.ui.fragments.AnnouncementsFragment.NUM_ANNOUNCEMENTS_DEFAULT;
 
@@ -68,7 +75,7 @@ public class MainActivity extends AppCompatActivity
 
     private FrameLayout container;
     private ProgressBar spinner;
-    public boolean isLoadingAllCourses;
+    private boolean isLoadingAllCourses;
 
     @Inject
     CourseViewModel courseViewModel;
@@ -76,6 +83,8 @@ public class MainActivity extends AppCompatActivity
     @Inject
     ViewModelFactory viewModelFactory;
     private Set<LiveData> beingObserved;
+
+    private Fragment displayingFragment;
 
     /******************************\
      LIFECYCLE/INTERFACE METHODS
@@ -174,6 +183,9 @@ public class MainActivity extends AppCompatActivity
             case R.id.navigation_announcements:
                 loadAnnouncementsFragment();
                 return true;
+            case R.id.navigation_gradebook:
+                loadGradesFragment();
+                return true;
             default:
                 return false;
         }
@@ -254,6 +266,30 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    public void onSiteGradesSelected(Course course) {
+        LiveData<List<Grade>> gradesLiveData = ViewModelProviders.of(this, viewModelFactory)
+                .get(GradeViewModel.class)
+                .getGradesForSite(course.siteId);
+
+        beingObserved.add(gradesLiveData);
+
+        gradesLiveData.observe(this, grades -> {
+            SiteGradesFragment fragment = SiteGradesFragment.newInstance(grades, course.siteId);
+
+            // if the displaying fragment is already site grades fragment, (refreshing)
+            // dont show animations or add to backstack
+
+
+            if(this.displayingFragment instanceof SiteGradesFragment)
+                popBackStackUntil(this.displayingFragment.getClass().getCanonicalName());
+
+            loadFragment(fragment, true, true);
+
+
+            setActionBarTitle(String.format("Gradebook: %s", course.title));
+        });
+    }
+
 
     /*******************************\
      LIFECYCLE CONVENIENCE METHODS
@@ -296,7 +332,7 @@ public class MainActivity extends AppCompatActivity
             if (animEnter > 0 && animExit > 0)
                 transaction.setCustomAnimations(animEnter, animExit, R.anim.pop_enter, R.anim.pop_exit);
             if (addToBackStack)
-                transaction.addToBackStack(null);
+                transaction.addToBackStack(fragment.getClass().getCanonicalName());
 
             if(replace == FRAGMENT_REPLACE)
                 transaction.replace(R.id.fragment_container, fragment).commit();
@@ -304,11 +340,22 @@ public class MainActivity extends AppCompatActivity
                 transaction.add(R.id.fragment_container, fragment).commit();
             else
                 return false;
-
+          
+            displayingFragment = fragment;
             return true;
         }
 
         return false;
+    }
+
+
+    /**
+     * pops the fragment backstacak until a given fragment
+     *
+     * @param name name of fragment to pop until
+     */
+    private void popBackStackUntil(String name) {
+        getSupportFragmentManager().popBackStack(name, FragmentManager.POP_BACK_STACK_INCLUSIVE);
     }
 
     /**
@@ -384,7 +431,33 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    /******************************\
+    /**
+     * Loads the all grades fragment
+     *
+     */
+    public void loadGradesFragment() {
+        this.container.setVisibility(View.GONE);
+        startProgressBar();
+
+        LiveData<List<List<Course>>> courseLiveData =
+                ViewModelProviders.of(this, viewModelFactory)
+                .get(GradeViewModel.class)
+                .getCoursesByTerm();
+        beingObserved.add(courseLiveData);
+
+        courseLiveData.observe(this, courses -> {
+            stopProgressBar();
+
+            AllGradesFragment gradesFragment = AllGradesFragment.newInstance(courses);
+            loadFragment(gradesFragment, false, false);
+            container.setVisibility(View.VISIBLE);
+
+            setActionBarTitle(getString(R.string.app_name));
+        });
+    }
+
+
+     /******************************\
      CONVENIENCE METHODS
      \******************************/
 

@@ -11,7 +11,7 @@ import retrofit2.http.Path;
  * Created by Shoumyo Chakravorti on 8/5/18.
  */
 
-public interface GradesService {
+public interface GradeService {
 
     @GET("gradebook/my.json")
     Single<GradesResponse> getAllGrades();
