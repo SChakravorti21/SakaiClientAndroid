@@ -82,7 +82,7 @@ public class DownloadCompleteReceiver extends BroadcastReceiver {
                 if(fileUri.getScheme().equals(ContentResolver.SCHEME_FILE)) {
                     File downloadFile = new File(fileUri.getPath());
                     fileUri = FileProvider.getUriForFile(context,
-                            "com.example.development.sakaiclientandroid.fileprovider",
+                            "com.sakaimobile.development.sakaiclientandroid.fileprovider",
                             downloadFile);
                 }
 
