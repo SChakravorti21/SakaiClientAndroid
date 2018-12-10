@@ -2,6 +2,7 @@ package com.example.development.sakaiclient20.dependency_injection;
 
 import com.example.development.sakaiclient20.ui.MainActivity;
 import com.example.development.sakaiclient20.ui.fragments.AllCoursesFragment;
+import com.example.development.sakaiclient20.ui.fragments.AnnouncementsFragment;
 import com.example.development.sakaiclient20.ui.fragments.AllGradesFragment;
 
 import dagger.Module;
@@ -19,7 +20,10 @@ abstract class SakaiApplicationModule {
     abstract MainActivity contributeMainActivityInjector();
 
     @ContributesAndroidInjector
-    abstract AllCoursesFragment contributesAllCoursesFragmentInjector();
+    abstract AllCoursesFragment contributesFragmentInjector();
+
+    @ContributesAndroidInjector
+    abstract AnnouncementsFragment contributesAnnouncementInjector();
 
     @ContributesAndroidInjector
     abstract AllGradesFragment contributesAllGradesFragmentInjector();

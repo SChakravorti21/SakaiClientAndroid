@@ -52,6 +52,18 @@ class NetworkingModule {
                 .build();
     }
 
+    @Named("announcement_retrofit")
+    @Provides
+    Retrofit announcementRetrofit(Retrofit.Builder builder,
+                                  @Named("announcement_deserializer") Gson announcementDeserializer,
+                                  @Named("attachment_deserializer") Gson attachmentDeserializer) {
+        return builder
+                .addConverterFactory(GsonConverterFactory.create(announcementDeserializer))
+                .addConverterFactory(GsonConverterFactory.create(attachmentDeserializer))
+                .build();
+    }
+
+
 
     @Provides
     Retrofit.Builder builder(Context context, OkHttpClient client) {

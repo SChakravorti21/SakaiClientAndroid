@@ -3,6 +3,7 @@ package com.example.development.sakaiclient20.dependency_injection;
 import android.content.Context;
 
 import com.example.development.sakaiclient20.persistence.SakaiDatabase;
+import com.example.development.sakaiclient20.persistence.access.AnnouncementDao;
 import com.example.development.sakaiclient20.persistence.access.AssignmentDao;
 import com.example.development.sakaiclient20.persistence.access.AttachmentDao;
 import com.example.development.sakaiclient20.persistence.access.CourseDao;
@@ -23,6 +24,10 @@ class DaoModule {
         return SakaiDatabase.getInstance(context).getSitePageDao();
     }
 
+    @Provides static AnnouncementDao provideAnnouncementDao(Context context) {
+        return SakaiDatabase.getInstance(context).getAnnouncementDao();
+    }
+
     @Provides static AssignmentDao provideAssignmentDao(Context context) {
         return SakaiDatabase.getInstance(context).getAssignmentDao();
     }
@@ -34,5 +39,4 @@ class DaoModule {
     @Provides static GradeDao provideGradeDao(Context context) {
         return SakaiDatabase.getInstance(context).getGradeDao();
     }
-
 }

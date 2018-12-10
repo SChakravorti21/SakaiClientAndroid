@@ -17,15 +17,15 @@ public class CourseSitesFragment extends Fragment {
 
     private ListView sitePagesListView;
     private Course courseToView;
-    private OnActionPerformedListener onSiteGradesSelected;
+    private OnActionPerformedListener siteClickedListener;
 
-    public static CourseSitesFragment newInstance(Course course, OnActionPerformedListener onSiteGradesSelected) {
+    public static CourseSitesFragment newInstance(Course course, OnActionPerformedListener siteClickedListener) {
         if(course == null)
             throw new IllegalArgumentException("Course cannot be null!");
 
         CourseSitesFragment fragment = new CourseSitesFragment();
         fragment.courseToView = course;
-        fragment.onSiteGradesSelected = onSiteGradesSelected;
+        fragment.siteClickedListener = siteClickedListener;
         return fragment;
     }
 
@@ -48,7 +48,10 @@ public class CourseSitesFragment extends Fragment {
             String siteName = (String) sitePagesListView.getItemAtPosition(pos);
 
             if (siteName.equals(getString(R.string.gradebook))) {
-                onSiteGradesSelected.onSiteGradesSelected(this.courseToView);
+                siteClickedListener.onSiteGradesSelected(courseToView);
+            }
+            else if(siteName.equals(getString(R.string.announcements_site))) {
+                siteClickedListener.onSiteAnnouncementsSelected(courseToView);
             }
         });
 

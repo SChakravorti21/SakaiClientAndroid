@@ -21,20 +21,30 @@ import android.widget.ProgressBar;
 import com.example.development.sakaiclient20.R;
 import com.example.development.sakaiclient20.models.sakai.gradebook.SiteGrades;
 import com.example.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
+import com.example.development.sakaiclient20.persistence.entities.Announcement;
 import com.example.development.sakaiclient20.persistence.entities.Course;
 import com.example.development.sakaiclient20.persistence.entities.Grade;
 import com.example.development.sakaiclient20.ui.fragments.AllCoursesFragment;
+import com.example.development.sakaiclient20.ui.fragments.AnnouncementsFragment;
+import com.example.development.sakaiclient20.ui.fragments.CourseSitesFragment;
+import com.example.development.sakaiclient20.ui.fragments.SingleAnnouncementFragment;
 import com.example.development.sakaiclient20.ui.fragments.AllGradesFragment;
 import com.example.development.sakaiclient20.ui.fragments.CourseSitesFragment;
 import com.example.development.sakaiclient20.ui.fragments.SiteGradesFragment;
 import com.example.development.sakaiclient20.ui.helpers.BottomNavigationViewHelper;
 import com.example.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
+import com.example.development.sakaiclient20.ui.listeners.OnFinishedLoadingListener;
+import com.example.development.sakaiclient20.ui.viewmodels.AnnouncementViewModel;
 import com.example.development.sakaiclient20.ui.viewmodels.CourseViewModel;
 import com.example.development.sakaiclient20.ui.viewmodels.GradeViewModel;
 import com.example.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -44,24 +54,41 @@ import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.HasSupportFragmentInjector;
 import dagger.multibindings.IntoMap;
 
+import static com.example.development.sakaiclient20.ui.fragments.AnnouncementsFragment.NUM_ANNOUNCEMENTS_DEFAULT;
+
 public class MainActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener,
-        HasSupportFragmentInjector, OnActionPerformedListener {
+        HasSupportFragmentInjector, OnActionPerformedListener, OnFinishedLoadingListener {
 
-    @Inject DispatchingAndroidInjector<Fragment> supportFragmentInjector;
+    @Inject
+    DispatchingAndroidInjector<Fragment> supportFragmentInjector;
+
+    public static final String ALL_COURSES_TAG = "ALL_COURSES";
+    public static final String COURSE_TAG = "COURSE";
+    public static final String ALL_GRADES_TAG = "GRADES";
+    public static final String ASSIGNMENTS_TAG = "ASSIGNMENTS";
+    public static final String SITE_GRADES_TAG = "SITE_GRADES";
+
+    private static final short FRAGMENT_REPLACE = 0;
+    private static final short FRAGMENT_ADD = 1;
+
 
     private FrameLayout container;
     private ProgressBar spinner;
     private boolean isLoadingAllCourses;
 
+    @Inject
+    CourseViewModel courseViewModel;
 
-    @Inject ViewModelFactory viewModelFactory;
-    private List<LiveData> beingObserved;
+    @Inject
+    ViewModelFactory viewModelFactory;
+    private Set<LiveData> beingObserved;
+
     private Fragment displayingFragment;
 
     /******************************\
-       LIFECYCLE/INTERFACE METHODS
-    \******************************/
+     LIFECYCLE/INTERFACE METHODS
+     \******************************/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +115,7 @@ public class MainActivity extends AppCompatActivity
 
         // Request all site pages for the Home Fragment and then loads the fragment
         //refresh since we are loading for the same time
-        beingObserved = new ArrayList<>();
+        beingObserved = new HashSet<>();
         loadHomeFragment();
     }
 
@@ -107,7 +134,7 @@ public class MainActivity extends AppCompatActivity
     public void onBackPressed() {
         super.onBackPressed();
         FragmentManager fragmentManager = getSupportFragmentManager();
-        if(fragmentManager.getBackStackEntryCount() == 0) {
+        if (fragmentManager.getBackStackEntryCount() == 0) {
             setActionBarTitle(getString(R.string.app_name));
         }
     }
@@ -120,7 +147,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
             case R.id.action_settings:
                 Intent intent = new Intent(this, SettingsActivity.class);
                 startActivity(intent);
@@ -143,7 +170,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
         //if we are loading all courses, don't allow user to click any navigation item
-        if(isLoadingAllCourses)
+        if (isLoadingAllCourses)
             return false;
 
         // To be safe, remove any observations that might be active for the previous tab
@@ -153,6 +180,9 @@ public class MainActivity extends AppCompatActivity
             case R.id.navigation_home:
                 loadHomeFragment();
                 return true;
+            case R.id.navigation_announcements:
+                loadAnnouncementsFragment();
+                return true;
             case R.id.navigation_gradebook:
                 loadGradesFragment();
                 return true;
@@ -160,6 +190,12 @@ public class MainActivity extends AppCompatActivity
                 return false;
         }
     }
+
+
+    /******************************\
+      INTERFACE IMPLEMENTATIONS
+     \******************************/
+
 
     @Override
     public void onCourseSelected(String siteId) {
@@ -169,13 +205,67 @@ public class MainActivity extends AppCompatActivity
         beingObserved.add(courseLiveData);
         courseLiveData.observe(this, course -> {
             CourseSitesFragment fragment = CourseSitesFragment.newInstance(course, this);
-            loadFragment(fragment, true, true);
+            loadFragment(fragment, FRAGMENT_REPLACE, true, true);
             setActionBarTitle(course.title);
         });
     }
 
 
     @Override
+    public void onAnnouncementSelected(Announcement announcement, Map<String, Course> siteIdToCourse) {
+        Bundle b = new Bundle();
+        b.putSerializable(getString(R.string.single_announcement_tag), announcement);
+        // for some reason map isn't serializable, so i had to cast to hashmap
+        //TODO check before casting
+        b.putSerializable(getString(R.string.siteid_to_course_map), (HashMap)siteIdToCourse);
+        b.putSerializable(getString(R.string.siteid_to_course_map), (HashMap)siteIdToCourse);
+
+        SingleAnnouncementFragment fragment = new SingleAnnouncementFragment();
+        fragment.setArguments(b);
+
+        loadFragment(fragment, FRAGMENT_ADD, true, R.anim.grow_enter, R.anim.pop_exit);
+    }
+
+    @Override
+    public void onSiteAnnouncementsSelected(Course course) {
+
+        startProgressBar();
+
+        LiveData<List<Announcement>> siteAnnouncementsLiveData =
+                ViewModelProviders.of(this, viewModelFactory)
+                .get(AnnouncementViewModel.class)
+                .getSiteAnnouncements(course.siteId, NUM_ANNOUNCEMENTS_DEFAULT);
+
+        beingObserved.add(siteAnnouncementsLiveData);
+
+
+        HashMap<String, Course> siteIdToCourse = new HashMap<>();
+        siteIdToCourse.put(course.siteId, course);
+
+        Bundle b = new Bundle();
+        b.putString(getString(R.string.siteid_tag), course.siteId);
+        b.putSerializable(getString(R.string.siteid_to_course_map), siteIdToCourse);
+
+        AnnouncementsFragment frag = new AnnouncementsFragment();
+        frag.setArguments(b);
+
+
+        loadFragment(frag, FRAGMENT_REPLACE, true, true);
+        container.setVisibility(View.VISIBLE);
+
+        // TODO use proper string resource
+        String actionBarTitle = String.format("%s: %s", getString(R.string.announcements_site), course.title);
+        setActionBarTitle(actionBarTitle);
+    }
+
+    @Override
+    public void onFinishedLoadingAllAnnouncements() {
+        stopProgressBar();
+        container.setVisibility(View.VISIBLE);
+        setActionBarTitle(getString(R.string.announcements));
+    }
+
+
     public void onSiteGradesSelected(Course course) {
         LiveData<List<Grade>> gradesLiveData = ViewModelProviders.of(this, viewModelFactory)
                 .get(GradeViewModel.class)
@@ -202,18 +292,19 @@ public class MainActivity extends AppCompatActivity
 
 
     /*******************************\
-      LIFECYCLE CONVENIENCE METHODS
-    \*******************************/
+     LIFECYCLE CONVENIENCE METHODS
+     \*******************************/
 
     private void removeObservations() {
         for (LiveData liveData : beingObserved) {
             liveData.removeObservers(this);
         }
+        beingObserved.clear();
     }
 
     /******************************\
-          FRAGMENT MANAGEMENT
-    \******************************/
+     FRAGMENT MANAGEMENT
+     \******************************/
 
     /**
      * Loads a given fragment into the fragment container in the NavActivity layout
@@ -221,15 +312,35 @@ public class MainActivity extends AppCompatActivity
      * @param fragment
      * @return boolean whether the fragment was successfully loaded
      */
-    private boolean loadFragment(Fragment fragment, boolean showAnimations, boolean addToBackStack) {
+    private boolean loadFragment(Fragment fragment, int replace, boolean addToBackStack, boolean showAnimations) {
+        if (showAnimations)
+            return loadFragment(fragment, replace, addToBackStack, R.anim.enter, R.anim.exit);
+        else
+            return loadFragment(fragment, replace, addToBackStack, -1, -1);
+    }
+
+    /**
+     * Loads a given fragment into the fragment container in the NavActivity layout
+     *
+     * @param fragment
+     * @return boolean whether the fragment was successfully loaded
+     */
+    private boolean loadFragment(Fragment fragment, int replace, boolean addToBackStack, int animEnter, int animExit) {
         if (fragment != null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            if (showAnimations)
-                transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
+
+            if (animEnter > 0 && animExit > 0)
+                transaction.setCustomAnimations(animEnter, animExit, R.anim.pop_enter, R.anim.pop_exit);
             if (addToBackStack)
                 transaction.addToBackStack(fragment.getClass().getCanonicalName());
 
-            transaction.replace(R.id.fragment_container, fragment).commit();
+            if(replace == FRAGMENT_REPLACE)
+                transaction.replace(R.id.fragment_container, fragment).commit();
+            else if(replace == FRAGMENT_ADD)
+                transaction.add(R.id.fragment_container, fragment).commit();
+            else
+                return false;
+          
             displayingFragment = fragment;
             return true;
         }
@@ -259,17 +370,64 @@ public class MainActivity extends AppCompatActivity
                 ViewModelProviders.of(this, viewModelFactory)
                         .get(CourseViewModel.class)
                         .getCoursesByTerm();
-                beingObserved.add(courseLiveData);
+        beingObserved.add(courseLiveData);
         courseLiveData.observe(this, courses -> {
             stopProgressBar();
 
             AllCoursesFragment coursesFragment = AllCoursesFragment.newInstance(courses, this);
-            loadFragment(coursesFragment, false, false);
+            loadFragment(coursesFragment, FRAGMENT_REPLACE, false, false);
             container.setVisibility(View.VISIBLE);
 
             setActionBarTitle(getString(R.string.app_name));
             isLoadingAllCourses = false;
         });
+    }
+
+    /**
+     * Loads the all announcements fragment by obser
+     * ving on the live data from the
+     * announcements view model
+     *
+     * whenever an update is detected in the live data, recreate the fragment
+     * TODO: possibly dont recreate the fragment, just recreate the view
+     */
+    public void loadAnnouncementsFragment() {
+        this.container.setVisibility(View.GONE);
+        startProgressBar();
+
+        LiveData<List<Announcement>> announcementsLiveData =
+                ViewModelProviders.of(this, viewModelFactory)
+                .get(AnnouncementViewModel.class)
+                .getAllAnnouncements(NUM_ANNOUNCEMENTS_DEFAULT);
+
+        LiveData<List<List<Course>>> coursesLiveData =
+                ViewModelProviders.of(this, viewModelFactory)
+                .get(CourseViewModel.class)
+                .getCoursesByTerm();
+
+
+        // announcements fragment will be observing on announcement live data
+        // here we are observing on courselivedata
+        beingObserved.add(announcementsLiveData);
+        beingObserved.add(coursesLiveData);
+
+        coursesLiveData.observe(this, courses -> {
+
+            HashMap<String, Course> map = createSiteIdToCourseMap(courses);
+
+            // create fragment arguments
+            Bundle b = new Bundle();
+            b.putString(getString(R.string.siteid_tag), null);
+            b.putSerializable(getString(R.string.siteid_to_course_map), map);
+
+            // create and load the fragment
+            AnnouncementsFragment frag = new AnnouncementsFragment();
+            frag.setArguments(b);
+
+            loadFragment(frag, FRAGMENT_REPLACE, false, false);
+        });
+
+
     }
 
 
@@ -298,9 +456,22 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    /******************************\
-           CONVENIENCE METHODS
-    \******************************/
+
+     /******************************\
+     CONVENIENCE METHODS
+     \******************************/
+
+    private HashMap<String, Course> createSiteIdToCourseMap(List<List<Course>> courses) {
+
+        HashMap<String, Course> siteIdToCourse = new HashMap<>();
+
+        for(List<Course> term : courses) {
+            for(Course course : term) {
+                siteIdToCourse.put(course.siteId, course);
+            }
+        }
+        return siteIdToCourse;
+    }
 
     public void setActionBarTitle(String title) {
         getSupportActionBar().setTitle(title);
