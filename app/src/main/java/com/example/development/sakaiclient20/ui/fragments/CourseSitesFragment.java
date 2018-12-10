@@ -1,5 +1,6 @@
 package com.example.development.sakaiclient20.ui.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,6 +12,7 @@ import android.widget.ListView;
 
 import com.example.development.sakaiclient20.R;
 import com.example.development.sakaiclient20.persistence.entities.Course;
+import com.example.development.sakaiclient20.ui.MainActivity;
 import com.example.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
 
 public class CourseSitesFragment extends Fragment {
@@ -54,6 +56,11 @@ public class CourseSitesFragment extends Fragment {
                 siteClickedListener.onSiteAnnouncementsSelected(courseToView);
             }
         });
+
+        // TODO change the hackies
+        MainActivity mainActivity = (MainActivity) getActivity();
+        mainActivity.setActionBarTitle(courseToView.title);
+
 
         return inflated;
     }

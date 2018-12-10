@@ -265,6 +265,13 @@ public class MainActivity extends AppCompatActivity
         setActionBarTitle(getString(R.string.announcements));
     }
 
+    @Override
+    public void onFinishedLoadingSiteAnnouncements(String courseName) {
+        stopProgressBar();
+        container.setVisibility(View.VISIBLE);
+        setActionBarTitle(String.format("%s: %s", getString(R.string.announcements), courseName));
+    }
+
 
     public void onSiteGradesSelected(Course course) {
         LiveData<List<Grade>> gradesLiveData = ViewModelProviders.of(this, viewModelFactory)

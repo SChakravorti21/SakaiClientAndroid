@@ -78,6 +78,8 @@ public class AnnouncementsFragment extends Fragment {
 
     LiveData<List<Announcement>> liveData;
 
+    // TODO remove
+    String siteIdIfSiteAnnouncements;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -85,13 +87,13 @@ public class AnnouncementsFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         Bundle bun = getArguments();
-        String siteId = bun.getString(getString(R.string.siteid_tag));
-        announcementType = siteId == null ? ALL_ANNOUNCEMENTS : SITE_ANNOUNCEMENTS;
+        siteIdIfSiteAnnouncements = bun.getString(getString(R.string.siteid_tag));
+        announcementType = siteIdIfSiteAnnouncements == null ? ALL_ANNOUNCEMENTS : SITE_ANNOUNCEMENTS;
         siteIdToCourseMap = (HashMap) bun.getSerializable(getString(R.string.siteid_to_course_map));
         allAnnouncements = new ArrayList<>();
 
 
-        if (siteId == null) {
+        if (siteIdIfSiteAnnouncements == null) {
             loadMoreListener = new LoadsAllAnnouncements();
             liveData = ViewModelProviders.of(getActivity(), viewModelFactory)
                     .get(AnnouncementViewModel.class)
@@ -102,7 +104,7 @@ public class AnnouncementsFragment extends Fragment {
 
             liveData = ViewModelProviders.of(getActivity(), viewModelFactory)
                     .get(AnnouncementViewModel.class)
-                    .getSiteAnnouncements(siteId, NUM_ANNOUNCEMENTS_DEFAULT);
+                    .getSiteAnnouncements(siteIdIfSiteAnnouncements, NUM_ANNOUNCEMENTS_DEFAULT);
         }
 
 
@@ -131,7 +133,13 @@ public class AnnouncementsFragment extends Fragment {
             addNewAnnouncementsToAdapter(announcements);
 
             // notify the activity that the announcements are finished loading
-            onFinishedLoadingListener.onFinishedLoadingAllAnnouncements();
+            if(announcementType == ALL_ANNOUNCEMENTS)
+                onFinishedLoadingListener.onFinishedLoadingAllAnnouncements();
+            else {
+                // TODO change this its so hacky
+                String courseName = siteIdToCourseMap.get(siteIdIfSiteAnnouncements).title;
+                onFinishedLoadingListener.onFinishedLoadingSiteAnnouncements(courseName);
+            }
             swipeRefreshLayout.setRefreshing(false);
         });
 
