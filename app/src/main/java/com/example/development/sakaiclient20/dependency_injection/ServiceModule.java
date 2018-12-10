@@ -6,6 +6,7 @@ import com.example.development.sakaiclient20.networking.services.AnnouncementsSe
 import com.example.development.sakaiclient20.networking.services.AssignmentsService;
 import com.example.development.sakaiclient20.networking.services.CoursesService;
 import com.example.development.sakaiclient20.networking.services.GradeService;
+import com.example.development.sakaiclient20.networking.services.UserService;
 
 import javax.inject.Named;
 
@@ -15,6 +16,11 @@ import retrofit2.Retrofit;
 
 @Module(includes = NetworkingModule.class)
 class ServiceModule {
+
+    @Provides
+    UserService provideUserService(@Named("default_retrofit") Retrofit retrofit) {
+        return retrofit.create(UserService.class);
+    }
 
     @Provides
     static CoursesService provideCoursesService(@Named("course_retrofit") Retrofit retrofit) {

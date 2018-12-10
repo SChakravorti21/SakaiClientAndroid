@@ -13,6 +13,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,7 +21,11 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.core.CrashlyticsListener;
 import com.example.development.sakaiclient20.R;
+import com.example.development.sakaiclient20.models.sakai.User.UserResponse;
+import com.example.development.sakaiclient20.networking.services.UserService;
 import com.example.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.example.development.sakaiclient20.persistence.entities.Announcement;
 import com.example.development.sakaiclient20.persistence.entities.Course;
@@ -57,12 +62,15 @@ import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.HasSupportFragmentInjector;
 import dagger.multibindings.IntoMap;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 import static com.example.development.sakaiclient20.ui.fragments.AnnouncementsFragment.NUM_ANNOUNCEMENTS_DEFAULT;
 
 public class MainActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener,
         HasSupportFragmentInjector, OnActionPerformedListener, OnFinishedLoadingListener {
+
 
     @Inject
     DispatchingAndroidInjector<Fragment> supportFragmentInjector;
@@ -87,6 +95,10 @@ public class MainActivity extends AppCompatActivity
     @Inject
     ViewModelFactory viewModelFactory;
     private Set<LiveData> beingObserved;
+
+    @Inject
+    UserService userService;
+
 
     private Fragment displayingFragment;
 
@@ -122,6 +134,17 @@ public class MainActivity extends AppCompatActivity
         //refresh since we are loading for the same time
         beingObserved = new HashSet<>();
         loadCoursesFragment(true);
+
+        userService
+                .getLoggedInUser()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(userResponse -> {
+                    Log.d("LOG", "logging user in crashlytics...");
+                    Crashlytics.setUserEmail(userResponse.email);
+                    Crashlytics.setUserName(userResponse.displayName);
+                });
+
     }
 
     @Override
@@ -207,7 +230,7 @@ public class MainActivity extends AppCompatActivity
 
 
     /******************************\
-      INTERFACE IMPLEMENTATIONS
+     INTERFACE IMPLEMENTATIONS
      \******************************/
 
 
@@ -231,8 +254,8 @@ public class MainActivity extends AppCompatActivity
         b.putSerializable(getString(R.string.single_announcement_tag), announcement);
         // for some reason map isn't serializable, so i had to cast to hashmap
         //TODO check before casting
-        b.putSerializable(getString(R.string.siteid_to_course_map), (HashMap)siteIdToCourse);
-        b.putSerializable(getString(R.string.siteid_to_course_map), (HashMap)siteIdToCourse);
+        b.putSerializable(getString(R.string.siteid_to_course_map), (HashMap) siteIdToCourse);
+        b.putSerializable(getString(R.string.siteid_to_course_map), (HashMap) siteIdToCourse);
 
         SingleAnnouncementFragment fragment = new SingleAnnouncementFragment();
         fragment.setArguments(b);
@@ -247,8 +270,8 @@ public class MainActivity extends AppCompatActivity
 
         LiveData<List<Announcement>> siteAnnouncementsLiveData =
                 ViewModelProviders.of(this, viewModelFactory)
-                .get(AnnouncementViewModel.class)
-                .getSiteAnnouncements(course.siteId, NUM_ANNOUNCEMENTS_DEFAULT);
+                        .get(AnnouncementViewModel.class)
+                        .getSiteAnnouncements(course.siteId, NUM_ANNOUNCEMENTS_DEFAULT);
 
         beingObserved.add(siteAnnouncementsLiveData);
 
@@ -301,7 +324,7 @@ public class MainActivity extends AppCompatActivity
             // dont show animations or add to backstack
 
 
-            if(this.displayingFragment instanceof SiteGradesFragment)
+            if (this.displayingFragment instanceof SiteGradesFragment)
                 popBackStackUntil(this.displayingFragment.getClass().getCanonicalName());
 
             loadFragment(fragment, FRAGMENT_REPLACE, true, true);
@@ -361,9 +384,9 @@ public class MainActivity extends AppCompatActivity
             if (addToBackStack)
                 transaction.addToBackStack(fragment.getClass().getCanonicalName());
 
-            if(replace == FRAGMENT_REPLACE)
+            if (replace == FRAGMENT_REPLACE)
                 transaction.replace(R.id.fragment_container, fragment).commit();
-            else if(replace == FRAGMENT_ADD)
+            else if (replace == FRAGMENT_ADD)
                 transaction.add(R.id.fragment_container, fragment).commit();
             else
                 return false;
@@ -409,7 +432,7 @@ public class MainActivity extends AppCompatActivity
             isLoadingAllCourses = false;
             courseLiveData.removeObservers(this);
 
-            if(refresh)
+            if (refresh)
                 makeToast("Successfully refreshed courses", Toast.LENGTH_SHORT);
         });
     }
@@ -440,7 +463,7 @@ public class MainActivity extends AppCompatActivity
             container.setVisibility(View.VISIBLE);
             coursesLiveData.removeObservers(this);
 
-            if(refresh)
+            if (refresh)
                 makeToast("Successfully refreshed assignments", Toast.LENGTH_SHORT);
         });
     }
@@ -449,7 +472,7 @@ public class MainActivity extends AppCompatActivity
      * Loads the all announcements fragment by obser
      * ving on the live data from the
      * announcements view model
-     *
+     * <p>
      * whenever an update is detected in the live data, recreate the fragment
      * TODO: possibly dont recreate the fragment, just recreate the view
      */
@@ -459,13 +482,13 @@ public class MainActivity extends AppCompatActivity
 
         LiveData<List<Announcement>> announcementsLiveData =
                 ViewModelProviders.of(this, viewModelFactory)
-                .get(AnnouncementViewModel.class)
-                .getAllAnnouncements(NUM_ANNOUNCEMENTS_DEFAULT);
+                        .get(AnnouncementViewModel.class)
+                        .getAllAnnouncements(NUM_ANNOUNCEMENTS_DEFAULT);
 
         LiveData<List<List<Course>>> coursesLiveData =
                 ViewModelProviders.of(this, viewModelFactory)
-                .get(CourseViewModel.class)
-                .getCoursesByTerm(false);
+                        .get(CourseViewModel.class)
+                        .getCoursesByTerm(false);
 
 
         // announcements fragment will be observing on announcement live data
@@ -495,7 +518,6 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * Loads the all grades fragment
-     *
      */
     public void loadGradesFragment() {
         this.container.setVisibility(View.GONE);
@@ -503,8 +525,8 @@ public class MainActivity extends AppCompatActivity
 
         LiveData<List<List<Course>>> courseLiveData =
                 ViewModelProviders.of(this, viewModelFactory)
-                .get(GradeViewModel.class)
-                .getCoursesByTerm(false);
+                        .get(GradeViewModel.class)
+                        .getCoursesByTerm(false);
         beingObserved.add(courseLiveData);
 
         courseLiveData.observe(this, courses -> {
@@ -519,7 +541,7 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-     /******************************\
+    /******************************\
      CONVENIENCE METHODS
      \******************************/
 
@@ -527,8 +549,8 @@ public class MainActivity extends AppCompatActivity
 
         HashMap<String, Course> siteIdToCourse = new HashMap<>();
 
-        for(List<Course> term : courses) {
-            for(Course course : term) {
+        for (List<Course> term : courses) {
+            for (Course course : term) {
                 siteIdToCourse.put(course.siteId, course);
             }
         }

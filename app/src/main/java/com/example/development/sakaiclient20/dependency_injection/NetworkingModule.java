@@ -21,6 +21,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
 @Module(includes = DeserializerModule.class)
 class NetworkingModule {
 
+    @Named("default_retrofit")
+    @Provides
+    Retrofit defaultRetrofit(Retrofit.Builder builder) {
+        return builder
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+    }
+
     @Named("course_retrofit")
     @Provides
     Retrofit courseRetrofit(Retrofit.Builder builder,
@@ -62,7 +70,6 @@ class NetworkingModule {
                 .addConverterFactory(GsonConverterFactory.create(attachmentDeserializer))
                 .build();
     }
-
 
 
     @Provides
