@@ -3,7 +3,6 @@ package com.example.development.sakaiclient20.dependency_injection;
 import com.example.development.sakaiclient20.networking.services.AnnouncementsService;
 import com.example.development.sakaiclient20.networking.services.AssignmentsService;
 import com.example.development.sakaiclient20.networking.services.CoursesService;
-import com.example.development.sakaiclient20.networking.services.GradesService;
 import com.example.development.sakaiclient20.persistence.access.AnnouncementDao;
 import com.example.development.sakaiclient20.networking.services.GradeService;
 import com.example.development.sakaiclient20.persistence.access.AssignmentDao;
@@ -47,10 +46,10 @@ class RepositoryModule {
     }
 
     @Provides
-    static GradesRepository provideGradesRepository(
+    static GradeRepository provideGradesRepository(
             GradeDao gradeDao,
-            GradesService gradesService) {
-        return new GradesRepository(gradeDao, gradesService);
+            GradeService gradesService) {
+        return new GradeRepository(gradeDao, gradesService);
     }
 
 }

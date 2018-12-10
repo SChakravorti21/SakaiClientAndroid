@@ -2,8 +2,6 @@ package com.example.development.sakaiclient20.dependency_injection;
 
 import android.content.Context;
 
-import com.example.development.sakaiclient20.R;
-import com.example.development.sakaiclient20.networking.deserializers.CourseDeserializer;
 import com.example.development.sakaiclient20.networking.services.AnnouncementsService;
 import com.example.development.sakaiclient20.networking.services.AssignmentsService;
 import com.example.development.sakaiclient20.networking.services.CoursesService;
@@ -34,8 +32,8 @@ class ServiceModule {
     }
 
     @Provides
-    static GradesService gradesService(@Named("grades_retrofit") Retrofit retrofit) {
-        return retrofit.create(GradesService.class);
+    static GradeService gradesService(@Named("grades_retrofit") Retrofit retrofit) {
+        return retrofit.create(GradeService.class);
     }
 
 }

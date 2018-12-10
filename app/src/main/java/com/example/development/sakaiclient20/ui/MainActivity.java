@@ -283,7 +283,7 @@ public class MainActivity extends AppCompatActivity
             if(this.displayingFragment instanceof SiteGradesFragment)
                 popBackStackUntil(this.displayingFragment.getClass().getCanonicalName());
 
-            loadFragment(fragment, true, true);
+            loadFragment(fragment, FRAGMENT_REPLACE, true, true);
 
 
             setActionBarTitle(String.format("Gradebook: %s", course.title));
@@ -449,7 +449,7 @@ public class MainActivity extends AppCompatActivity
             stopProgressBar();
 
             AllGradesFragment gradesFragment = AllGradesFragment.newInstance(courses);
-            loadFragment(gradesFragment, false, false);
+            loadFragment(gradesFragment, FRAGMENT_REPLACE, false, false);
             container.setVisibility(View.VISIBLE);
 
             setActionBarTitle(getString(R.string.app_name));
