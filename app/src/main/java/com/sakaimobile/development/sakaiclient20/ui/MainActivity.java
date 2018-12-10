@@ -208,6 +208,7 @@ public class MainActivity extends AppCompatActivity
         // To be safe, remove any observations that might be active for the previous tab
         // since that might trigger an unwanted fragment transaction
         removeObservations();
+        setActionBarTitle(getString(R.string.app_name));
         switch (item.getItemId()) {
             case R.id.navigation_home:
                 loadCoursesFragment(false);
@@ -297,7 +298,7 @@ public class MainActivity extends AppCompatActivity
     public void onFinishedLoadingAllAnnouncements() {
         stopProgressBar();
         container.setVisibility(View.VISIBLE);
-        setActionBarTitle(getString(R.string.announcements));
+        makeToast("Successfully refreshed all announcements", Toast.LENGTH_SHORT);
     }
 
     @Override
@@ -305,6 +306,7 @@ public class MainActivity extends AppCompatActivity
         stopProgressBar();
         container.setVisibility(View.VISIBLE);
         setActionBarTitle(String.format("%s: %s", getString(R.string.announcements), courseName));
+        makeToast("Successfully refreshed announcements for " + courseName, Toast.LENGTH_SHORT);
     }
 
 
@@ -426,7 +428,6 @@ public class MainActivity extends AppCompatActivity
             loadFragment(coursesFragment, FRAGMENT_REPLACE, false, false);
             container.setVisibility(View.VISIBLE);
 
-            setActionBarTitle(getString(R.string.app_name));
             isLoadingAllCourses = false;
             courseLiveData.removeObservers(this);
 
@@ -534,7 +535,6 @@ public class MainActivity extends AppCompatActivity
             loadFragment(gradesFragment, FRAGMENT_REPLACE, false, false);
             container.setVisibility(View.VISIBLE);
 
-            setActionBarTitle(getString(R.string.app_name));
         });
     }
 
