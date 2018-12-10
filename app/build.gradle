@@ -34,7 +34,7 @@ android {
         applicationId "com.sakaimobile.development.sakaiclient20"
         minSdkVersion 16
         targetSdkVersion 26
-        versionCode 2
+        versionCode 3
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         javaCompileOptions {
