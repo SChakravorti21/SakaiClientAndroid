@@ -32,7 +32,7 @@ import com.example.development.sakaiclient20.persistence.typeconverters.TermConv
         Assignment.class,
         Attachment.class,
         Announcement.class
-}, version = 5)
+}, version = 6)
 @TypeConverters({DateConverter.class, TermConverter.class})
 public abstract class SakaiDatabase extends RoomDatabase {
 

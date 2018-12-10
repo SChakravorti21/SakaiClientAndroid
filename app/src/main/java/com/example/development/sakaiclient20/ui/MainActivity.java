@@ -13,7 +13,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,7 +21,6 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.development.sakaiclient20.R;
-import com.example.development.sakaiclient20.models.sakai.gradebook.SiteGrades;
 import com.example.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.example.development.sakaiclient20.persistence.entities.Announcement;
 import com.example.development.sakaiclient20.persistence.entities.Course;
@@ -34,14 +32,14 @@ import com.example.development.sakaiclient20.ui.fragments.AnnouncementsFragment;
 import com.example.development.sakaiclient20.ui.fragments.CourseSitesFragment;
 import com.example.development.sakaiclient20.ui.fragments.SingleAnnouncementFragment;
 import com.example.development.sakaiclient20.ui.fragments.AllGradesFragment;
-import com.example.development.sakaiclient20.ui.fragments.CourseSitesFragment;
+import com.example.development.sakaiclient20.ui.fragments.SiteGradesFragment;
 import com.example.development.sakaiclient20.ui.fragments.assignments.AssignmentsFragment;
 import com.example.development.sakaiclient20.ui.helpers.BottomNavigationViewHelper;
 import com.example.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
+import com.example.development.sakaiclient20.ui.listeners.OnFinishedLoadingListener;
 import com.example.development.sakaiclient20.ui.viewmodels.AnnouncementViewModel;
 import com.example.development.sakaiclient20.ui.viewmodels.AssignmentViewModel;
 import com.example.development.sakaiclient20.ui.viewmodels.CourseViewModel;
-import com.example.development.sakaiclient20.ui.viewmodels.GradeViewModel;
 import com.example.development.sakaiclient20.ui.viewmodels.GradeViewModel;
 import com.example.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
@@ -399,6 +397,7 @@ public class MainActivity extends AppCompatActivity
                 ViewModelProviders.of(this, viewModelFactory)
                         .get(CourseViewModel.class)
                         .getCoursesByTerm(refresh);
+
         courseLiveData.observe(this, courses -> {
             stopProgressBar();
 
@@ -436,7 +435,7 @@ public class MainActivity extends AppCompatActivity
 
             AssignmentsFragment fragment = new AssignmentsFragment();
             fragment.setArguments(bundle);
-            loadFragment(fragment, false, false);
+            loadFragment(fragment, FRAGMENT_REPLACE, false, false);
 
             container.setVisibility(View.VISIBLE);
             coursesLiveData.removeObservers(this);
