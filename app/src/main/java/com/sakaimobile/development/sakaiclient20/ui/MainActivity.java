@@ -213,7 +213,7 @@ public class MainActivity extends AppCompatActivity
                 loadCoursesFragment(false);
                 return true;
             case R.id.navigation_assignments:
-                loadAssignmentsFragment(true, false);
+                loadAssignmentsFragment(true, true);
                 return true;
             case R.id.navigation_announcements:
                 loadAnnouncementsFragment();
@@ -524,7 +524,7 @@ public class MainActivity extends AppCompatActivity
         LiveData<List<List<Course>>> courseLiveData =
                 ViewModelProviders.of(this, viewModelFactory)
                         .get(GradeViewModel.class)
-                        .getCoursesByTerm(false);
+                        .getCoursesByTerm(true);
         beingObserved.add(courseLiveData);
 
         courseLiveData.observe(this, courses -> {
