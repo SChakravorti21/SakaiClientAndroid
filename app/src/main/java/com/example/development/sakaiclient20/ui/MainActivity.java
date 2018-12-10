@@ -134,7 +134,9 @@ public class MainActivity extends AppCompatActivity
         //refresh since we are loading for the same time
         beingObserved = new HashSet<>();
         loadCoursesFragment(true);
+    }
 
+    private void logUserInfo() {
         userService
                 .getLoggedInUser()
                 .subscribeOn(Schedulers.io())
@@ -144,7 +146,6 @@ public class MainActivity extends AppCompatActivity
                     Crashlytics.setUserEmail(userResponse.email);
                     Crashlytics.setUserName(userResponse.displayName);
                 });
-
     }
 
     @Override
