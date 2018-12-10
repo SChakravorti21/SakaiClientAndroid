@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SakaiClientAndroid</string>
+    <string name="app_name">Sakai Mobile</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>

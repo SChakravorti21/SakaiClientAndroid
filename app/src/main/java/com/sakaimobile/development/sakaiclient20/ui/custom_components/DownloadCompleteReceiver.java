@@ -105,7 +105,6 @@ public class DownloadCompleteReceiver extends BroadcastReceiver {
     }
 
     /**
-     * Allows {@link com.sakaimobile.development.sakaiclientandroid.utils.ui_components.webview.AttachmentDownloadListener}
      * to add a {@code downloadId} to this {@code DownloadCompleteListener}'s list of
      * downloads to watch out for.
      * @param downloadId The ID of the download to open once the download is complete.
