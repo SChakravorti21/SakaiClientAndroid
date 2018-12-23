@@ -23,11 +23,13 @@ import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.sakaimobile.development.sakaiclient20.R;
+import com.sakaimobile.development.sakaiclient20.networking.services.ResourcesService;
 import com.sakaimobile.development.sakaiclient20.networking.services.UserService;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Announcement;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Grade;
+import com.sakaimobile.development.sakaiclient20.persistence.entities.Resource;
 import com.sakaimobile.development.sakaiclient20.ui.custom_components.CustomLinkMovementMethod;
 import com.sakaimobile.development.sakaiclient20.ui.custom_components.DownloadCompleteReceiver;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AllCoursesFragment;
@@ -97,6 +99,11 @@ public class MainActivity extends AppCompatActivity
     UserService userService;
 
 
+    // testing
+    @Inject
+    ResourcesService resourcesService;
+
+
     private Fragment displayingFragment;
 
     /******************************\
@@ -131,6 +138,17 @@ public class MainActivity extends AppCompatActivity
         //refresh since we are loading for the same time
         beingObserved = new HashSet<>();
         loadCoursesFragment(true);
+
+
+        resourcesService
+                .getSiteResources("9a50f8ab-4f51-4454-9241-f178561ed13f")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(response -> {
+                   for(Resource r : response.getResources()) {
+                       Log.d("GLASS", r.title);
+                   }
+                });
     }
 
 //    private void logUserInfo() {
