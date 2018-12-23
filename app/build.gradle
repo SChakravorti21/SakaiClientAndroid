@@ -35,7 +35,7 @@ android {
         applicationId "com.sakaimobile.development.sakaiclient20"
         minSdkVersion 16
         targetSdkVersion 26
-        versionCode 3
+        versionCode 4
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         javaCompileOptions {
@@ -46,7 +46,6 @@ android {
     }
     buildTypes {
         release {
-            debuggable true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.config
         }

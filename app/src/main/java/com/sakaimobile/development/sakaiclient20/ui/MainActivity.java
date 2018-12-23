@@ -133,17 +133,17 @@ public class MainActivity extends AppCompatActivity
         loadCoursesFragment(true);
     }
 
-    private void logUserInfo() {
-        userService
-                .getLoggedInUser()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(userResponse -> {
-                    Log.d("LOG", "logging user in crashlytics...");
-                    Crashlytics.setUserEmail(userResponse.email);
-                    Crashlytics.setUserName(userResponse.displayName);
-                });
-    }
+//    private void logUserInfo() {
+//        userService
+//                .getLoggedInUser()
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(userResponse -> {
+//                    Log.d("LOG", "logging user in crashlytics...");
+//                    Crashlytics.setUserEmail(userResponse.email);
+//                    Crashlytics.setUserName(userResponse.displayName);
+//                });
+//    }
 
     @Override
     public AndroidInjector<Fragment> supportFragmentInjector() {
