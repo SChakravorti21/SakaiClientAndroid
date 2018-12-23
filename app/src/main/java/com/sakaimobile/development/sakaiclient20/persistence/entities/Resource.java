@@ -27,6 +27,9 @@ public class Resource implements Serializable {
     // number of children files, if a directory
     public int numChildren;
 
+    // total number of descendants, if a directory
+    public int numDescendants;
+
     // type of type, pdf, img ..., or directory (collection)
     public String type;
 

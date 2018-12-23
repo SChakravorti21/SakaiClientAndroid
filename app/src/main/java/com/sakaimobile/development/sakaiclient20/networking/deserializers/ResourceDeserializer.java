@@ -30,8 +30,10 @@ public class ResourceDeserializer implements JsonDeserializer<Resource> {
 
         if(resource.type.equals(COLLECTION_STRING)) {
             resource.isDirectory = true;
+            resource.numDescendants = json.get("size").getAsInt();
         } else {
             resource.isDirectory = false;
+            resource.numDescendants = 0;
         }
 
         return resource;

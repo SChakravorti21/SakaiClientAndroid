@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.sakaimobile.development.sakaiclient20.R;
+import com.sakaimobile.development.sakaiclient20.ResourceTest;
 import com.sakaimobile.development.sakaiclient20.networking.services.ResourcesService;
 import com.sakaimobile.development.sakaiclient20.networking.services.UserService;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
@@ -95,10 +96,6 @@ public class MainActivity extends AppCompatActivity
     ViewModelFactory viewModelFactory;
     private Set<LiveData> beingObserved;
 
-    @Inject
-    UserService userService;
-
-
     // testing
     @Inject
     ResourcesService resourcesService;
@@ -134,21 +131,14 @@ public class MainActivity extends AppCompatActivity
         //clear the saved tree states in saved preferences so some nodes aren't opened by default
         SharedPrefsUtil.clearTreeStates(this);
 
+        ResourceTest.test(resourcesService);
+
         // Request all site pages for the Home Fragment and then loads the fragment
         //refresh since we are loading for the same time
         beingObserved = new HashSet<>();
         loadCoursesFragment(true);
 
 
-        resourcesService
-                .getSiteResources("9a50f8ab-4f51-4454-9241-f178561ed13f")
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(response -> {
-                   for(Resource r : response.getResources()) {
-                       Log.d("GLASS", r.title);
-                   }
-                });
     }
 
 //    private void logUserInfo() {
