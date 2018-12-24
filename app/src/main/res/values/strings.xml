@@ -22,12 +22,12 @@
 
     <string name="gradebook_site">Gradebook</string>
     <string name="announcements_site">Announcements</string>
+    <string name="resources_site">Resources</string>
 
     <string name="spring">Spring</string>
     <string name="summer">Summer</string>
     <string name="winter">Winter</string>
     <string name="fall">Fall</string>
-
 
 
     <string name="BASE_URL">https://sakai.rutgers.edu/direct/</string>
@@ -59,6 +59,8 @@
     <string name="site_announcements_tag" translatable="false">SITE_ANNOUNCEMENTS</string>
     <string name="siteid_to_course_map" translatable="false">SITEIDTOCOURSE</string>
     <string name="single_announcement_tag" translatable="false">SINGLE_ANNOUNCEMENT</string>
+    <string name="site_resources_tag">SITERESOURCES</string>
+
 
     <string name="no_announcements">There are no announcements available.</string>
 </resources>

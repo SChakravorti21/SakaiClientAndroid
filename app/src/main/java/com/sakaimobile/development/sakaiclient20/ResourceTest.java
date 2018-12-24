@@ -22,26 +22,23 @@ public class ResourceTest {
                     List<Resource> resources = response.getResources();
 
                     Node root = new Node(resources.get(0));
-                    List<Resource> sliced = resources.subList(1, resources.size());
-                    root.children = getChildren(sliced);
+                    root.children = getChildren(resources, 1, resources.size());
 
                     int i = 0;
 
                 });
     }
 
-    private static List<Node> getChildren(List<Resource> resources) {
+    private static List<Node> getChildren(List<Resource> resources, int start, int end) {
 
         List<Node> children = new ArrayList<>();
-        for (int i = 0; i < resources.size(); i++) {
+        for (int i = start; i < end; i++) {
 
             Resource resource = resources.get(i);
             if (resource.isDirectory) {
 
-                List<Resource> descendants = resources.subList(i + 1, i + 1 + resource.numDescendants);
-
                 Node dirNode = new Node(resource);
-                dirNode.children = getChildren(descendants);
+                dirNode.children = getChildren(resources, i + 1, i + 1 + resource.numDescendants);
 
                 children.add(dirNode);
 

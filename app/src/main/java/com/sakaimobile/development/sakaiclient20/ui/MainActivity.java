@@ -22,6 +22,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.sakaimobile.development.sakaiclient20.Node;
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.ResourceTest;
 import com.sakaimobile.development.sakaiclient20.networking.services.ResourcesService;
@@ -50,6 +51,7 @@ import com.sakaimobile.development.sakaiclient20.ui.viewmodels.GradeViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -131,14 +133,22 @@ public class MainActivity extends AppCompatActivity
         //clear the saved tree states in saved preferences so some nodes aren't opened by default
         SharedPrefsUtil.clearTreeStates(this);
 
-        ResourceTest.test(resourcesService);
-
         // Request all site pages for the Home Fragment and then loads the fragment
         //refresh since we are loading for the same time
         beingObserved = new HashSet<>();
-        loadCoursesFragment(true);
+//        loadCoursesFragment(true);
 
+        resourcesService
+                .getSiteResources("cbc83f22-e436-4e54-b88a-14e6e4dd621b")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(response -> {
+                    ArrayList<Resource> resources = (ArrayList) response.getResources();
 
+                    Intent i = new Intent(this, SiteResourcesActivity.class);
+                    i.putExtra(getString(R.string.site_resources_tag), resources);
+                    startActivity(i);
+                });
     }
 
 //    private void logUserInfo() {
