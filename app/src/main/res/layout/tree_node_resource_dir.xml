@@ -6,14 +6,14 @@
     android:layout_height="wrap_content"
     android:foreground="?android:attr/selectableItemBackground"
     android:orientation="horizontal"
-    android:padding="10dp">
+    android:background="@color/colorPrimary"
+    android:padding="5dp">
 
     <TextView
         android:id="@+id/resource_dir_txt"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:paddingRight="4dp"
         tools:text="Directory Name"
         android:textColor="@color/sakai_light_black"
         android:textSize="20sp" />

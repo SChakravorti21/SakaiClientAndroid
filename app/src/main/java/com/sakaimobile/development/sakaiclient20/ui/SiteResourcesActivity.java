@@ -47,7 +47,6 @@ public class SiteResourcesActivity extends AppCompatActivity {
         treeView.setDefaultAnimation(true);
 
         root.addChildren(getChildren(flatResources, 0, flatResources.size()));
-        root.setExpanded(true);
         return treeView;
     }
 
@@ -73,7 +72,7 @@ public class SiteResourcesActivity extends AppCompatActivity {
                 i += resource.numDescendants;
             } else {
 
-                // add this file node asa child of the parent node
+                // add this file node as a child of the parent node
                 children.add(buildResourceFileNode(resource));
             }
         }
