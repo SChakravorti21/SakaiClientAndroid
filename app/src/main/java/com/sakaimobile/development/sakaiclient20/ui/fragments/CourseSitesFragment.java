@@ -54,6 +54,9 @@ public class CourseSitesFragment extends Fragment {
             else if(siteName.equals(getString(R.string.announcements_site))) {
                 siteClickedListener.onSiteAnnouncementsSelected(courseToView);
             }
+            else if(siteName.equals(getString(R.string.resources_site))) {
+                siteClickedListener.onSiteResourcesSelected(courseToView);
+            }
         });
 
         // TODO change the hackies

@@ -13,7 +13,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,12 +20,8 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
-import com.sakaimobile.development.sakaiclient20.Node;
 import com.sakaimobile.development.sakaiclient20.R;
-import com.sakaimobile.development.sakaiclient20.ResourceTest;
 import com.sakaimobile.development.sakaiclient20.networking.services.ResourcesService;
-import com.sakaimobile.development.sakaiclient20.networking.services.UserService;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Announcement;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
@@ -136,19 +131,7 @@ public class MainActivity extends AppCompatActivity
         // Request all site pages for the Home Fragment and then loads the fragment
         //refresh since we are loading for the same time
         beingObserved = new HashSet<>();
-//        loadCoursesFragment(true);
-
-        resourcesService
-                .getSiteResources("cbc83f22-e436-4e54-b88a-14e6e4dd621b")
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(response -> {
-                    ArrayList<Resource> resources = (ArrayList) response.getResources();
-
-                    Intent i = new Intent(this, SiteResourcesActivity.class);
-                    i.putExtra(getString(R.string.site_resources_tag), resources);
-                    startActivity(i);
-                });
+        loadCoursesFragment(true);
     }
 
 //    private void logUserInfo() {
@@ -325,6 +308,20 @@ public class MainActivity extends AppCompatActivity
         container.setVisibility(View.VISIBLE);
         setActionBarTitle(String.format("%s: %s", getString(R.string.announcements), courseName));
         makeToast("Successfully refreshed announcements for " + courseName, Toast.LENGTH_SHORT);
+    }
+
+    public void onSiteResourcesSelected(Course course) {
+        resourcesService
+                .getSiteResources(course.siteId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(response -> {
+                    ArrayList<Resource> resources = (ArrayList) response.getResources();
+
+                    Intent i = new Intent(this, SiteResourcesActivity.class);
+                    i.putExtra(getString(R.string.site_resources_tag), resources);
+                    startActivity(i);
+                });
     }
 
 

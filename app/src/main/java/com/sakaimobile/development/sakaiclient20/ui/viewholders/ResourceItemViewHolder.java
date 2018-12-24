@@ -27,9 +27,11 @@ public class ResourceItemViewHolder extends TreeNode.BaseNodeViewHolder<Resource
 
     public static class ResourceFileItem {
         public String fileName;
+        public String url;
 
-        public ResourceFileItem(String fileName) {
+        public ResourceFileItem(String fileName, String url) {
             this.fileName = fileName;
+            this.url = url;
         }
     }
 

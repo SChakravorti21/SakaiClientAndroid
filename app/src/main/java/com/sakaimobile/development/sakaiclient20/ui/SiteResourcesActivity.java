@@ -8,6 +8,8 @@ import android.widget.Toast;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Resource;
+import com.sakaimobile.development.sakaiclient20.ui.custom_components.CustomLinkMovementMethod;
+import com.sakaimobile.development.sakaiclient20.ui.fragments.WebFragment;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.ResourceDirectoryViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.ResourceItemViewHolder;
 import com.unnamed.b.atv.model.TreeNode;
@@ -38,7 +40,6 @@ public class SiteResourcesActivity extends AppCompatActivity {
         });
     }
 
-
     private AndroidTreeView constructResourcesTreeView(List<Resource> flatResources) {
 
         TreeNode root = TreeNode.root();
@@ -46,7 +47,7 @@ public class SiteResourcesActivity extends AppCompatActivity {
         treeView.setDefaultAnimation(true);
 
         root.addChildren(getChildren(flatResources, 0, flatResources.size()));
-
+        root.setExpanded(true);
         return treeView;
     }
 
@@ -59,7 +60,7 @@ public class SiteResourcesActivity extends AppCompatActivity {
             if (resource.isDirectory) {
 
                 // build directory node
-                TreeNode dirNode = buildResourceDirNode(resource.title);
+                TreeNode dirNode = buildResourceDirNode(resource);
 
                 // add the directory as the child of the parent node
                 children.add(dirNode);
@@ -73,7 +74,7 @@ public class SiteResourcesActivity extends AppCompatActivity {
             } else {
 
                 // add this file node asa child of the parent node
-                children.add(buildResourceFileNode(resource.title));
+                children.add(buildResourceFileNode(resource));
             }
         }
 
@@ -83,24 +84,39 @@ public class SiteResourcesActivity extends AppCompatActivity {
 
     /**
      * Build a node for a resource file item
-     * @param title
+     * @param resource
      * @return
      */
-    private TreeNode buildResourceFileNode(String title) {
+    private TreeNode buildResourceFileNode(Resource resource) {
         ResourceItemViewHolder.ResourceFileItem fileItem =
-                new ResourceItemViewHolder.ResourceFileItem(title);
+                new ResourceItemViewHolder.ResourceFileItem(resource.title, resource.url);
 
-        return new TreeNode(fileItem).setViewHolder(new ResourceItemViewHolder(this));
+        TreeNode fileNode = new TreeNode(fileItem).setViewHolder(new ResourceItemViewHolder(this));
+
+        fileNode.setClickListener((node, value) -> {
+           if(value instanceof ResourceItemViewHolder.ResourceFileItem) {
+
+               String url = ((ResourceItemViewHolder.ResourceFileItem) value).url;
+               WebFragment fragment = WebFragment.newInstance(url);
+
+               getSupportFragmentManager()
+                       .beginTransaction()
+                       .add(R.id.swiperefresh, fragment)
+                       .commit();
+           }
+        });
+
+        return fileNode;
     }
 
     /**
      * Build a node for a resource directory
-     * @param title
+     * @param resource
      * @return
      */
-    private TreeNode buildResourceDirNode(String title) {
+    private TreeNode buildResourceDirNode(Resource resource) {
         ResourceDirectoryViewHolder.ResourceDirectoryItem dirItem =
-                new ResourceDirectoryViewHolder.ResourceDirectoryItem(title);
+                new ResourceDirectoryViewHolder.ResourceDirectoryItem(resource.title);
 
         return new TreeNode(dirItem).setViewHolder(new ResourceDirectoryViewHolder(this));
     }

@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/sakai_light_silver"
-    android:foreground="?android:attr/selectableItemBackground" >
+    android:foreground="?android:attr/selectableItemBackground"
+    android:orientation="horizontal"
+    android:padding="10dp">
 
     <TextView
-        android:paddingLeft="16dp"
-        android:padding="8dp"
-        android:textColor="@color/sakai_light_black"
-        android:textSize="24sp"
-        android:text="Directory Name"
         android:id="@+id/resource_dir_txt"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:paddingRight="4dp"
+        tools:text="Directory Name"
+        android:textColor="@color/sakai_light_black"
+        android:textSize="20sp" />
 
 </LinearLayout>
