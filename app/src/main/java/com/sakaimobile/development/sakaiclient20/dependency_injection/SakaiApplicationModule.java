@@ -1,6 +1,7 @@
 package com.sakaimobile.development.sakaiclient20.dependency_injection;
 
 import com.sakaimobile.development.sakaiclient20.ui.MainActivity;
+import com.sakaimobile.development.sakaiclient20.ui.SiteResourcesActivity;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AllCoursesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AllGradesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AnnouncementsFragment;
@@ -18,6 +19,9 @@ abstract class SakaiApplicationModule {
      */
     @ContributesAndroidInjector
     abstract MainActivity contributeMainActivityInjector();
+
+    @ContributesAndroidInjector
+    abstract SiteResourcesActivity contributeSiteResourcesActivityInjector();
 
     @ContributesAndroidInjector
     abstract AllCoursesFragment contributesFragmentInjector();

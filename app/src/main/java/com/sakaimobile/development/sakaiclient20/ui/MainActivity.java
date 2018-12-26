@@ -87,15 +87,8 @@ public class MainActivity extends AppCompatActivity
     private boolean isLoadingAllCourses;
 
     @Inject
-    CourseViewModel courseViewModel;
-
-    @Inject
     ViewModelFactory viewModelFactory;
     private Set<LiveData> beingObserved;
-
-    // testing
-    @Inject
-    ResourcesService resourcesService;
 
 
     private Fragment displayingFragment;
@@ -311,17 +304,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void onSiteResourcesSelected(Course course) {
-        resourcesService
-                .getSiteResources(course.siteId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(response -> {
-                    ArrayList<Resource> resources = (ArrayList) response.getResources();
-
-                    Intent i = new Intent(this, SiteResourcesActivity.class);
-                    i.putExtra(getString(R.string.site_resources_tag), resources);
-                    startActivity(i);
-                });
+        Intent i = new Intent(this, SiteResourcesActivity.class);
+        i.putExtra(getString(R.string.site_resources_tag), course.siteId);
+        startActivity(i);
     }
 
 

@@ -7,6 +7,7 @@ import com.sakaimobile.development.sakaiclient20.ui.viewmodels.AnnouncementViewM
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.AssignmentViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.CourseViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.GradeViewModel;
+import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ResourceViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
 import dagger.Binds;
@@ -20,6 +21,11 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(CourseViewModel.class)
     abstract ViewModel bindCourseViewModel(CourseViewModel userViewModel);
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ResourceViewModel.class)
+    abstract ViewModel bindResourceViewModel(ResourceViewModel resourceViewModel);
 
     @Binds
     @IntoMap

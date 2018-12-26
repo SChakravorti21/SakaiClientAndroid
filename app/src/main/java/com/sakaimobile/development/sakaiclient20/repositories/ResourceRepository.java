@@ -20,20 +20,49 @@ public class ResourceRepository {
         this.resourcesService = service;
     }
 
+    /**
+     * Gets the stored site resources from room database
+     * @param siteId siteId of resources
+     * @return list of resources, can be observed on
+     */
     public Single<List<Resource>> getSiteResources(String siteId) {
         return resourceDao
                 .getSiteResources(siteId)
                 .firstOrError();
     }
 
-    public Completable refreshSiteResources(String siteId) {
+    /**
+     * refresh the site resources, sets the siteIDs and then persists them
+     * @param siteId siteId of resources to request
+     * @return whether or not the operation was successful
+     */
+    public Single<List<Resource>> refreshSiteResources(String siteId) {
         return resourcesService
                 .getSiteResources(siteId)
                 .map(ResourcesResponse::getResources)
-                .map(resources -> persistSiteResources(siteId, resources))
-                .ignoreElement();
+                .map(resources -> setSiteIdOfResources(siteId, resources))
+                .map(resources -> persistSiteResources(siteId, resources));
     }
 
+    /**
+     * Set the siteId of the requested resources, since it is not in the response body
+     * @param siteId siteId to set
+     * @param resources resource list
+     * @return resource list with siteIds set
+     */
+    private List<Resource> setSiteIdOfResources(String siteId, List<Resource> resources) {
+        for(Resource resource : resources) {
+            resource.siteId = siteId;
+        }
+        return resources;
+    }
+
+    /**
+     * Store the resources in room database
+     * @param siteId siteId of resources
+     * @param resources resource list
+     * @return stored resources
+     */
     private List<Resource> persistSiteResources(String siteId, List<Resource> resources) {
         // if its empty list, don't persist them
         if(resources.size() == 0)
