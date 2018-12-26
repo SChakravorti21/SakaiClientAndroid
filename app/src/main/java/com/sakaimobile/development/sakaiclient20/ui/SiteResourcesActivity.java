@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.sakaimobile.development.sakaiclient20.R;
@@ -36,6 +38,8 @@ public class SiteResourcesActivity extends AppCompatActivity {
 
     private String currentSiteId;
 
+    private AndroidTreeView resourcesTreeView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         AndroidInjection.inject(this);
@@ -45,6 +49,13 @@ public class SiteResourcesActivity extends AppCompatActivity {
         // get the parent view container
         SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swiperefresh);
 
+        // setup the treeview
+        final TreeNode root = TreeNode.root();
+        resourcesTreeView = new AndroidTreeView(this, root);
+        resourcesTreeView.setDefaultAnimation(true);
+        swipeRefreshLayout.addView(resourcesTreeView.getView());
+
+
         // initialized the being observed set
         beingObserved = new HashSet<>();
 
@@ -52,38 +63,39 @@ public class SiteResourcesActivity extends AppCompatActivity {
         Intent intent = getIntent();
         currentSiteId = intent.getStringExtra(getString(R.string.site_resources_tag));
 
-        LiveData<List<Resource>> resourceLiveData =
-                ViewModelProviders.of(this, viewModelFactory)
-                        .get(ResourceViewModel.class)
-                        .getResourcesForSite(currentSiteId);
 
+
+        // get a reference to the view model
+        ResourceViewModel resourceViewModel = ViewModelProviders.of(this, viewModelFactory)
+                .get(ResourceViewModel.class);
+
+
+        // request the resources for the site
+        LiveData<List<Resource>> resourceLiveData = resourceViewModel.getResourcesForSite(currentSiteId);
         beingObserved.add(resourceLiveData);
 
         // observe on the resources data
         resourceLiveData.observe(this, resources -> {
 
-//            swipeRefreshLayout.removeAllViews();
+            // remove the old children of the root, so we can build a new treeview
+            removeChildren(root);
+
             // build the treeView and add it to the parent view
-            AndroidTreeView treeView = constructResourcesTreeView(resources);
-            swipeRefreshLayout.addView(treeView.getView());
+            constructResourcesTreeView(root, resources);
+
+            // if this change was detected because of a refresh, just stop refreshing
+            swipeRefreshLayout.setRefreshing(false);
         });
 
 
         // set refresh listener
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            Toast.makeText(this, "refresh", Toast.LENGTH_SHORT).show();
-            swipeRefreshLayout.setRefreshing(false);
-        });
+        swipeRefreshLayout.setOnRefreshListener(() ->
+            resourceViewModel.refreshSiteResources(currentSiteId)
+        );
     }
 
-    private AndroidTreeView constructResourcesTreeView(List<Resource> flatResources) {
-
-        TreeNode root = TreeNode.root();
-        AndroidTreeView treeView = new AndroidTreeView(this, root);
-        treeView.setDefaultAnimation(true);
-
-        root.addChildren(getChildren(flatResources, 0, flatResources.size()));
-        return treeView;
+    private void constructResourcesTreeView(TreeNode root, List<Resource> flatResources) {
+        root.addChildren(getChildren(flatResources, 1, flatResources.size()));
     }
 
     private List<TreeNode> getChildren(List<Resource> resources, int start, int end) {
@@ -103,7 +115,6 @@ public class SiteResourcesActivity extends AppCompatActivity {
                 // recursively get the children of this directory, and add them
                 List<TreeNode> dirChildren = getChildren(resources, i + 1, i + 1 + resource.numDescendants);
                 dirNode.addChildren(dirChildren);
-
                 // move forward index
                 i += resource.numDescendants;
             } else {
@@ -160,6 +171,16 @@ public class SiteResourcesActivity extends AppCompatActivity {
                 .beginTransaction()
                 .add(R.id.swiperefresh, fragment)
                 .commit();
+    }
+
+
+    private static void removeChildren(TreeNode node) {
+
+        List<TreeNode> children = node.getChildren();
+        for (int i = 0; i < children.size(); i++) {
+            TreeNode child = children.get(i);
+            node.deleteChild(child);
+        }
     }
 
 
