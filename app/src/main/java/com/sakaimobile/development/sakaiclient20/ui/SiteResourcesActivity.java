@@ -8,7 +8,6 @@ import android.widget.Toast;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Resource;
-import com.sakaimobile.development.sakaiclient20.ui.custom_components.CustomLinkMovementMethod;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.WebFragment;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.ResourceDirectoryViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.ResourceItemViewHolder;
@@ -93,17 +92,11 @@ public class SiteResourcesActivity extends AppCompatActivity {
         TreeNode fileNode = new TreeNode(fileItem).setViewHolder(new ResourceItemViewHolder(this));
 
         fileNode.setClickListener((node, value) -> {
-           if(value instanceof ResourceItemViewHolder.ResourceFileItem) {
 
-               String url = ((ResourceItemViewHolder.ResourceFileItem) value).url;
-               WebFragment fragment = WebFragment.newInstance(url);
-
-               getSupportFragmentManager()
-                       .beginTransaction()
-                       .add(R.id.swiperefresh, fragment)
-                       .commit();
-           }
+           if(value instanceof ResourceItemViewHolder.ResourceFileItem)
+               downloadFile((ResourceItemViewHolder.ResourceFileItem) value);
         });
+
 
         return fileNode;
     }
@@ -118,6 +111,16 @@ public class SiteResourcesActivity extends AppCompatActivity {
                 new ResourceDirectoryViewHolder.ResourceDirectoryItem(resource.title);
 
         return new TreeNode(dirItem).setViewHolder(new ResourceDirectoryViewHolder(this));
+    }
+
+
+    private void downloadFile(ResourceItemViewHolder.ResourceFileItem item) {
+        WebFragment fragment = WebFragment.newInstance(item.url);
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.swiperefresh, fragment)
+                .commit();
     }
 
 }
