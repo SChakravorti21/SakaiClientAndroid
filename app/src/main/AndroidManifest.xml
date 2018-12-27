@@ -14,15 +14,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.MainActivity" />
-        <activity android:name=".ui.WebViewActivity">
+        <activity android:name=".ui.activities.MainActivity" />
+        <activity android:name=".ui.activities.WebViewActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.SettingsActivity" />
+        <activity android:name=".ui.activities.SettingsActivity" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -38,7 +38,8 @@
             android:name="io.fabric.ApiKey"
             android:value="ebf2c3e22b5ce9abda48ea296c12d2aebaf2b1c8" />
 
-        <activity android:name=".ui.SiteResourcesActivity"></activity>
+        <activity android:name=".ui.activities.SiteResourcesActivity" />
+        <activity android:name=".ui.activities.BaseObservingActivity"></activity>
     </application>
 
 </manifest>

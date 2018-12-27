@@ -1,10 +1,9 @@
-package com.sakaimobile.development.sakaiclient20.ui;
+package com.sakaimobile.development.sakaiclient20.ui.activities;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 
@@ -14,25 +13,16 @@ import com.sakaimobile.development.sakaiclient20.ui.fragments.WebFragment;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.ResourceDirectoryViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.ResourceItemViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ResourceViewModel;
-import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
-import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
 
-public class SiteResourcesActivity extends AppCompatActivity {
-
-    @Inject
-    ViewModelFactory viewModelFactory;
-
-    private Set<LiveData> beingObserved;
+public class SiteResourcesActivity extends BaseObservingActivity {
 
     private String currentSiteId;
 
@@ -64,10 +54,7 @@ public class SiteResourcesActivity extends AppCompatActivity {
         currentSiteId = intent.getStringExtra(getString(R.string.site_resources_tag));
 
 
-        // get a reference to the view model
-        ResourceViewModel resourceViewModel = ViewModelProviders.of(this, viewModelFactory)
-                .get(ResourceViewModel.class);
-
+        ResourceViewModel resourceViewModel = (ResourceViewModel) getViewModel(ResourceViewModel.class);
 
         // request the resources for the site
         LiveData<List<Resource>> resourceLiveData = resourceViewModel.getResourcesForSite(currentSiteId);
@@ -235,26 +222,17 @@ public class SiteResourcesActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        removeObservations();
-    }
-
-    private void removeObservations() {
-        for (LiveData liveData : beingObserved) {
-            liveData.removeObservers(this);
-        }
-        beingObserved.clear();
-    }
-
 
     private void setupToolbar(List<Resource> resources) {
         // add the toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(v -> SiteResourcesActivity.super.onBackPressed());
-        toolbar.setTitle(resources.get(0).title);
+
+        if(resources != null && resources.size() >= 1)
+            toolbar.setTitle(resources.get(0).title);
+        else
+            toolbar.setTitle(getString(R.string.app_name));
     }
 
 }

@@ -11,7 +11,7 @@ import android.widget.ListView;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
-import com.sakaimobile.development.sakaiclient20.ui.MainActivity;
+import com.sakaimobile.development.sakaiclient20.ui.activities.MainActivity;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
 
 public class CourseSitesFragment extends Fragment {

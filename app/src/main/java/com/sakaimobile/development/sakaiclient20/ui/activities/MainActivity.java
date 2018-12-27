@@ -1,4 +1,4 @@
-package com.sakaimobile.development.sakaiclient20.ui;
+package com.sakaimobile.development.sakaiclient20.ui.activities;
 
 import android.app.DownloadManager;
 import android.arch.lifecycle.LiveData;
@@ -11,7 +11,6 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,12 +20,12 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.sakaimobile.development.sakaiclient20.R;
-import com.sakaimobile.development.sakaiclient20.networking.services.ResourcesService;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Announcement;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Grade;
-import com.sakaimobile.development.sakaiclient20.persistence.entities.Resource;
+import com.sakaimobile.development.sakaiclient20.ui.activities.SettingsActivity;
+import com.sakaimobile.development.sakaiclient20.ui.activities.SiteResourcesActivity;
 import com.sakaimobile.development.sakaiclient20.ui.custom_components.CustomLinkMovementMethod;
 import com.sakaimobile.development.sakaiclient20.ui.custom_components.DownloadCompleteReceiver;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AllCoursesFragment;
@@ -43,15 +42,12 @@ import com.sakaimobile.development.sakaiclient20.ui.viewmodels.AnnouncementViewM
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.AssignmentViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.CourseViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.GradeViewModel;
-import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -59,12 +55,10 @@ import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.HasSupportFragmentInjector;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 
 import static com.sakaimobile.development.sakaiclient20.ui.fragments.AnnouncementsFragment.NUM_ANNOUNCEMENTS_DEFAULT;
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends BaseObservingActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener,
         HasSupportFragmentInjector, OnActionPerformedListener, OnFinishedLoadingListener {
 
@@ -72,11 +66,7 @@ public class MainActivity extends AppCompatActivity
     @Inject
     DispatchingAndroidInjector<Fragment> supportFragmentInjector;
 
-    public static final String ALL_COURSES_TAG = "ALL_COURSES";
-    public static final String COURSE_TAG = "COURSE";
-    public static final String ALL_GRADES_TAG = "GRADES";
     public static final String ASSIGNMENTS_TAG = "ASSIGNMENTS";
-    public static final String SITE_GRADES_TAG = "SITE_GRADES";
 
     private static final short FRAGMENT_REPLACE = 0;
     private static final short FRAGMENT_ADD = 1;
@@ -85,11 +75,6 @@ public class MainActivity extends AppCompatActivity
     private FrameLayout container;
     private ProgressBar spinner;
     private boolean isLoadingAllCourses;
-
-    @Inject
-    ViewModelFactory viewModelFactory;
-    private Set<LiveData> beingObserved;
-
 
     private Fragment displayingFragment;
 
@@ -148,12 +133,6 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         CustomLinkMovementMethod.setFragmentManager(getSupportFragmentManager());
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        removeObservations();
     }
 
     @Override
@@ -229,9 +208,9 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onCourseSelected(String siteId) {
-        LiveData<Course> courseLiveData = ViewModelProviders.of(this, viewModelFactory)
-                .get(CourseViewModel.class)
-                .getCourse(siteId);
+        CourseViewModel courseViewModel = (CourseViewModel) getViewModel(CourseViewModel.class);
+        LiveData<Course> courseLiveData = courseViewModel.getCourse(siteId);
+
         beingObserved.add(courseLiveData);
         courseLiveData.observe(this, course -> {
             CourseSitesFragment fragment = CourseSitesFragment.newInstance(course, this);
@@ -261,10 +240,10 @@ public class MainActivity extends AppCompatActivity
 
         startProgressBar();
 
-        LiveData<List<Announcement>> siteAnnouncementsLiveData =
-                ViewModelProviders.of(this, viewModelFactory)
-                        .get(AnnouncementViewModel.class)
-                        .getSiteAnnouncements(course.siteId, NUM_ANNOUNCEMENTS_DEFAULT);
+        AnnouncementViewModel announcementViewModel = (AnnouncementViewModel) getViewModel(AnnouncementViewModel.class);
+
+        LiveData<List<Announcement>> siteAnnouncementsLiveData = announcementViewModel
+                .getSiteAnnouncements(course.siteId, NUM_ANNOUNCEMENTS_DEFAULT);
 
         beingObserved.add(siteAnnouncementsLiveData);
 
@@ -311,8 +290,9 @@ public class MainActivity extends AppCompatActivity
 
 
     public void onSiteGradesSelected(Course course) {
-        LiveData<List<Grade>> gradesLiveData = ViewModelProviders.of(this, viewModelFactory)
-                .get(GradeViewModel.class)
+
+        GradeViewModel gradeViewModel = (GradeViewModel) getViewModel(GradeViewModel.class);
+        LiveData<List<Grade>> gradesLiveData = gradeViewModel
                 .getGradesForSite(course.siteId);
 
         beingObserved.add(gradesLiveData);
@@ -345,12 +325,6 @@ public class MainActivity extends AppCompatActivity
         registerReceiver(receiver, filter);
     }
 
-    private void removeObservations() {
-        for (LiveData liveData : beingObserved) {
-            liveData.removeObservers(this);
-        }
-        beingObserved.clear();
-    }
 
     /******************************\
      FRAGMENT MANAGEMENT
@@ -416,10 +390,10 @@ public class MainActivity extends AppCompatActivity
         startProgressBar();
         isLoadingAllCourses = true;
 
-        LiveData<List<List<Course>>> courseLiveData =
-                ViewModelProviders.of(this, viewModelFactory)
-                        .get(CourseViewModel.class)
-                        .getCoursesByTerm(refresh);
+        CourseViewModel courseViewModel = (CourseViewModel) getViewModel(CourseViewModel.class);
+
+        LiveData<List<List<Course>>> courseLiveData = courseViewModel
+                .getCoursesByTerm(refresh);
 
         courseLiveData.observe(this, courses -> {
             stopProgressBar();
@@ -444,10 +418,11 @@ public class MainActivity extends AppCompatActivity
         this.container.setVisibility(View.GONE);
         this.spinner.setVisibility(View.VISIBLE);
 
-        LiveData<List<List<Course>>> coursesLiveData =
-                ViewModelProviders.of(this, viewModelFactory)
-                        .get(AssignmentViewModel.class)
+        AssignmentViewModel assignmentViewModel = (AssignmentViewModel) getViewModel(AssignmentViewModel.class);
+
+        LiveData<List<List<Course>>> coursesLiveData = assignmentViewModel
                         .getCoursesByTerm(refresh);
+
         coursesLiveData.observe(this, courses -> {
             spinner.setVisibility(View.GONE);
 
@@ -479,14 +454,13 @@ public class MainActivity extends AppCompatActivity
         this.container.setVisibility(View.GONE);
         startProgressBar();
 
-        LiveData<List<Announcement>> announcementsLiveData =
-                ViewModelProviders.of(this, viewModelFactory)
-                        .get(AnnouncementViewModel.class)
+        AnnouncementViewModel announcementViewModel = (AnnouncementViewModel) getViewModel(AnnouncementViewModel.class);
+        CourseViewModel courseViewModel = (CourseViewModel) getViewModel(CourseViewModel.class);
+
+        LiveData<List<Announcement>> announcementsLiveData = announcementViewModel
                         .getAllAnnouncements(NUM_ANNOUNCEMENTS_DEFAULT);
 
-        LiveData<List<List<Course>>> coursesLiveData =
-                ViewModelProviders.of(this, viewModelFactory)
-                        .get(CourseViewModel.class)
+        LiveData<List<List<Course>>> coursesLiveData = courseViewModel
                         .getCoursesByTerm(false);
 
 
@@ -522,10 +496,11 @@ public class MainActivity extends AppCompatActivity
         this.container.setVisibility(View.GONE);
         startProgressBar();
 
-        LiveData<List<List<Course>>> courseLiveData =
-                ViewModelProviders.of(this, viewModelFactory)
-                        .get(GradeViewModel.class)
+        GradeViewModel gradeViewModel = (GradeViewModel) getViewModel(GradeViewModel.class);
+
+        LiveData<List<List<Course>>> courseLiveData = gradeViewModel
                         .getCoursesByTerm(true);
+
         beingObserved.add(courseLiveData);
 
         courseLiveData.observe(this, courses -> {

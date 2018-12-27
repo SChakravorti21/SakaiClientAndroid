@@ -1,4 +1,4 @@
-package com.sakaimobile.development.sakaiclient20.ui;
+package com.sakaimobile.development.sakaiclient20.ui.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;

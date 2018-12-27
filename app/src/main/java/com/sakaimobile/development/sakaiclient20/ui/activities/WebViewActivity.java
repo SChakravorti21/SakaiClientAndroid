@@ -1,4 +1,4 @@
-package com.sakaimobile.development.sakaiclient20.ui;
+package com.sakaimobile.development.sakaiclient20.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
