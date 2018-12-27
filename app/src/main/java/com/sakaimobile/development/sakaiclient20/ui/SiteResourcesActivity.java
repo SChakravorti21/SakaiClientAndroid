@@ -6,9 +6,6 @@ import android.content.Intent;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Resource;
@@ -64,7 +61,6 @@ public class SiteResourcesActivity extends AppCompatActivity {
         currentSiteId = intent.getStringExtra(getString(R.string.site_resources_tag));
 
 
-
         // get a reference to the view model
         ResourceViewModel resourceViewModel = ViewModelProviders.of(this, viewModelFactory)
                 .get(ResourceViewModel.class);
@@ -77,11 +73,8 @@ public class SiteResourcesActivity extends AppCompatActivity {
         // observe on the resources data
         resourceLiveData.observe(this, resources -> {
 
-            // remove the old children of the root, so we can build a new treeview
-            removeChildren(root);
-
-            // build the treeView and add it to the parent view
-            constructResourcesTreeView(root, resources);
+            // update the resources tree view
+            updateResourcesTreeView(root, resources);
 
             // if this change was detected because of a refresh, just stop refreshing
             swipeRefreshLayout.setRefreshing(false);
@@ -89,15 +82,41 @@ public class SiteResourcesActivity extends AppCompatActivity {
 
 
         // set refresh listener
-        swipeRefreshLayout.setOnRefreshListener(() ->
-            resourceViewModel.refreshSiteResources(currentSiteId)
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+                    resourceViewModel.refreshSiteResources(currentSiteId);
+                }
         );
     }
 
-    private void constructResourcesTreeView(TreeNode root, List<Resource> flatResources) {
-        root.addChildren(getChildren(flatResources, 1, flatResources.size()));
+    /**
+     * Updates the resources tree view by removing old nodes and adding new nodes
+     * from the resources list
+     *
+     * @param root          root of the tree (Root is never changed)
+     * @param flatResources new list of resources
+     */
+    private void updateResourcesTreeView(TreeNode root, List<Resource> flatResources) {
+
+        // remove the old children of the root, so we can build a new treeview
+        removeChildren(root);
+
+        List<TreeNode> children = getChildren(flatResources, 1, flatResources.size());
+
+        for (TreeNode n : children) {
+            resourcesTreeView.addNode(root, n);
+        }
     }
 
+
+    /**
+     * Recursively gets the children for a "node" given the list of resources
+     *
+     * @param resources list, must be in a proper traversal format, otherwise algorithm won't work
+     *                  vist, then go to all children, recursively
+     * @param start     start of the list to get children of
+     * @param end       end of the part of the list representing the descendants
+     * @return a list of nodes which are the children of the node at resources[start]
+     */
     private List<TreeNode> getChildren(List<Resource> resources, int start, int end) {
 
         List<TreeNode> children = new ArrayList<>();
@@ -131,8 +150,8 @@ public class SiteResourcesActivity extends AppCompatActivity {
     /**
      * Build a node for a resource file item
      *
-     * @param resource
-     * @return
+     * @param resource item
+     * @return treenode to add
      */
     private TreeNode buildResourceFileNode(Resource resource) {
         ResourceItemViewHolder.ResourceFileItem fileItem =
@@ -151,10 +170,10 @@ public class SiteResourcesActivity extends AppCompatActivity {
     }
 
     /**
-     * Build a node for a resource directory
+     * Build a node for a resource directory, only using the resource title
      *
-     * @param resource
-     * @return
+     * @param resource item
+     * @return treenode to add
      */
     private TreeNode buildResourceDirNode(Resource resource) {
         ResourceDirectoryViewHolder.ResourceDirectoryItem dirItem =
@@ -164,6 +183,13 @@ public class SiteResourcesActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * Downloads a file inside a given resource file item node
+     * <p>
+     * loads up a web fragment to download the file
+     *
+     * @param item resource file item node
+     */
     private void downloadFile(ResourceItemViewHolder.ResourceFileItem item) {
         WebFragment fragment = WebFragment.newInstance(item.url);
 
@@ -174,12 +200,32 @@ public class SiteResourcesActivity extends AppCompatActivity {
     }
 
 
-    private static void removeChildren(TreeNode node) {
+    /**
+     * This may look weird at first glance, but do not fret
+     * originally, I was doing a simple foreach loop and calling node.deleteChild(), but for
+     * some reason this does not update the view, from what I found
+     * then I tried a simple foreach loop and deleting the node using the reference to the treeview
+     * itself, but I started getting concurrent modification exceptions, which makes sense since I was
+     * iterating through the list and deleting the list at the same time (with node.getChildren())
+     * <p>
+     * **IMPORTANT**, the list returned by getChildren() is the same list internally used
+     * so changing this list will also change the internal representation
+     * <p>
+     * After this, I tried a regular for loop and removed the child at index i
+     * but since the getChildren() is returning the same list, the list is getting shorter
+     * each time I remove a child, so the index i isn't valid
+     * <p>
+     * To fix this, I would continue until the list of children was empty and keep deleting
+     * the first child. this seemed to work
+     *
+     * @param node node to remove children of
+     */
+    private void removeChildren(TreeNode node) {
 
         List<TreeNode> children = node.getChildren();
-        for (int i = 0; i < children.size(); i++) {
-            TreeNode child = children.get(i);
-            node.deleteChild(child);
+        while (children.size() > 0) {
+            TreeNode child = children.get(0);
+            resourcesTreeView.removeNode(child);
         }
     }
 
