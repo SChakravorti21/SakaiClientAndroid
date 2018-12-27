@@ -1,7 +1,6 @@
 package com.sakaimobile.development.sakaiclient20.ui.activities;
 
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.os.Bundle;
@@ -33,11 +32,12 @@ public class SiteResourcesActivity extends BaseObservingActivity {
     protected void onCreate(Bundle savedInstanceState) {
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_site_resources);
+        setContentView(R.layout.activity_site_page);
 
 
         // get the parent view container
         swipeRefreshLayout = findViewById(R.id.swiperefresh);
+        swipeRefreshLayout.setRefreshing(true);
 
         // setup the treeview
         final TreeNode root = TreeNode.root();

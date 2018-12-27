@@ -236,38 +236,6 @@ public class MainActivity extends BaseObservingActivity
     }
 
     @Override
-    public void onSiteAnnouncementsSelected(Course course) {
-
-        startProgressBar();
-
-        AnnouncementViewModel announcementViewModel = (AnnouncementViewModel) getViewModel(AnnouncementViewModel.class);
-
-        LiveData<List<Announcement>> siteAnnouncementsLiveData = announcementViewModel
-                .getSiteAnnouncements(course.siteId, NUM_ANNOUNCEMENTS_DEFAULT);
-
-        beingObserved.add(siteAnnouncementsLiveData);
-
-
-        HashMap<String, Course> siteIdToCourse = new HashMap<>();
-        siteIdToCourse.put(course.siteId, course);
-
-        Bundle b = new Bundle();
-        b.putString(getString(R.string.siteid_tag), course.siteId);
-        b.putSerializable(getString(R.string.siteid_to_course_map), siteIdToCourse);
-
-        AnnouncementsFragment frag = new AnnouncementsFragment();
-        frag.setArguments(b);
-
-
-        loadFragment(frag, FRAGMENT_REPLACE, true, true);
-        container.setVisibility(View.VISIBLE);
-
-        // TODO use proper string resource
-        String actionBarTitle = String.format("%s: %s", getString(R.string.announcements_site), course.title);
-        setActionBarTitle(actionBarTitle);
-    }
-
-    @Override
     public void onFinishedLoadingAllAnnouncements() {
         stopProgressBar();
         container.setVisibility(View.VISIBLE);
@@ -282,11 +250,7 @@ public class MainActivity extends BaseObservingActivity
         makeToast("Successfully refreshed announcements for " + courseName, Toast.LENGTH_SHORT);
     }
 
-    public void onSiteResourcesSelected(Course course) {
-        Intent i = new Intent(this, SiteResourcesActivity.class);
-        i.putExtra(getString(R.string.site_resources_tag), course.siteId);
-        startActivity(i);
-    }
+
 
 
     public void onSiteGradesSelected(Course course) {
@@ -448,7 +412,6 @@ public class MainActivity extends BaseObservingActivity
      * announcements view model
      * <p>
      * whenever an update is detected in the live data, recreate the fragment
-     * TODO: possibly dont recreate the fragment, just recreate the view
      */
     public void loadAnnouncementsFragment() {
         this.container.setVisibility(View.GONE);

@@ -1,5 +1,6 @@
 package com.sakaimobile.development.sakaiclient20.ui.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,7 +13,11 @@ import android.widget.ListView;
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 import com.sakaimobile.development.sakaiclient20.ui.activities.MainActivity;
+import com.sakaimobile.development.sakaiclient20.ui.activities.SiteAnnouncementActivity;
+import com.sakaimobile.development.sakaiclient20.ui.activities.SiteResourcesActivity;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
+
+import java.util.HashMap;
 
 public class CourseSitesFragment extends Fragment {
 
@@ -48,15 +53,14 @@ public class CourseSitesFragment extends Fragment {
         this.sitePagesListView.setOnItemClickListener((adapterView, view, pos, id) -> {
             String siteName = (String) sitePagesListView.getItemAtPosition(pos);
 
-            if (siteName.equals(getString(R.string.gradebook))) {
+            if (siteName.equals(getString(R.string.gradebook)))
                 siteClickedListener.onSiteGradesSelected(courseToView);
-            }
-            else if(siteName.equals(getString(R.string.announcements_site))) {
-                siteClickedListener.onSiteAnnouncementsSelected(courseToView);
-            }
-            else if(siteName.equals(getString(R.string.resources_site))) {
-                siteClickedListener.onSiteResourcesSelected(courseToView);
-            }
+
+            else if(siteName.equals(getString(R.string.announcements_site)))
+                startAnnouncementsActivity();
+
+            else if(siteName.equals(getString(R.string.resources_site)))
+                startResourcesActivity();
         });
 
         // TODO change the hackies
@@ -65,6 +69,22 @@ public class CourseSitesFragment extends Fragment {
 
 
         return inflated;
+    }
+
+    private void startAnnouncementsActivity() {
+        HashMap<String, Course> siteIdToCourse = new HashMap<>();
+        siteIdToCourse.put(courseToView.siteId, courseToView);
+
+        Intent i = new Intent(getActivity(), SiteAnnouncementActivity.class);
+        i.putExtra(getString(R.string.siteid_tag), courseToView.siteId);
+        i.putExtra(getString(R.string.siteid_to_course_map), siteIdToCourse);
+
+    }
+
+    private void startResourcesActivity() {
+        Intent i = new Intent(getActivity(), SiteResourcesActivity.class);
+        i.putExtra(getString(R.string.site_resources_tag), courseToView.siteId);
+        startActivity(i);
     }
 }
 
