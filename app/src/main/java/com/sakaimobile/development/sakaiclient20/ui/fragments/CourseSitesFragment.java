@@ -79,6 +79,7 @@ public class CourseSitesFragment extends Fragment {
         i.putExtra(getString(R.string.siteid_tag), courseToView.siteId);
         i.putExtra(getString(R.string.siteid_to_course_map), siteIdToCourse);
 
+        startActivity(i);
     }
 
     private void startResourcesActivity() {

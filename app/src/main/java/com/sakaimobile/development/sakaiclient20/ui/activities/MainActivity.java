@@ -2,7 +2,6 @@ package com.sakaimobile.development.sakaiclient20.ui.activities;
 
 import android.app.DownloadManager;
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -24,8 +23,6 @@ import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPref
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Announcement;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Grade;
-import com.sakaimobile.development.sakaiclient20.ui.activities.SettingsActivity;
-import com.sakaimobile.development.sakaiclient20.ui.activities.SiteResourcesActivity;
 import com.sakaimobile.development.sakaiclient20.ui.custom_components.CustomLinkMovementMethod;
 import com.sakaimobile.development.sakaiclient20.ui.custom_components.DownloadCompleteReceiver;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AllCoursesFragment;
@@ -37,7 +34,7 @@ import com.sakaimobile.development.sakaiclient20.ui.fragments.SiteGradesFragment
 import com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.AssignmentsFragment;
 import com.sakaimobile.development.sakaiclient20.ui.helpers.BottomNavigationViewHelper;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
-import com.sakaimobile.development.sakaiclient20.ui.listeners.OnFinishedLoadingListener;
+import com.sakaimobile.development.sakaiclient20.ui.listeners.OnAnnouncementSelected;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.AnnouncementViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.AssignmentViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.CourseViewModel;
@@ -51,7 +48,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.HasSupportFragmentInjector;
@@ -60,7 +56,7 @@ import static com.sakaimobile.development.sakaiclient20.ui.fragments.Announcemen
 
 public class MainActivity extends BaseObservingActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener,
-        HasSupportFragmentInjector, OnActionPerformedListener, OnFinishedLoadingListener {
+        HasSupportFragmentInjector, OnActionPerformedListener, OnAnnouncementSelected {
 
 
     @Inject
@@ -84,7 +80,6 @@ public class MainActivity extends BaseObservingActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         registerDownloadReceiver();
@@ -227,30 +222,12 @@ public class MainActivity extends BaseObservingActivity
         // for some reason map isn't serializable, so i had to cast to hashmap
         //TODO check before casting
         b.putSerializable(getString(R.string.siteid_to_course_map), (HashMap) siteIdToCourse);
-        b.putSerializable(getString(R.string.siteid_to_course_map), (HashMap) siteIdToCourse);
 
         SingleAnnouncementFragment fragment = new SingleAnnouncementFragment();
         fragment.setArguments(b);
 
         loadFragment(fragment, FRAGMENT_ADD, true, R.anim.grow_enter, R.anim.pop_exit);
     }
-
-    @Override
-    public void onFinishedLoadingAllAnnouncements() {
-        stopProgressBar();
-        container.setVisibility(View.VISIBLE);
-        makeToast("Successfully refreshed all announcements", Toast.LENGTH_SHORT);
-    }
-
-    @Override
-    public void onFinishedLoadingSiteAnnouncements(String courseName) {
-        stopProgressBar();
-        container.setVisibility(View.VISIBLE);
-        setActionBarTitle(String.format("%s: %s", getString(R.string.announcements), courseName));
-        makeToast("Successfully refreshed announcements for " + courseName, Toast.LENGTH_SHORT);
-    }
-
-
 
 
     public void onSiteGradesSelected(Course course) {

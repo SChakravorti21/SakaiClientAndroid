@@ -11,7 +11,6 @@ public interface OnActionPerformedListener {
 
     void onSiteGradesSelected(Course course);
 
-    void onAnnouncementSelected(Announcement announcement, Map<String,Course> siteIdToCourse);
 
     void loadCoursesFragment(boolean refresh);
     void loadAssignmentsFragment(boolean sortByCourses, boolean refresh);

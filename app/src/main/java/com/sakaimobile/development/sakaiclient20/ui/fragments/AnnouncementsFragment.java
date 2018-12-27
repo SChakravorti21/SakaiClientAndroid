@@ -24,8 +24,7 @@ import com.sakaimobile.development.sakaiclient20.persistence.entities.Announceme
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 import com.sakaimobile.development.sakaiclient20.ui.adapters.AnnouncementsAdapter;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.LoadMoreListener;
-import com.sakaimobile.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
-import com.sakaimobile.development.sakaiclient20.ui.listeners.OnFinishedLoadingListener;
+import com.sakaimobile.development.sakaiclient20.ui.listeners.OnAnnouncementSelected;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.AnnouncementViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
@@ -69,8 +68,7 @@ public class AnnouncementsFragment extends Fragment {
     private static final int ANNOUNCEMENTS_TO_GET_PER_REQUEST = 10;
 
     // listener for clicking on an announcement
-    private OnActionPerformedListener onActionPerformedListener;
-    private OnFinishedLoadingListener onFinishedLoadingListener;
+    private OnAnnouncementSelected onAnnouncementSelected;
 
     private SwipeRefreshLayout swipeRefreshLayout;
 
@@ -121,7 +119,7 @@ public class AnnouncementsFragment extends Fragment {
         announcementRecycler.setItemAnimator(new DefaultItemAnimator());
 
         swipeRefreshLayout = view.findViewById(R.id.swiperefresh);
-
+        swipeRefreshLayout.setRefreshing(true);
 
         createAdapter();
 
@@ -129,15 +127,6 @@ public class AnnouncementsFragment extends Fragment {
         liveData.observe(getActivity(), announcements -> {
 
             addNewAnnouncementsToAdapter(announcements);
-
-            // notify the activity that the announcements are finished loading
-            if(announcementType == ALL_ANNOUNCEMENTS)
-                onFinishedLoadingListener.onFinishedLoadingAllAnnouncements();
-            else {
-                // TODO change this its so hacky
-                String courseName = siteIdToCourseMap.get(siteIdIfSiteAnnouncements).title;
-                onFinishedLoadingListener.onFinishedLoadingSiteAnnouncements(courseName);
-            }
             swipeRefreshLayout.setRefreshing(false);
         });
 
@@ -153,7 +142,7 @@ public class AnnouncementsFragment extends Fragment {
                 siteIdToCourseMap,
                 announcementType
         );
-        adapter.setClickListener(onActionPerformedListener);
+        adapter.setClickListener(onAnnouncementSelected);
         adapter.setLoadMoreListener(loadMoreListener);
 
         announcementRecycler.setAdapter(adapter);
@@ -314,16 +303,11 @@ public class AnnouncementsFragment extends Fragment {
             Activity activity = getActivity(context);
 
             try {
-                onActionPerformedListener = (OnActionPerformedListener) activity;
+                onAnnouncementSelected = (OnAnnouncementSelected) activity;
             } catch (ClassCastException e) {
-                throw new ClassCastException(activity.toString() + " must implement OnActionPerformedListener");
+                throw new ClassCastException(activity.toString() + " must implement OnAnnouncementSelected");
             }
 
-            try {
-                onFinishedLoadingListener = (OnFinishedLoadingListener) activity;
-            } catch (ClassCastException e) {
-                throw new ClassCastException(activity.toString() + " must implement OnFinishedLoadingListener");
-            }
         }
     }
 

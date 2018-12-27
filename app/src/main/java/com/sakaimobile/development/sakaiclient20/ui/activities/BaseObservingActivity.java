@@ -22,7 +22,7 @@ import dagger.android.AndroidInjection;
 public class BaseObservingActivity extends AppCompatActivity {
 
     @Inject
-    ViewModelFactory viewModelFactory;
+    public ViewModelFactory viewModelFactory;
 
     protected Set<LiveData> beingObserved;
 

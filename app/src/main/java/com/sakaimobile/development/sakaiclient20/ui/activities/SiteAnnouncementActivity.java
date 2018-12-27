@@ -4,22 +4,40 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.sakaimobile.development.sakaiclient20.R;
+import com.sakaimobile.development.sakaiclient20.persistence.entities.Announcement;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AnnouncementsFragment;
+import com.sakaimobile.development.sakaiclient20.ui.fragments.SingleAnnouncementFragment;
+import com.sakaimobile.development.sakaiclient20.ui.listeners.OnAnnouncementSelected;
 
 import java.util.HashMap;
+import java.util.Map;
 
-public class SiteAnnouncementActivity extends BaseObservingActivity {
+import javax.inject.Inject;
+
+import dagger.android.AndroidInjection;
+import dagger.android.AndroidInjector;
+import dagger.android.DispatchingAndroidInjector;
+import dagger.android.support.HasSupportFragmentInjector;
+
+public class SiteAnnouncementActivity extends BaseObservingActivity
+        implements HasSupportFragmentInjector, OnAnnouncementSelected {
+
+    @Inject
+    DispatchingAndroidInjector<Fragment> supportFragmentInjector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_site_page);
+        setContentView(R.layout.activity_site_announcements);
+
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -47,4 +65,29 @@ public class SiteAnnouncementActivity extends BaseObservingActivity {
 
     }
 
+    @Override
+    public AndroidInjector<Fragment> supportFragmentInjector() {
+        return supportFragmentInjector;
+    }
+
+
+    @Override
+    public void onAnnouncementSelected(Announcement announcement, Map<String, Course> siteIdToCourse) {
+        Bundle b = new Bundle();
+        b.putSerializable(getString(R.string.single_announcement_tag), announcement);
+        // for some reason map isn't serializable, so i had to cast to hashmap
+        b.putSerializable(getString(R.string.siteid_to_course_map), (HashMap) siteIdToCourse);
+
+        SingleAnnouncementFragment fragment = new SingleAnnouncementFragment();
+        fragment.setArguments(b);
+
+        // load fragment
+        getSupportFragmentManager()
+                .beginTransaction()
+                .setCustomAnimations(R.anim.grow_enter, R.anim.pop_exit, R.anim.pop_enter, R.anim.pop_exit)
+                .addToBackStack(null)
+                .add(R.id.fragment_container, fragment)
+                .commit();
+
+    }
 }
