@@ -37,6 +37,7 @@ public class SiteResourcesActivity extends AppCompatActivity {
     private String currentSiteId;
 
     private AndroidTreeView resourcesTreeView;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,13 +45,9 @@ public class SiteResourcesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_site_resources);
 
-        // add the toolbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(v -> SiteResourcesActivity.super.onBackPressed());
 
         // get the parent view container
-        SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swiperefresh);
+        swipeRefreshLayout = findViewById(R.id.swiperefresh);
 
         // setup the treeview
         final TreeNode root = TreeNode.root();
@@ -78,6 +75,8 @@ public class SiteResourcesActivity extends AppCompatActivity {
 
         // observe on the resources data
         resourceLiveData.observe(this, resources -> {
+
+            setupToolbar(resources);
 
             // update the resources tree view
             updateResourcesTreeView(root, resources);
@@ -247,6 +246,15 @@ public class SiteResourcesActivity extends AppCompatActivity {
             liveData.removeObservers(this);
         }
         beingObserved.clear();
+    }
+
+
+    private void setupToolbar(List<Resource> resources) {
+        // add the toolbar
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setNavigationOnClickListener(v -> SiteResourcesActivity.super.onBackPressed());
+        toolbar.setTitle(resources.get(0).title);
     }
 
 }
