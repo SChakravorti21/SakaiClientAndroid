@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Resource;
@@ -42,6 +43,11 @@ public class SiteResourcesActivity extends AppCompatActivity {
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_site_resources);
+
+        // add the toolbar
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setNavigationOnClickListener(v -> SiteResourcesActivity.super.onBackPressed());
 
         // get the parent view container
         SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swiperefresh);
