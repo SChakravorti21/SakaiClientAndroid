@@ -423,6 +423,9 @@ public class MainActivity extends BaseObservingActivity
             frag.setArguments(b);
 
             loadFragment(frag, FRAGMENT_REPLACE, false, false);
+
+            this.container.setVisibility(View.VISIBLE);
+            stopProgressBar();
         });
 
 

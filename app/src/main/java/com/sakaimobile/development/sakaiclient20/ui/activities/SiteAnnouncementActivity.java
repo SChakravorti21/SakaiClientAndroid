@@ -1,5 +1,6 @@
 package com.sakaimobile.development.sakaiclient20.ui.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -7,6 +8,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.AttributeSet;
 import android.view.View;
 
 import com.sakaimobile.development.sakaiclient20.R;
@@ -47,6 +49,11 @@ public class SiteAnnouncementActivity extends BaseObservingActivity
         Intent intent = getIntent();
         String siteId = intent.getStringExtra(getString(R.string.siteid_tag));
         HashMap<String, Course> siteIdToCourse = (HashMap) intent.getSerializableExtra(getString(R.string.siteid_to_course_map));
+
+        String courseTitle = siteIdToCourse.get(siteId).title;
+        String toolbarTitle = String.format("%s: %s", getString(R.string.announcements), courseTitle);
+        getSupportActionBar().setTitle(toolbarTitle);
+
 
         // create the bundle for site announcements frag args
         Bundle b = new Bundle();
@@ -90,4 +97,5 @@ public class SiteAnnouncementActivity extends BaseObservingActivity
                 .commit();
 
     }
+
 }

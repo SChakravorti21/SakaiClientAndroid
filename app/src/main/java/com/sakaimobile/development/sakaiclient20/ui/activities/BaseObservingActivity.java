@@ -19,7 +19,7 @@ import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
 
-public class BaseObservingActivity extends AppCompatActivity {
+public abstract class BaseObservingActivity extends AppCompatActivity {
 
     @Inject
     public ViewModelFactory viewModelFactory;
