@@ -41,7 +41,7 @@ public class GradeViewModel extends BaseViewModel {
      * @param siteId site to get grades for
      * @return live data containing grades list
      */
-    public LiveData<List<Grade>> getGradesForSite(String siteId) {
+    public LiveData<List<Grade>> getSiteGrades(String siteId) {
 
         if (!this.siteIdToGrades.containsKey(siteId)) {
             this.siteIdToGrades.put(siteId, new MutableLiveData<>());

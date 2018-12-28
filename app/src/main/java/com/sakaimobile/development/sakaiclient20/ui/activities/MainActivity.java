@@ -22,7 +22,6 @@ import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Announcement;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
-import com.sakaimobile.development.sakaiclient20.persistence.entities.Grade;
 import com.sakaimobile.development.sakaiclient20.ui.custom_components.CustomLinkMovementMethod;
 import com.sakaimobile.development.sakaiclient20.ui.custom_components.DownloadCompleteReceiver;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AllCoursesFragment;
@@ -30,7 +29,6 @@ import com.sakaimobile.development.sakaiclient20.ui.fragments.AllGradesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AnnouncementsFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.CourseSitesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.SingleAnnouncementFragment;
-import com.sakaimobile.development.sakaiclient20.ui.fragments.SiteGradesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.AssignmentsFragment;
 import com.sakaimobile.development.sakaiclient20.ui.helpers.BottomNavigationViewHelper;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
@@ -227,32 +225,6 @@ public class MainActivity extends BaseObservingActivity
         fragment.setArguments(b);
 
         loadFragment(fragment, FRAGMENT_ADD, true, R.anim.grow_enter, R.anim.pop_exit);
-    }
-
-
-    public void onSiteGradesSelected(Course course) {
-
-        GradeViewModel gradeViewModel = (GradeViewModel) getViewModel(GradeViewModel.class);
-        LiveData<List<Grade>> gradesLiveData = gradeViewModel
-                .getGradesForSite(course.siteId);
-
-        beingObserved.add(gradesLiveData);
-
-        gradesLiveData.observe(this, grades -> {
-            SiteGradesFragment fragment = SiteGradesFragment.newInstance(grades, course.siteId);
-
-            // if the displaying fragment is already site grades fragment, (refreshing)
-            // dont show animations or add to backstack
-
-
-            if (this.displayingFragment instanceof SiteGradesFragment)
-                popBackStackUntil(this.displayingFragment.getClass().getCanonicalName());
-
-            loadFragment(fragment, FRAGMENT_REPLACE, true, true);
-
-
-            setActionBarTitle(String.format("Gradebook: %s", course.title));
-        });
     }
 
 

@@ -16,10 +16,7 @@ import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-
-import dagger.android.AndroidInjection;
 
 public class SiteResourcesActivity extends BaseObservingActivity {
 
@@ -31,7 +28,7 @@ public class SiteResourcesActivity extends BaseObservingActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_site_page);
+        setContentView(R.layout.activity_site_resources);
 
 
         // get the parent view container
@@ -44,9 +41,6 @@ public class SiteResourcesActivity extends BaseObservingActivity {
         resourcesTreeView.setDefaultAnimation(true);
         swipeRefreshLayout.addView(resourcesTreeView.getView());
 
-
-        // initialized the being observed set
-        beingObserved = new HashSet<>();
 
         // get the siteId of the course to show
         Intent intent = getIntent();

@@ -9,9 +9,6 @@ import java.util.Map;
 public interface OnActionPerformedListener {
     void onCourseSelected(String siteId);
 
-    void onSiteGradesSelected(Course course);
-
-
     void loadCoursesFragment(boolean refresh);
     void loadAssignmentsFragment(boolean sortByCourses, boolean refresh);
 }

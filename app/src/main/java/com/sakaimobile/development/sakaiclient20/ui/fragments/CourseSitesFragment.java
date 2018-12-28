@@ -14,6 +14,7 @@ import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 import com.sakaimobile.development.sakaiclient20.ui.activities.MainActivity;
 import com.sakaimobile.development.sakaiclient20.ui.activities.SiteAnnouncementActivity;
+import com.sakaimobile.development.sakaiclient20.ui.activities.SiteGradesActivity;
 import com.sakaimobile.development.sakaiclient20.ui.activities.SiteResourcesActivity;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
 
@@ -54,7 +55,7 @@ public class CourseSitesFragment extends Fragment {
             String siteName = (String) sitePagesListView.getItemAtPosition(pos);
 
             if (siteName.equals(getString(R.string.gradebook)))
-                siteClickedListener.onSiteGradesSelected(courseToView);
+                startSiteGradesActivity();
 
             else if(siteName.equals(getString(R.string.announcements_site)))
                 startAnnouncementsActivity();
@@ -85,6 +86,12 @@ public class CourseSitesFragment extends Fragment {
     private void startResourcesActivity() {
         Intent i = new Intent(getActivity(), SiteResourcesActivity.class);
         i.putExtra(getString(R.string.site_resources_tag), courseToView.siteId);
+        startActivity(i);
+    }
+
+    private void startSiteGradesActivity() {
+        Intent i = new Intent(getActivity(), SiteGradesActivity.class);
+        i.putExtra(getString(R.string.siteid_tag), courseToView.siteId);
         startActivity(i);
     }
 }

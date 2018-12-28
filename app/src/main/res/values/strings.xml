@@ -59,7 +59,8 @@
     <string name="site_announcements_tag" translatable="false">SITE_ANNOUNCEMENTS</string>
     <string name="siteid_to_course_map" translatable="false">SITEIDTOCOURSE</string>
     <string name="single_announcement_tag" translatable="false">SINGLE_ANNOUNCEMENT</string>
-    <string name="site_resources_tag">SITERESOURCES</string>
+    <string name="site_resources_tag" translatable="false">SITERESOURCES</string>
+    <string name="site_grades_tag" translatable="false">SITEGRADES</string>
 
 
     <string name="no_announcements">There are no announcements available.</string>
