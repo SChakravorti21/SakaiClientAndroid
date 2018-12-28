@@ -26,36 +26,51 @@ public class AnnouncementViewModel extends ViewModel {
 
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
-    // need to have two seperate ones, must observe on all announcements (When refresh all announcements tab)
-    // and must observe on siteIdToAnnouncements when refresh site announcements
-    private MutableLiveData<List<Announcement>> allAnnouncements;
-    private Map<String, MutableLiveData<List<Announcement>>> siteIdToAnnouncements;
-
+    private MutableLiveData<List<Announcement>> announcementsLiveData;
+    // the site ID of the announcements in the live data
+    // if contains all announcements, the siteID will be a blank string
+    // if the live data is empty, siteID will be null
+    private String announcementsSiteId;
 
     @Inject
     AnnouncementViewModel(AnnouncementRepository repo) {
         announcementRepository = repo;
-        siteIdToAnnouncements = new HashMap<>();
     }
 
 
-    public LiveData<List<Announcement>>  getAllAnnouncements(int num) {
-        if(allAnnouncements == null) {
-            allAnnouncements = new MutableLiveData<>();
-            refreshAllAnnouncements(num);
+    public LiveData<List<Announcement>> getAllAnnouncements(int num) {
+        // if the live data is null, initialize it, and try loading data
+        if (announcementsLiveData == null) {
+            announcementsLiveData = new MutableLiveData<>();
+            loadAllAnnouncements(num);
+            announcementsSiteId = "";
+        }
+        // if the stored data is not for all announcements
+        else if(!announcementsSiteId.equals("")) {
+            loadAllAnnouncements(num);
+            announcementsSiteId = "";
         }
 
-        return allAnnouncements;
+        // correct live data
+        return announcementsLiveData;
     }
 
     public LiveData<List<Announcement>> getSiteAnnouncements(String siteId, int num) {
 
-        if(!siteIdToAnnouncements.containsKey(siteId)) {
-            siteIdToAnnouncements.put(siteId, new MutableLiveData<>());
-            refreshSiteData(siteId, num);
+        // if the live data is null, initialize it, and try loading data
+        if (announcementsLiveData == null) {
+            announcementsLiveData = new MutableLiveData<>();
+            loadSiteAnnouncements(siteId, num);
+            announcementsSiteId = siteId;
+        }
+        // if the stored data is not for all announcements
+        else if(!announcementsSiteId.equals(siteId)) {
+            loadAllAnnouncements(num);
+            announcementsSiteId = siteId;
         }
 
-        return siteIdToAnnouncements.get(siteId);
+        // correct live data
+        return announcementsLiveData;
     }
 
 
@@ -63,19 +78,21 @@ public class AnnouncementViewModel extends ViewModel {
      * get all announcements from repository, set the value of allAnnouncements
      * and update the hashmap with all the new announcements
      */
-    private void loadAllAnnouncements() {
+    private void loadAllAnnouncements(int num) {
         compositeDisposable.add(
                 announcementRepository.getAllAnnouncements()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        (announcements) -> {
-                            Log.d("YOLO", "num announcements from db" + announcements.size());
-                            allAnnouncements.setValue(announcements);
-                            updateSiteAnnouncementsMap(announcements);
-                        },
-                        Throwable::printStackTrace
-                )
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                announcements -> {
+                                    // if nothing in DB, refresh
+                                    if (announcements.isEmpty())
+                                        refreshAllAnnouncements(num);
+                                    else
+                                        announcementsLiveData.setValue(announcements);
+                                },
+                                Throwable::printStackTrace
+                        )
         );
     }
 
@@ -83,18 +100,21 @@ public class AnnouncementViewModel extends ViewModel {
      * Refresh all announcements
      */
     public void refreshAllAnnouncements(int num) {
-        Log.d("YOLO", "refreshing " + num);
         compositeDisposable.add(
                 announcementRepository.refreshAllAnnouncements(num)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                this::loadAllAnnouncements,
+                                (announcements) -> {
+                                    if (announcements.size() == 0)
+                                        announcementsLiveData.setValue(null);
+                                    else
+                                        loadAllAnnouncements(num);
+                                },
                                 Throwable::printStackTrace
                         )
         );
     }
-
 
 
     /**
@@ -103,15 +123,18 @@ public class AnnouncementViewModel extends ViewModel {
      *
      * @param siteId siteId to get announcements for
      */
-    private void loadSiteAnnouncements(String siteId) {
+    private void loadSiteAnnouncements(String siteId, int num) {
         compositeDisposable.add(
                 announcementRepository.getSiteAnnouncements(siteId)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                (siteAnnouncements) -> {
-                                    siteIdToAnnouncements.get(siteId).setValue(siteAnnouncements);
-                                    updateAllAnnouncements(siteAnnouncements);
+                                siteAnnouncements -> {
+                                    // if nothing in DB, refresh
+                                    if (siteAnnouncements.isEmpty())
+                                        refreshSiteData(siteId, num);
+                                    else
+                                        announcementsLiveData.setValue(siteAnnouncements);
                                 },
                                 Throwable::printStackTrace
                         )
@@ -120,6 +143,7 @@ public class AnnouncementViewModel extends ViewModel {
 
     /**
      * Refresh all site announcements
+     *
      * @param siteId
      */
     public void refreshSiteData(String siteId, int num) {
@@ -128,64 +152,15 @@ public class AnnouncementViewModel extends ViewModel {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                () -> loadSiteAnnouncements(siteId),
+                                (resources) -> {
+                                    if (resources.size() == 0)
+                                        announcementsLiveData.setValue(null);
+                                    else
+                                        loadSiteAnnouncements(siteId, num);
+                                },
                                 Throwable::printStackTrace
                         )
         );
-    }
-
-
-
-    /**
-     * Takes a list of all announcements and updates the hashmap
-     * which stores siteId -> mutable live data of list of announcements
-     *
-     * @param announcements all announcements list
-     */
-    private void updateSiteAnnouncementsMap(List<Announcement> announcements) {
-
-        Map<String, List<Announcement>> announcementsMap = new HashMap<>();
-        for(Announcement announcement : announcements) {
-
-            String siteId = announcement.siteId;
-            if(!announcementsMap.containsKey(siteId)) {
-                announcementsMap.put(siteId, new ArrayList<>());
-            }
-
-            announcementsMap.get(siteId).add(announcement);
-        }
-
-        // set the updated values
-        for(String siteId : siteIdToAnnouncements.keySet()) {
-            siteIdToAnnouncements.get(siteId).setValue(announcementsMap.get(siteId));
-        }
-    }
-
-
-    /**
-     * In the all announcements list, update all the announcements
-     * that have the same siteId as the newly requested site announcements
-     *
-     * @param siteAnnouncements
-     */
-    private void updateAllAnnouncements(List<Announcement> siteAnnouncements) {
-        if(allAnnouncements == null || allAnnouncements.getValue() == null)
-            return;
-
-        String siteId = siteAnnouncements.get(0).siteId;
-        List<Announcement> allAnnouncementsList = new ArrayList<>();
-
-        // remove all elements with the site id of the new announcements
-        for(Announcement announcement : allAnnouncements.getValue()) {
-            if(!announcement.siteId.equals(siteId))
-                allAnnouncementsList.add(announcement);
-        }
-
-        // add all the new announcements
-        allAnnouncementsList.addAll(siteAnnouncements);
-
-        // set the new value of the mutable live data
-        allAnnouncements.setValue(allAnnouncementsList);
     }
 
 

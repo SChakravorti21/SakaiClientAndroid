@@ -32,12 +32,11 @@ public class AnnouncementRepository {
                 .firstOrError();
     }
 
-    public Completable refreshAllAnnouncements(int num) {
+    public Single<List<Announcement>> refreshAllAnnouncements(int num) {
         return announcementsService
                 .getAllAnnouncements(10000, num)
                 .map(AnnouncementsResponse::getAnnouncements)
-                .map(this::persistAnnouncements)
-                .ignoreElement();
+                .map(this::persistAnnouncements);
     }
 
 
@@ -48,21 +47,19 @@ public class AnnouncementRepository {
                 .firstOrError();
     }
 
-    public Completable refreshSiteAnnouncements(String siteId, int num) {
+    public Single<List<Announcement>> refreshSiteAnnouncements(String siteId, int num) {
         return announcementsService
                 .getAnnouncementsForSite(siteId, 10000, num)
                 .map(AnnouncementsResponse::getAnnouncements)
-                .map(this::persistAnnouncements)
-                .ignoreElement();
+                .map(this::persistAnnouncements);
     }
-
 
 
     static List<Announcement> flattenCompositesToEntities(List<AnnouncementWithAttachments> announcementWithAttachments) {
 
         List<Announcement> announcements = new ArrayList<>(announcementWithAttachments.size());
 
-        for(AnnouncementWithAttachments composite : announcementWithAttachments) {
+        for (AnnouncementWithAttachments composite : announcementWithAttachments) {
             Announcement announcement = composite.announcement;
             announcement.attachments = composite.attachments;
             announcements.add(announcement);
@@ -78,7 +75,7 @@ public class AnnouncementRepository {
         announcementDao.deleteAllAnnouncements();
 
         announcementDao.insert(announcements);
-        for(Announcement announcement : announcements) {
+        for (Announcement announcement : announcements) {
             attachmentDao.insert(announcement.attachments);
         }
 

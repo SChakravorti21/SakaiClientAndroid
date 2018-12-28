@@ -96,7 +96,7 @@ public class ResourceViewModel extends ViewModel {
                         .subscribe(
                                 resources -> {
                                     // if nothing in DB, refresh
-                                    if(resources.size() == 0)
+                                    if(resources.isEmpty())
                                         refreshSiteResources(siteId);
                                     else
                                         resourcesLiveData.setValue(resources);
