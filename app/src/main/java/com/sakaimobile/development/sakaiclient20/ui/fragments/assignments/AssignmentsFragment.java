@@ -154,13 +154,13 @@ public class AssignmentsFragment extends Fragment {
             case R.id.action_sort_by_date: {
                 MainActivity activity = (MainActivity) getActivity();
                 // Sort by date (i.e. do not sort by courses) but don't refresh
-//                activity.loadAssignmentsFragment(false, false);
+                activity.loadAssignmentsFragment(false, false);
                 return true;
             }
             case R.id.action_sort_by_course: {
                 MainActivity activity = (MainActivity) getActivity();
                 // Sort by courses but don't refresh
-//                activity.loadAssignmentsFragment(true, false);
+                activity.loadAssignmentsFragment(true, false);
                 return true;
             }
             default:
@@ -196,9 +196,14 @@ public class AssignmentsFragment extends Fragment {
         // so we just need to loop through them to create the terms with all
         // courses and their assignments
         for(List<Course> courseList : courses) {
+            // If there are no courses in the term, skip it (the Sakai
+            // API shouldn't return a term if there are no courses for it,
+            // so nothing special needs to be done here)
+            if(courseList.size() == 0)
+                continue;
+
             // Get the term name
-            Term courseTerm = (courses.size() > 0) ? courseList.get(0).term : null;
-            String termName = courseTerm.toString();
+            String termName = courseList.get(0).term.toString();
 
             // Create a term header item, and make a tree node using it
             TermHeaderViewHolder.TermHeaderItem termHeaderItem =
@@ -256,10 +261,12 @@ public class AssignmentsFragment extends Fragment {
         // so we just need to loop through them to create the terms with all
         // courses and their assignments
         for(List<Assignment> termAssignments : assignments) {
+            // If no assignments, ignore this term/semester
+            if(termAssignments.size() == 0)
+                continue;
+
             // Get the term name
-            Term courseTerm = (termAssignments.size() > 0) ? termAssignments.get(0).term : null;
-            String termName = (courseTerm != null) ?
-                    courseTerm.getTermString() + " " + courseTerm.getYear() : "General";
+            String termName = termAssignments.get(0).term.toString();
 
             // Create a term header item, and make a tree node using it
             AssignmentTermHeaderViewHolder.TermHeaderItem termHeaderItem =

@@ -64,7 +64,7 @@ public class AssignmentTermHeaderViewHolder
         View view = inflater.inflate(R.layout.term_with_recycler_view, null, false);
 
         // The course name
-        TextView courseView = view.findViewById(R.id.course_name);
+        TextView courseView = view.findViewById(R.id.term_name);
         courseView.setText(value.termName);
 
         // Initialize the RecyclerView with its data

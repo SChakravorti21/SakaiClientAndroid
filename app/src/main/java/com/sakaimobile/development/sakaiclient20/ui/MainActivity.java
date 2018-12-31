@@ -26,6 +26,7 @@ import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.networking.services.UserService;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Announcement;
+import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Grade;
 import com.sakaimobile.development.sakaiclient20.ui.custom_components.CustomLinkMovementMethod;
@@ -37,6 +38,7 @@ import com.sakaimobile.development.sakaiclient20.ui.fragments.CourseSitesFragmen
 import com.sakaimobile.development.sakaiclient20.ui.fragments.SingleAnnouncementFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.SiteGradesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.AssignmentsFragment;
+import com.sakaimobile.development.sakaiclient20.ui.helpers.AssignmentSortingUtils;
 import com.sakaimobile.development.sakaiclient20.ui.helpers.BottomNavigationViewHelper;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.OnFinishedLoadingListener;
@@ -452,8 +454,15 @@ public class MainActivity extends AppCompatActivity
             spinner.setVisibility(View.GONE);
 
             Bundle bundle = new Bundle();
-            bundle.putSerializable(ASSIGNMENTS_TAG, (Serializable) courses);
             bundle.putBoolean(AssignmentsFragment.ASSIGNMENTS_SORTED_BY_COURSES, sortedByCourses);
+
+            if(sortedByCourses) {
+                AssignmentSortingUtils.sortCourseAssignments(courses);
+                bundle.putSerializable(ASSIGNMENTS_TAG, (Serializable) courses);
+            } else {
+                List<List<Assignment>> assignments = AssignmentSortingUtils.sortAssignmentsByTerm(courses);
+                bundle.putSerializable(ASSIGNMENTS_TAG, (Serializable) assignments);
+            }
 
             AssignmentsFragment fragment = new AssignmentsFragment();
             fragment.setArguments(bundle);
