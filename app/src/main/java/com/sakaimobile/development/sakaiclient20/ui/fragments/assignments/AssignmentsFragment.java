@@ -1,19 +1,16 @@
 package com.sakaimobile.development.sakaiclient20.ui.fragments.assignments;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.FrameLayout;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
@@ -21,13 +18,11 @@ import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 import com.sakaimobile.development.sakaiclient20.ui.helpers.AssignmentSortingUtils;
 import com.sakaimobile.development.sakaiclient20.ui.helpers.RutgersSubjectCodes;
-import com.sakaimobile.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.TreeViewItemClickListener;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.AssignmentCourseViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.AssignmentTermHeaderViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.TermHeaderViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.AssignmentViewModel;
-import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
@@ -51,12 +46,6 @@ import dagger.android.support.AndroidSupportInjection;
 public class AssignmentsFragment extends Fragment {
 
     /**
-     * Tag used to indicate whether the assignments should be shown as being sorted
-     * by date or courses.
-     */
-    public static final String ASSIGNMENTS_SORTED_BY_COURSES = "ASSIGNMENTS_SORTED_BY_COURSES";
-
-    /**
      * The {@link AndroidTreeView} that is represented by this
      *  {@link android.support.v4.app.Fragment}.
      */
@@ -65,7 +54,7 @@ public class AssignmentsFragment extends Fragment {
     /**
      * The parent layout for the assignments TreeView.
      */
-    private SwipeRefreshLayout swipeRefreshLayout;
+    private FrameLayout treeContainer;
 
     /**
      * If the {@link android.support.v4.app.Fragment} is specified to show assignments
@@ -87,17 +76,13 @@ public class AssignmentsFragment extends Fragment {
      * Whether the assignments should be shown as being sorted by course. {@code False} if
      * assignments should be sorted by term instead.
      */
-    private boolean sortedByCourses;
-
-    private OnActionPerformedListener actionPerformedListener;
+    private boolean sortedByCourses = true;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // This fragment provides the option to sort assignments by course or date.
         setHasOptionsMenu(true);
-        this.actionPerformedListener = (OnActionPerformedListener) getActivity();
-        this.sortedByCourses = getArguments().getBoolean(ASSIGNMENTS_SORTED_BY_COURSES);
     }
 
     @Nullable
@@ -107,10 +92,7 @@ public class AssignmentsFragment extends Fragment {
 
         // Set up refresh layout to make a new network request and re-instantiate the
         // assignments fragment
-        this.swipeRefreshLayout = view.findViewById(R.id.assignments_container);
-        this.swipeRefreshLayout.setOnRefreshListener(() -> {
-            this.assignmentViewModel.refreshAllData();
-        });
+        this.treeContainer = view.findViewById(R.id.assignments_container);
 
         // View to ultimately be added to the screen
         return view;
@@ -138,10 +120,11 @@ public class AssignmentsFragment extends Fragment {
                 if(this.treeView == null) {
                     // Make the TreeView visible inside the parent layout
                     this.treeView = constructAndroidTreeView(root);
-                    this.swipeRefreshLayout.addView(this.treeView.getView());
+                    this.treeContainer.addView(this.treeView.getView());
                 } else {
+                    this.treeContainer.removeAllViews();
                     this.treeView.setRoot(root);
-                    this.swipeRefreshLayout.setRefreshing(false);
+                    this.treeContainer.addView(this.treeView.getView());
                 }
             }
         );
@@ -176,13 +159,22 @@ public class AssignmentsFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.action_sort_by_date: {
                 // Sort by date (i.e. do not sort by courses) but don't refresh
-                this.actionPerformedListener.loadAssignmentsFragment(false, false);
+                TreeNode root = createTreeFromAssignments();
+                this.treeContainer.removeAllViews();
+                this.treeView.setRoot(root);
+                this.treeContainer.addView(this.treeView.getView());
                 return true;
             }
             case R.id.action_sort_by_course: {
                 // Sort by courses but don't refresh
-                this.actionPerformedListener.loadAssignmentsFragment(true, false);
+                TreeNode root = createTreeFromCourses();
+                this.treeContainer.removeAllViews();
+                this.treeView.setRoot(root);
+                this.treeContainer.addView(this.treeView.getView());
                 return true;
+            }
+            case R.id.action_refresh: {
+                this.assignmentViewModel.refreshAllData();
             }
             default:
                 return super.onOptionsItemSelected(item);
@@ -278,6 +270,9 @@ public class AssignmentsFragment extends Fragment {
      * nothing needs to be returned.
      */
     private TreeNode createTreeFromAssignments() {
+        if(this.assignments == null)
+            this.assignments = AssignmentSortingUtils.sortAssignmentsByTerm(this.courses);
+
         TreeNode root =  TreeNode.root();
         Context currContext = getActivity();
 

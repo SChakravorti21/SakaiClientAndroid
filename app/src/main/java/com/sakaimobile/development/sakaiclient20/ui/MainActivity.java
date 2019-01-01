@@ -204,7 +204,7 @@ public class MainActivity extends AppCompatActivity
                 loadCoursesFragment(false);
                 return true;
             case R.id.navigation_assignments:
-                loadAssignmentsFragment(true, true);
+                loadAssignmentsFragment();
                 return true;
             case R.id.navigation_announcements:
                 loadAnnouncementsFragment();
@@ -429,12 +429,8 @@ public class MainActivity extends AppCompatActivity
     /**
      * Loads all assignments tab
      */
-    public void loadAssignmentsFragment(boolean sortedByCourses, boolean refresh) {
-        Bundle bundle = new Bundle();
-        bundle.putBoolean(AssignmentsFragment.ASSIGNMENTS_SORTED_BY_COURSES, sortedByCourses);
+    public void loadAssignmentsFragment() {
         AssignmentsFragment fragment = new AssignmentsFragment();
-        fragment.setArguments(bundle);
-
         loadFragment(fragment, FRAGMENT_REPLACE, false, false);
     }
 
