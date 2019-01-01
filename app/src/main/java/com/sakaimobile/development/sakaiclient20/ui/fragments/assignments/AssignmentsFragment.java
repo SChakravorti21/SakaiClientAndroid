@@ -1,5 +1,7 @@
 package com.sakaimobile.development.sakaiclient20.ui.fragments.assignments;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,23 +16,27 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.sakaimobile.development.sakaiclient20.R;
-import com.sakaimobile.development.sakaiclient20.models.Term;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
-import com.sakaimobile.development.sakaiclient20.ui.MainActivity;
+import com.sakaimobile.development.sakaiclient20.ui.helpers.AssignmentSortingUtils;
 import com.sakaimobile.development.sakaiclient20.ui.helpers.RutgersSubjectCodes;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.TreeViewItemClickListener;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.AssignmentCourseViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.AssignmentTermHeaderViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.TermHeaderViewHolder;
+import com.sakaimobile.development.sakaiclient20.ui.viewmodels.AssignmentViewModel;
+import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
 import java.util.List;
 
-import static com.sakaimobile.development.sakaiclient20.ui.MainActivity.ASSIGNMENTS_TAG;
+import javax.inject.Inject;
+
+import dagger.android.support.AndroidSupportInjection;
+
 
 /**
  * Created by Shoumyo Chakravorti.
@@ -57,6 +63,11 @@ public class AssignmentsFragment extends Fragment {
     private AndroidTreeView treeView;
 
     /**
+     * The parent layout for the assignments TreeView.
+     */
+    private SwipeRefreshLayout swipeRefreshLayout;
+
+    /**
      * If the {@link android.support.v4.app.Fragment} is specified to show assignments
      * sorted by their courses, this is the non-null list of courses sorted by their terms.
      */
@@ -68,6 +79,9 @@ public class AssignmentsFragment extends Fragment {
      * terms.
      */
     private List<List<Assignment>> assignments;
+
+    @Inject
+    AssignmentViewModel assignmentViewModel;
 
     /**
      * Whether the assignments should be shown as being sorted by course. {@code False} if
@@ -83,25 +97,7 @@ public class AssignmentsFragment extends Fragment {
         // This fragment provides the option to sort assignments by course or date.
         setHasOptionsMenu(true);
         this.actionPerformedListener = (OnActionPerformedListener) getActivity();
-
-        // Using the bundle arguments, construct the tree to be displayed
-        Bundle arguments = getArguments();
-        sortedByCourses = arguments.getBoolean(ASSIGNMENTS_SORTED_BY_COURSES);
-        try {
-            if(sortedByCourses) {
-                courses = (List<List<Course>>) arguments.getSerializable(ASSIGNMENTS_TAG);
-            } else {
-                assignments = (List<List<Assignment>>) arguments.getSerializable(ASSIGNMENTS_TAG);
-            }
-        } catch (ClassCastException exception) {
-            // Unable to create the tree, create a dummy tree
-            treeView = new AndroidTreeView(getActivity(), TreeNode.root());
-
-            Toast errorToast = Toast.makeText(getContext(),
-                    "An error occurred, please try refreshing.",
-                    Toast.LENGTH_SHORT);
-            errorToast.show();
-        }
+        this.sortedByCourses = getArguments().getBoolean(ASSIGNMENTS_SORTED_BY_COURSES);
     }
 
     @Nullable
@@ -109,32 +105,11 @@ public class AssignmentsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_all_assignments, container, false);
 
-        // Construct the tree view based on the current sorting preference
-        TreeNode root = TreeNode.root();
-        if(sortedByCourses) {
-            createTreeViewFromCourses(root);
-        } else {
-            createTreeViewFromAssignments(root);
-        }
-
-        // Initialize the TreeView with the tree structure
-        this.treeView = new AndroidTreeView(getActivity(), root);
-        this.treeView.setDefaultNodeClickListener(new TreeViewItemClickListener(treeView, root));
-
-        // Restore the tree's state from how it was before the user moved away from the
-        // tab the last time, and disable the animation while the state is restored
-        // (otherwise the expansion animation repeating every time the tab is visited gets annoying)
-        this.treeView.setDefaultAnimation(false);
-        String state = SharedPrefsUtil.getTreeState(getContext(), SharedPrefsUtil.ASSIGNMENTS_TREE_TYPE);
-        this.treeView.restoreState(state);
-        this.treeView.setDefaultAnimation(true);
-
         // Set up refresh layout to make a new network request and re-instantiate the
         // assignments fragment
-        SwipeRefreshLayout refreshLayout = view.findViewById(R.id.assignments_container);
-        refreshLayout.addView(this.treeView.getView());
-        refreshLayout.setOnRefreshListener(() -> {
-            this.actionPerformedListener.loadAssignmentsFragment(sortedByCourses, true);
+        this.swipeRefreshLayout = view.findViewById(R.id.assignments_container);
+        this.swipeRefreshLayout.setOnRefreshListener(() -> {
+            this.assignmentViewModel.refreshAllData();
         });
 
         // View to ultimately be added to the screen
@@ -142,31 +117,40 @@ public class AssignmentsFragment extends Fragment {
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.assignments_fragment_menu, menu);
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        this.assignmentViewModel
+            .getCoursesByTerm(true)
+            .observe(this, courses -> {
+                if(this.sortedByCourses) {
+                    AssignmentSortingUtils.sortCourseAssignments(courses);
+                    this.courses = courses;
+                } else {
+                    this.assignments = AssignmentSortingUtils.sortAssignmentsByTerm(courses);
+                }
+
+                // Construct the tree view based on the current sorting preference
+                TreeNode root = this.sortedByCourses
+                        ? createTreeFromCourses()
+                        : createTreeFromAssignments();
+
+                if(this.treeView == null) {
+                    // Make the TreeView visible inside the parent layout
+                    this.treeView = constructAndroidTreeView(root);
+                    this.swipeRefreshLayout.addView(this.treeView.getView());
+                } else {
+                    this.treeView.setRoot(root);
+                    this.swipeRefreshLayout.setRefreshing(false);
+                }
+            }
+        );
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        //TODO implement this
-        switch (item.getItemId()) {
-            case R.id.action_sort_by_date: {
-                MainActivity activity = (MainActivity) getActivity();
-                // Sort by date (i.e. do not sort by courses) but don't refresh
-                activity.loadAssignmentsFragment(false, false);
-                return true;
-            }
-            case R.id.action_sort_by_course: {
-                MainActivity activity = (MainActivity) getActivity();
-                // Sort by courses but don't refresh
-                activity.loadAssignmentsFragment(true, false);
-                return true;
-            }
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-
+    public void onAttach(Context context) {
+        AndroidSupportInjection.inject(this);
+        super.onAttach(context);
     }
 
     /**
@@ -182,14 +166,53 @@ public class AssignmentsFragment extends Fragment {
                 SharedPrefsUtil.ASSIGNMENTS_TREE_TYPE);
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.assignments_fragment_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_sort_by_date: {
+                // Sort by date (i.e. do not sort by courses) but don't refresh
+                this.actionPerformedListener.loadAssignmentsFragment(false, false);
+                return true;
+            }
+            case R.id.action_sort_by_course: {
+                // Sort by courses but don't refresh
+                this.actionPerformedListener.loadAssignmentsFragment(true, false);
+                return true;
+            }
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private AndroidTreeView constructAndroidTreeView(TreeNode root) {
+        // Initialize the TreeView with the tree structure
+        AndroidTreeView treeView = new AndroidTreeView(getActivity(), root);
+        treeView.setDefaultNodeClickListener(new TreeViewItemClickListener(treeView, root));
+
+        // Restore the tree's state from how it was before the user moved away from the
+        // tab the last time, and disable the animation while the state is restored
+        // (otherwise the expansion animation repeating every time the tab is visited gets annoying)
+        treeView.setDefaultAnimation(false);
+        String state = SharedPrefsUtil.getTreeState(getContext(), SharedPrefsUtil.ASSIGNMENTS_TREE_TYPE);
+        treeView.restoreState(state);
+        treeView.setDefaultAnimation(true);
+
+        return treeView;
+    }
+
     /**
      * Constructs the {@link AndroidTreeView} with a Term -> Course -> Assignment hierarchy
      * if the {@link Fragment} is specified to sort by courses. Since the root node is handled
      * by reference, nothing needs to be returned.
      *
-     * @param root The root node for making the tree
      */
-    private void createTreeViewFromCourses(TreeNode root) {
+    private TreeNode createTreeFromCourses() {
+        TreeNode root =  TreeNode.root();
         Context currContext = getActivity();
 
         // The courses as returned by the DataHandler are already sorted by term,
@@ -244,17 +267,18 @@ public class AssignmentsFragment extends Fragment {
             if(termNode.getChildren().size() > 0)
                 root.addChild(termNode);
         }
+
+        return root;
     }
 
     /**
      * Constructs the {@link AndroidTreeView} for assignments sorted within their terms
      * by placing assignments under their respective term header. Similar to
-     * {@code createTreeViewFromCourses}, since the root node is handled by reference,
+     * {@code createTreeFromCourses}, since the root node is handled by reference,
      * nothing needs to be returned.
-     *
-     * @param root The root node for making the tree
      */
-    private void createTreeViewFromAssignments(TreeNode root) {
+    private TreeNode createTreeFromAssignments() {
+        TreeNode root =  TreeNode.root();
         Context currContext = getActivity();
 
         // The courses as returned by the DataHandler are already sorted by term,
@@ -278,5 +302,7 @@ public class AssignmentsFragment extends Fragment {
             // Add the term to the root node
             root.addChild(termNode);
         }
+
+        return root;
     }
 }

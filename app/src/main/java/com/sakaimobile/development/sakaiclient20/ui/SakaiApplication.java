@@ -2,8 +2,10 @@ package com.sakaimobile.development.sakaiclient20.ui;
 
 import android.app.Activity;
 import android.app.Application;
+import android.os.Build;
 
 import com.crashlytics.android.Crashlytics;
+import com.sakaimobile.development.sakaiclient20.BuildConfig;
 import com.sakaimobile.development.sakaiclient20.dependency_injection.DaggerSakaiApplicationComponent;
 
 import javax.inject.Inject;
@@ -21,7 +23,10 @@ public class SakaiApplication extends Application
     @Override
     public void onCreate() {
         super.onCreate();
-        Fabric.with(this, new Crashlytics());
+
+        if(!BuildConfig.DEBUG)
+            Fabric.with(this, new Crashlytics());
+
         DaggerSakaiApplicationComponent.builder()
                 .applicationContext(this)
                 .build()

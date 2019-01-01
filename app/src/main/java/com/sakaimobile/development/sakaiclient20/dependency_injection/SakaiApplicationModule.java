@@ -4,6 +4,7 @@ import com.sakaimobile.development.sakaiclient20.ui.MainActivity;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AllCoursesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AllGradesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AnnouncementsFragment;
+import com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.AssignmentsFragment;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -27,4 +28,7 @@ abstract class SakaiApplicationModule {
 
     @ContributesAndroidInjector
     abstract AllGradesFragment contributesAllGradesFragmentInjector();
+
+    @ContributesAndroidInjector
+    abstract AssignmentsFragment contributesAssignmentsFragmentInjector();
 }

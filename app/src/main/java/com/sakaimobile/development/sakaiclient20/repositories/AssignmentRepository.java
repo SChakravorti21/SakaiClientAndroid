@@ -33,20 +33,6 @@ public class AssignmentRepository {
         this.assignmentsService = service;
     }
 
-    public Single<List<Assignment>> getSiteAssignments(String siteId) {
-        return assignmentDao
-                .getSiteAssignments(siteId)
-                .firstOrError()
-                .map(AssignmentRepository::flattenCompositesToEntities);
-    }
-
-    public Single<List<Assignment>> getAllAssignments() {
-        return assignmentDao
-                .getAllAssignments()
-                .firstOrError()
-                .map(AssignmentRepository::flattenCompositesToEntities);
-    }
-
     public Completable refreshAllAssignments() {
         return assignmentsService
                 .getAllAssignments()

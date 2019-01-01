@@ -135,18 +135,6 @@ public class MainActivity extends AppCompatActivity
         loadCoursesFragment(true);
     }
 
-//    private void logUserInfo() {
-//        userService
-//                .getLoggedInUser()
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(userResponse -> {
-//                    Log.d("LOG", "logging user in crashlytics...");
-//                    Crashlytics.setUserEmail(userResponse.email);
-//                    Crashlytics.setUserName(userResponse.displayName);
-//                });
-//    }
-
     @Override
     public AndroidInjector<Fragment> supportFragmentInjector() {
         return supportFragmentInjector;
@@ -442,38 +430,12 @@ public class MainActivity extends AppCompatActivity
      * Loads all assignments tab
      */
     public void loadAssignmentsFragment(boolean sortedByCourses, boolean refresh) {
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(AssignmentsFragment.ASSIGNMENTS_SORTED_BY_COURSES, sortedByCourses);
+        AssignmentsFragment fragment = new AssignmentsFragment();
+        fragment.setArguments(bundle);
 
-        this.container.setVisibility(View.GONE);
-        this.spinner.setVisibility(View.VISIBLE);
-
-        LiveData<List<List<Course>>> coursesLiveData =
-                ViewModelProviders.of(this, viewModelFactory)
-                        .get(AssignmentViewModel.class)
-                        .getCoursesByTerm(refresh);
-        coursesLiveData.observe(this, courses -> {
-            spinner.setVisibility(View.GONE);
-
-            Bundle bundle = new Bundle();
-            bundle.putBoolean(AssignmentsFragment.ASSIGNMENTS_SORTED_BY_COURSES, sortedByCourses);
-
-            if(sortedByCourses) {
-                AssignmentSortingUtils.sortCourseAssignments(courses);
-                bundle.putSerializable(ASSIGNMENTS_TAG, (Serializable) courses);
-            } else {
-                List<List<Assignment>> assignments = AssignmentSortingUtils.sortAssignmentsByTerm(courses);
-                bundle.putSerializable(ASSIGNMENTS_TAG, (Serializable) assignments);
-            }
-
-            AssignmentsFragment fragment = new AssignmentsFragment();
-            fragment.setArguments(bundle);
-            loadFragment(fragment, FRAGMENT_REPLACE, false, false);
-
-            container.setVisibility(View.VISIBLE);
-            coursesLiveData.removeObservers(this);
-
-            if (refresh)
-                makeToast("Successfully refreshed assignments", Toast.LENGTH_SHORT);
-        });
+        loadFragment(fragment, FRAGMENT_REPLACE, false, false);
     }
 
     /**
