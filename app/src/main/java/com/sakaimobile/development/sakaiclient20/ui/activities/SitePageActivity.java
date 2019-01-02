@@ -10,9 +10,11 @@ import android.widget.Toast;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
+import com.sakaimobile.development.sakaiclient20.persistence.entities.SitePage;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AnnouncementsFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.SiteGradesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.SiteResourcesFragment;
+import com.sakaimobile.development.sakaiclient20.ui.fragments.WebFragment;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -59,7 +61,7 @@ public class SitePageActivity extends AppCompatActivity {
         } else if (siteType.equals(getString(R.string.resources_site))) {
             startSiteResourcesFragment(course);
         } else {
-
+            startWebViewFragment(siteType, course);
         }
     }
 
@@ -97,6 +99,21 @@ public class SitePageActivity extends AppCompatActivity {
         fragment.setArguments(bun);
 
         addFragment(fragment);
+    }
+
+    private void startWebViewFragment(String siteName, Course course) {
+
+        String url = null;
+        for(SitePage page : course.sitePages) {
+            if(page.title.equals(siteName))
+                url = page.url;
+        }
+
+        if(url != null) {
+            WebFragment fragment = WebFragment.newInstance(url);
+            addFragment(fragment);
+        }
+
     }
 
 
