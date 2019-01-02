@@ -207,7 +207,9 @@ public class SiteResourcesFragment extends Fragment {
         getActivity()
                 .getSupportFragmentManager()
                 .beginTransaction()
-                .add(R.id.swiperefresh, fragment)
+                .setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
+                .add(R.id.fragment_container, fragment)
+                .addToBackStack(null)
                 .commit();
     }
 
