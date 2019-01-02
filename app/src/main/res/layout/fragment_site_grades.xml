@@ -5,16 +5,6 @@
     android:orientation="vertical">
 
 
-    <android.support.v7.widget.Toolbar
-        app:titleTextColor="@color/white"
-        app:navigationIcon="?android:attr/homeAsUpIndicator"
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?android:attr/actionBarSize"
-        android:background="@color/colorPrimary"
-        />
-
-
     <android.support.v4.widget.SwipeRefreshLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

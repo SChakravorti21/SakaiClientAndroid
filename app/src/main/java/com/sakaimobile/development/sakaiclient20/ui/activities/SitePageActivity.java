@@ -9,6 +9,7 @@ import android.os.Bundle;
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.SiteGradesFragment;
+import com.sakaimobile.development.sakaiclient20.ui.fragments.SiteResourcesFragment;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -40,7 +41,7 @@ public class SitePageActivity extends AppCompatActivity {
         } else if(siteType.equals(getString(R.string.announcements_site))) {
 
         } else if(siteType.equals(getString(R.string.resources_site))) {
-
+            startSiteResourcesFragment(course);
         } else {
 
         }
@@ -54,6 +55,21 @@ public class SitePageActivity extends AppCompatActivity {
         SiteGradesFragment fragment = new SiteGradesFragment();
         fragment.setArguments(bun);
 
+        addFragment(fragment);
+    }
+
+    private void startSiteResourcesFragment(Course course) {
+        Bundle bun = new Bundle();
+        bun.putString(getString(R.string.siteid_tag), course.siteId);
+
+        SiteResourcesFragment fragment = new SiteResourcesFragment();
+        fragment.setArguments(bun);
+
+        addFragment(fragment);
+    }
+
+
+    private void addFragment(Fragment fragment) {
         getSupportFragmentManager()
                 .beginTransaction()
                 .add(R.id.fragment_container, fragment)

@@ -2,6 +2,7 @@ package com.sakaimobile.development.sakaiclient20.ui.fragments;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -27,6 +28,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import dagger.android.support.AndroidSupportInjection;
+
 public class SiteResourcesFragment extends Fragment {
 
     @Inject
@@ -44,14 +47,15 @@ public class SiteResourcesFragment extends Fragment {
 
 
         Bundle bun = getArguments();
-        currentSiteId = bun.getString(getString(R.string.site_resources_tag));
+        currentSiteId = bun.getString(getString(R.string.siteid_tag));
+
+    }
 
 
-        // set refresh listener
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-                    resourceViewModel.refreshSiteResources(currentSiteId);
-                }
-        );
+    @Override
+    public void onAttach(Context context) {
+        AndroidSupportInjection.inject(this);
+        super.onAttach(context);
     }
 
     @Nullable
@@ -87,6 +91,12 @@ public class SiteResourcesFragment extends Fragment {
             // if this change was detected because of a refresh, just stop refreshing
             swipeRefreshLayout.setRefreshing(false);
         });
+
+        // set refresh listener
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+                    resourceViewModel.refreshSiteResources(currentSiteId);
+                }
+        );
 
         return view;
     }
