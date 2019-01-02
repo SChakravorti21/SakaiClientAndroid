@@ -45,7 +45,7 @@ public class AssignmentViewModel extends BaseViewModel {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                    () -> {
+                    (assignments) -> {
                         throw new NotImplementedException("Need to implement refreshing site assignments");
                     },
                     Throwable::printStackTrace

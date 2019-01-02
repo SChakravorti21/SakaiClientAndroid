@@ -10,6 +10,7 @@ import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 import java.util.List;
 
 import io.reactivex.Flowable;
+import io.reactivex.Single;
 
 /**
  * Created by Development on 8/11/18.
@@ -24,5 +25,8 @@ public abstract class CourseDao implements BaseDao<Course> {
     @Transaction
     @Query("SELECT * FROM courses WHERE siteId = :siteId LIMIT 1")
     public abstract Flowable<CourseWithAllData> getCourse(String siteId);
+
+    @Query("SELECT siteId FROM courses")
+    public abstract Single<List<String>> getAllSiteIds();
 
 }
