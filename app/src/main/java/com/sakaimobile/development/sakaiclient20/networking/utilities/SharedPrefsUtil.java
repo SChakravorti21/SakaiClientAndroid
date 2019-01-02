@@ -20,7 +20,15 @@ public class SharedPrefsUtil {
 
     public static String getTreeState(Context context, String treeType) {
         SharedPreferences sharedPref = context.getSharedPreferences(TREE_SET, Context.MODE_PRIVATE);
-        return sharedPref.getString(treeType, "");
+
+        // We want a default state of "1" (first node is expanded) if the state
+        // is not defined or an empty state is saved. This makes it clear to the user that
+        // our structures are trees and not just links
+        String state = sharedPref.getString(treeType, "1");
+        if(state.length() == 0)
+            state = "1";
+
+        return state;
     }
 
     public static void saveTreeState(Context context, AndroidTreeView tree, String treeType) {
