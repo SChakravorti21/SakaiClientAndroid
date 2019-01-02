@@ -12,13 +12,16 @@ import android.widget.ListView;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
-import com.sakaimobile.development.sakaiclient20.ui.activities.MainActivity;
-import com.sakaimobile.development.sakaiclient20.ui.activities.SiteAnnouncementActivity;
-import com.sakaimobile.development.sakaiclient20.ui.activities.SiteGradesActivity;
-import com.sakaimobile.development.sakaiclient20.ui.activities.SiteResourcesActivity;
+import com.sakaimobile.development.sakaiclient20.ui.activities.SitePageActivity;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
 
 import java.util.HashMap;
+
+import javax.inject.Inject;
+
+import dagger.android.AndroidInjector;
+import dagger.android.DispatchingAndroidInjector;
+import dagger.android.support.HasSupportFragmentInjector;
 
 public class CourseSitesFragment extends Fragment {
 
@@ -52,47 +55,47 @@ public class CourseSitesFragment extends Fragment {
         this.sitePagesListView.setAdapter(adapter);
 
         this.sitePagesListView.setOnItemClickListener((adapterView, view, pos, id) -> {
-            String siteName = (String) sitePagesListView.getItemAtPosition(pos);
+            String siteType = (String) sitePagesListView.getItemAtPosition(pos);
 
-            if (siteName.equals(getString(R.string.gradebook)))
-                startSiteGradesActivity();
+            // start the sitepage activity to handle the appropriate site page
+            Intent i = new Intent(getActivity(), SitePageActivity.class);
+            i.putExtra(getString(R.string.site_type_tag), siteType);
+            i.putExtra(getString(R.string.course_tag), courseToView);
 
-            else if(siteName.equals(getString(R.string.announcements_site)))
-                startAnnouncementsActivity();
+            startActivity(i);
 
-            else if(siteName.equals(getString(R.string.resources_site)))
-                startResourcesActivity();
         });
 
-        // TODO change the hackies
-        MainActivity mainActivity = (MainActivity) getActivity();
-        mainActivity.setActionBarTitle(courseToView.title);
+//        // TODO change the hackies
+//        MainActivity mainActivity = (MainActivity) getActivity();
+//        mainActivity.setActionBarTitle(courseToView.title);
 
 
         return inflated;
     }
 
-    private void startAnnouncementsActivity() {
-        HashMap<String, Course> siteIdToCourse = new HashMap<>();
-        siteIdToCourse.put(courseToView.siteId, courseToView);
 
-        Intent i = new Intent(getActivity(), SiteAnnouncementActivity.class);
-        i.putExtra(getString(R.string.siteid_tag), courseToView.siteId);
-        i.putExtra(getString(R.string.siteid_to_course_map), siteIdToCourse);
-
-        startActivity(i);
-    }
-
-    private void startResourcesActivity() {
-        Intent i = new Intent(getActivity(), SiteResourcesActivity.class);
-        i.putExtra(getString(R.string.site_resources_tag), courseToView.siteId);
-        startActivity(i);
-    }
-
-    private void startSiteGradesActivity() {
-        Intent i = new Intent(getActivity(), SiteGradesActivity.class);
-        i.putExtra(getString(R.string.siteid_tag), courseToView.siteId);
-        startActivity(i);
-    }
+//    private void startAnnouncementsActivity() {
+//        HashMap<String, Course> siteIdToCourse = new HashMap<>();
+//        siteIdToCourse.put(courseToView.siteId, courseToView);
+//
+//        Intent i = new Intent(getActivity(), SiteAnnouncementActivity.class);
+//        i.putExtra(getString(R.string.siteid_tag), courseToView.siteId);
+//        i.putExtra(getString(R.string.siteid_to_course_map), siteIdToCourse);
+//
+//        startActivity(i);
+//    }
+//
+//    private void startResourcesActivity() {
+//        Intent i = new Intent(getActivity(), SiteResourcesActivity.class);
+//        i.putExtra(getString(R.string.site_resources_tag), courseToView.siteId);
+//        startActivity(i);
+//    }
+//
+//    private void startSiteGradesActivity() {
+//        Intent i = new Intent(getActivity(), SiteGradesFragment.class);
+//        i.putExtra(getString(R.string.siteid_tag), courseToView.siteId);
+//        startActivity(i);
+//    }
 }
 

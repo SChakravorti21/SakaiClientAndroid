@@ -1,10 +1,16 @@
-package com.sakaimobile.development.sakaiclient20.ui.activities;
+package com.sakaimobile.development.sakaiclient20.ui.fragments;
 
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Resource;
@@ -12,13 +18,19 @@ import com.sakaimobile.development.sakaiclient20.ui.fragments.WebFragment;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.ResourceDirectoryViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.ResourceItemViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ResourceViewModel;
+import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SiteResourcesActivity extends BaseObservingActivity {
+import javax.inject.Inject;
+
+public class SiteResourcesFragment extends Fragment {
+
+    @Inject
+    ResourceViewModel resourceViewModel;
 
     private String currentSiteId;
 
@@ -26,37 +38,48 @@ public class SiteResourcesActivity extends BaseObservingActivity {
     private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_site_resources);
 
+
+
+        Bundle bun = getArguments();
+        currentSiteId = bun.getString(getString(R.string.site_resources_tag));
+
+
+        // set refresh listener
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+                    resourceViewModel.refreshSiteResources(currentSiteId);
+                }
+        );
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        View view = inflater.inflate(R.layout.fragment_site_resources, null);
 
         // get the parent view container
-        swipeRefreshLayout = findViewById(R.id.swiperefresh);
+        swipeRefreshLayout = view.findViewById(R.id.swiperefresh);
         swipeRefreshLayout.setRefreshing(true);
 
         // setup the treeview
         final TreeNode root = TreeNode.root();
-        resourcesTreeView = new AndroidTreeView(this, root);
+        resourcesTreeView = new AndroidTreeView(getActivity(), root);
         resourcesTreeView.setDefaultAnimation(true);
         swipeRefreshLayout.addView(resourcesTreeView.getView());
 
-
-        // get the siteId of the course to show
-        Intent intent = getIntent();
-        currentSiteId = intent.getStringExtra(getString(R.string.site_resources_tag));
-
-
-        ResourceViewModel resourceViewModel = (ResourceViewModel) getViewModel(ResourceViewModel.class);
-
         // request the resources for the site
-        LiveData<List<Resource>> resourceLiveData = resourceViewModel.getResourcesForSite(currentSiteId);
-        beingObserved.add(resourceLiveData);
+        LiveData<List<Resource>> resourceLiveData =
+                resourceViewModel.getResourcesForSite(currentSiteId);
+
+//        beingObserved.add(resourceLiveData);
 
         // observe on the resources data
         resourceLiveData.observe(this, resources -> {
 
-            setupToolbar(resources);
+//            setupToolbar(resources);
 
             // update the resources tree view
             updateResourcesTreeView(root, resources);
@@ -65,12 +88,7 @@ public class SiteResourcesActivity extends BaseObservingActivity {
             swipeRefreshLayout.setRefreshing(false);
         });
 
-
-        // set refresh listener
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-                    resourceViewModel.refreshSiteResources(currentSiteId);
-                }
-        );
+        return view;
     }
 
     /**
@@ -142,7 +160,7 @@ public class SiteResourcesActivity extends BaseObservingActivity {
         ResourceItemViewHolder.ResourceFileItem fileItem =
                 new ResourceItemViewHolder.ResourceFileItem(resource.title, resource.url);
 
-        TreeNode fileNode = new TreeNode(fileItem).setViewHolder(new ResourceItemViewHolder(this));
+        TreeNode fileNode = new TreeNode(fileItem).setViewHolder(new ResourceItemViewHolder(getActivity()));
 
         fileNode.setClickListener((node, value) -> {
 
@@ -164,7 +182,7 @@ public class SiteResourcesActivity extends BaseObservingActivity {
         ResourceDirectoryViewHolder.ResourceDirectoryItem dirItem =
                 new ResourceDirectoryViewHolder.ResourceDirectoryItem(resource.title);
 
-        return new TreeNode(dirItem).setViewHolder(new ResourceDirectoryViewHolder(this));
+        return new TreeNode(dirItem).setViewHolder(new ResourceDirectoryViewHolder(getActivity()));
     }
 
 
@@ -178,7 +196,8 @@ public class SiteResourcesActivity extends BaseObservingActivity {
     private void downloadFile(ResourceItemViewHolder.ResourceFileItem item) {
         WebFragment fragment = WebFragment.newInstance(item.url);
 
-        getSupportFragmentManager()
+        getActivity()
+                .getSupportFragmentManager()
                 .beginTransaction()
                 .add(R.id.swiperefresh, fragment)
                 .commit();
@@ -216,16 +235,16 @@ public class SiteResourcesActivity extends BaseObservingActivity {
 
 
 
-    private void setupToolbar(List<Resource> resources) {
-        // add the toolbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(v -> SiteResourcesActivity.super.onBackPressed());
-
-        if(resources != null && resources.size() >= 1)
-            toolbar.setTitle(resources.get(0).title);
-        else
-            toolbar.setTitle(getString(R.string.app_name));
-    }
+//    private void setupToolbar(List<Resource> resources) {
+//        // add the toolbar
+//        Toolbar toolbar = findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
+//        toolbar.setNavigationOnClickListener(v -> getActivity().onBackPressed());
+//
+//        if(resources != null && resources.size() >= 1)
+//            toolbar.setTitle(resources.get(0).title);
+//        else
+//            toolbar.setTitle(getString(R.string.app_name));
+//    }
 
 }

@@ -40,12 +40,7 @@
             android:name="io.fabric.ApiKey"
             android:value="ebf2c3e22b5ce9abda48ea296c12d2aebaf2b1c8" />
 
-        <activity android:name=".ui.activities.SiteResourcesActivity" />
-        <activity
-            android:name=".ui.activities.SiteAnnouncementActivity"
-            android:label="@string/title_activity_site_announcement"
-            android:theme="@style/AppTheme" />
-        <activity android:name=".ui.activities.SiteGradesActivity"></activity>
+        <activity android:name=".ui.activities.SitePageActivity"></activity>
     </application>
 
 </manifest>

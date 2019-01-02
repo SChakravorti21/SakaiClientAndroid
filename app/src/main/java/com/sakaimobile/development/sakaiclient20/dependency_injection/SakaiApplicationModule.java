@@ -1,12 +1,12 @@
 package com.sakaimobile.development.sakaiclient20.dependency_injection;
 
 import com.sakaimobile.development.sakaiclient20.ui.activities.MainActivity;
-import com.sakaimobile.development.sakaiclient20.ui.activities.SiteAnnouncementActivity;
-import com.sakaimobile.development.sakaiclient20.ui.activities.SiteGradesActivity;
-import com.sakaimobile.development.sakaiclient20.ui.activities.SiteResourcesActivity;
+import com.sakaimobile.development.sakaiclient20.ui.activities.SitePageActivity;
+import com.sakaimobile.development.sakaiclient20.ui.fragments.SiteGradesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AllCoursesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AllGradesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AnnouncementsFragment;
+import com.sakaimobile.development.sakaiclient20.ui.fragments.SiteResourcesFragment;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -23,13 +23,16 @@ abstract class SakaiApplicationModule {
     abstract MainActivity contributeMainActivityInjector();
 
     @ContributesAndroidInjector
-    abstract SiteResourcesActivity contributeSiteResourcesActivityInjector();
+    abstract SitePageActivity contributeSitePageActivityInjector();
 
     @ContributesAndroidInjector
-    abstract SiteAnnouncementActivity contributesSiteAnnouncementsActivityInjector();
+    abstract SiteResourcesFragment contributeSiteResourcesFragmentInjector();
+
+//    @ContributesAndroidInjector
+//    abstract SiteAnnouncementActivity contributesSiteAnnouncementsActivityInjector();
 
     @ContributesAndroidInjector
-    abstract SiteGradesActivity contributesSiteGradesActivityInjector();
+    abstract SiteGradesFragment contributesSiteGradesFragmentInjector();
 
     @ContributesAndroidInjector
     abstract AllCoursesFragment contributesFragmentInjector();

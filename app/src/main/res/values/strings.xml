@@ -62,6 +62,10 @@
     <string name="site_resources_tag" translatable="false">SITERESOURCES</string>
     <string name="site_grades_tag" translatable="false">SITEGRADES</string>
 
+    <string name="site_type_tag" translatable="false">SITE_TYPE</string>
+    <string name="course_tag" translatable="false">COURSE_TAG</string>
+
+
 
     <string name="no_announcements">There are no announcements available.</string>
     <string name="title_activity_site_announcement">SiteAnnouncementActivity</string>
