@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 7,
-    "identityHash": "effaef3086f564fdb4dbd7e63fe57dfb",
+    "identityHash": "4105de87dc466606d8d900b173dcf8d6",
     "entities": [
       {
         "tableName": "courses",
@@ -121,7 +121,7 @@
       },
       {
         "tableName": "grades",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `siteId` TEXT, `grade` TEXT, `itemName` TEXT, `points` REAL NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `siteId` TEXT, `grade` TEXT, `itemName` TEXT, `points` REAL NOT NULL, FOREIGN KEY(`siteId`) REFERENCES `courses`(`siteId`) ON UPDATE CASCADE ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -170,7 +170,19 @@
             "createSql": "CREATE  INDEX `index_grades_siteId` ON `${TABLE_NAME}` (`siteId`)"
           }
         ],
-        "foreignKeys": []
+        "foreignKeys": [
+          {
+            "table": "courses",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "siteId"
+            ],
+            "referencedColumns": [
+              "siteId"
+            ]
+          }
+        ]
       },
       {
         "tableName": "assignments",
@@ -356,7 +368,7 @@
       },
       {
         "tableName": "announcements",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`announcementId` TEXT NOT NULL, `body` TEXT, `title` TEXT, `siteId` TEXT, `createdBy` TEXT, `createdOn` INTEGER NOT NULL, PRIMARY KEY(`announcementId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`announcementId` TEXT NOT NULL, `body` TEXT, `title` TEXT, `siteId` TEXT, `createdBy` TEXT, `createdOn` INTEGER NOT NULL, PRIMARY KEY(`announcementId`), FOREIGN KEY(`siteId`) REFERENCES `courses`(`siteId`) ON UPDATE CASCADE ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "announcementId",
@@ -419,11 +431,23 @@
             "createSql": "CREATE  INDEX `index_announcements_announcementId` ON `${TABLE_NAME}` (`announcementId`)"
           }
         ],
-        "foreignKeys": []
+        "foreignKeys": [
+          {
+            "table": "courses",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "siteId"
+            ],
+            "referencedColumns": [
+              "siteId"
+            ]
+          }
+        ]
       },
       {
         "tableName": "resources",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`url` TEXT NOT NULL, `title` TEXT, `container` TEXT, `isDirectory` INTEGER NOT NULL, `numChildren` INTEGER NOT NULL, `numDescendants` INTEGER NOT NULL, `type` TEXT, `siteId` TEXT, PRIMARY KEY(`url`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`url` TEXT NOT NULL, `title` TEXT, `container` TEXT, `isDirectory` INTEGER NOT NULL, `numChildren` INTEGER NOT NULL, `numDescendants` INTEGER NOT NULL, `type` TEXT, `siteId` TEXT, PRIMARY KEY(`url`), FOREIGN KEY(`siteId`) REFERENCES `courses`(`siteId`) ON UPDATE CASCADE ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "url",
@@ -480,13 +504,34 @@
           ],
           "autoGenerate": false
         },
-        "indices": [],
-        "foreignKeys": []
+        "indices": [
+          {
+            "name": "index_resources_siteId",
+            "unique": false,
+            "columnNames": [
+              "siteId"
+            ],
+            "createSql": "CREATE  INDEX `index_resources_siteId` ON `${TABLE_NAME}` (`siteId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "courses",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "siteId"
+            ],
+            "referencedColumns": [
+              "siteId"
+            ]
+          }
+        ]
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"effaef3086f564fdb4dbd7e63fe57dfb\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"4105de87dc466606d8d900b173dcf8d6\")"
     ]
   }
 }

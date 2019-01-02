@@ -1,12 +1,20 @@
 package com.sakaimobile.development.sakaiclient20.persistence.entities;
 
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.ForeignKey;
+import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
 import java.io.Serializable;
 
-@Entity(tableName = "resources")
+@Entity(tableName = "resources",
+        foreignKeys = @ForeignKey(entity = Course.class,
+                parentColumns = "siteId",
+                childColumns = "siteId",
+                onDelete = ForeignKey.CASCADE,
+                onUpdate = ForeignKey.CASCADE),
+        indices = @Index(value = "siteId"))
 public class Resource implements Serializable {
 
     // url to download file
