@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +16,10 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.sakaimobile.development.sakaiclient20.R;
+import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Grade;
 import com.sakaimobile.development.sakaiclient20.ui.adapters.GradeItemAdapter;
+import com.sakaimobile.development.sakaiclient20.ui.viewmodels.CourseViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.GradeViewModel;
 
 import java.util.List;
@@ -28,6 +32,9 @@ public class SiteGradesFragment extends Fragment {
 
     @Inject
     GradeViewModel gradeViewModel;
+
+    @Inject
+    CourseViewModel courseViewModel;
 
     private ListView siteGradesListView;
     private String siteId;
@@ -47,8 +54,6 @@ public class SiteGradesFragment extends Fragment {
 
         siteId = getArguments().getString(getString(R.string.siteid_tag));
 
-//        setup the toolbar
-//        setupToolbar(siteId);
     }
 
 
@@ -96,28 +101,4 @@ public class SiteGradesFragment extends Fragment {
         }
     }
 
-//    /**
-//     * Sets up the toolbar, title text, back button, etc.
-//     * @param siteId siteId which is used to get the course title
-//     */
-//    private void setupToolbar(String siteId) {
-//        // add the toolbar
-//        Toolbar toolbar = findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-//        toolbar.setNavigationOnClickListener(v -> SiteGradesFragment.super.onBackPressed());
-//
-//
-//        CourseViewModel courseViewModel = (CourseViewModel) getViewModel(CourseViewModel.class);
-//
-//        // set the toolbar title as the course title
-//        LiveData<Course> courseLiveData = courseViewModel.getCourse(siteId);
-//        beingObserved.add(courseLiveData);
-//
-//        courseLiveData.observe(this, course -> {
-//            if(course != null) {
-//                String title = String.format("%s: %s", getString(R.string.title_gradebook), course.title);
-//                toolbar.setTitle(title);
-//            }
-//        });
-//    }
 }

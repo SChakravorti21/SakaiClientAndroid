@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.widget.Toast;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
@@ -37,6 +39,17 @@ public class SitePageActivity extends AppCompatActivity {
         Intent i = getIntent();
         String siteType = i.getStringExtra(getString(R.string.site_type_tag));
         Course course = (Course) i.getSerializableExtra(getString(R.string.course_tag));
+
+        // setup toolbar
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setNavigationOnClickListener(v -> this.onBackPressed());
+
+
+        // set the toolbar title as siteType + coursename
+        getSupportActionBar().setTitle(String.format("%s: %s", siteType, course.title));
+
+
 
         // load the appropriate fragment for the site type
         if (siteType.equals(getString(R.string.gradebook))) {
