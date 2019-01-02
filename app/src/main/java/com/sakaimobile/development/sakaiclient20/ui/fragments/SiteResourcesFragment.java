@@ -44,8 +44,6 @@ public class SiteResourcesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-
         Bundle bun = getArguments();
         currentSiteId = bun.getString(getString(R.string.siteid_tag));
 

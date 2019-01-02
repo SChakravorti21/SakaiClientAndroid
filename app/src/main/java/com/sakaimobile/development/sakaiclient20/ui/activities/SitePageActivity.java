@@ -8,9 +8,11 @@ import android.os.Bundle;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
+import com.sakaimobile.development.sakaiclient20.ui.fragments.AnnouncementsFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.SiteGradesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.SiteResourcesFragment;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -36,11 +38,12 @@ public class SitePageActivity extends AppCompatActivity {
         String siteType = i.getStringExtra(getString(R.string.site_type_tag));
         Course course = (Course) i.getSerializableExtra(getString(R.string.course_tag));
 
-        if(siteType.equals(getString(R.string.gradebook))) {
+        // load the appropriate fragment for the site type
+        if (siteType.equals(getString(R.string.gradebook))) {
             startSiteGradesFragment(course);
-        } else if(siteType.equals(getString(R.string.announcements_site))) {
-
-        } else if(siteType.equals(getString(R.string.resources_site))) {
+        } else if (siteType.equals(getString(R.string.announcements_site))) {
+            startSiteAnnouncementsFragment(course);
+        } else if (siteType.equals(getString(R.string.resources_site))) {
             startSiteResourcesFragment(course);
         } else {
 
@@ -53,6 +56,21 @@ public class SitePageActivity extends AppCompatActivity {
         bun.putString(getString(R.string.siteid_tag), course.siteId);
 
         SiteGradesFragment fragment = new SiteGradesFragment();
+        fragment.setArguments(bun);
+
+        addFragment(fragment);
+    }
+
+    private void startSiteAnnouncementsFragment(Course course) {
+
+        HashMap<String, Course> siteIdToCourse = new HashMap<>();
+        siteIdToCourse.put(course.siteId, course);
+
+        Bundle bun = new Bundle();
+        bun.putString(getString(R.string.siteid_tag), course.siteId);
+        bun.putSerializable(getString(R.string.siteid_to_course_map), siteIdToCourse);
+
+        AnnouncementsFragment fragment = new AnnouncementsFragment();
         fragment.setArguments(bun);
 
         addFragment(fragment);
@@ -77,7 +95,6 @@ public class SitePageActivity extends AppCompatActivity {
     }
 
 
-
     @Override
     protected void onPause() {
         super.onPause();
@@ -90,8 +107,6 @@ public class SitePageActivity extends AppCompatActivity {
         }
         beingObserved.clear();
     }
-
-
 
 
 }
