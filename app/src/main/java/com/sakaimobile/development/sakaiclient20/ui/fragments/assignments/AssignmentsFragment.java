@@ -120,6 +120,9 @@ public class AssignmentsFragment extends Fragment {
                 if(this.treeView == null) {
                     this.treeView = new AndroidTreeView(getContext());
                     this.treeView.setDefaultAnimation(true);
+
+                    TreeViewItemClickListener nodeClickListener = new TreeViewItemClickListener(this.treeView);
+                    this.treeView.setDefaultNodeClickListener(nodeClickListener);
                 }
 
                 this.renderTree();
@@ -286,9 +289,6 @@ public class AssignmentsFragment extends Fragment {
 
         this.treeContainer.removeAllViews();
         this.treeView.setRoot(root);
-
-        TreeViewItemClickListener nodeClickListener = new TreeViewItemClickListener(this.treeView, root);
-        this.treeView.setDefaultNodeClickListener(nodeClickListener);
 
         String state = this.getTreeState();
         this.treeView.restoreState(state);

@@ -155,7 +155,7 @@ public class AllCoursesFragment extends Fragment {
 
         treeView = new AndroidTreeView(getActivity(), root);
         treeView.setDefaultAnimation(true);
-        treeView.setDefaultNodeClickListener(new TreeViewItemClickListener(treeView, root));
+        treeView.setDefaultNodeClickListener(new TreeViewItemClickListener(treeView));
     }
 
 }
