@@ -13,7 +13,8 @@ public class SharedPrefsUtil {
 
     private static String TREE_SET = "TREE_SET";
     public static String ALL_GRADES_TREE_TYPE = "ALL_GRADES";
-    public static String ASSIGNMENTS_TREE_TYPE = "ASSIGNMENTS";
+    public static String ASSIGNMENTS_BY_COURSES_TREE_TYPE = "ASSIGNMENTS_BY_COURSES";
+    public static String ASSIGNMENTS_BY_TERM_TREE_TYPE = "ASSIGNMENTS_BY_TERM";
     public static String ALL_COURSES_TREE_TYPE = "ALL_COURSES";
 
 
@@ -23,6 +24,9 @@ public class SharedPrefsUtil {
     }
 
     public static void saveTreeState(Context context, AndroidTreeView tree, String treeType) {
+        if(tree == null)
+            return;
+
         SharedPreferences sharedPref = context.getSharedPreferences(TREE_SET, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
 

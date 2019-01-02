@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
@@ -55,6 +56,7 @@ public class AssignmentsFragment extends Fragment {
      * The parent layout for the assignments TreeView.
      */
     private FrameLayout treeContainer;
+    private ProgressBar progressBar;
 
     /**
      * If the {@link android.support.v4.app.Fragment} is specified to show assignments
@@ -93,6 +95,8 @@ public class AssignmentsFragment extends Fragment {
         // Set up refresh layout to make a new network request and re-instantiate the
         // assignments fragment
         this.treeContainer = view.findViewById(R.id.assignments_container);
+        this.progressBar = view.findViewById(R.id.assignments_progressbar);
+        this.progressBar.setIndeterminate(true);
 
         // View to ultimately be added to the screen
         return view;
@@ -105,27 +109,21 @@ public class AssignmentsFragment extends Fragment {
         this.assignmentViewModel
             .getCoursesByTerm(true)
             .observe(this, courses -> {
-                if(this.sortedByCourses) {
+                this.courses = courses;
+                if(this.sortedByCourses)
                     AssignmentSortingUtils.sortCourseAssignments(courses);
-                    this.courses = courses;
-                } else {
+                else
                     this.assignments = AssignmentSortingUtils.sortAssignmentsByTerm(courses);
-                }
 
-                // Construct the tree view based on the current sorting preference
-                TreeNode root = this.sortedByCourses
-                        ? createTreeFromCourses()
-                        : createTreeFromAssignments();
-
+                // Construct the tree view based on th
+                // Make the TreeView visible inside the parent layout
                 if(this.treeView == null) {
-                    // Make the TreeView visible inside the parent layout
-                    this.treeView = constructAndroidTreeView(root);
-                    this.treeContainer.addView(this.treeView.getView());
-                } else {
-                    this.treeContainer.removeAllViews();
-                    this.treeView.setRoot(root);
-                    this.treeContainer.addView(this.treeView.getView());
+                    this.treeView = new AndroidTreeView(getContext());
+                    this.treeView.setDefaultAnimation(true);
                 }
+
+                this.renderTree();
+                this.progressBar.setVisibility(View.GONE);
             }
         );
     }
@@ -144,9 +142,7 @@ public class AssignmentsFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        SharedPrefsUtil.saveTreeState(getContext(),
-                treeView,
-                SharedPrefsUtil.ASSIGNMENTS_TREE_TYPE);
+        this.saveTreeState();
     }
 
     @Override
@@ -158,43 +154,28 @@ public class AssignmentsFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_sort_by_date: {
-                // Sort by date (i.e. do not sort by courses) but don't refresh
-                TreeNode root = createTreeFromAssignments();
-                this.treeContainer.removeAllViews();
-                this.treeView.setRoot(root);
-                this.treeContainer.addView(this.treeView.getView());
-                return true;
+                // Nothing to do if tree view is already sorted by date
+                if(!sortedByCourses) return true;
+                break;
             }
             case R.id.action_sort_by_course: {
-                // Sort by courses but don't refresh
-                TreeNode root = createTreeFromCourses();
-                this.treeContainer.removeAllViews();
-                this.treeView.setRoot(root);
-                this.treeContainer.addView(this.treeView.getView());
-                return true;
+                if(sortedByCourses) return true;
+                break;
             }
             case R.id.action_refresh: {
+                this.progressBar.setVisibility(View.VISIBLE);
+                this.saveTreeState();
                 this.assignmentViewModel.refreshAllData();
+                return true;
             }
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
 
-    private AndroidTreeView constructAndroidTreeView(TreeNode root) {
-        // Initialize the TreeView with the tree structure
-        AndroidTreeView treeView = new AndroidTreeView(getActivity(), root);
-        treeView.setDefaultNodeClickListener(new TreeViewItemClickListener(treeView, root));
-
-        // Restore the tree's state from how it was before the user moved away from the
-        // tab the last time, and disable the animation while the state is restored
-        // (otherwise the expansion animation repeating every time the tab is visited gets annoying)
-        treeView.setDefaultAnimation(false);
-        String state = SharedPrefsUtil.getTreeState(getContext(), SharedPrefsUtil.ASSIGNMENTS_TREE_TYPE);
-        treeView.restoreState(state);
-        treeView.setDefaultAnimation(true);
-
-        return treeView;
+        this.saveTreeState();
+        sortedByCourses = !sortedByCourses;
+        this.renderTree();
+        return true;
     }
 
     /**
@@ -231,21 +212,18 @@ public class AssignmentsFragment extends Fragment {
             // assignments
             for(Course course : courseList) {
                 //SKIP THE COURSE IF IT DOESN'T HAVE ANY ASSIGNMENTS
-                if(course.assignments.size() == 0) {
+                if(course.assignments.size() == 0)
                     continue;
-                }
-
-                // Get the course name for the view
-                String courseName = course.title;
 
                 // Create a course header item, and make a tree node using it
-                String courseIconCode = RutgersSubjectCodes.mapCourseCodeToIcon
-                        .get(course.subjectCode);
+                String courseIconCode =
+                        RutgersSubjectCodes.mapCourseCodeToIcon.get(course.subjectCode);
                 AssignmentCourseViewHolder.CourseHeaderItem courseHeaderItem =
                         new AssignmentCourseViewHolder.CourseHeaderItem(
-                                courseName,
+                                course.title,
                                 courseIconCode,
-                                course.assignments);
+                                course.assignments
+                        );
 
                 TreeNode courseNode = new TreeNode(courseHeaderItem);
                 // Set the course header view holder to inflate the appropriate view
@@ -299,5 +277,41 @@ public class AssignmentsFragment extends Fragment {
         }
 
         return root;
+    }
+
+    private void renderTree() {
+        TreeNode root = this.sortedByCourses
+                ? createTreeFromCourses()
+                : createTreeFromAssignments();
+
+        this.treeContainer.removeAllViews();
+        this.treeView.setRoot(root);
+
+        TreeViewItemClickListener nodeClickListener = new TreeViewItemClickListener(this.treeView, root);
+        this.treeView.setDefaultNodeClickListener(nodeClickListener);
+
+        String state = this.getTreeState();
+        this.treeView.restoreState(state);
+
+        this.treeContainer.addView(this.treeView.getView());
+    }
+
+    private void saveTreeState() {
+        SharedPrefsUtil.saveTreeState(
+                getContext(),
+                this.treeView,
+                sortedByCourses
+                        ? SharedPrefsUtil.ASSIGNMENTS_BY_COURSES_TREE_TYPE
+                        : SharedPrefsUtil.ASSIGNMENTS_BY_TERM_TREE_TYPE
+        );
+    }
+
+    private String getTreeState() {
+        return SharedPrefsUtil.getTreeState(
+                getContext(),
+                sortedByCourses
+                        ? SharedPrefsUtil.ASSIGNMENTS_BY_COURSES_TREE_TYPE
+                        : SharedPrefsUtil.ASSIGNMENTS_BY_TERM_TREE_TYPE
+        );
     }
 }
