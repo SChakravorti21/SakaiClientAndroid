@@ -2,11 +2,10 @@ package com.sakaimobile.development.sakaiclient20.ui.activities;
 
 import android.arch.lifecycle.LiveData;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.widget.Toast;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
@@ -20,11 +19,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.inject.Inject;
-
-import dagger.android.AndroidInjector;
-import dagger.android.DispatchingAndroidInjector;
-import dagger.android.support.HasSupportFragmentInjector;
 
 public class SitePageActivity extends AppCompatActivity {
 
