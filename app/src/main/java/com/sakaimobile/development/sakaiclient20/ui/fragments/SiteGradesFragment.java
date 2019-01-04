@@ -2,21 +2,20 @@ package com.sakaimobile.development.sakaiclient20.ui.fragments;
 
 import android.arch.lifecycle.LiveData;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.sakaimobile.development.sakaiclient20.R;
-import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Grade;
 import com.sakaimobile.development.sakaiclient20.ui.adapters.GradeItemAdapter;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.CourseViewModel;
@@ -39,8 +38,7 @@ public class SiteGradesFragment extends Fragment {
     private ListView siteGradesListView;
     private String siteId;
 
-    private SwipeRefreshLayout swipeRefreshLayout;
-
+    private ProgressBar spinner;
 
     @Override
     public void onAttach(Context context) {
@@ -49,11 +47,28 @@ public class SiteGradesFragment extends Fragment {
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.sitepage_fragment_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.action_refresh:
+                gradeViewModel.refreshSiteData(siteId);
+                spinner.setVisibility(View.VISIBLE);
+                siteGradesListView.setVisibility(View.GONE);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        setHasOptionsMenu(true);
         siteId = getArguments().getString(getString(R.string.siteid_tag));
-
     }
 
 
@@ -62,26 +77,20 @@ public class SiteGradesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_site_grades, null);
 
-        swipeRefreshLayout = view.findViewById(R.id.swiperefresh);
-        swipeRefreshLayout.setRefreshing(true);
+        spinner = view.findViewById(R.id.progress_circular);
+        spinner.setVisibility(View.VISIBLE);
 
         siteGradesListView = view.findViewById(R.id.site_grades_list_view);
 
 
         // get the live data
         LiveData<List<Grade>> gradeLiveData = gradeViewModel.getSiteGrades(siteId);
-//        beingObserved.add(gradeLiveData);
 
         gradeLiveData.observe(this, grades -> {
             feedGradesIntoListView(grades);
-
-            swipeRefreshLayout.setRefreshing(false);
+            spinner.setVisibility(View.GONE);
+            siteGradesListView.setVisibility(View.VISIBLE);
         });
-
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            gradeViewModel.refreshSiteData(siteId);
-        });
-
 
         return view;
     }

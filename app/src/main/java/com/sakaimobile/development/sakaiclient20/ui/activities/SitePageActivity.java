@@ -1,6 +1,5 @@
 package com.sakaimobile.development.sakaiclient20.ui.activities;
 
-import android.arch.lifecycle.LiveData;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -16,21 +15,14 @@ import com.sakaimobile.development.sakaiclient20.ui.fragments.SiteResourcesFragm
 import com.sakaimobile.development.sakaiclient20.ui.fragments.WebFragment;
 
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-
 
 public class SitePageActivity extends AppCompatActivity {
 
-
-    protected Set<LiveData> beingObserved;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_site_page);
-
-        beingObserved = new HashSet<>();
 
         Intent i = getIntent();
         String siteType = i.getStringExtra(getString(R.string.site_type_tag));
@@ -116,20 +108,6 @@ public class SitePageActivity extends AppCompatActivity {
                 .beginTransaction()
                 .add(R.id.fragment_container, fragment)
                 .commit();
-    }
-
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        removeObservations();
-    }
-
-    protected void removeObservations() {
-        for (LiveData liveData : beingObserved) {
-            liveData.removeObservers(this);
-        }
-        beingObserved.clear();
     }
 
 

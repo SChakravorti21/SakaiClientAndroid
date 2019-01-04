@@ -71,12 +71,8 @@ public class SiteResourcesFragment extends Fragment {
         LiveData<List<Resource>> resourceLiveData =
                 resourceViewModel.getResourcesForSite(currentSiteId);
 
-//        beingObserved.add(resourceLiveData);
-
         // observe on the resources data
         resourceLiveData.observe(this, resources -> {
-
-//            setupToolbar(resources);
 
             // update the resources tree view
             updateResourcesTreeView(root, resources);
