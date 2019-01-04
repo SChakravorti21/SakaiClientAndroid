@@ -3,7 +3,6 @@ package com.sakaimobile.development.sakaiclient20.ui;
 import android.app.DownloadManager;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,15 +12,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.networking.services.UserService;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
@@ -37,7 +33,6 @@ import com.sakaimobile.development.sakaiclient20.ui.fragments.CourseSitesFragmen
 import com.sakaimobile.development.sakaiclient20.ui.fragments.SettingsFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.SingleAnnouncementFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.SiteGradesFragment;
-import com.sakaimobile.development.sakaiclient20.ui.fragments.UserPreferencesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.AssignmentsFragment;
 import com.sakaimobile.development.sakaiclient20.ui.helpers.BottomNavigationViewHelper;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
@@ -61,8 +56,6 @@ import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.HasSupportFragmentInjector;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 
 import static com.sakaimobile.development.sakaiclient20.ui.fragments.AnnouncementsFragment.NUM_ANNOUNCEMENTS_DEFAULT;
 
@@ -100,6 +93,7 @@ public class MainActivity extends AppCompatActivity
 
 
     private Fragment displayingFragment;
+    DownloadCompleteReceiver downloadReceiver;
 
     /******************************\
      LIFECYCLE/INTERFACE METHODS
@@ -110,7 +104,6 @@ public class MainActivity extends AppCompatActivity
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        registerDownloadReceiver();
 
         // Get reference to the container
         this.container = findViewById(R.id.fragment_container);
@@ -155,12 +148,14 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+        registerDownloadReceiver();
         CustomLinkMovementMethod.setFragmentManager(getSupportFragmentManager());
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        unregisterReceiver(downloadReceiver);
         removeObservations();
     }
 
@@ -328,8 +323,8 @@ public class MainActivity extends AppCompatActivity
 
     public void registerDownloadReceiver() {
         IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
-        DownloadCompleteReceiver receiver = new DownloadCompleteReceiver();
-        registerReceiver(receiver, filter);
+        this.downloadReceiver = new DownloadCompleteReceiver();
+        registerReceiver(downloadReceiver, filter);
     }
 
     private void removeObservations() {
