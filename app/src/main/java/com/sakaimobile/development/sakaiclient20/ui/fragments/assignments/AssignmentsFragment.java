@@ -18,7 +18,7 @@ import com.sakaimobile.development.sakaiclient20.models.Term;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
-import com.sakaimobile.development.sakaiclient20.ui.MainActivity;
+import com.sakaimobile.development.sakaiclient20.ui.activities.MainActivity;
 import com.sakaimobile.development.sakaiclient20.ui.helpers.RutgersSubjectCodes;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.TreeViewItemClickListener;
@@ -30,7 +30,7 @@ import com.unnamed.b.atv.view.AndroidTreeView;
 
 import java.util.List;
 
-import static com.sakaimobile.development.sakaiclient20.ui.MainActivity.ASSIGNMENTS_TAG;
+import static com.sakaimobile.development.sakaiclient20.ui.activities.MainActivity.ASSIGNMENTS_TAG;
 
 /**
  * Created by Shoumyo Chakravorti.

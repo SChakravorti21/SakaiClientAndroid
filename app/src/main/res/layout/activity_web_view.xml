@@ -4,11 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.sakaimobile.development.sakaiclient20.ui.WebViewActivity">
+    tools:context="com.sakaimobile.development.sakaiclient20.ui.activities.WebViewActivity">
 
 
     <android.support.v7.widget.Toolbar
+        android:background="@color/colorPrimary"
         android:id="@+id/webview_toolbar"
+        app:titleTextColor="@color/white"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:text="@string/app_name"

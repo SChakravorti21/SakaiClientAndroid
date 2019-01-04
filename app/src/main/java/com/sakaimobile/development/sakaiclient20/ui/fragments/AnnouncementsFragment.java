@@ -24,23 +24,23 @@ import com.sakaimobile.development.sakaiclient20.persistence.entities.Announceme
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 import com.sakaimobile.development.sakaiclient20.ui.adapters.AnnouncementsAdapter;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.LoadMoreListener;
-import com.sakaimobile.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
-import com.sakaimobile.development.sakaiclient20.ui.listeners.OnFinishedLoadingListener;
+import com.sakaimobile.development.sakaiclient20.ui.listeners.OnAnnouncementSelected;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.AnnouncementViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
 
-public class AnnouncementsFragment extends Fragment {
+public class AnnouncementsFragment extends Fragment implements OnAnnouncementSelected {
 
     @Inject
-    ViewModelFactory viewModelFactory;
+    AnnouncementViewModel announcementViewModel;
 
     public static final int NUM_ANNOUNCEMENTS_DEFAULT = 10;
 
@@ -68,16 +68,10 @@ public class AnnouncementsFragment extends Fragment {
 
     private static final int ANNOUNCEMENTS_TO_GET_PER_REQUEST = 10;
 
-    // listener for clicking on an announcement
-    private OnActionPerformedListener onActionPerformedListener;
-    private OnFinishedLoadingListener onFinishedLoadingListener;
-
     private SwipeRefreshLayout swipeRefreshLayout;
 
     LiveData<List<Announcement>> liveData;
 
-    // TODO remove
-    String siteIdIfSiteAnnouncements;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -85,26 +79,22 @@ public class AnnouncementsFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         Bundle bun = getArguments();
-        siteIdIfSiteAnnouncements = bun.getString(getString(R.string.siteid_tag));
-        announcementType = siteIdIfSiteAnnouncements == null ? ALL_ANNOUNCEMENTS : SITE_ANNOUNCEMENTS;
+        String siteId = bun.getString(getString(R.string.siteid_tag));
+        announcementType = (siteId == null) ? ALL_ANNOUNCEMENTS : SITE_ANNOUNCEMENTS;
         siteIdToCourseMap = (HashMap) bun.getSerializable(getString(R.string.siteid_to_course_map));
         allAnnouncements = new ArrayList<>();
 
 
-        if (siteIdIfSiteAnnouncements == null) {
+        if (announcementType == ALL_ANNOUNCEMENTS) {
             loadMoreListener = new LoadsAllAnnouncements();
-            liveData = ViewModelProviders.of(getActivity(), viewModelFactory)
-                    .get(AnnouncementViewModel.class)
+            liveData = announcementViewModel
                     .getAllAnnouncements(NUM_ANNOUNCEMENTS_DEFAULT);
 
         } else {
             loadMoreListener = new LoadsSiteAnnouncements();
-
-            liveData = ViewModelProviders.of(getActivity(), viewModelFactory)
-                    .get(AnnouncementViewModel.class)
-                    .getSiteAnnouncements(siteIdIfSiteAnnouncements, NUM_ANNOUNCEMENTS_DEFAULT);
+            liveData = announcementViewModel
+                    .getSiteAnnouncements(siteId, NUM_ANNOUNCEMENTS_DEFAULT);
         }
-
 
 
     }
@@ -121,23 +111,13 @@ public class AnnouncementsFragment extends Fragment {
         announcementRecycler.setItemAnimator(new DefaultItemAnimator());
 
         swipeRefreshLayout = view.findViewById(R.id.swiperefresh);
-
+        swipeRefreshLayout.setRefreshing(true);
 
         createAdapter();
-
 
         liveData.observe(getActivity(), announcements -> {
 
             addNewAnnouncementsToAdapter(announcements);
-
-            // notify the activity that the announcements are finished loading
-            if(announcementType == ALL_ANNOUNCEMENTS)
-                onFinishedLoadingListener.onFinishedLoadingAllAnnouncements();
-            else {
-                // TODO change this its so hacky
-                String courseName = siteIdToCourseMap.get(siteIdIfSiteAnnouncements).title;
-                onFinishedLoadingListener.onFinishedLoadingSiteAnnouncements(courseName);
-            }
             swipeRefreshLayout.setRefreshing(false);
         });
 
@@ -153,7 +133,7 @@ public class AnnouncementsFragment extends Fragment {
                 siteIdToCourseMap,
                 announcementType
         );
-        adapter.setClickListener(onActionPerformedListener);
+        adapter.setClickListener(this);
         adapter.setLoadMoreListener(loadMoreListener);
 
         announcementRecycler.setAdapter(adapter);
@@ -236,18 +216,13 @@ public class AnnouncementsFragment extends Fragment {
             // we want
             int numAnnouncementsToRequest = allAnnouncements.size() - 1 + ANNOUNCEMENTS_TO_GET_PER_REQUEST;
 
-            ViewModelProviders.of(getActivity(), viewModelFactory)
-                    .get(AnnouncementViewModel.class)
-                    .refreshAllAnnouncements(numAnnouncementsToRequest);
+            announcementViewModel.refreshAllAnnouncements(numAnnouncementsToRequest);
 
         }
 
         @Override
         public void refresh() {
-
-            ViewModelProviders.of(getActivity(), viewModelFactory)
-                    .get(AnnouncementViewModel.class)
-                    .refreshAllAnnouncements(NUM_ANNOUNCEMENTS_DEFAULT);
+            announcementViewModel.refreshAllAnnouncements(NUM_ANNOUNCEMENTS_DEFAULT);
         }
 
 
@@ -285,9 +260,7 @@ public class AnnouncementsFragment extends Fragment {
 
             String siteId = allAnnouncements.get(0).siteId;
 
-            ViewModelProviders.of(getActivity(), viewModelFactory)
-                    .get(AnnouncementViewModel.class)
-                    .refreshSiteData(siteId, numAnnouncementsToRequest);
+            announcementViewModel.refreshSiteData(siteId, numAnnouncementsToRequest);
 
         }
 
@@ -297,9 +270,7 @@ public class AnnouncementsFragment extends Fragment {
 
             String siteId = allAnnouncements.get(0).siteId;
 
-            ViewModelProviders.of(getActivity(), viewModelFactory)
-                    .get(AnnouncementViewModel.class)
-                    .refreshSiteData(siteId, NUM_ANNOUNCEMENTS_DEFAULT);
+            announcementViewModel.refreshSiteData(siteId, NUM_ANNOUNCEMENTS_DEFAULT);
         }
 
     }
@@ -309,39 +280,27 @@ public class AnnouncementsFragment extends Fragment {
     public void onAttach(Context context) {
         AndroidSupportInjection.inject(this);
         super.onAttach(context);
-
-        if (context instanceof Activity) {
-            Activity activity = getActivity(context);
-
-            try {
-                onActionPerformedListener = (OnActionPerformedListener) activity;
-            } catch (ClassCastException e) {
-                throw new ClassCastException(activity.toString() + " must implement OnActionPerformedListener");
-            }
-
-            try {
-                onFinishedLoadingListener = (OnFinishedLoadingListener) activity;
-            } catch (ClassCastException e) {
-                throw new ClassCastException(activity.toString() + " must implement OnFinishedLoadingListener");
-            }
-        }
     }
 
-    public Activity getActivity(Context context) {
-        if (context == null) {
-            return null;
-        } else if (context instanceof ContextWrapper) {
-            if (context instanceof Activity) {
-                return (Activity) context;
-            } else {
-                return getActivity(((ContextWrapper) context).getBaseContext());
-            }
-        }
+    @Override
+    public void onAnnouncementSelected(Announcement announcement, Map<String, Course> siteIdToCourse) {
+        Bundle b = new Bundle();
+        b.putSerializable(getString(R.string.single_announcement_tag), announcement);
+        // for some reason map isn't serializable, so i had to cast to hashmap
+        b.putSerializable(getString(R.string.siteid_to_course_map), (HashMap) siteIdToCourse);
 
-        return null;
+        SingleAnnouncementFragment fragment = new SingleAnnouncementFragment();
+        fragment.setArguments(b);
+
+        // load fragment
+        getActivity()
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .setCustomAnimations(R.anim.grow_enter, R.anim.pop_exit, R.anim.pop_enter, R.anim.pop_exit)
+                .addToBackStack(null)
+                .add(R.id.fragment_container, fragment)
+                .commit();
     }
-
-
 }
 
 

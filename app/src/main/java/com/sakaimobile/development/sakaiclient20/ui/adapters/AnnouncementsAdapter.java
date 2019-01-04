@@ -17,6 +17,7 @@ import com.sakaimobile.development.sakaiclient20.ui.fragments.AnnouncementsFragm
 import com.sakaimobile.development.sakaiclient20.ui.helpers.RutgersSubjectCodes;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.LoadMoreListener;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
+import com.sakaimobile.development.sakaiclient20.ui.listeners.OnAnnouncementSelected;
 
 import java.util.HashMap;
 import java.util.List;
@@ -42,7 +43,7 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<RecyclerView.View
     // mapping siteIdToCourse, needed to get subject code and course title
     private HashMap<String, Course> siteIdToCourse;
     // click listener for each announcement card
-    private OnActionPerformedListener announcementclickListener;
+    private OnAnnouncementSelected announcementclickListener;
 
     // number of total announcements displaying
     private int numItems;
@@ -227,7 +228,7 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<RecyclerView.View
     }
 
 
-    public void setClickListener(OnActionPerformedListener announcementclickListener) {
+    public void setClickListener(OnAnnouncementSelected announcementclickListener) {
         this.announcementclickListener = announcementclickListener;
     }
 

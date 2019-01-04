@@ -59,13 +59,8 @@ public class GradeRepository {
         // all of the grades in the given list are of the same course (Same siteId)
         String siteId = grades.get(0).siteId;
 
-        // TODO figure out better way of converting to array
-        Grade[] gradesArray = new Grade[grades.size()];
-        for(int i = 0; i < grades.size(); i++) {
-            gradesArray[i] = grades.get(i);
-        }
         // insert the grades
-        gradeDao.insertGradesForSite(siteId, gradesArray);
+        gradeDao.insertGradesForSite(siteId, grades.toArray(new Grade[0]));
 
         return grades;
     }
