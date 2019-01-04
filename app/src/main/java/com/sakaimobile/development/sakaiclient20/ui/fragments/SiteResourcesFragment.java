@@ -5,12 +5,17 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 
 import com.sakaimobile.development.sakaiclient20.R;
+import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Resource;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.ResourceDirectoryViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.ResourceItemViewHolder;
@@ -29,19 +34,37 @@ public class SiteResourcesFragment extends Fragment {
 
     @Inject
     ResourceViewModel resourceViewModel;
-
     private String currentSiteId;
-
     private AndroidTreeView resourcesTreeView;
-    private SwipeRefreshLayout swipeRefreshLayout;
+    private View viewOfTree;
+    private ProgressBar spinner;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
 
         Bundle bun = getArguments();
         currentSiteId = bun.getString(getString(R.string.siteid_tag));
+    }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.sitepage_fragment_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.action_refresh:
+                resourceViewModel.refreshSiteResources(currentSiteId);
+                spinner.setVisibility(View.VISIBLE);
+                viewOfTree.setVisibility(View.GONE);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
 
@@ -51,21 +74,33 @@ public class SiteResourcesFragment extends Fragment {
         super.onAttach(context);
     }
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        saveResourceTreeState();
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_site_resources, null);
 
+        spinner = view.findViewById(R.id.progress_circular);
+        spinner.setVisibility(View.VISIBLE);
+
         // get the parent view container
-        swipeRefreshLayout = view.findViewById(R.id.swiperefresh);
-        swipeRefreshLayout.setRefreshing(true);
+        FrameLayout frameLayout = view.findViewById(R.id.container);
 
         // setup the treeview
         final TreeNode root = TreeNode.root();
         resourcesTreeView = new AndroidTreeView(getActivity(), root);
         resourcesTreeView.setDefaultAnimation(true);
-        swipeRefreshLayout.addView(resourcesTreeView.getView());
+
+        restoreResourceTreeState();
+
+        viewOfTree = resourcesTreeView.getView();
+        frameLayout.addView(viewOfTree);
 
         // request the resources for the site
         LiveData<List<Resource>> resourceLiveData =
@@ -77,15 +112,9 @@ public class SiteResourcesFragment extends Fragment {
             // update the resources tree view
             updateResourcesTreeView(root, resources);
 
-            // if this change was detected because of a refresh, just stop refreshing
-            swipeRefreshLayout.setRefreshing(false);
+            viewOfTree.setVisibility(View.VISIBLE);
+            spinner.setVisibility(View.GONE);
         });
-
-        // set refresh listener
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-                    resourceViewModel.refreshSiteResources(currentSiteId);
-                }
-        );
 
         return view;
     }
@@ -235,5 +264,13 @@ public class SiteResourcesFragment extends Fragment {
     }
 
 
+    private void saveResourceTreeState() {
+        SharedPrefsUtil.saveTreeState(getActivity(), resourcesTreeView, SharedPrefsUtil.SITE_RESOURCES_TREE_TYPE);
+    }
+
+    private void restoreResourceTreeState() {
+        String state = SharedPrefsUtil.getTreeState(getContext(), SharedPrefsUtil.SITE_RESOURCES_TREE_TYPE);
+        resourcesTreeView.restoreState(state);
+    }
 
 }

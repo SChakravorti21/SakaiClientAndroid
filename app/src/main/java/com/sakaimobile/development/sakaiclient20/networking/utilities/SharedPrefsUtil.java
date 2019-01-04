@@ -15,6 +15,7 @@ public class SharedPrefsUtil {
     public static String ALL_GRADES_TREE_TYPE = "ALL_GRADES";
     public static String ASSIGNMENTS_TREE_TYPE = "ASSIGNMENTS";
     public static String ALL_COURSES_TREE_TYPE = "ALL_COURSES";
+    public static String SITE_RESOURCES_TREE_TYPE = "SITE_RESOURCES";
 
 
     public static String getTreeState(Context context, String treeType) {
