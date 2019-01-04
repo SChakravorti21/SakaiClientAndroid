@@ -36,6 +36,7 @@ public class CASWebViewClient extends WebViewClient {
     // Sakai
     private OkHttpClient httpClient;
     // Keeping track of relevant headers
+    private Headers savedHeaders;
     private boolean gotHeaders;
 
     public CASWebViewClient(String url, SakaiLoadedListener loadedListener) {
@@ -43,6 +44,7 @@ public class CASWebViewClient extends WebViewClient {
 
         cookieUrl = url;
         sakaiLoadedListener = loadedListener;
+        savedHeaders = null;
 
         httpClient = new OkHttpClient();
         gotHeaders = false;
@@ -50,6 +52,7 @@ public class CASWebViewClient extends WebViewClient {
         // Make sure that the CookieManager accepts all cookies
         cookieManager = CookieManager.getInstance();
         cookieManager.setAcceptCookie(true);
+        cookieManager.removeSessionCookie();
     }
 
     @Override
@@ -92,6 +95,7 @@ public class CASWebViewClient extends WebViewClient {
             Headers temp = response.headers();
             if (temp.get("x-sakai-session") != null && !gotHeaders) {
                 Log.i("Headers", response.headers().toString());
+                savedHeaders = temp;
                 gotHeaders = true;
                 sakaiLoadedListener.onSakaiMainPageLoaded(null);
             }

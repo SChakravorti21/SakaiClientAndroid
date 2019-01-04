@@ -18,7 +18,7 @@
                <!-- Sorting by date -->
                <item
                    android:id="@+id/action_sort_by_date"
-                   android:title="Sort By Semester"
+                   android:title="Sort By Date"
                    android:icon="@drawable/ic_today_black_24dp"/>
            </group>
        </menu>
@@ -26,7 +26,7 @@
     <item
         android:title="Refresh"
         android:id="@+id/action_refresh"
-        android:icon="@drawable/ic_refresh_24dp"
+        android:icon="@drawable/ic_home_black_24dp"
         app:showAsAction="always">
 
     </item>
