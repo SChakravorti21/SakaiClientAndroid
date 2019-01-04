@@ -4,15 +4,11 @@ package com.sakaimobile.development.sakaiclient20.ui.viewmodels;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
-import android.util.Log;
 
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Announcement;
 import com.sakaimobile.development.sakaiclient20.repositories.AnnouncementRepository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -152,8 +148,8 @@ public class AnnouncementViewModel extends ViewModel {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                (resources) -> {
-                                    if (resources.size() == 0)
+                                announcements -> {
+                                    if (announcements.size() == 0)
                                         announcementsLiveData.setValue(null);
                                     else
                                         loadSiteAnnouncements(siteId, num);

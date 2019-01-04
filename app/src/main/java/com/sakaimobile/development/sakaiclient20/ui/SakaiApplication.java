@@ -25,7 +25,7 @@ public class SakaiApplication extends Application
     @Override
     public void onCreate() {
         super.onCreate();
-//        Fabric.with(this, new Crashlytics());
+        Fabric.with(this, new Crashlytics());
         DaggerSakaiApplicationComponent.builder()
                 .applicationContext(this)
                 .build()

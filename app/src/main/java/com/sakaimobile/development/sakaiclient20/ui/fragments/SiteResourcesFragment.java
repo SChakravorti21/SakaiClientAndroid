@@ -1,25 +1,20 @@
 package com.sakaimobile.development.sakaiclient20.ui.fragments;
 
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Resource;
-import com.sakaimobile.development.sakaiclient20.ui.fragments.WebFragment;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.ResourceDirectoryViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.ResourceItemViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ResourceViewModel;
-import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
@@ -244,17 +239,5 @@ public class SiteResourcesFragment extends Fragment {
     }
 
 
-
-//    private void setupToolbar(List<Resource> resources) {
-//        // add the toolbar
-//        Toolbar toolbar = findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-//        toolbar.setNavigationOnClickListener(v -> getActivity().onBackPressed());
-//
-//        if(resources != null && resources.size() >= 1)
-//            toolbar.setTitle(resources.get(0).title);
-//        else
-//            toolbar.setTitle(getString(R.string.app_name));
-//    }
 
 }
