@@ -29,7 +29,6 @@
     <string name="fall">Fall</string>
 
 
-
     <string name="BASE_URL">https://sakai.rutgers.edu/direct/</string>
     <string name="CAS_BASE_URL">https://cas.rutgers.edu/login?service=https%3A%2F%2Fsakai.rutgers.edu%2Fsakai-login-tool%2Fcontainer</string>
     <string name="COOKIE_URL_1">https://sakai.rutgers.edu/sakai-login-tool/container</string>
@@ -37,7 +36,7 @@
     <string name="COOKIE_URL_3">https://cas.rutgers.edu/login</string>
     <string name="title_activity_nav">NavActivity</string>
 
-    <string name="title_home">Home</string>
+    <string name="title_home">Classes</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_announcements">Alerts</string>
     <string name="title_assignments">Assignments</string>
@@ -59,7 +58,6 @@
     <string name="site_announcements_tag" translatable="false">SITE_ANNOUNCEMENTS</string>
     <string name="siteid_to_course_map" translatable="false">SITEIDTOCOURSE</string>
     <string name="single_announcement_tag" translatable="false">SINGLE_ANNOUNCEMENT</string>
-
     <string name="no_announcements">There are no announcements available.</string>
 </resources>
 

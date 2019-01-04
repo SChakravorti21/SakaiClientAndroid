@@ -34,8 +34,10 @@ import com.sakaimobile.development.sakaiclient20.ui.fragments.AllCoursesFragment
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AllGradesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AnnouncementsFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.CourseSitesFragment;
+import com.sakaimobile.development.sakaiclient20.ui.fragments.SettingsFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.SingleAnnouncementFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.SiteGradesFragment;
+import com.sakaimobile.development.sakaiclient20.ui.fragments.UserPreferencesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.AssignmentsFragment;
 import com.sakaimobile.development.sakaiclient20.ui.helpers.BottomNavigationViewHelper;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
@@ -171,24 +173,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.toolbar_nav_activity, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_settings:
-                Intent intent = new Intent(this, SettingsActivity.class);
-                startActivity(intent);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
     /**
      * When an item on the navigation bar is selected, creates the respective fragment
      * and then loads the fragment into the Frame Layout. For the AllCoursesFragment, we have to
@@ -221,6 +205,9 @@ public class MainActivity extends AppCompatActivity
                 return true;
             case R.id.navigation_gradebook:
                 loadGradesFragment();
+                return true;
+            case R.id.navigation_settings:
+                loadFragment(new SettingsFragment(), FRAGMENT_REPLACE, true, false);
                 return true;
             default:
                 return false;
