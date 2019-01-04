@@ -46,7 +46,6 @@ public class SitePageActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(String.format("%s: %s", siteType, course.title));
 
 
-
         // load the appropriate fragment for the site type
         if (siteType.equals(getString(R.string.gradebook))) {
             startSiteGradesFragment(course);
@@ -98,15 +97,16 @@ public class SitePageActivity extends AppCompatActivity {
     private void startWebViewFragment(String siteName, Course course) {
 
         String url = null;
-        for(SitePage page : course.sitePages) {
-            if(page.title.equals(siteName))
+        for (SitePage page : course.sitePages) {
+            if (page.title.equals(siteName))
                 url = page.url;
         }
 
-        if(url != null) {
-            WebFragment fragment = WebFragment.newInstance(url);
-            addFragment(fragment);
-        }
+        // url will never be null because we only displayed
+        // site pages with valid urls, so the user can never click
+        // on a site page with an invalid url
+        WebFragment fragment = WebFragment.newInstance(url);
+        addFragment(fragment);
 
     }
 

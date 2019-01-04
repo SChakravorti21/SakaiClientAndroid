@@ -12,7 +12,11 @@ import android.widget.ListView;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
+import com.sakaimobile.development.sakaiclient20.persistence.entities.SitePage;
 import com.sakaimobile.development.sakaiclient20.ui.activities.SitePageActivity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CourseSitesFragment extends Fragment {
 
@@ -33,11 +37,15 @@ public class CourseSitesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View inflated = inflater.inflate(R.layout.fragment_course, null);
 
-        final String[] siteTitles = new String[this.courseToView.sitePages.size()];
-        for (int i = 0; i < siteTitles.length; i++) {
-            siteTitles[i] = this.courseToView.sitePages.get(i).title;
+        // get the list of site titles
+        // only display in adapter if it has a valid url
+        final List<String> siteTitles = new ArrayList<>();
+        for(SitePage page : courseToView.sitePages) {
+            if(page.url != null)
+                siteTitles.add(page.title);
         }
 
+        // create the adapter and list view
         this.sitePagesListView = inflated.findViewById(R.id.sites_list_view);
         ArrayAdapter<String> adapter =
                 new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, siteTitles);
@@ -52,7 +60,6 @@ public class CourseSitesFragment extends Fragment {
             i.putExtra(getString(R.string.course_tag), courseToView);
 
             startActivity(i);
-
         });
 
         return inflated;
