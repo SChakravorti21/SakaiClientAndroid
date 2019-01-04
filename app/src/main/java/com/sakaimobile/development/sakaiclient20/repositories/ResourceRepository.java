@@ -7,7 +7,6 @@ import com.sakaimobile.development.sakaiclient20.persistence.entities.Resource;
 
 import java.util.List;
 
-import io.reactivex.Completable;
 import io.reactivex.Single;
 
 public class ResourceRepository {
@@ -41,7 +40,7 @@ public class ResourceRepository {
                 .getSiteResources(siteId)
                 .map(ResourcesResponse::getResources)
                 .map(resources -> setSiteIdOfResources(siteId, resources))
-                .map(resources -> persistSiteResources(siteId, resources));
+                .map(this::persistSiteResources);
     }
 
     /**
@@ -59,16 +58,15 @@ public class ResourceRepository {
 
     /**
      * Store the resources in room database
-     * @param siteId siteId of resources
      * @param resources resource list
      * @return stored resources
      */
-    private List<Resource> persistSiteResources(String siteId, List<Resource> resources) {
+    private List<Resource> persistSiteResources(List<Resource> resources) {
         // if its empty list, don't persist them
         if(resources.size() == 0)
             return resources;
 
-        resourceDao.insertResourcesForSite(siteId, resources.toArray(new Resource[0]));
+        resourceDao.insert(resources.toArray(new Resource[0]));
         return resources;
     }
 }

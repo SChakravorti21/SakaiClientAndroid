@@ -21,10 +21,12 @@ public class ResourceDeserializer implements JsonDeserializer<Resource> {
         String url = json.get("url").getAsString();
         Resource resource = new Resource(url);
 
+        // SiteId is not set directly after deserializing because
+        // the siteId is not present in the json response
+        // check resource repository.refreshSiteResources()
+
         resource.numChildren = json.get("numChildren").getAsInt();
         resource.container = json.get("container").getAsString();
-        // TODO add siteId to Resource
-//        resource.siteId = something
         resource.title = json.get("title").getAsString();
         resource.type = json.get("type").getAsString();
 
