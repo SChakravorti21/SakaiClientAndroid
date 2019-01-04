@@ -14,6 +14,7 @@ import android.webkit.CookieManager;
 import android.widget.Button;
 
 import com.sakaimobile.development.sakaiclient20.R;
+import com.sakaimobile.development.sakaiclient20.networking.utilities.AuthenticationUtils;
 import com.sakaimobile.development.sakaiclient20.ui.WebViewActivity;
 
 /**
@@ -45,6 +46,7 @@ public class SettingsFragment extends Fragment {
             // Removing the session cookie ensures that the login WebView
             // will allow user to login again (instead of automatically logging in)
             CookieManager.getInstance().removeSessionCookie();
+            AuthenticationUtils.setSessionCookie(getContext(), null);
             // Start the login activity, clearing all activities in back stack
             Intent intent = new Intent(getContext(), WebViewActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);

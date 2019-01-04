@@ -4,10 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.webkit.CookieManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.sakaimobile.development.sakaiclient20.R;
+import com.sakaimobile.development.sakaiclient20.networking.utilities.AuthenticationUtils;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.CASWebViewClient;
 
 public class WebViewActivity extends AppCompatActivity {
