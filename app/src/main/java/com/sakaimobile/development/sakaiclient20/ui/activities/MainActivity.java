@@ -51,9 +51,6 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
-import dagger.android.AndroidInjector;
-import dagger.android.DispatchingAndroidInjector;
-import dagger.android.support.HasSupportFragmentInjector;
 
 import static com.sakaimobile.development.sakaiclient20.ui.fragments.AnnouncementsFragment.NUM_ANNOUNCEMENTS_DEFAULT;
 
@@ -211,7 +208,7 @@ public class MainActivity extends AppCompatActivity
 
         beingObserved.add(courseLiveData);
         courseLiveData.observe(this, course -> {
-            CourseSitesFragment fragment = CourseSitesFragment.newInstance(course, this);
+            CourseSitesFragment fragment = CourseSitesFragment.newInstance(course);
             loadFragment(fragment, FRAGMENT_REPLACE, true, true);
             setActionBarTitle(course.title);
         });

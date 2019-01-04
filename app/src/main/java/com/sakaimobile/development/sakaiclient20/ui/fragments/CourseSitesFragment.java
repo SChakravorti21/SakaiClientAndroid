@@ -13,29 +13,18 @@ import android.widget.ListView;
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 import com.sakaimobile.development.sakaiclient20.ui.activities.SitePageActivity;
-import com.sakaimobile.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
-
-import java.util.HashMap;
-
-import javax.inject.Inject;
-
-import dagger.android.AndroidInjector;
-import dagger.android.DispatchingAndroidInjector;
-import dagger.android.support.HasSupportFragmentInjector;
 
 public class CourseSitesFragment extends Fragment {
 
     private ListView sitePagesListView;
     private Course courseToView;
-    private OnActionPerformedListener siteClickedListener;
 
-    public static CourseSitesFragment newInstance(Course course, OnActionPerformedListener siteClickedListener) {
+    public static CourseSitesFragment newInstance(Course course) {
         if(course == null)
             throw new IllegalArgumentException("Course cannot be null!");
 
         CourseSitesFragment fragment = new CourseSitesFragment();
         fragment.courseToView = course;
-        fragment.siteClickedListener = siteClickedListener;
         return fragment;
     }
 
@@ -66,36 +55,7 @@ public class CourseSitesFragment extends Fragment {
 
         });
 
-//        // TODO change the hackies
-//        MainActivity mainActivity = (MainActivity) getActivity();
-//        mainActivity.setActionBarTitle(courseToView.title);
-
-
         return inflated;
     }
 
-
-//    private void startAnnouncementsActivity() {
-//        HashMap<String, Course> siteIdToCourse = new HashMap<>();
-//        siteIdToCourse.put(courseToView.siteId, courseToView);
-//
-//        Intent i = new Intent(getActivity(), SiteAnnouncementActivity.class);
-//        i.putExtra(getString(R.string.siteid_tag), courseToView.siteId);
-//        i.putExtra(getString(R.string.siteid_to_course_map), siteIdToCourse);
-//
-//        startActivity(i);
-//    }
-//
-//    private void startResourcesActivity() {
-//        Intent i = new Intent(getActivity(), SiteResourcesActivity.class);
-//        i.putExtra(getString(R.string.site_resources_tag), courseToView.siteId);
-//        startActivity(i);
-//    }
-//
-//    private void startSiteGradesActivity() {
-//        Intent i = new Intent(getActivity(), SiteGradesFragment.class);
-//        i.putExtra(getString(R.string.siteid_tag), courseToView.siteId);
-//        startActivity(i);
-//    }
 }
-
