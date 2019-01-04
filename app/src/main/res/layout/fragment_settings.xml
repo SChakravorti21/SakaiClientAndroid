@@ -24,7 +24,7 @@
         app:layout_constraintStart_toStartOf="parent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/white"
+        android:textColor="@color/sakai_light_silver"
         android:textStyle="bold"/>
 
 </android.support.constraint.ConstraintLayout>
