@@ -7,12 +7,10 @@ import java.io.Serializable;
 
 public class UserResponse implements Serializable {
 
+    // Display name is the user's NetID,
+    // only used to check if cookies are still valid
     @SerializedName("displayName")
     @Expose
     public String displayName;
-
-    @SerializedName("email")
-    @Expose
-    public String email;
 
 }

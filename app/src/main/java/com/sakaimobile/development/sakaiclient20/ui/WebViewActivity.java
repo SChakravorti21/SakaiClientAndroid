@@ -10,7 +10,13 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.sakaimobile.development.sakaiclient20.R;
+import com.sakaimobile.development.sakaiclient20.networking.services.UserService;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.CASWebViewClient;
+import com.sakaimobile.development.sakaiclient20.networking.utilities.LoginPersistenceWorker;
+
+import javax.inject.Inject;
+
+import dagger.android.AndroidInjection;
 
 public class WebViewActivity extends AppCompatActivity {
 
@@ -32,6 +38,7 @@ public class WebViewActivity extends AppCompatActivity {
         CASWebViewClient webViewClient = new CASWebViewClient(
                 getString(R.string.COOKIE_URL_2),
                 savedHeaders -> {
+                    LoginPersistenceWorker.startLoginPersistenceTask();
                     // Ensure that the cookies persist even when the app is closed
                     // (Allows users to restart the app without logging in again
                     // since the cookies allow login to be bypassed if valid)
