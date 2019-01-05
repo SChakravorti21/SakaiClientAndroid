@@ -4,7 +4,7 @@ import com.sakaimobile.development.sakaiclient20.networking.services.Announcemen
 import com.sakaimobile.development.sakaiclient20.networking.services.AssignmentsService;
 import com.sakaimobile.development.sakaiclient20.networking.services.CoursesService;
 import com.sakaimobile.development.sakaiclient20.networking.services.GradeService;
-import com.sakaimobile.development.sakaiclient20.networking.services.UserService;
+import com.sakaimobile.development.sakaiclient20.networking.services.SessionService;
 
 import javax.inject.Named;
 
@@ -16,8 +16,8 @@ import retrofit2.Retrofit;
 class ServiceModule {
 
     @Provides
-    UserService provideUserService(@Named("default_retrofit") Retrofit retrofit) {
-        return retrofit.create(UserService.class);
+    SessionService provideUserService(@Named("default_retrofit") Retrofit retrofit) {
+        return retrofit.create(SessionService.class);
     }
 
     @Provides

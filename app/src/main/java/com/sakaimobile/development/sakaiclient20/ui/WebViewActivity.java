@@ -10,13 +10,8 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.sakaimobile.development.sakaiclient20.R;
-import com.sakaimobile.development.sakaiclient20.networking.services.UserService;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.CASWebViewClient;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.LoginPersistenceWorker;
-
-import javax.inject.Inject;
-
-import dagger.android.AndroidInjection;
 
 public class WebViewActivity extends AppCompatActivity {
 

@@ -19,7 +19,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.sakaimobile.development.sakaiclient20.R;
-import com.sakaimobile.development.sakaiclient20.networking.services.UserService;
+import com.sakaimobile.development.sakaiclient20.networking.services.SessionService;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Announcement;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity
     private Set<LiveData> beingObserved;
 
     @Inject
-    UserService userService;
+    SessionService sessionService;
 
 
     private Fragment displayingFragment;
@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity
     }
 
 //    private void logUserInfo() {
-//        userService
+//        sessionService
 //                .getLoggedInUser()
 //                .subscribeOn(Schedulers.io())
 //                .observeOn(AndroidSchedulers.mainThread())
