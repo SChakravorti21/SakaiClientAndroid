@@ -7,11 +7,13 @@ import com.sakaimobile.development.sakaiclient20.networking.deserializers.Announ
 import com.sakaimobile.development.sakaiclient20.networking.deserializers.AssignmentDeserializer;
 import com.sakaimobile.development.sakaiclient20.networking.deserializers.AttachmentDeserializer;
 import com.sakaimobile.development.sakaiclient20.networking.deserializers.CourseDeserializer;
+import com.sakaimobile.development.sakaiclient20.networking.deserializers.ResourceDeserializer;
 import com.sakaimobile.development.sakaiclient20.networking.deserializers.SiteGradesDeserializer;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Announcement;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Attachment;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
+import com.sakaimobile.development.sakaiclient20.persistence.entities.Resource;
 
 import javax.inject.Named;
 
@@ -26,6 +28,15 @@ class DeserializerModule {
         return new GsonBuilder()
                 .setLenient()
                 .registerTypeAdapter(Course.class, new CourseDeserializer())
+                .create();
+    }
+
+
+    @Named("resource_deserializer")
+    @Provides Gson resourceDeserializer() {
+        return new GsonBuilder()
+                .setLenient()
+                .registerTypeAdapter(Resource.class, new ResourceDeserializer())
                 .create();
     }
 

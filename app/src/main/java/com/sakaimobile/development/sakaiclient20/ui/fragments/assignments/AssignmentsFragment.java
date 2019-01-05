@@ -33,7 +33,6 @@ import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
 
-
 /**
  * Created by Shoumyo Chakravorti.
  *

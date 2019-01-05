@@ -11,12 +11,14 @@ import com.sakaimobile.development.sakaiclient20.persistence.access.AssignmentDa
 import com.sakaimobile.development.sakaiclient20.persistence.access.AttachmentDao;
 import com.sakaimobile.development.sakaiclient20.persistence.access.CourseDao;
 import com.sakaimobile.development.sakaiclient20.persistence.access.GradeDao;
+import com.sakaimobile.development.sakaiclient20.persistence.access.ResourceDao;
 import com.sakaimobile.development.sakaiclient20.persistence.access.SitePageDao;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Announcement;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Attachment;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Grade;
+import com.sakaimobile.development.sakaiclient20.persistence.entities.Resource;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.SitePage;
 import com.sakaimobile.development.sakaiclient20.persistence.typeconverters.DateConverter;
 import com.sakaimobile.development.sakaiclient20.persistence.typeconverters.TermConverter;
@@ -31,8 +33,9 @@ import com.sakaimobile.development.sakaiclient20.persistence.typeconverters.Term
         Grade.class,
         Assignment.class,
         Attachment.class,
-        Announcement.class
-}, version = 6)
+        Announcement.class,
+        Resource.class
+}, version = 8)
 @TypeConverters({DateConverter.class, TermConverter.class})
 public abstract class SakaiDatabase extends RoomDatabase {
 
@@ -41,6 +44,7 @@ public abstract class SakaiDatabase extends RoomDatabase {
     private static final String DB_NAME = "Sakai.db";
 
     public abstract CourseDao getCourseDao();
+    public abstract ResourceDao getResourceDao();
     public abstract SitePageDao getSitePageDao();
     public abstract AssignmentDao getAssignmentDao();
     public abstract AttachmentDao getAttachmentDao();

@@ -48,9 +48,7 @@ public class HeaderInterceptor implements Interceptor {
         // We only need one set of cookies, the Sakai cookies,
         // so this method does not need to parse any extra cookies.
         CookieManager cookieManager = CookieManager.getInstance();
-        String cookie = cookieManager.getCookie(cookieUrl);
-        Log.i("Cookie ", cookie);
-        return cookie;
+        return cookieManager.getCookie(cookieUrl);
     }
 
     /**
