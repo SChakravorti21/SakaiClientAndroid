@@ -35,6 +35,15 @@ class NetworkingModule {
                 .build();
     }
 
+    @Named("resource_retrofit")
+    @Provides
+    Retrofit resourceRetrofit(Retrofit.Builder builder,
+                              @Named("resource_deserializer") Gson resourceDeserializer) {
+        return builder
+                .addConverterFactory(GsonConverterFactory.create(resourceDeserializer))
+                .build();
+    }
+
 
     @Named("assignment_retrofit")
     @Provides

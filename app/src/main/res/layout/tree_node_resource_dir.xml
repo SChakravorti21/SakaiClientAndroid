@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:orientation="horizontal"
+    android:background="@color/colorPrimaryDark"
+    android:padding="5dp">
+
+    <TextView
+        android:textStyle="bold"
+        android:id="@+id/resource_dir_txt"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        tools:text="Directory Name"
+        android:textColor="@color/sakai_medium_silver"
+        android:textSize="20sp" />
+
+</LinearLayout>

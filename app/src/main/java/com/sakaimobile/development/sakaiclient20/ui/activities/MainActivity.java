@@ -1,4 +1,4 @@
-package com.sakaimobile.development.sakaiclient20.ui;
+package com.sakaimobile.development.sakaiclient20.ui.activities;
 
 import android.app.DownloadManager;
 import android.arch.lifecycle.LiveData;
@@ -12,6 +12,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -19,11 +21,9 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.sakaimobile.development.sakaiclient20.R;
-import com.sakaimobile.development.sakaiclient20.networking.services.SessionService;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Announcement;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
-import com.sakaimobile.development.sakaiclient20.persistence.entities.Grade;
 import com.sakaimobile.development.sakaiclient20.ui.custom_components.CustomLinkMovementMethod;
 import com.sakaimobile.development.sakaiclient20.ui.custom_components.DownloadCompleteReceiver;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AllCoursesFragment;
@@ -32,11 +32,10 @@ import com.sakaimobile.development.sakaiclient20.ui.fragments.AnnouncementsFragm
 import com.sakaimobile.development.sakaiclient20.ui.fragments.CourseSitesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.SettingsFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.SingleAnnouncementFragment;
-import com.sakaimobile.development.sakaiclient20.ui.fragments.SiteGradesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.AssignmentsFragment;
 import com.sakaimobile.development.sakaiclient20.ui.helpers.BottomNavigationViewHelper;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
-import com.sakaimobile.development.sakaiclient20.ui.listeners.OnFinishedLoadingListener;
+import com.sakaimobile.development.sakaiclient20.ui.listeners.OnAnnouncementSelected;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.AnnouncementViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.AssignmentViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.CourseViewModel;
@@ -61,17 +60,16 @@ import static com.sakaimobile.development.sakaiclient20.ui.fragments.Announcemen
 
 public class MainActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener,
-        HasSupportFragmentInjector, OnActionPerformedListener, OnFinishedLoadingListener {
+        OnActionPerformedListener, OnAnnouncementSelected {
 
 
     @Inject
-    DispatchingAndroidInjector<Fragment> supportFragmentInjector;
+    ViewModelFactory viewModelFactory;
 
-    public static final String ALL_COURSES_TAG = "ALL_COURSES";
-    public static final String COURSE_TAG = "COURSE";
-    public static final String ALL_GRADES_TAG = "GRADES";
+
+    protected Set<LiveData> beingObserved;
+
     public static final String ASSIGNMENTS_TAG = "ASSIGNMENTS";
-    public static final String SITE_GRADES_TAG = "SITE_GRADES";
 
     private static final short FRAGMENT_REPLACE = 0;
     private static final short FRAGMENT_ADD = 1;
@@ -139,11 +137,6 @@ public class MainActivity extends AppCompatActivity
 //                    Crashlytics.setUserName(userResponse.displayName);
 //                });
 //    }
-
-    @Override
-    public AndroidInjector<Fragment> supportFragmentInjector() {
-        return supportFragmentInjector;
-    }
 
     @Override
     protected void onResume() {
@@ -220,9 +213,10 @@ public class MainActivity extends AppCompatActivity
         LiveData<Course> courseLiveData = ViewModelProviders.of(this, viewModelFactory)
                 .get(CourseViewModel.class)
                 .getCourse(siteId);
+
         beingObserved.add(courseLiveData);
         courseLiveData.observe(this, course -> {
-            CourseSitesFragment fragment = CourseSitesFragment.newInstance(course, this);
+            CourseSitesFragment fragment = CourseSitesFragment.newInstance(course);
             loadFragment(fragment, FRAGMENT_REPLACE, true, true);
             setActionBarTitle(course.title);
         });
@@ -236,84 +230,11 @@ public class MainActivity extends AppCompatActivity
         // for some reason map isn't serializable, so i had to cast to hashmap
         //TODO check before casting
         b.putSerializable(getString(R.string.siteid_to_course_map), (HashMap) siteIdToCourse);
-        b.putSerializable(getString(R.string.siteid_to_course_map), (HashMap) siteIdToCourse);
 
         SingleAnnouncementFragment fragment = new SingleAnnouncementFragment();
         fragment.setArguments(b);
 
         loadFragment(fragment, FRAGMENT_ADD, true, R.anim.grow_enter, R.anim.pop_exit);
-    }
-
-    @Override
-    public void onSiteAnnouncementsSelected(Course course) {
-
-        startProgressBar();
-
-        LiveData<List<Announcement>> siteAnnouncementsLiveData =
-                ViewModelProviders.of(this, viewModelFactory)
-                        .get(AnnouncementViewModel.class)
-                        .getSiteAnnouncements(course.siteId, NUM_ANNOUNCEMENTS_DEFAULT);
-
-        beingObserved.add(siteAnnouncementsLiveData);
-
-
-        HashMap<String, Course> siteIdToCourse = new HashMap<>();
-        siteIdToCourse.put(course.siteId, course);
-
-        Bundle b = new Bundle();
-        b.putString(getString(R.string.siteid_tag), course.siteId);
-        b.putSerializable(getString(R.string.siteid_to_course_map), siteIdToCourse);
-
-        AnnouncementsFragment frag = new AnnouncementsFragment();
-        frag.setArguments(b);
-
-
-        loadFragment(frag, FRAGMENT_REPLACE, true, true);
-        container.setVisibility(View.VISIBLE);
-
-        // TODO use proper string resource
-        String actionBarTitle = String.format("%s: %s", getString(R.string.announcements_site), course.title);
-        setActionBarTitle(actionBarTitle);
-    }
-
-    @Override
-    public void onFinishedLoadingAllAnnouncements() {
-        stopProgressBar();
-        container.setVisibility(View.VISIBLE);
-        makeToast("Successfully refreshed all announcements", Toast.LENGTH_SHORT);
-    }
-
-    @Override
-    public void onFinishedLoadingSiteAnnouncements(String courseName) {
-        stopProgressBar();
-        container.setVisibility(View.VISIBLE);
-        setActionBarTitle(String.format("%s: %s", getString(R.string.announcements), courseName));
-        makeToast("Successfully refreshed announcements for " + courseName, Toast.LENGTH_SHORT);
-    }
-
-
-    public void onSiteGradesSelected(Course course) {
-        LiveData<List<Grade>> gradesLiveData = ViewModelProviders.of(this, viewModelFactory)
-                .get(GradeViewModel.class)
-                .getGradesForSite(course.siteId);
-
-        beingObserved.add(gradesLiveData);
-
-        gradesLiveData.observe(this, grades -> {
-            SiteGradesFragment fragment = SiteGradesFragment.newInstance(grades, course.siteId);
-
-            // if the displaying fragment is already site grades fragment, (refreshing)
-            // dont show animations or add to backstack
-
-
-            if (this.displayingFragment instanceof SiteGradesFragment)
-                popBackStackUntil(this.displayingFragment.getClass().getCanonicalName());
-
-            loadFragment(fragment, FRAGMENT_REPLACE, true, true);
-
-
-            setActionBarTitle(String.format("Gradebook: %s", course.title));
-        });
     }
 
 
@@ -327,12 +248,6 @@ public class MainActivity extends AppCompatActivity
         registerReceiver(downloadReceiver, filter);
     }
 
-    private void removeObservations() {
-        for (LiveData liveData : beingObserved) {
-            liveData.removeObservers(this);
-        }
-        beingObserved.clear();
-    }
 
     /******************************\
      FRAGMENT MANAGEMENT
@@ -398,10 +313,10 @@ public class MainActivity extends AppCompatActivity
         startProgressBar();
         isLoadingAllCourses = true;
 
-        LiveData<List<List<Course>>> courseLiveData =
-                ViewModelProviders.of(this, viewModelFactory)
-                        .get(CourseViewModel.class)
-                        .getCoursesByTerm(refresh);
+        LiveData<List<List<Course>>> courseLiveData = ViewModelProviders.of(this, viewModelFactory)
+                .get(CourseViewModel.class)
+                .getCoursesByTerm(refresh);
+
 
         courseLiveData.observe(this, courses -> {
             stopProgressBar();
@@ -426,11 +341,11 @@ public class MainActivity extends AppCompatActivity
         this.container.setVisibility(View.GONE);
         this.spinner.setVisibility(View.VISIBLE);
 
-        LiveData<List<List<Course>>> coursesLiveData =
-                ViewModelProviders.of(this, viewModelFactory)
-                        .get(AssignmentViewModel.class)
-                        .getCoursesByTerm(refresh);
-        coursesLiveData.observe(this, courses -> {
+        LiveData<List<List<Course>>> courseLiveData = ViewModelProviders.of(this, viewModelFactory)
+                .get(AssignmentViewModel.class)
+                .getCoursesByTerm(refresh);
+
+        courseLiveData.observe(this, courses -> {
             spinner.setVisibility(View.GONE);
 
             Bundle bundle = new Bundle();
@@ -442,7 +357,7 @@ public class MainActivity extends AppCompatActivity
             loadFragment(fragment, FRAGMENT_REPLACE, false, false);
 
             container.setVisibility(View.VISIBLE);
-            coursesLiveData.removeObservers(this);
+            courseLiveData.removeObservers(this);
 
             if (refresh)
                 makeToast("Successfully refreshed assignments", Toast.LENGTH_SHORT);
@@ -455,20 +370,19 @@ public class MainActivity extends AppCompatActivity
      * announcements view model
      * <p>
      * whenever an update is detected in the live data, recreate the fragment
-     * TODO: possibly dont recreate the fragment, just recreate the view
      */
     public void loadAnnouncementsFragment() {
         this.container.setVisibility(View.GONE);
         startProgressBar();
 
-        LiveData<List<Announcement>> announcementsLiveData =
-                ViewModelProviders.of(this, viewModelFactory)
-                        .get(AnnouncementViewModel.class)
+        AnnouncementViewModel announcementViewModel = ViewModelProviders.of(this, viewModelFactory).get(AnnouncementViewModel.class);
+        CourseViewModel courseViewModel = ViewModelProviders.of(this, viewModelFactory).get(CourseViewModel.class);
+
+
+        LiveData<List<Announcement>> announcementsLiveData = announcementViewModel
                         .getAllAnnouncements(NUM_ANNOUNCEMENTS_DEFAULT);
 
-        LiveData<List<List<Course>>> coursesLiveData =
-                ViewModelProviders.of(this, viewModelFactory)
-                        .get(CourseViewModel.class)
+        LiveData<List<List<Course>>> coursesLiveData = courseViewModel
                         .getCoursesByTerm(false);
 
 
@@ -491,6 +405,9 @@ public class MainActivity extends AppCompatActivity
             frag.setArguments(b);
 
             loadFragment(frag, FRAGMENT_REPLACE, false, false);
+
+            this.container.setVisibility(View.VISIBLE);
+            stopProgressBar();
         });
 
 
@@ -504,10 +421,12 @@ public class MainActivity extends AppCompatActivity
         this.container.setVisibility(View.GONE);
         startProgressBar();
 
+
         LiveData<List<List<Course>>> courseLiveData =
                 ViewModelProviders.of(this, viewModelFactory)
                         .get(GradeViewModel.class)
                         .getCoursesByTerm(true);
+
         beingObserved.add(courseLiveData);
 
         courseLiveData.observe(this, courses -> {
@@ -551,5 +470,18 @@ public class MainActivity extends AppCompatActivity
 
     public void makeToast(String message, int duration) {
         Toast.makeText(this, message, duration).show();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        removeObservations();
+    }
+
+    protected void removeObservations() {
+        for (LiveData liveData : beingObserved) {
+            liveData.removeObservers(this);
+        }
+        beingObserved.clear();
     }
 }
