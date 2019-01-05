@@ -44,7 +44,7 @@ public class LoginPersistenceWorker extends Worker {
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
-                .create(UserService.class);;
+                .create(UserService.class);
     }
 
     public static void startLoginPersistenceTask() {
@@ -74,8 +74,8 @@ public class LoginPersistenceWorker extends Worker {
         // Work requests already run in background threads, so we will not
         // get a NetworkOnMainThread exception here
         UserResponse user = this.userService.getLoggedInUser().blockingGet();
-        // If the display name (i.e. NetID) is non-null, the cookies are still active
-        return user.displayName == null ? Result.failure() : Result.success();
+        // If the display ID (i.e. NetID) is non-null, the cookies are still active
+        return user.displayId == null ? Result.failure() : Result.success();
     }
 
 }

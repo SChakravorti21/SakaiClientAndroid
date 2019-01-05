@@ -9,8 +9,8 @@ public class UserResponse implements Serializable {
 
     // Display name is the user's NetID,
     // only used to check if cookies are still valid
-    @SerializedName("displayName")
+    @SerializedName("displayId")
     @Expose
-    public String displayName;
+    public String displayId;
 
 }
