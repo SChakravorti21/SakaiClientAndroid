@@ -1,10 +1,7 @@
 package com.sakaimobile.development.sakaiclient20.ui.fragments;
 
-import android.app.Activity;
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -26,7 +23,6 @@ import com.sakaimobile.development.sakaiclient20.ui.adapters.AnnouncementsAdapte
 import com.sakaimobile.development.sakaiclient20.ui.listeners.LoadMoreListener;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.OnAnnouncementSelected;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.AnnouncementViewModel;
-import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;

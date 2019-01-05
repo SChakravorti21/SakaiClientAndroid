@@ -14,7 +14,7 @@ import android.webkit.CookieManager;
 import android.widget.Button;
 
 import com.sakaimobile.development.sakaiclient20.R;
-import com.sakaimobile.development.sakaiclient20.ui.WebViewActivity;
+import com.sakaimobile.development.sakaiclient20.ui.activities.WebViewActivity;
 
 /**
  * A simple {@link Fragment} subclass.

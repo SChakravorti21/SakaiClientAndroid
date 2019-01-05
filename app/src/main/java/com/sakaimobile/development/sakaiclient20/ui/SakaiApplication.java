@@ -7,14 +7,14 @@ import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.OnLifecycleEvent;
 import android.arch.lifecycle.ProcessLifecycleOwner;
 import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
-import android.webkit.CookieManager;
+import android.os.Build;
 import android.support.v4.app.Fragment;
+import android.webkit.CookieManager;
 
 import com.crashlytics.android.Crashlytics;
 import com.sakaimobile.development.sakaiclient20.dependency_injection.DaggerSakaiApplicationComponent;
 import com.sakaimobile.development.sakaiclient20.networking.services.SessionService;
+import com.sakaimobile.development.sakaiclient20.ui.activities.WebViewActivity;
 
 import javax.inject.Inject;
 
@@ -25,7 +25,6 @@ import dagger.android.support.HasSupportFragmentInjector;
 import io.fabric.sdk.android.Fabric;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class SakaiApplication extends Application
@@ -44,6 +43,12 @@ public class SakaiApplication extends Application
                 .applicationContext(this)
                 .build()
                 .inject(this);
+
+        // Session persistence cannot be achieved below version Lollipop
+        // anyways, so do not bother with the moveToForeground observation
+        // defined below.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
+            return;
 
         // We want to ensure that the user is still logged in if the application
         // is opened from the background. This might not be the case if WorkManager

@@ -33,17 +33,17 @@ public class WebViewActivity extends AppCompatActivity {
         CASWebViewClient webViewClient = new CASWebViewClient(
                 getString(R.string.COOKIE_URL_2),
                 savedHeaders -> {
-                    // Start background task to keep cookies active
-                    // WorkManager should ensure that the task continues running
-                    // even if the app is sent to the background.
-                    LoginPersistenceWorker.startLoginPersistenceTask();
-
                     // Ensure that the cookies persist even when the app is closed
                     // (Allows users to restart the app without logging in again
                     // since the cookies allow login to be bypassed if valid)
                     // Unfortunately only works on API 21+ (but that's good enough for us)
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         CookieManager.getInstance().flush();
+
+                        // Start background task to keep cookies active
+                        // WorkManager should ensure that the task continues running
+                        // even if the app is sent to the background.
+                        LoginPersistenceWorker.startLoginPersistenceTask();
                     }
 
                     // Once the main page loads, we should have all the cookies and

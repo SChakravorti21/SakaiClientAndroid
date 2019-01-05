@@ -16,7 +16,6 @@ import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AnnouncementsFragment;
 import com.sakaimobile.development.sakaiclient20.ui.helpers.RutgersSubjectCodes;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.LoadMoreListener;
-import com.sakaimobile.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.OnAnnouncementSelected;
 
 import java.util.HashMap;
