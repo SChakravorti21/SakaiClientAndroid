@@ -131,7 +131,7 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.sitepage_fragment_menu, menu);
+        inflater.inflate(R.menu.refresh_menu, menu);
     }
 
     @Override
