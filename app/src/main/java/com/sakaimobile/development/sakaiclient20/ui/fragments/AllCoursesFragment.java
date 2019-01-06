@@ -38,9 +38,12 @@ import dagger.android.support.AndroidSupportInjection;
 
 public class AllCoursesFragment extends Fragment {
 
+    public static final String SHOULD_REFRESH = "SHOULD_REFRESH";
+
     @Inject ViewModelFactory viewModelFactory;
     private CourseViewModel courseViewModel;
     private AndroidTreeView treeView;
+    private boolean shouldRefresh;
 
     private FrameLayout treeContainer;
     private ProgressBar progressBar;
@@ -49,6 +52,7 @@ public class AllCoursesFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        this.shouldRefresh = getArguments().getBoolean(SHOULD_REFRESH);
     }
 
     @Override
@@ -88,8 +92,14 @@ public class AllCoursesFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        courseViewModel.getCoursesByTerm(false)
+        courseViewModel.getCoursesByTerm(shouldRefresh)
                 .observe(getViewLifecycleOwner(), courses -> {
+                    // If we are refreshing, there will be one initial false emission
+                    if(shouldRefresh) {
+                        shouldRefresh = false;
+                        return;
+                    }
+
                     // Construct the tree view based on th
                     // Make the TreeView visible inside the parent layout
                     if(this.treeView == null) {

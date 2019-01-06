@@ -255,14 +255,25 @@ public class MainActivity extends AppCompatActivity
      * Loads the all courses fragment (home page)
      */
     public void loadCoursesFragment(boolean refresh) {
-        loadFragment(new AllCoursesFragment(), FRAGMENT_REPLACE, false, false);
+        Bundle bundle = new Bundle();
+        boolean shouldRefresh = getAndUpdateRefreshedState(AllCoursesFragment.class);
+        bundle.putBoolean(AllCoursesFragment.SHOULD_REFRESH, shouldRefresh);
+
+        Fragment fragment = new AllCoursesFragment();
+        fragment.setArguments(bundle);
+        loadFragment(fragment, FRAGMENT_REPLACE, false, false);
     }
 
     /**
      * Loads all assignments tab
      */
     public void loadAssignmentsFragment() {
-        AssignmentsFragment fragment = new AssignmentsFragment();
+        Bundle bundle = new Bundle();
+        boolean shouldRefresh = getAndUpdateRefreshedState(AssignmentsFragment.class);
+        bundle.putBoolean(AssignmentsFragment.SHOULD_REFRESH, shouldRefresh);
+
+        Fragment fragment = new AssignmentsFragment();
+        fragment.setArguments(bundle);
         loadFragment(fragment, FRAGMENT_REPLACE, false, false);
     }
 
@@ -345,6 +356,15 @@ public class MainActivity extends AppCompatActivity
     // CONVENIENCE METHODS
     //=======================
 
+    private boolean getAndUpdateRefreshedState(Class clazz) {
+        if(refreshedFragments.contains(clazz)) {
+            return false;
+        } else {
+            refreshedFragments.add(clazz);
+            return true;
+        }
+    }
+
     private HashMap<String, Course> createSiteIdToCourseMap(List<List<Course>> courses) {
 
         HashMap<String, Course> siteIdToCourse = new HashMap<>();
@@ -367,10 +387,6 @@ public class MainActivity extends AppCompatActivity
 
     public void stopProgressBar() {
         spinner.setVisibility(View.GONE);
-    }
-
-    public void makeToast(String message, int duration) {
-        Toast.makeText(this, message, duration).show();
     }
 
     protected void removeObservations() {

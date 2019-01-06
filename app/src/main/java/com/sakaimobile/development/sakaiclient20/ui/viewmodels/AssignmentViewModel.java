@@ -25,16 +25,7 @@ public class AssignmentViewModel extends BaseViewModel {
 
     @Override
     public void refreshAllData() {
-        this.compositeDisposable.add(
-            this.assignmentRepository
-                .refreshAllAssignments()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    this::loadCourses,
-                    Throwable::printStackTrace
-                )
-        );
+        this.assignmentRepository.refreshAllAssignments();
     }
 
     @Override

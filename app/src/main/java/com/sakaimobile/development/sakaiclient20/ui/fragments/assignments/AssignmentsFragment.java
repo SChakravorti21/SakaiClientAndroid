@@ -1,5 +1,6 @@
 package com.sakaimobile.development.sakaiclient20.ui.fragments.assignments;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -24,6 +25,7 @@ import com.sakaimobile.development.sakaiclient20.ui.viewholders.AssignmentCourse
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.AssignmentTermHeaderViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.TermHeaderViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.AssignmentViewModel;
+import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
@@ -44,6 +46,8 @@ import dagger.android.support.AndroidSupportInjection;
  */
 
 public class AssignmentsFragment extends Fragment {
+
+    public static final String SHOULD_REFRESH = "SHOULD_REFRESH";
 
     /**
      * The {@link AndroidTreeView} that is represented by this
@@ -70,8 +74,10 @@ public class AssignmentsFragment extends Fragment {
      */
     private List<List<Assignment>> assignments;
 
-    @Inject
-    AssignmentViewModel assignmentViewModel;
+    @Inject ViewModelFactory viewModelFactory;
+    private AssignmentViewModel assignmentViewModel;
+
+    private boolean shouldRefresh;
 
     /**
      * Whether the assignments should be shown as being sorted by course. {@code False} if
@@ -84,6 +90,7 @@ public class AssignmentsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         // This fragment provides the option to sort assignments by course or date.
         setHasOptionsMenu(true);
+        this.shouldRefresh = getArguments().getBoolean(SHOULD_REFRESH);
     }
 
     @Nullable
@@ -106,8 +113,14 @@ public class AssignmentsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         this.assignmentViewModel
-            .getCoursesByTerm(true)
+            .getCoursesByTerm(shouldRefresh)
             .observe(getViewLifecycleOwner(), courses -> {
+                // If we are refreshing, there will be one initial false emission
+                if(shouldRefresh) {
+                    shouldRefresh = false;
+                    return;
+                }
+
                 this.courses = courses;
                 if(this.sortedByCourses)
                     AssignmentSortingUtils.sortCourseAssignments(courses);
@@ -134,6 +147,9 @@ public class AssignmentsFragment extends Fragment {
     public void onAttach(Context context) {
         AndroidSupportInjection.inject(this);
         super.onAttach(context);
+
+        this.assignmentViewModel = ViewModelProviders.of(this, viewModelFactory)
+                .get(AssignmentViewModel.class);
     }
 
     /**

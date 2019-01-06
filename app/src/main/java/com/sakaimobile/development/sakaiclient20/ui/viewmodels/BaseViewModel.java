@@ -31,6 +31,9 @@ abstract class BaseViewModel extends ViewModel {
             loadCourses();
         }
 
+        if(refresh)
+            refreshAllData();
+
         return this.coursesByTerm;
     }
 
@@ -40,8 +43,8 @@ abstract class BaseViewModel extends ViewModel {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                    coursesByTerm::setValue,
-                    Throwable::printStackTrace
+                        this.coursesByTerm::setValue,
+                        Throwable::printStackTrace
                 )
         );
     }
