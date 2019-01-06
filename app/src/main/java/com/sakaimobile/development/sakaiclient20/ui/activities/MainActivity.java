@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity
         //refresh since we are loading for the same time
         beingObserved = new HashSet<>();
         refreshedFragments = new HashSet<>();
-        loadCoursesFragment(true);
+        loadCoursesFragment();
     }
 
     @Override
@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity
         setActionBarTitle(getString(R.string.app_name));
         switch (item.getItemId()) {
             case R.id.navigation_home:
-                loadCoursesFragment(false);
+                loadCoursesFragment();
                 return true;
             case R.id.navigation_assignments:
                 loadAssignmentsFragment();
@@ -254,7 +254,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * Loads the all courses fragment (home page)
      */
-    public void loadCoursesFragment(boolean refresh) {
+    public void loadCoursesFragment() {
         Bundle bundle = new Bundle();
         boolean shouldRefresh = getAndUpdateRefreshedState(AllCoursesFragment.class);
         bundle.putBoolean(AllCoursesFragment.SHOULD_REFRESH, shouldRefresh);
@@ -288,21 +288,9 @@ public class MainActivity extends AppCompatActivity
         this.container.setVisibility(View.GONE);
         startProgressBar();
 
-        AnnouncementViewModel announcementViewModel = ViewModelProviders.of(this, viewModelFactory).get(AnnouncementViewModel.class);
-        CourseViewModel courseViewModel = ViewModelProviders.of(this, viewModelFactory).get(CourseViewModel.class);
-
-
-        LiveData<List<Announcement>> announcementsLiveData = announcementViewModel
-                        .getAllAnnouncements(NUM_ANNOUNCEMENTS_DEFAULT);
-
-        LiveData<List<List<Course>>> coursesLiveData = courseViewModel
-                        .getCoursesByTerm(false);
-
-
-        // announcements fragment will be observing on announcement live data
-        // here we are observing on courselivedata
-        beingObserved.add(announcementsLiveData);
-        beingObserved.add(coursesLiveData);
+        LiveData<List<List<Course>>> coursesLiveData =
+            ViewModelProviders.of(this, viewModelFactory).get(CourseViewModel.class)
+                .getCoursesByTerm(false);
 
         coursesLiveData.observe(this, courses -> {
 
@@ -321,9 +309,9 @@ public class MainActivity extends AppCompatActivity
 
             this.container.setVisibility(View.VISIBLE);
             stopProgressBar();
+
+            coursesLiveData.removeObservers(this);
         });
-
-
     }
 
 
