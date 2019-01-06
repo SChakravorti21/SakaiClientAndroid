@@ -75,7 +75,6 @@ public class MainActivity extends AppCompatActivity
 
     private FrameLayout container;
     private ProgressBar spinner;
-    private boolean isLoadingAllCourses;
     private Set<Class> refreshedFragments;
 
     @Inject CourseViewModel courseViewModel;
@@ -154,11 +153,6 @@ public class MainActivity extends AppCompatActivity
      */
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
-        //if we are loading all courses, don't allow user to click any navigation item
-        if (isLoadingAllCourses)
-            return false;
-
         // To be safe, remove any observations that might be active for the previous tab
         // since that might trigger an unwanted fragment transaction
         removeObservations();
