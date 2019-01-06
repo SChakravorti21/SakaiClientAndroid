@@ -107,7 +107,7 @@ public class AssignmentsFragment extends Fragment {
 
         this.assignmentViewModel
             .getCoursesByTerm(true)
-            .observe(this, courses -> {
+            .observe(getViewLifecycleOwner(), courses -> {
                 this.courses = courses;
                 if(this.sortedByCourses)
                     AssignmentSortingUtils.sortCourseAssignments(courses);

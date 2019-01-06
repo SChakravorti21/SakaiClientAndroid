@@ -53,16 +53,19 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
+import dagger.android.AndroidInjector;
+import dagger.android.DispatchingAndroidInjector;
+import dagger.android.HasFragmentInjector;
+import dagger.android.support.HasSupportFragmentInjector;
 
 import static com.sakaimobile.development.sakaiclient20.ui.fragments.AnnouncementsFragment.NUM_ANNOUNCEMENTS_DEFAULT;
 
 public class MainActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener,
-        OnActionPerformedListener, OnAnnouncementSelected {
+        OnActionPerformedListener, OnAnnouncementSelected, HasSupportFragmentInjector {
 
-
-    @Inject
-    ViewModelFactory viewModelFactory;
+    @Inject DispatchingAndroidInjector<Fragment> supportFragmentInjector;
+    @Inject ViewModelFactory viewModelFactory;
     protected Set<LiveData> beingObserved;
 
     public static final String ASSIGNMENTS_TAG = "ASSIGNMENTS";
@@ -70,15 +73,12 @@ public class MainActivity extends AppCompatActivity
     private static final short FRAGMENT_REPLACE = 0;
     private static final short FRAGMENT_ADD = 1;
 
-
     private FrameLayout container;
     private ProgressBar spinner;
     private boolean isLoadingAllCourses;
 
     @Inject
     CourseViewModel courseViewModel;
-
-    private Fragment displayingFragment;
     DownloadCompleteReceiver downloadReceiver;
 
     //==============================
@@ -261,10 +261,6 @@ public class MainActivity extends AppCompatActivity
                 transaction.replace(R.id.fragment_container, fragment).commit();
             else if (replace == FRAGMENT_ADD)
                 transaction.add(R.id.fragment_container, fragment).commit();
-            else
-                return;
-
-            displayingFragment = fragment;
         }
     }
 
@@ -287,9 +283,7 @@ public class MainActivity extends AppCompatActivity
             AllCoursesFragment coursesFragment = AllCoursesFragment.newInstance(courses, this);
             loadFragment(coursesFragment, FRAGMENT_REPLACE, false, false);
             container.setVisibility(View.VISIBLE);
-
             isLoadingAllCourses = false;
-            courseLiveData.removeObservers(this);
 
             if (refresh)
                 makeToast("Successfully refreshed courses", Toast.LENGTH_SHORT);
