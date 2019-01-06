@@ -211,8 +211,8 @@ public class AllCoursesFragment extends Fragment {
 
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
-                .setCustomAnimations(R.anim.enter, R.anim.exit)
-                .replace(R.id.fragment_container, CourseSitesFragment.newInstance(course))
+                .setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
+                .add(R.id.fragment_container, CourseSitesFragment.newInstance(course))
                 .addToBackStack(null)
                 .commit();
     }
