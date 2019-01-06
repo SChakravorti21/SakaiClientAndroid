@@ -15,15 +15,21 @@
         app:showAsAction="withText"/>
 
     <item
+        android:id="@+id/navigation_gradebook"
+        android:icon="@drawable/ic_book"
+        android:title="@string/title_gradebook"
+        app:showAsAction="withText"/>
+
+    <item
         android:id="@+id/navigation_assignments"
         android:icon="@drawable/ic_assignments"
         android:title="@string/title_assignments"
         app:showAsAction="withText"/>
 
     <item
-        android:id="@+id/navigation_gradebook"
-        android:icon="@drawable/ic_book"
-        android:title="@string/title_gradebook"
+        android:id="@+id/navigation_settings"
+        android:icon="@drawable/ic_settings_24dp"
+        android:title="@string/title_settings"
         app:showAsAction="withText"/>
 
 </menu>

@@ -3,7 +3,6 @@ package com.sakaimobile.development.sakaiclient20.ui.viewmodels;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
-import android.util.Log;
 
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Resource;
 import com.sakaimobile.development.sakaiclient20.repositories.ResourceRepository;

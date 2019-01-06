@@ -37,7 +37,7 @@
     <string name="COOKIE_URL_3">https://cas.rutgers.edu/login</string>
     <string name="title_activity_nav">NavActivity</string>
 
-    <string name="title_home">Home</string>
+    <string name="title_home">Classes</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_announcements">Alerts</string>
     <string name="title_assignments">Assignments</string>
