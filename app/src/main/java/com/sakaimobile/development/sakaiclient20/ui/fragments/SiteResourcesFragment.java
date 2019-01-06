@@ -38,6 +38,7 @@ public class SiteResourcesFragment extends Fragment {
     private AndroidTreeView resourcesTreeView;
     private ProgressBar spinner;
     private FrameLayout treeContainer;
+    private View viewOfTree;
 
 
     @Override
@@ -46,7 +47,8 @@ public class SiteResourcesFragment extends Fragment {
         setHasOptionsMenu(true);
 
         Bundle bun = getArguments();
-        currentSiteId = bun.getString(getString(R.string.siteid_tag));
+        if(bun != null)
+            currentSiteId = bun.getString(getString(R.string.siteid_tag));
     }
 
     @Override
@@ -59,6 +61,7 @@ public class SiteResourcesFragment extends Fragment {
         switch(item.getItemId()) {
             case R.id.action_refresh:
                 spinner.setVisibility(View.VISIBLE);
+                viewOfTree.setVisibility(View.GONE);
                 saveResourceTreeState();
                 resourceViewModel.refreshSiteResources(currentSiteId);
                 return true;
@@ -113,6 +116,7 @@ public class SiteResourcesFragment extends Fragment {
             updateResourcesTreeView(resources);
 
             spinner.setVisibility(View.GONE);
+            viewOfTree.setVisibility(View.VISIBLE);
         });
 
         return view;
@@ -125,7 +129,6 @@ public class SiteResourcesFragment extends Fragment {
      * @param flatResources new list of resources
      */
     private void updateResourcesTreeView(List<Resource> flatResources) {
-
 
         // create new tree root
         TreeNode root = TreeNode.root();
@@ -140,7 +143,8 @@ public class SiteResourcesFragment extends Fragment {
         // render the tree
         treeContainer.removeAllViews();
 
-        treeContainer.addView(resourcesTreeView.getView());
+        viewOfTree = resourcesTreeView.getView();
+        treeContainer.addView(viewOfTree);
     }
 
 
