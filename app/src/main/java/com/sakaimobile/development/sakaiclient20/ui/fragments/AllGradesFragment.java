@@ -3,12 +3,18 @@ package com.sakaimobile.development.sakaiclient20.ui.fragments;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.models.Term;
@@ -20,6 +26,7 @@ import com.sakaimobile.development.sakaiclient20.ui.listeners.TreeViewItemClickL
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.CourseHeaderViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.GradeNodeViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.TermHeaderViewHolder;
+import com.sakaimobile.development.sakaiclient20.ui.viewmodels.CourseViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.GradeViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 import com.unnamed.b.atv.model.TreeNode;
@@ -34,83 +41,120 @@ import dagger.android.support.AndroidSupportInjection;
 
 public class AllGradesFragment extends Fragment {
 
-    @Inject
-    ViewModelFactory viewModelFactory;
+    public static final String SHOULD_REFRESH = "SHOULD_REFRESH";
 
+    @Inject ViewModelFactory viewModelFactory;
+    private GradeViewModel gradeViewModel;
     private AndroidTreeView treeView;
+    private boolean shouldRefresh;
 
-    // list of courses to display
-    private List<List<Course>> courses;
+    private FrameLayout treeContainer;
+    private ProgressBar progressBar;
 
-
-    public static AllGradesFragment newInstance(List<List<Course>> courses) {
-
-        AllGradesFragment allGradesFragment = new AllGradesFragment();
-        allGradesFragment.courses = courses;
-        return allGradesFragment;
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+        this.shouldRefresh = getArguments().getBoolean(SHOULD_REFRESH);
     }
 
     @Override
     public void onAttach(Context context) {
         AndroidSupportInjection.inject(this);
         super.onAttach(context);
+        this.gradeViewModel = ViewModelProviders.of(this, viewModelFactory)
+                .get(GradeViewModel.class);
     }
-
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.refreshable_treeview_fragment, null);
 
-        View view = inflater.inflate(R.layout.fragment_all_grades, null);
-        SwipeRefreshLayout swipeRefreshLayout = view.findViewById(R.id.swiperefresh);
+        // Set up refresh layout to make a new network request and re-instantiate the
+        // assignments fragment
+        this.treeContainer = view.findViewById(R.id.treeview_container);
+        this.progressBar = view.findViewById(R.id.progressbar);
+        this.progressBar.setIndeterminate(true);
 
-        createTreeView(this.courses);
-        swipeRefreshLayout.addView(treeView.getView());
-
-        //temporarily disable animations so the animations don't play when the state
-        //is being restored
-        treeView.setDefaultAnimation(false);
-
-        //state must be restored after the view is added to the layout
-        String state = SharedPrefsUtil.getTreeState(getContext(), SharedPrefsUtil.ALL_GRADES_TREE_TYPE);
-        treeView.restoreState(state);
-
-        treeView.setDefaultAnimation(true);
-
-
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            ViewModelProviders.of(getActivity(), viewModelFactory)
-                    .get(GradeViewModel.class)
-                    .refreshAllData();
-        });
-
-
+        // View to ultimately be added to the screen
         return view;
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        gradeViewModel.getCoursesByTerm(shouldRefresh)
+                .observe(getViewLifecycleOwner(), courses -> {
+                    // If we are refreshing, there will be one initial false emission
+                    if(shouldRefresh) {
+                        shouldRefresh = false;
+                        return;
+                    }
+
+                    // Construct the tree view based on th
+                    // Make the TreeView visible inside the parent layout
+                    if(this.treeView == null) {
+                        this.treeView = new AndroidTreeView(getContext());
+                        this.treeView.setDefaultAnimation(true);
+
+                        TreeViewItemClickListener nodeClickListener = new TreeViewItemClickListener(this.treeView);
+                        this.treeView.setDefaultNodeClickListener(nodeClickListener);
+                    }
+
+                    this.renderTree(courses);
+                    this.progressBar.setVisibility(View.GONE);
+                });
+    }
 
     @Override
     public void onDetach() {
         super.onDetach();
-
-        //here we should save tree state when user navigates away from fragment
-        SharedPrefsUtil.saveTreeState(getContext(), treeView, SharedPrefsUtil.ALL_GRADES_TREE_TYPE);
+        this.saveTreeState();
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.grades_fragment_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.action_refresh:
+                this.progressBar.setVisibility(View.VISIBLE);
+                this.saveTreeState();
+                this.gradeViewModel.refreshAllData();
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void renderTree(List<List<Course>> courses) {
+        TreeNode root = createTreeView(courses);
+
+        this.treeContainer.removeAllViews();
+        this.treeView.setRoot(root);
+
+        String state = SharedPrefsUtil.getTreeState(getContext(), SharedPrefsUtil.ALL_GRADES_TREE_TYPE);
+        this.treeView.restoreState(state);
+
+        this.treeContainer.addView(this.treeView.getView());
+    }
 
     /**
      * Creates a treeview structure using a list of terms, and a hashmap mapping
      * term to list of courses for that term, which is gotten from DataHandler
      */
-    public void createTreeView(List<List<Course>> coursesSorted) {
+    public TreeNode createTreeView(List<List<Course>> coursesSorted) {
         TreeNode root = TreeNode.root();
-
 
         for (List<Course> coursesInTerm : coursesSorted) {
             Term courseTerm = (coursesSorted.size() > 0) ? coursesInTerm.get(0).term : null;
             String termString = (courseTerm != null) ?
                     courseTerm.getTermString() + " " + courseTerm.getYear() : "General";
-
 
             //used to determine  if this term has any grades,
             //if the term has no grades, we do not add this term to the tree
@@ -133,21 +177,18 @@ public class AllGradesFragment extends Fragment {
                 //set the custom view holder
                 TreeNode courseNode = new TreeNode(courseNodeItem).setViewHolder(new CourseHeaderViewHolder(getContext(), true));
 
-
-                List<Grade> gradebookObjectList = currCourse.grades;
                 //only continue if the course has grades
+                List<Grade> gradebookObjectList = currCourse.grades;
                 if (gradebookObjectList != null && gradebookObjectList.size() > 0) {
                     termHasAnyGrades = true;
 
                     //for each grade item in the current course, create a node
                     for (Grade grade : gradebookObjectList) {
-
                         GradeNodeViewHolder.GradeTreeItem gradeNodeItem = new GradeNodeViewHolder.GradeTreeItem(
                                 grade.itemName,
                                 grade.grade,
                                 grade.points
                         );
-
 
                         //set the custom view holder
                         TreeNode gradeNode = new TreeNode(gradeNodeItem).setViewHolder(new GradeNodeViewHolder(getContext()));
@@ -156,23 +197,19 @@ public class AllGradesFragment extends Fragment {
                     }
 
                     termNode.addChild(courseNode);
-
                 }
-
-
             }
 
             //only add the term to the tree only if at least one course has one grade item
             if (termHasAnyGrades)
                 root.addChild(termNode);
-
         }
 
-
-        treeView = new AndroidTreeView(getActivity(), root);
-        treeView.setDefaultAnimation(true);
-        treeView.setDefaultNodeClickListener(new TreeViewItemClickListener(treeView));
+        return root;
     }
 
+    private void saveTreeState() {
+        SharedPrefsUtil.saveTreeState(getContext(), this.treeView, SharedPrefsUtil.ALL_GRADES_TREE_TYPE);
+    }
 
 }

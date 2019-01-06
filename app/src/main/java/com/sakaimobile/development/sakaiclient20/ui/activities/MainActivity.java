@@ -272,6 +272,19 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
+     * Loads the all grades fragment
+     */
+    public void loadGradesFragment() {
+        Bundle bundle = new Bundle();
+        boolean shouldRefresh = getAndUpdateRefreshedState(AllGradesFragment.class);
+        bundle.putBoolean(AllGradesFragment.SHOULD_REFRESH, shouldRefresh);
+
+        Fragment fragment = new AllGradesFragment();
+        fragment.setArguments(bundle);
+        loadFragment(fragment, FRAGMENT_REPLACE, false, false);
+    }
+
+    /**
      * Loads the all announcements fragment by obser
      * ving on the live data from the
      * announcements view model
@@ -305,32 +318,6 @@ public class MainActivity extends AppCompatActivity
             stopProgressBar();
 
             coursesLiveData.removeObservers(this);
-        });
-    }
-
-
-    /**
-     * Loads the all grades fragment
-     */
-    public void loadGradesFragment() {
-        this.container.setVisibility(View.GONE);
-        startProgressBar();
-
-
-        LiveData<List<List<Course>>> courseLiveData =
-                ViewModelProviders.of(this, viewModelFactory)
-                        .get(GradeViewModel.class)
-                        .getCoursesByTerm(true);
-
-        beingObserved.add(courseLiveData);
-
-        courseLiveData.observe(this, courses -> {
-            stopProgressBar();
-
-            AllGradesFragment gradesFragment = AllGradesFragment.newInstance(courses);
-            loadFragment(gradesFragment, FRAGMENT_REPLACE, false, false);
-            container.setVisibility(View.VISIBLE);
-
         });
     }
 
