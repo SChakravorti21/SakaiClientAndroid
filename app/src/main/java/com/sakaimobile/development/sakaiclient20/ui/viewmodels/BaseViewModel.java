@@ -28,12 +28,8 @@ abstract class BaseViewModel extends ViewModel {
     public LiveData<List<List<Course>>> getCoursesByTerm(boolean refresh) {
         if(this.coursesByTerm == null) {
             this.coursesByTerm = new MutableLiveData<>();
-        }
-
-        if(refresh)
-            refreshAllData();
-        else
             loadCourses();
+        }
 
         return this.coursesByTerm;
     }

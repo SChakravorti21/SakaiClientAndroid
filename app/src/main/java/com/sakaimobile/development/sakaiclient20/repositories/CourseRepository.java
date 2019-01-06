@@ -1,5 +1,8 @@
 package com.sakaimobile.development.sakaiclient20.repositories;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Transformations;
+
 import com.sakaimobile.development.sakaiclient20.models.Term;
 import com.sakaimobile.development.sakaiclient20.models.sakai.courses.CoursesResponse;
 import com.sakaimobile.development.sakaiclient20.networking.services.CoursesService;
@@ -13,9 +16,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Completable;
+import io.reactivex.Flowable;
 import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
 
 public class CourseRepository {
 
@@ -39,13 +45,17 @@ public class CourseRepository {
                 .map(this::flattenCompositeToEntity);
     }
 
-    public Single<List<List<Course>>> getCoursesSortedByTerm() {
+    public Flowable<List<List<Course>>> getCoursesSortedByTerm() {
         return courseDao.getAllCourses()
-                .firstOrError()
-                .toObservable()
-                .flatMapIterable(courses -> courses)
-                .map(this::flattenCompositeToEntity)
-                .toList()
+                //.firstOrError()
+                //.toObservable()
+                .debounce(1000, TimeUnit.MILLISECONDS)
+                .map(courses -> {
+                    List<Course> flattened = new ArrayList<>(courses.size());
+                    for(CourseWithAllData course : courses)
+                        flattened.add(flattenCompositeToEntity(course));
+                    return flattened;
+                })
                 .map(this::sortCoursesByTerm);
     }
 
@@ -58,11 +68,13 @@ public class CourseRepository {
                 .ignoreElement();
     }
 
-    public Completable refreshAllCourses() {
-        return coursesService.getAllSites()
+    public void refreshAllCourses() {
+        coursesService.getAllSites()
                 .map(CoursesResponse::getCourses)
                 .map(this::persistCourses)
-                .ignoreElement();
+                .ignoreElement()
+                .subscribeOn(Schedulers.io())
+                .subscribe();
     }
 
     private List<Course> persistCourses(List<Course> courses) {

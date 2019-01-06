@@ -26,15 +26,7 @@ public class CourseViewModel extends BaseViewModel {
 
     @Override
     public void refreshAllData() {
-        this.compositeDisposable.add(
-            this.courseRepository.refreshAllCourses()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    this::loadCourses,
-                    Throwable::printStackTrace
-                )
-        );
+        this.courseRepository.refreshAllCourses();
     }
 
     @Override

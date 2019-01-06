@@ -89,12 +89,12 @@ public class AssignmentsFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_all_assignments, container, false);
+        View view = inflater.inflate(R.layout.refreshable_treeview_fragment, container, false);
 
         // Set up refresh layout to make a new network request and re-instantiate the
         // assignments fragment
-        this.treeContainer = view.findViewById(R.id.assignments_container);
-        this.progressBar = view.findViewById(R.id.assignments_progressbar);
+        this.treeContainer = view.findViewById(R.id.treeview_container);
+        this.progressBar = view.findViewById(R.id.progressbar);
         this.progressBar.setIndeterminate(true);
 
         // View to ultimately be added to the screen
