@@ -68,13 +68,11 @@ public class CourseRepository {
                 .ignoreElement();
     }
 
-    public void refreshAllCourses() {
-        coursesService.getAllSites()
+    public Completable refreshAllCourses() {
+        return coursesService.getAllSites()
                 .map(CoursesResponse::getCourses)
                 .map(this::persistCourses)
-                .ignoreElement()
-                .subscribeOn(Schedulers.io())
-                .subscribe();
+                .ignoreElement();
     }
 
     private List<Course> persistCourses(List<Course> courses) {

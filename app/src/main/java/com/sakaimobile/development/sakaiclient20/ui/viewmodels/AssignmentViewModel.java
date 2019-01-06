@@ -25,7 +25,10 @@ public class AssignmentViewModel extends BaseViewModel {
 
     @Override
     public void refreshAllData() {
-        this.assignmentRepository.refreshAllAssignments();
+        this.assignmentRepository.refreshAllAssignments()
+                .doOnSubscribe(compositeDisposable::add)
+                .subscribeOn(Schedulers.io())
+                .subscribe();
     }
 
     @Override

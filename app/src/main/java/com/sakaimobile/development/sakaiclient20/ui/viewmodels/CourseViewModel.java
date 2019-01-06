@@ -26,7 +26,10 @@ public class CourseViewModel extends BaseViewModel {
 
     @Override
     public void refreshAllData() {
-        this.courseRepository.refreshAllCourses();
+        this.courseRepository.refreshAllCourses()
+                .doOnSubscribe(compositeDisposable::add)
+                .subscribeOn(Schedulers.io())
+                .subscribe();
     }
 
     @Override

@@ -15,6 +15,7 @@ import javax.inject.Inject;
 
 import io.reactivex.Completable;
 import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -41,14 +42,14 @@ public class AssignmentRepository {
         this.assignmentsService = service;
     }
 
-    public void refreshAllAssignments() {
+    public Completable refreshAllAssignments() {
         // Probably the most impressive piece of RxJava in this project
         // We need to update all assignments, but requesting directly
         // from the endpoint for all assignments is too slow. Instead,
         // we construct requests to update assignments for each site (i.e. course),
         // and run them in parallel. This reduces the request/persistence time significantly
         // (slashes it in half).
-        courseDao.getAllSiteIds()
+        return courseDao.getAllSiteIds()
             .toObservable()
             // Construct the network request for each course's assignments
             .flatMapIterable(siteIds -> siteIds)
@@ -63,9 +64,7 @@ public class AssignmentRepository {
                     this.persistAssignments(courseAssignments);
                 return allAssignments;
             })
-            .ignoreElement()
-            .subscribeOn(Schedulers.io())
-            .subscribe();
+            .ignoreElement();
     }
 
     public Single<List<Assignment>> refreshSiteAssignments(String siteId) {
