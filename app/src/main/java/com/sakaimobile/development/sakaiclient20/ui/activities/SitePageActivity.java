@@ -99,7 +99,6 @@ public class SitePageActivity extends AppCompatActivity {
         // on a site page with an invalid url
         WebFragment fragment = WebFragment.newInstance(url);
         addFragment(fragment);
-
     }
 
 
