@@ -60,8 +60,16 @@ public class SiteResourcesFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.action_refresh:
+
+                // this can be null if the user immediately clicks refresh while
+                // resources are loading for the first time
+                // don't refresh if this is the case
+                if(viewOfTree == null)
+                    return false;
+
                 spinner.setVisibility(View.VISIBLE);
                 viewOfTree.setVisibility(View.GONE);
+
                 saveResourceTreeState();
                 resourceViewModel.refreshSiteResources(currentSiteId);
                 return true;
