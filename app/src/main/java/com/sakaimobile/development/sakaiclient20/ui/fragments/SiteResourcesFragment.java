@@ -36,8 +36,8 @@ public class SiteResourcesFragment extends Fragment {
     ResourceViewModel resourceViewModel;
     private String currentSiteId;
     private AndroidTreeView resourcesTreeView;
-    private View viewOfTree;
     private ProgressBar spinner;
+    private FrameLayout treeContainer;
 
 
     @Override
@@ -58,9 +58,9 @@ public class SiteResourcesFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.action_refresh:
-                resourceViewModel.refreshSiteResources(currentSiteId);
                 spinner.setVisibility(View.VISIBLE);
-                viewOfTree.setVisibility(View.GONE);
+                saveResourceTreeState();
+                resourceViewModel.refreshSiteResources(currentSiteId);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -87,20 +87,20 @@ public class SiteResourcesFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_site_resources, null);
 
         spinner = view.findViewById(R.id.progress_circular);
+        spinner.bringToFront();
+        spinner.invalidate();
         spinner.setVisibility(View.VISIBLE);
 
         // get the parent view container
-        FrameLayout frameLayout = view.findViewById(R.id.container);
+        treeContainer = view.findViewById(R.id.container);
+
 
         // setup the treeview
         final TreeNode root = TreeNode.root();
         resourcesTreeView = new AndroidTreeView(getActivity(), root);
         resourcesTreeView.setDefaultAnimation(true);
 
-        restoreResourceTreeState();
 
-        viewOfTree = resourcesTreeView.getView();
-        frameLayout.addView(viewOfTree);
 
         // request the resources for the site
         LiveData<List<Resource>> resourceLiveData =
@@ -110,9 +110,8 @@ public class SiteResourcesFragment extends Fragment {
         resourceLiveData.observe(this, resources -> {
 
             // update the resources tree view
-            updateResourcesTreeView(root, resources);
+            updateResourcesTreeView(resources);
 
-            viewOfTree.setVisibility(View.VISIBLE);
             spinner.setVisibility(View.GONE);
         });
 
@@ -123,19 +122,25 @@ public class SiteResourcesFragment extends Fragment {
      * Updates the resources tree view by removing old nodes and adding new nodes
      * from the resources list
      *
-     * @param root          root of the tree (Root is never changed)
      * @param flatResources new list of resources
      */
-    private void updateResourcesTreeView(TreeNode root, List<Resource> flatResources) {
+    private void updateResourcesTreeView(List<Resource> flatResources) {
 
-        // remove the old children of the root, so we can build a new treeview
-        removeChildren(root);
 
+        // create new tree root
+        TreeNode root = TreeNode.root();
         List<TreeNode> children = getChildren(flatResources, 1, flatResources.size());
+        root.addChildren(children);
 
-        for (TreeNode n : children) {
-            resourcesTreeView.addNode(root, n);
-        }
+        // set the new root
+        resourcesTreeView.setRoot(root);
+
+        restoreResourceTreeState();
+
+        // render the tree
+        treeContainer.removeAllViews();
+
+        treeContainer.addView(resourcesTreeView.getView());
     }
 
 
@@ -233,35 +238,6 @@ public class SiteResourcesFragment extends Fragment {
                 .commit();
     }
 
-
-    /**
-     * This may look weird at first glance, but do not fret
-     * originally, I was doing a simple foreach loop and calling node.deleteChild(), but for
-     * some reason this does not update the view, from what I found
-     * then I tried a simple foreach loop and deleting the node using the reference to the treeview
-     * itself, but I started getting concurrent modification exceptions, which makes sense since I was
-     * iterating through the list and deleting the list at the same time (with node.getChildren())
-     * <p>
-     * **IMPORTANT**, the list returned by getChildren() is the same list internally used
-     * so changing this list will also change the internal representation
-     * <p>
-     * After this, I tried a regular for loop and removed the child at index i
-     * but since the getChildren() is returning the same list, the list is getting shorter
-     * each time I remove a child, so the index i isn't valid
-     * <p>
-     * To fix this, I would continue until the list of children was empty and keep deleting
-     * the first child. this seemed to work
-     *
-     * @param node node to remove children of
-     */
-    private void removeChildren(TreeNode node) {
-
-        List<TreeNode> children = node.getChildren();
-        while (children.size() > 0) {
-            TreeNode child = children.get(0);
-            resourcesTreeView.removeNode(child);
-        }
-    }
 
 
     private void saveResourceTreeState() {
