@@ -1,14 +1,17 @@
 package com.sakaimobile.development.sakaiclient20.ui.activities;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.webkit.CookieManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.CASWebViewClient;
+import com.sakaimobile.development.sakaiclient20.networking.utilities.LoginPersistenceWorker;
 
 public class WebViewActivity extends AppCompatActivity {
 
@@ -30,6 +33,19 @@ public class WebViewActivity extends AppCompatActivity {
         CASWebViewClient webViewClient = new CASWebViewClient(
                 getString(R.string.COOKIE_URL_2),
                 savedHeaders -> {
+                    // Ensure that the cookies persist even when the app is closed
+                    // (Allows users to restart the app without logging in again
+                    // since the cookies allow login to be bypassed if valid)
+                    // Unfortunately only works on API 21+ (but that's good enough for us)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        CookieManager.getInstance().flush();
+
+                        // Start background task to keep cookies active
+                        // WorkManager should ensure that the task continues running
+                        // even if the app is sent to the background.
+                        LoginPersistenceWorker.startLoginPersistenceTask();
+                    }
+
                     // Once the main page loads, we should have all the cookies and
                     // headers necessary to make requests. These headers just
                     // need to be saved for the custom OkHttpClients to be able to access.

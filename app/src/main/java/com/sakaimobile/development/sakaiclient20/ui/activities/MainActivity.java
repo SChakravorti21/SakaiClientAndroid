@@ -3,7 +3,6 @@ package com.sakaimobile.development.sakaiclient20.ui.activities;
 import android.app.DownloadManager;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,7 +12,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -21,6 +19,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.sakaimobile.development.sakaiclient20.R;
+import com.sakaimobile.development.sakaiclient20.networking.services.SessionService;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Announcement;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
@@ -30,6 +29,7 @@ import com.sakaimobile.development.sakaiclient20.ui.fragments.AllCoursesFragment
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AllGradesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AnnouncementsFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.CourseSitesFragment;
+import com.sakaimobile.development.sakaiclient20.ui.fragments.SettingsFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.SingleAnnouncementFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.AssignmentsFragment;
 import com.sakaimobile.development.sakaiclient20.ui.helpers.BottomNavigationViewHelper;
@@ -61,8 +61,6 @@ public class MainActivity extends AppCompatActivity
 
     @Inject
     ViewModelFactory viewModelFactory;
-
-
     protected Set<LiveData> beingObserved;
 
     public static final String ASSIGNMENTS_TAG = "ASSIGNMENTS";
@@ -75,18 +73,21 @@ public class MainActivity extends AppCompatActivity
     private ProgressBar spinner;
     private boolean isLoadingAllCourses;
 
-    private Fragment displayingFragment;
+    @Inject
+    CourseViewModel courseViewModel;
 
-    /******************************\
-     LIFECYCLE/INTERFACE METHODS
-     \******************************/
+    private Fragment displayingFragment;
+    DownloadCompleteReceiver downloadReceiver;
+
+    //==============================
+    // LIFECYCLE/INTERFACE METHODS
+    //==============================
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        registerDownloadReceiver();
 
         // Get reference to the container
         this.container = findViewById(R.id.fragment_container);
@@ -111,22 +112,18 @@ public class MainActivity extends AppCompatActivity
         loadCoursesFragment(true);
     }
 
-//    private void logUserInfo() {
-//        userService
-//                .getLoggedInUser()
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(userResponse -> {
-//                    Log.d("LOG", "logging user in crashlytics...");
-//                    Crashlytics.setUserEmail(userResponse.email);
-//                    Crashlytics.setUserName(userResponse.displayName);
-//                });
-//    }
-
     @Override
     protected void onResume() {
         super.onResume();
+        registerDownloadReceiver();
         CustomLinkMovementMethod.setFragmentManager(getSupportFragmentManager());
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(downloadReceiver);
+        removeObservations();
     }
 
     @Override
@@ -135,24 +132,6 @@ public class MainActivity extends AppCompatActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager.getBackStackEntryCount() == 0) {
             setActionBarTitle(getString(R.string.app_name));
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.toolbar_nav_activity, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_settings:
-                Intent intent = new Intent(this, SettingsActivity.class);
-                startActivity(intent);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
         }
     }
 
@@ -189,16 +168,17 @@ public class MainActivity extends AppCompatActivity
             case R.id.navigation_gradebook:
                 loadGradesFragment();
                 return true;
+            case R.id.navigation_settings:
+                loadFragment(new SettingsFragment(), FRAGMENT_REPLACE, true, false);
+                return true;
             default:
                 return false;
         }
     }
 
-
-    /******************************\
-     INTERFACE IMPLEMENTATIONS
-     \******************************/
-
+    //============================
+    // INTERFACE IMPLEMENTATIONS
+    //============================
 
     @Override
     public void onCourseSelected(String siteId) {
@@ -219,7 +199,7 @@ public class MainActivity extends AppCompatActivity
     public void onAnnouncementSelected(Announcement announcement, Map<String, Course> siteIdToCourse) {
         Bundle b = new Bundle();
         b.putSerializable(getString(R.string.single_announcement_tag), announcement);
-        // for some reason map isn't serializable, so i had to cast to hashmap
+        // for some reason map isn't serializable, so i had to cast to HashMap
         //TODO check before casting
         b.putSerializable(getString(R.string.siteid_to_course_map), (HashMap) siteIdToCourse);
 
@@ -229,42 +209,39 @@ public class MainActivity extends AppCompatActivity
         loadFragment(fragment, FRAGMENT_ADD, true, R.anim.grow_enter, R.anim.pop_exit);
     }
 
-
-    /*******************************\
-     LIFECYCLE CONVENIENCE METHODS
-     \*******************************/
+    //================================
+    // LIFECYCLE CONVENIENCE METHODS
+    //================================
 
     public void registerDownloadReceiver() {
         IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
-        DownloadCompleteReceiver receiver = new DownloadCompleteReceiver();
-        registerReceiver(receiver, filter);
+        this.downloadReceiver = new DownloadCompleteReceiver();
+        registerReceiver(downloadReceiver, filter);
     }
 
 
-    /******************************\
-     FRAGMENT MANAGEMENT
-     \******************************/
+    //=======================
+    // FRAGMENT MANAGEMENT
+    //=======================
 
     /**
      * Loads a given fragment into the fragment container in the NavActivity layout
      *
-     * @param fragment
-     * @return boolean whether the fragment was successfully loaded
+     * @param fragment the Fragment to make visible
      */
-    private boolean loadFragment(Fragment fragment, int replace, boolean addToBackStack, boolean showAnimations) {
+    private void loadFragment(Fragment fragment, int replace, boolean addToBackStack, boolean showAnimations) {
         if (showAnimations)
-            return loadFragment(fragment, replace, addToBackStack, R.anim.enter, R.anim.exit);
+            loadFragment(fragment, replace, addToBackStack, R.anim.enter, R.anim.exit);
         else
-            return loadFragment(fragment, replace, addToBackStack, -1, -1);
+            loadFragment(fragment, replace, addToBackStack, -1, -1);
     }
 
     /**
      * Loads a given fragment into the fragment container in the NavActivity layout
      *
-     * @param fragment
-     * @return boolean whether the fragment was successfully loaded
+     * @param fragment the Fragment to make visible
      */
-    private boolean loadFragment(Fragment fragment, int replace, boolean addToBackStack, int animEnter, int animExit) {
+    private void loadFragment(Fragment fragment, int replace, boolean addToBackStack, int animEnter, int animExit) {
         if (fragment != null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
@@ -278,23 +255,10 @@ public class MainActivity extends AppCompatActivity
             else if (replace == FRAGMENT_ADD)
                 transaction.add(R.id.fragment_container, fragment).commit();
             else
-                return false;
+                return;
 
             displayingFragment = fragment;
-            return true;
         }
-
-        return false;
-    }
-
-
-    /**
-     * pops the fragment backstacak until a given fragment
-     *
-     * @param name name of fragment to pop until
-     */
-    private void popBackStackUntil(String name) {
-        getSupportFragmentManager().popBackStack(name, FragmentManager.POP_BACK_STACK_INCLUSIVE);
     }
 
     /**
@@ -431,10 +395,9 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-
-    /******************************\
-     CONVENIENCE METHODS
-     \******************************/
+    //=======================
+    // CONVENIENCE METHODS
+    //=======================
 
     private HashMap<String, Course> createSiteIdToCourseMap(List<List<Course>> courses) {
 
@@ -462,12 +425,6 @@ public class MainActivity extends AppCompatActivity
 
     public void makeToast(String message, int duration) {
         Toast.makeText(this, message, duration).show();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        removeObservations();
     }
 
     protected void removeObservations() {

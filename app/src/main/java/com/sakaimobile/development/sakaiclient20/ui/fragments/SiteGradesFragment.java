@@ -2,13 +2,10 @@ package com.sakaimobile.development.sakaiclient20.ui.fragments;
 
 import android.arch.lifecycle.LiveData;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +13,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.sakaimobile.development.sakaiclient20.R;
-import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Grade;
 import com.sakaimobile.development.sakaiclient20.ui.adapters.GradeItemAdapter;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.CourseViewModel;
