@@ -103,7 +103,7 @@ public class SingleAssignmentFragment extends Fragment implements View.OnClickLi
             case R.id.assignment_close_button:
                 // Return to the previous fragment in the back stack
                 AppCompatActivity activity = (AppCompatActivity) getActivity();
-                activity.getSupportFragmentManager().popBackStack();
+                activity.onBackPressed();
                 break;
         }
     }
@@ -150,7 +150,8 @@ public class SingleAssignmentFragment extends Fragment implements View.OnClickLi
         // If there are no attachments, do not show the attachments view.
         // Otherwise, construct the HTML and set the TextView's content from that.
         if(attachments == null || attachments.size() == 0) {
-            attachmentsView.setVisibility(View.GONE);
+            attachmentsView.setText(
+                    getSpannedFromHtml("<p>No attachments found for this assignment.</p>"));
         } else {
             StringBuilder attachmentsString = new StringBuilder();
             for (Attachment attachment : attachments) {

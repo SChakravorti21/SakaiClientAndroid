@@ -11,6 +11,7 @@ import com.sakaimobile.development.sakaiclient20.ui.helpers.AssignmentSortingUti
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -47,6 +48,7 @@ public class AssignmentRepository {
 
     public Flowable<List<Assignment>> getSiteAssignments(List<String> siteIds) {
         return assignmentDao.getSiteAssignments(siteIds)
+                .debounce(100, TimeUnit.MILLISECONDS)
                 .map(AssignmentRepository::flattenCompositesToEntities)
                 .map(assignments -> {
                     AssignmentSortingUtils.sortAssignmentsByDate(assignments);

@@ -10,8 +10,12 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
@@ -21,8 +25,11 @@ import com.sakaimobile.development.sakaiclient20.ui.viewmodels.AssignmentViewMod
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -60,11 +67,15 @@ public class SiteAssignmentsFragment extends Fragment {
 
     @Inject ViewModelFactory viewModelFactory;
     private AssignmentViewModel assignmentViewModel;
+
+    private ProgressBar progressBar;
     private ViewPager assignmentsPager;
+    private Map<String, String> mapSiteIdToSitePageUrl;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         this.siteIds = new ArrayList<>();
 
         Bundle arguments = getArguments();
@@ -72,10 +83,10 @@ public class SiteAssignmentsFragment extends Fragment {
             List<Assignment> assignments = (List<Assignment>) arguments.getSerializable(ASSIGNMENTS_TAG);
             initialPosition = arguments.getInt(ASSIGNMENT_NUMBER, 0);
 
-            Set<String> siteIdSet = new HashSet<>();
+            this.mapSiteIdToSitePageUrl = new HashMap<>();
             for(Assignment assignment : assignments)
-                siteIdSet.add(assignment.siteId);
-            this.siteIds.addAll(siteIdSet);
+                this.mapSiteIdToSitePageUrl.put(assignment.siteId, assignment.assignmentSitePageUrl);
+            this.siteIds.addAll(this.mapSiteIdToSitePageUrl.keySet());
         }
     }
 
@@ -95,9 +106,10 @@ public class SiteAssignmentsFragment extends Fragment {
         ViewGroup layout = (ViewGroup) inflater.inflate(R.layout.fragment_course_assignments,
                                                             container, false);
 
-        // Find the ViwPager and give it the adapter that tells how to instantiate
-        // Fragments for each assignment
+        // Find the ViwPager and so that we can give it an adapter once LiveData triggers
         this.assignmentsPager = layout.findViewById(R.id.assignment_viewpager);
+        this.progressBar = layout.findViewById(R.id.progressbar);
+        this.progressBar.setVisibility(View.GONE);
 
         // Set up the bottom indicators to show that there are multiple assignments
         // that can be viewed
@@ -113,14 +125,39 @@ public class SiteAssignmentsFragment extends Fragment {
 
         this.assignmentViewModel.getSiteAssignments(siteIds)
                 .observe(getViewLifecycleOwner(), assignments -> {
-                    AssignmentsPagerAdapter pagerAdapter =
-                            new AssignmentsPagerAdapter(getActivity().getSupportFragmentManager(),
-                                    assignments);
+                    for(Assignment assignment : assignments)
+                        attachAssignmentSitePageUrl(assignment);
+
+                    AssignmentsPagerAdapter pagerAdapter = new AssignmentsPagerAdapter(
+                            getActivity().getSupportFragmentManager(),
+                            assignments);
                     this.assignmentsPager.setAdapter(pagerAdapter);
 
                     // Even if initial position was not provided, it will default to zero and
                     // show the first assignment
                     this.assignmentsPager.setCurrentItem(initialPosition);
+                    this.progressBar.setVisibility(View.GONE);
                 });
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.site_assignments_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.action_refresh:
+                this.initialPosition = this.assignmentsPager.getCurrentItem();
+                this.assignmentViewModel.refreshSiteData(this.siteIds);
+                this.progressBar.setVisibility(View.VISIBLE);
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void attachAssignmentSitePageUrl(Assignment assignment) {
+        assignment.assignmentSitePageUrl = this.mapSiteIdToSitePageUrl.get(assignment.siteId);
     }
 }

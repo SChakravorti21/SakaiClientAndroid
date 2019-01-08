@@ -49,7 +49,7 @@ public class CourseRepository {
         return courseDao.getAllCourses()
                 //.firstOrError()
                 //.toObservable()
-                .debounce(1000, TimeUnit.MILLISECONDS)
+                .debounce(300, TimeUnit.MILLISECONDS)
                 .map(courses -> {
                     List<Course> flattened = new ArrayList<>(courses.size());
                     for(CourseWithAllData course : courses)
