@@ -8,6 +8,7 @@ import com.sakaimobile.development.sakaiclient20.ui.fragments.AnnouncementsFragm
 import com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.AssignmentsFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.SiteGradesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.SiteResourcesFragment;
+import com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.SiteAssignmentsFragment;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -31,6 +32,9 @@ abstract class SakaiApplicationModule {
 
     @ContributesAndroidInjector
     abstract SiteGradesFragment contributesSiteGradesFragmentInjector();
+
+    @ContributesAndroidInjector
+    abstract SiteAssignmentsFragment contributesSiteAssignmentsFragmentInjector();
 
     @ContributesAndroidInjector
     abstract AllCoursesFragment contributesFragmentInjector();

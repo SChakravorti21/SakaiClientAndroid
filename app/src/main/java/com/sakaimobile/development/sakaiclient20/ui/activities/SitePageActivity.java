@@ -17,6 +17,7 @@ import com.sakaimobile.development.sakaiclient20.ui.fragments.WebFragment;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -35,15 +36,17 @@ public class SitePageActivity extends AppCompatActivity {
         Intent i = getIntent();
         String siteType = i.getStringExtra(getString(R.string.site_type_tag));
         Course course = (Course) i.getSerializableExtra(getString(R.string.course_tag));
+        // When loading assignments,
+        List<String> courseSiteIds = (List<String>) i.getSerializableExtra(getString(R.string.courses_tag));
 
         // setup toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(v -> this.onBackPressed());
 
-
-        // set the toolbar title as siteType + coursename
-        getSupportActionBar().setTitle(String.format("%s: %s", siteType, course.title));
+        if(course != null)
+            // set the toolbar title as siteType + coursename
+            getSupportActionBar().setTitle(String.format("%s: %s", siteType, course.title));
 
 
         // load the appropriate fragment for the site type
@@ -52,6 +55,8 @@ public class SitePageActivity extends AppCompatActivity {
         } else if (siteType.equals(getString(R.string.announcements_site))) {
             startSiteAnnouncementsFragment(course);
         } else if (siteType.equals(getString(R.string.resources_site))) {
+            startSiteResourcesFragment(course);
+        } else if (siteType.equals(getString(R.string.assignments_site))) {
             startSiteResourcesFragment(course);
         } else {
             startWebViewFragment(siteType, course);

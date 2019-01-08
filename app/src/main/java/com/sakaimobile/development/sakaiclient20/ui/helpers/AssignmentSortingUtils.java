@@ -12,6 +12,12 @@ public final class AssignmentSortingUtils {
 
     private static final int HEAP_INIT_SIZE = 20;
 
+    public static void sortAssignmentsByDate(List<Assignment> assignments) {
+        Collections.sort(assignments, (assignment1, assignment2) ->
+                -1 * assignment1.dueTime.compareTo(assignment2.dueTime)
+        );
+    }
+
     public static void sortCourseAssignments(List<List<Course>> coursesByTerm) {
         if(coursesByTerm == null)
             return;
@@ -21,9 +27,7 @@ public final class AssignmentSortingUtils {
                 // Sort the assignments just within this course
                 // Multiply the result of compareTo by -1 since
                 // we want assignments sorted in _reverse_ chronological order
-                Collections.sort(course.assignments, (assignment1, assignment2) ->
-                    -1 * assignment1.dueTime.compareTo(assignment2.dueTime)
-                );
+                sortAssignmentsByDate(course.assignments);
     }
 
     public static List<List<Assignment>> sortAssignmentsByTerm(List<List<Course>> coursesByTerm) {
