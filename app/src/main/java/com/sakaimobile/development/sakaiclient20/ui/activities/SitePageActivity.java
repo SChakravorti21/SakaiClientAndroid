@@ -59,10 +59,11 @@ public class SitePageActivity extends AppCompatActivity {
             startSiteResourcesFragment(course);
         } else if (siteType.equals(getString(R.string.assignments_site))) {
             if(course != null)
-                startSiteAssignmentsFragment(course.assignments);
+                startSiteAssignmentsFragment(course.assignments, 0);
             else {
                 List<Assignment> assignments = (List<Assignment>) i.getSerializableExtra(getString(R.string.assignments_tag));
-                startSiteAssignmentsFragment(assignments);
+                int initialPosition = i.getIntExtra(SiteAssignmentsFragment.ASSIGNMENT_NUMBER, 0);
+                startSiteAssignmentsFragment(assignments, initialPosition);
             }
         } else {
             startWebViewFragment(siteType, course);
@@ -105,9 +106,10 @@ public class SitePageActivity extends AppCompatActivity {
         addFragment(fragment);
     }
 
-    private void startSiteAssignmentsFragment(List<Assignment> assignments) {
+    private void startSiteAssignmentsFragment(List<Assignment> assignments, int initialPosition) {
         Bundle bun = new Bundle();
         bun.putSerializable(SiteAssignmentsFragment.ASSIGNMENTS_TAG, (Serializable) assignments);
+        bun.putInt(SiteAssignmentsFragment.ASSIGNMENT_NUMBER, initialPosition);
 
         SiteAssignmentsFragment fragment = new SiteAssignmentsFragment();
         fragment.setArguments(bun);

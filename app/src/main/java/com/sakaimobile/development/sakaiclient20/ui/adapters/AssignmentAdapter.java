@@ -229,6 +229,7 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
             Intent i = new Intent(activity, SitePageActivity.class);
             i.putExtra(activity.getString(R.string.site_type_tag), activity.getString(R.string.assignments_site));
             i.putExtra(activity.getString(R.string.assignments_tag), (Serializable) assignments);
+            i.putExtra(SiteAssignmentsFragment.ASSIGNMENT_NUMBER, position);
 
             activity.startActivity(i);
         }
