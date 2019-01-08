@@ -40,6 +40,8 @@ import dagger.android.support.AndroidSupportInjection;
  */
 public class SiteAssignmentsFragment extends Fragment {
 
+    public static final String ASSIGNMENTS_TAG = "ASSIGNMENTS";
+
     /**
      * Tag for passing the active assignment position to this {@link Fragment}.
      */
@@ -67,7 +69,7 @@ public class SiteAssignmentsFragment extends Fragment {
 
         Bundle arguments = getArguments();
         if(arguments != null) {
-            List<Assignment> assignments = (List<Assignment>) arguments.getSerializable(MainActivity.ASSIGNMENTS_TAG);
+            List<Assignment> assignments = (List<Assignment>) arguments.getSerializable(ASSIGNMENTS_TAG);
             initialPosition = arguments.getInt(ASSIGNMENT_NUMBER, 0);
 
             Set<String> siteIdSet = new HashSet<>();

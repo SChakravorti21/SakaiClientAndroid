@@ -50,7 +50,7 @@ public class SingleAssignmentFragment extends Fragment implements View.OnClickLi
         // Get the assignment for this fragment
         Bundle arguments = getArguments();
         if(arguments != null) {
-            this.assignment = (Assignment) arguments.getSerializable(MainActivity.ASSIGNMENTS_TAG);
+            this.assignment = (Assignment) arguments.getSerializable(SiteAssignmentsFragment.ASSIGNMENTS_TAG);
         }
     }
 

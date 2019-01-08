@@ -65,7 +65,7 @@
 
     <string name="site_type_tag" translatable="false">SITE_TYPE</string>
     <string name="course_tag" translatable="false">COURSE_TAG</string>
-    <string name="courses_tag" translatable="false">COURSES_TAG</string>
+    <string name="assignments_tag" translatable="false">ASSIGNMENTS_TAG</string>
 
 
 

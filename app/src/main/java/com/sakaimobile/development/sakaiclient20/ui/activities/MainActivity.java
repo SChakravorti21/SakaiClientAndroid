@@ -64,8 +64,6 @@ public class MainActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener,
         OnAnnouncementSelected, HasSupportFragmentInjector {
 
-    public static final String ASSIGNMENTS_TAG = "ASSIGNMENTS";
-
     private static final short FRAGMENT_REPLACE = 0;
     private static final short FRAGMENT_ADD = 1;
 

@@ -8,13 +8,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.sakaimobile.development.sakaiclient20.R;
+import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.SitePage;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AnnouncementsFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.SiteGradesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.SiteResourcesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.WebFragment;
+import com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.SiteAssignmentsFragment;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -36,8 +39,6 @@ public class SitePageActivity extends AppCompatActivity {
         Intent i = getIntent();
         String siteType = i.getStringExtra(getString(R.string.site_type_tag));
         Course course = (Course) i.getSerializableExtra(getString(R.string.course_tag));
-        // When loading assignments,
-        List<String> courseSiteIds = (List<String>) i.getSerializableExtra(getString(R.string.courses_tag));
 
         // setup toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -57,7 +58,12 @@ public class SitePageActivity extends AppCompatActivity {
         } else if (siteType.equals(getString(R.string.resources_site))) {
             startSiteResourcesFragment(course);
         } else if (siteType.equals(getString(R.string.assignments_site))) {
-            startSiteResourcesFragment(course);
+            if(course != null)
+                startSiteAssignmentsFragment(course.assignments);
+            else {
+                List<Assignment> assignments = (List<Assignment>) i.getSerializableExtra(getString(R.string.assignments_tag));
+                startSiteAssignmentsFragment(assignments);
+            }
         } else {
             startWebViewFragment(siteType, course);
         }
@@ -94,6 +100,16 @@ public class SitePageActivity extends AppCompatActivity {
         bun.putString(getString(R.string.siteid_tag), course.siteId);
 
         SiteResourcesFragment fragment = new SiteResourcesFragment();
+        fragment.setArguments(bun);
+
+        addFragment(fragment);
+    }
+
+    private void startSiteAssignmentsFragment(List<Assignment> assignments) {
+        Bundle bun = new Bundle();
+        bun.putSerializable(SiteAssignmentsFragment.ASSIGNMENTS_TAG, (Serializable) assignments);
+
+        SiteAssignmentsFragment fragment = new SiteAssignmentsFragment();
         fragment.setArguments(bun);
 
         addFragment(fragment);

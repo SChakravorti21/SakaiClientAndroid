@@ -1,5 +1,6 @@
 package com.sakaimobile.development.sakaiclient20.ui.adapters;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
 import com.sakaimobile.development.sakaiclient20.ui.activities.MainActivity;
+import com.sakaimobile.development.sakaiclient20.ui.activities.SitePageActivity;
 import com.sakaimobile.development.sakaiclient20.ui.custom_components.CustomLinkMovementMethod;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.SiteAssignmentsFragment;
 
@@ -223,24 +225,12 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
          * @param activity the parent {@link AppCompatActivity}
          */
         private void expandAssignment(AppCompatActivity activity) {
-            Bundle bundle = new Bundle();
-            bundle.putSerializable(MainActivity.ASSIGNMENTS_TAG, (Serializable) assignments);
-            bundle.putInt(SiteAssignmentsFragment.ASSIGNMENT_NUMBER, position);
+            // start the sitepage activity to handle the appropriate site page
+            Intent i = new Intent(activity, SitePageActivity.class);
+            i.putExtra(activity.getString(R.string.site_type_tag), activity.getString(R.string.assignments_site));
+            i.putExtra(activity.getString(R.string.assignments_tag), (Serializable) assignments);
 
-            SiteAssignmentsFragment fragment = new SiteAssignmentsFragment();
-            fragment.setArguments(bundle);
-
-            activity.getSupportFragmentManager()
-                    .beginTransaction()
-                    .setCustomAnimations(R.anim.anim_fade_in,
-                            R.anim.anim_fade_out,
-                            R.anim.anim_fade_in,
-                            R.anim.anim_fade_out)
-                    // Add instead of replacing so that the state of opened assignments
-                    // remains the same after returning
-                    .add(R.id.fragment_container, fragment)
-                    .addToBackStack(null)
-                    .commit();
+            activity.startActivity(i);
         }
     }
 
