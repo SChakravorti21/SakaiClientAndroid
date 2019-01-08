@@ -48,13 +48,19 @@ public class AssignmentViewModel extends BaseViewModel {
         this.refreshSiteData(Collections.singletonList(siteId));
     }
 
+    @SuppressLint("CheckResult")
     public void refreshSiteData(List<String> siteIds) {
         this.assignmentRepository
                 .refreshMultipleSiteAssignments(siteIds)
                 .doOnSubscribe(compositeDisposable::add)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe();
+                .subscribe(
+                        assignments -> {
+                            if(assignments.isEmpty())
+                                this.siteAssignments.setValue(null);
+                        }
+                );
     }
 
     @SuppressLint("CheckResult")
@@ -65,7 +71,12 @@ public class AssignmentViewModel extends BaseViewModel {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        this.siteAssignments::setValue,
+                        assignments -> {
+                            if(assignments.isEmpty())
+                                this.refreshSiteData(siteIds);
+                            else
+                                this.siteAssignments.setValue(assignments);
+                        },
                         Throwable::printStackTrace
                 )
         );

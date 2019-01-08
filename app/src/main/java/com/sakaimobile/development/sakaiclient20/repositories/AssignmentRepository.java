@@ -64,10 +64,11 @@ public class AssignmentRepository {
         // (slashes it in half).
         return courseDao.getAllSiteIds()
             .toObservable()
-            .switchMapCompletable(this::refreshMultipleSiteAssignments);
+            .switchMapSingle(this::refreshMultipleSiteAssignments)
+            .ignoreElements();
     }
 
-    public Completable refreshMultipleSiteAssignments(List<String> siteIds) {
+    public Single<List<List<Assignment>>> refreshMultipleSiteAssignments(List<String> siteIds) {
         return Observable.fromIterable(siteIds)
                 .map(this::refreshSiteAssignments)
                 // Observe each network call on its own thread, running them in parallel
@@ -79,8 +80,7 @@ public class AssignmentRepository {
                     for(List<Assignment> courseAssignments : allAssignments)
                         this.persistAssignments(courseAssignments);
                     return allAssignments;
-                })
-                .ignoreElement();
+                });
     }
 
     private Single<List<Assignment>> refreshSiteAssignments(String siteId) {
@@ -90,6 +90,9 @@ public class AssignmentRepository {
     }
 
     private List<Assignment> persistAssignments(List<Assignment> assignments) {
+        if(assignments.isEmpty())
+            return assignments;
+
         // Insert all assignments and their attachments into the database
         assignmentDao.insert(assignments);
         for(Assignment assignment : assignments)

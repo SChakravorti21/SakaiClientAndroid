@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
@@ -125,6 +126,11 @@ public class SiteAssignmentsFragment extends Fragment {
 
         this.assignmentViewModel.getSiteAssignments(siteIds)
                 .observe(getViewLifecycleOwner(), assignments -> {
+                    if(assignments == null) {
+                        Toast.makeText(getContext(), "No assignments found", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+
                     for(Assignment assignment : assignments)
                         attachAssignmentSitePageUrl(assignment);
 
