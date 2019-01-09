@@ -10,6 +10,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.ui.custom_components.AttachmentDownloadListener;
@@ -92,6 +94,7 @@ public class WebFragment extends Fragment {
 
         // Present the expected URL
         webView.loadUrl(URL);
+
     }
 
     /**

@@ -3,17 +3,21 @@ package com.sakaimobile.development.sakaiclient20.ui.fragments;
 import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.sakaimobile.development.sakaiclient20.R;
@@ -64,15 +68,16 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
 
     private static final int ANNOUNCEMENTS_TO_GET_PER_REQUEST = 10;
 
-    private SwipeRefreshLayout swipeRefreshLayout;
+    private LiveData<List<Announcement>> announcementLiveData;
 
-    LiveData<List<Announcement>> liveData;
+    private ProgressBar spinner;
 
 
     @SuppressWarnings("unchecked")
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
 
         Bundle bun = getArguments();
         String siteId = bun.getString(getString(R.string.siteid_tag));
@@ -83,12 +88,12 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
 
         if (announcementType == ALL_ANNOUNCEMENTS) {
             loadMoreListener = new LoadsAllAnnouncements();
-            liveData = announcementViewModel
+            announcementLiveData = announcementViewModel
                     .getAllAnnouncements(NUM_ANNOUNCEMENTS_DEFAULT);
 
         } else {
             loadMoreListener = new LoadsSiteAnnouncements();
-            liveData = announcementViewModel
+            announcementLiveData = announcementViewModel
                     .getSiteAnnouncements(siteId, NUM_ANNOUNCEMENTS_DEFAULT);
         }
 
@@ -100,24 +105,52 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_announcements, null);
+
+        // setup recycler view
         announcementRecycler = view.findViewById(R.id.announcements_recycler);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         announcementRecycler.setLayoutManager(layoutManager);
         announcementRecycler.setItemAnimator(new DefaultItemAnimator());
 
-        swipeRefreshLayout = view.findViewById(R.id.swiperefresh);
-        swipeRefreshLayout.setRefreshing(true);
+        // start the spinner
+        spinner = view.findViewById(R.id.progress_circular);
+        spinner.setVisibility(View.VISIBLE);
 
         createAdapter();
 
-        liveData.observe(getActivity(), announcements -> {
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // update the recycler adapter when new announcements come
+        announcementLiveData.observe(getViewLifecycleOwner(), announcements -> {
 
             addNewAnnouncementsToAdapter(announcements);
-            swipeRefreshLayout.setRefreshing(false);
+            announcementRecycler.setVisibility(View.VISIBLE);
+            spinner.setVisibility(View.GONE);
         });
+    }
 
-        return view;
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.refresh_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_refresh:
+                announcementRecycler.setVisibility(View.GONE);
+                spinner.setVisibility(View.VISIBLE);
+                loadMoreListener.refresh();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
 
@@ -140,9 +173,6 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
         announcementRecycler.setLayoutAnimation(controller);
 
         announcementRecycler.scheduleLayoutAnimation();
-
-
-        swipeRefreshLayout.setOnRefreshListener(loadMoreListener::refresh);
     }
 
 

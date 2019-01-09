@@ -3,14 +3,20 @@ package com.sakaimobile.development.sakaiclient20.ui.fragments;
 import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 
 import com.sakaimobile.development.sakaiclient20.R;
+import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Resource;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.ResourceDirectoryViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.ResourceItemViewHolder;
@@ -29,19 +35,48 @@ public class SiteResourcesFragment extends Fragment {
 
     @Inject
     ResourceViewModel resourceViewModel;
-
     private String currentSiteId;
-
     private AndroidTreeView resourcesTreeView;
-    private SwipeRefreshLayout swipeRefreshLayout;
+    private ProgressBar spinner;
+    private FrameLayout treeContainer;
+    private View viewOfTree;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
 
         Bundle bun = getArguments();
-        currentSiteId = bun.getString(getString(R.string.siteid_tag));
+        if (bun != null)
+            currentSiteId = bun.getString(getString(R.string.siteid_tag));
+    }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.refresh_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_refresh:
+
+                // this can be null if the user immediately clicks refresh while
+                // resources are loading for the first time
+                // don't refresh if this is the case
+                if (viewOfTree == null)
+                    return false;
+
+                spinner.setVisibility(View.VISIBLE);
+                viewOfTree.setVisibility(View.GONE);
+
+                saveResourceTreeState();
+                resourceViewModel.refreshSiteResources(currentSiteId);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
 
@@ -51,66 +86,74 @@ public class SiteResourcesFragment extends Fragment {
         super.onAttach(context);
     }
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        saveResourceTreeState();
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_site_resources, null);
 
+        spinner = view.findViewById(R.id.progress_circular);
+        spinner.bringToFront();
+        spinner.invalidate();
+        spinner.setVisibility(View.VISIBLE);
+
         // get the parent view container
-        swipeRefreshLayout = view.findViewById(R.id.swiperefresh);
-        swipeRefreshLayout.setRefreshing(true);
+        treeContainer = view.findViewById(R.id.container);
+
+        return view;
+    }
+
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         // setup the treeview
         final TreeNode root = TreeNode.root();
         resourcesTreeView = new AndroidTreeView(getActivity(), root);
         resourcesTreeView.setDefaultAnimation(true);
-        swipeRefreshLayout.addView(resourcesTreeView.getView());
 
-        // request the resources for the site
-        LiveData<List<Resource>> resourceLiveData =
-                resourceViewModel.getResourcesForSite(currentSiteId);
 
-//        beingObserved.add(resourceLiveData);
+        resourceViewModel.getResourcesForSite(currentSiteId)
+                .observe(getViewLifecycleOwner(), resources -> {
 
-        // observe on the resources data
-        resourceLiveData.observe(this, resources -> {
+                    // update the resources tree view
+                    updateResourcesTreeView(resources);
 
-//            setupToolbar(resources);
-
-            // update the resources tree view
-            updateResourcesTreeView(root, resources);
-
-            // if this change was detected because of a refresh, just stop refreshing
-            swipeRefreshLayout.setRefreshing(false);
-        });
-
-        // set refresh listener
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-                    resourceViewModel.refreshSiteResources(currentSiteId);
-                }
-        );
-
-        return view;
+                    spinner.setVisibility(View.GONE);
+                    viewOfTree.setVisibility(View.VISIBLE);
+                });
     }
 
     /**
      * Updates the resources tree view by removing old nodes and adding new nodes
      * from the resources list
      *
-     * @param root          root of the tree (Root is never changed)
      * @param flatResources new list of resources
      */
-    private void updateResourcesTreeView(TreeNode root, List<Resource> flatResources) {
+    private void updateResourcesTreeView(List<Resource> flatResources) {
 
-        // remove the old children of the root, so we can build a new treeview
-        removeChildren(root);
-
+        // create new tree root
+        TreeNode root = TreeNode.root();
         List<TreeNode> children = getChildren(flatResources, 1, flatResources.size());
+        root.addChildren(children);
 
-        for (TreeNode n : children) {
-            resourcesTreeView.addNode(root, n);
-        }
+        // set the new root
+        resourcesTreeView.setRoot(root);
+
+        restoreResourceTreeState();
+
+        // render the tree
+        treeContainer.removeAllViews();
+
+        viewOfTree = resourcesTreeView.getView();
+        treeContainer.addView(viewOfTree);
     }
 
 
@@ -209,35 +252,13 @@ public class SiteResourcesFragment extends Fragment {
     }
 
 
-    /**
-     * This may look weird at first glance, but do not fret
-     * originally, I was doing a simple foreach loop and calling node.deleteChild(), but for
-     * some reason this does not update the view, from what I found
-     * then I tried a simple foreach loop and deleting the node using the reference to the treeview
-     * itself, but I started getting concurrent modification exceptions, which makes sense since I was
-     * iterating through the list and deleting the list at the same time (with node.getChildren())
-     * <p>
-     * **IMPORTANT**, the list returned by getChildren() is the same list internally used
-     * so changing this list will also change the internal representation
-     * <p>
-     * After this, I tried a regular for loop and removed the child at index i
-     * but since the getChildren() is returning the same list, the list is getting shorter
-     * each time I remove a child, so the index i isn't valid
-     * <p>
-     * To fix this, I would continue until the list of children was empty and keep deleting
-     * the first child. this seemed to work
-     *
-     * @param node node to remove children of
-     */
-    private void removeChildren(TreeNode node) {
-
-        List<TreeNode> children = node.getChildren();
-        while (children.size() > 0) {
-            TreeNode child = children.get(0);
-            resourcesTreeView.removeNode(child);
-        }
+    private void saveResourceTreeState() {
+        SharedPrefsUtil.saveTreeState(getActivity(), resourcesTreeView, SharedPrefsUtil.SITE_RESOURCES_TREE_TYPE);
     }
 
-
+    private void restoreResourceTreeState() {
+        String state = SharedPrefsUtil.getTreeState(getContext(), SharedPrefsUtil.SITE_RESOURCES_TREE_TYPE);
+        resourcesTreeView.restoreState(state);
+    }
 
 }
