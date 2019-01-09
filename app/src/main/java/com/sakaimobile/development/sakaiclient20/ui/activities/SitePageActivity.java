@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 
@@ -59,11 +60,11 @@ public class SitePageActivity extends AppCompatActivity {
             startSiteResourcesFragment(course);
         } else if (siteType.equals(getString(R.string.assignments_site))) {
             if(course != null)
-                startSiteAssignmentsFragment(course.assignments, 0);
+                startSiteAssignmentsFragment(course, null, 0);
             else {
                 List<Assignment> assignments = (List<Assignment>) i.getSerializableExtra(getString(R.string.assignments_tag));
                 int initialPosition = i.getIntExtra(SiteAssignmentsFragment.ASSIGNMENT_NUMBER, 0);
-                startSiteAssignmentsFragment(assignments, initialPosition);
+                startSiteAssignmentsFragment(null, assignments, initialPosition);
             }
         } else {
             startWebViewFragment(siteType, course);
@@ -106,9 +107,18 @@ public class SitePageActivity extends AppCompatActivity {
         addFragment(fragment);
     }
 
-    private void startSiteAssignmentsFragment(List<Assignment> assignments, int initialPosition) {
+    private void startSiteAssignmentsFragment(Course course, List<Assignment> assignments, int initialPosition) {
+        Map<String, String> mapSiteIdToSitePageUrl = new HashMap<>();
+
+        if(course != null) {
+            mapSiteIdToSitePageUrl.put(course.siteId, course.assignmentSitePageUrl);
+        } else {
+            for (Assignment assignment : assignments)
+                mapSiteIdToSitePageUrl.put(assignment.siteId, assignment.assignmentSitePageUrl);
+        }
+
         Bundle bun = new Bundle();
-        bun.putSerializable(SiteAssignmentsFragment.ASSIGNMENTS_TAG, (Serializable) assignments);
+        bun.putSerializable(SiteAssignmentsFragment.SITE_IDS_TAG, (Serializable) mapSiteIdToSitePageUrl);
         bun.putInt(SiteAssignmentsFragment.ASSIGNMENT_NUMBER, initialPosition);
 
         SiteAssignmentsFragment fragment = new SiteAssignmentsFragment();

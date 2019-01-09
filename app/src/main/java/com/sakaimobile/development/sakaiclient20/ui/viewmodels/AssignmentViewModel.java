@@ -57,7 +57,7 @@ public class AssignmentViewModel extends BaseViewModel {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         assignments -> {
-                            if(assignments.isEmpty())
+                            if(assignments.isEmpty() || containsEmptyLists(assignments))
                                 this.siteAssignments.setValue(null);
                         }
                 );
@@ -82,5 +82,13 @@ public class AssignmentViewModel extends BaseViewModel {
         );
 
         return this.siteAssignments;
+    }
+
+    private boolean containsEmptyLists(List<List<Assignment>> assignments) {
+        for(List<Assignment> siteAssignments : assignments)
+            if(!siteAssignments.isEmpty())
+                return false;
+        
+        return true;
     }
 }

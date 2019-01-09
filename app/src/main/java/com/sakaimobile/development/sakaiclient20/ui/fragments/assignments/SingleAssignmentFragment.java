@@ -31,6 +31,8 @@ import java.util.List;
  */
 public class SingleAssignmentFragment extends Fragment implements View.OnClickListener {
 
+    public static final String ASSIGNMENT_TAG = "ASSIGNMENT_TAG";
+
     /**
      * The {@link Assignment} that feeds this {@link Fragment}'s data.
      */
@@ -50,7 +52,7 @@ public class SingleAssignmentFragment extends Fragment implements View.OnClickLi
         // Get the assignment for this fragment
         Bundle arguments = getArguments();
         if(arguments != null) {
-            this.assignment = (Assignment) arguments.getSerializable(SiteAssignmentsFragment.ASSIGNMENTS_TAG);
+            this.assignment = (Assignment) arguments.getSerializable(SingleAssignmentFragment.ASSIGNMENT_TAG);
         }
     }
 

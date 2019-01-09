@@ -121,11 +121,11 @@ public class AssignmentsFragment extends Fragment {
                     return;
                 }
 
+                // Since new data has arrived, the old data might not be
+                // relevant any more, so we need to do both sorts (by course and by term) again.
                 this.courses = courses;
-                if(this.sortedByCourses)
-                    AssignmentSortingUtils.sortCourseAssignments(courses);
-                else
-                    this.assignments = AssignmentSortingUtils.sortAssignmentsByTerm(courses);
+                AssignmentSortingUtils.sortCourseAssignments(this.courses);
+                this.assignments = AssignmentSortingUtils.sortAssignmentsByTerm(this.courses);
 
                 // Construct the tree view based on th
                 // Make the TreeView visible inside the parent layout
@@ -153,13 +153,13 @@ public class AssignmentsFragment extends Fragment {
     }
 
     /**
-     * On top of performing regular functions of {@link Fragment#onDetach()},
+     * On top of performing regular functions of {@link Fragment#onPause()},
      * saves the expanded state of the tree view so that returning to this tab
      * restores the same state.
      */
     @Override
-    public void onDetach() {
-        super.onDetach();
+    public void onPause() {
+        super.onPause();
         this.saveTreeState();
     }
 
@@ -209,7 +209,7 @@ public class AssignmentsFragment extends Fragment {
         // The courses as returned by the DataHandler are already sorted by term,
         // so we just need to loop through them to create the terms with all
         // courses and their assignments
-        for(List<Course> courseList : courses) {
+        for(List<Course> courseList : this.courses) {
             // If there are no courses in the term, skip it (the Sakai
             // API shouldn't return a term if there are no courses for it,
             // so nothing special needs to be done here)
@@ -266,9 +266,6 @@ public class AssignmentsFragment extends Fragment {
      * nothing needs to be returned.
      */
     private TreeNode createTreeFromAssignments() {
-        if(this.assignments == null)
-            this.assignments = AssignmentSortingUtils.sortAssignmentsByTerm(this.courses);
-
         TreeNode root =  TreeNode.root();
         Context currContext = getActivity();
 

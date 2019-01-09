@@ -48,7 +48,7 @@ public class AssignmentsPagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         // Put the assignments in the arguments and instantiate the fragment
         Bundle bundle = new Bundle();
-        bundle.putSerializable(SiteAssignmentsFragment.ASSIGNMENTS_TAG, assignments.get(position));
+        bundle.putSerializable(SingleAssignmentFragment.ASSIGNMENT_TAG, assignments.get(position));
 
         SingleAssignmentFragment fragment = new SingleAssignmentFragment();
         fragment.setArguments(bundle);

@@ -20,18 +20,14 @@ import android.widget.Toast;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
-import com.sakaimobile.development.sakaiclient20.ui.activities.MainActivity;
 import com.sakaimobile.development.sakaiclient20.ui.adapters.AssignmentsPagerAdapter;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.AssignmentViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -48,7 +44,7 @@ import dagger.android.support.AndroidSupportInjection;
  */
 public class SiteAssignmentsFragment extends Fragment {
 
-    public static final String ASSIGNMENTS_TAG = "ASSIGNMENTS";
+    public static final String SITE_IDS_TAG = "SITE_IDS";
 
     /**
      * Tag for passing the active assignment position to this {@link Fragment}.
@@ -81,12 +77,9 @@ public class SiteAssignmentsFragment extends Fragment {
 
         Bundle arguments = getArguments();
         if(arguments != null) {
-            List<Assignment> assignments = (List<Assignment>) arguments.getSerializable(ASSIGNMENTS_TAG);
+            this.mapSiteIdToSitePageUrl = (Map<String, String>) arguments.getSerializable(SITE_IDS_TAG);
             initialPosition = arguments.getInt(ASSIGNMENT_NUMBER, 0);
 
-            this.mapSiteIdToSitePageUrl = new HashMap<>();
-            for(Assignment assignment : assignments)
-                this.mapSiteIdToSitePageUrl.put(assignment.siteId, assignment.assignmentSitePageUrl);
             this.siteIds.addAll(this.mapSiteIdToSitePageUrl.keySet());
         }
     }
@@ -128,6 +121,7 @@ public class SiteAssignmentsFragment extends Fragment {
                 .observe(getViewLifecycleOwner(), assignments -> {
                     if(assignments == null) {
                         Toast.makeText(getContext(), "No assignments found", Toast.LENGTH_LONG).show();
+                        this.progressBar.setVisibility(View.GONE);
                         return;
                     }
 
