@@ -22,6 +22,7 @@ import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.networking.services.SessionService;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Announcement;
+import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 import com.sakaimobile.development.sakaiclient20.ui.custom_components.CustomLinkMovementMethod;
 import com.sakaimobile.development.sakaiclient20.ui.custom_components.DownloadCompleteReceiver;
@@ -32,6 +33,7 @@ import com.sakaimobile.development.sakaiclient20.ui.fragments.CourseSitesFragmen
 import com.sakaimobile.development.sakaiclient20.ui.fragments.SettingsFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.SingleAnnouncementFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.AssignmentsFragment;
+import com.sakaimobile.development.sakaiclient20.ui.helpers.AssignmentSortingUtils;
 import com.sakaimobile.development.sakaiclient20.ui.helpers.BottomNavigationViewHelper;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.OnAnnouncementSelected;
@@ -51,32 +53,28 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
+import dagger.android.AndroidInjector;
+import dagger.android.DispatchingAndroidInjector;
+import dagger.android.HasFragmentInjector;
+import dagger.android.support.HasSupportFragmentInjector;
 
 import static com.sakaimobile.development.sakaiclient20.ui.fragments.AnnouncementsFragment.NUM_ANNOUNCEMENTS_DEFAULT;
 
 public class MainActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener,
-        OnActionPerformedListener, OnAnnouncementSelected {
-
-
-    @Inject
-    ViewModelFactory viewModelFactory;
-    protected Set<LiveData> beingObserved;
-
-    public static final String ASSIGNMENTS_TAG = "ASSIGNMENTS";
+        OnAnnouncementSelected {
 
     private static final short FRAGMENT_REPLACE = 0;
     private static final short FRAGMENT_ADD = 1;
 
+    protected Set<LiveData> beingObserved;
+    @Inject ViewModelFactory viewModelFactory;
 
     private FrameLayout container;
     private ProgressBar spinner;
-    private boolean isLoadingAllCourses;
+    private Set<Class> refreshedFragments;
 
-    @Inject
-    CourseViewModel courseViewModel;
-
-    private Fragment displayingFragment;
+    @Inject CourseViewModel courseViewModel;
     DownloadCompleteReceiver downloadReceiver;
 
     //==============================
@@ -94,7 +92,7 @@ public class MainActivity extends AppCompatActivity
 
         //starts spinner
         this.spinner = findViewById(R.id.nav_activity_progressbar);
-        this.spinner.setVisibility(View.VISIBLE);
+        this.spinner.setVisibility(View.GONE);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -109,7 +107,8 @@ public class MainActivity extends AppCompatActivity
         // Request all site pages for the Home Fragment and then loads the fragment
         //refresh since we are loading for the same time
         beingObserved = new HashSet<>();
-        loadCoursesFragment(true);
+        refreshedFragments = new HashSet<>();
+        loadCoursesFragment();
     }
 
     @Override
@@ -146,21 +145,16 @@ public class MainActivity extends AppCompatActivity
      */
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
-        //if we are loading all courses, don't allow user to click any navigation item
-        if (isLoadingAllCourses)
-            return false;
-
         // To be safe, remove any observations that might be active for the previous tab
         // since that might trigger an unwanted fragment transaction
         removeObservations();
         setActionBarTitle(getString(R.string.app_name));
         switch (item.getItemId()) {
             case R.id.navigation_home:
-                loadCoursesFragment(false);
+                loadCoursesFragment();
                 return true;
             case R.id.navigation_assignments:
-                loadAssignmentsFragment(true, true);
+                loadAssignmentsFragment();
                 return true;
             case R.id.navigation_announcements:
                 loadAnnouncementsFragment();
@@ -179,20 +173,6 @@ public class MainActivity extends AppCompatActivity
     //============================
     // INTERFACE IMPLEMENTATIONS
     //============================
-
-    @Override
-    public void onCourseSelected(String siteId) {
-        LiveData<Course> courseLiveData = ViewModelProviders.of(this, viewModelFactory)
-                .get(CourseViewModel.class)
-                .getCourse(siteId);
-
-        beingObserved.add(courseLiveData);
-        courseLiveData.observe(this, course -> {
-            CourseSitesFragment fragment = CourseSitesFragment.newInstance(course);
-            loadFragment(fragment, FRAGMENT_REPLACE, true, true);
-            setActionBarTitle(course.title);
-        });
-    }
 
 
     @Override
@@ -254,70 +234,46 @@ public class MainActivity extends AppCompatActivity
                 transaction.replace(R.id.fragment_container, fragment).commit();
             else if (replace == FRAGMENT_ADD)
                 transaction.add(R.id.fragment_container, fragment).commit();
-            else
-                return;
-
-            displayingFragment = fragment;
         }
     }
 
     /**
      * Loads the all courses fragment (home page)
      */
-    public void loadCoursesFragment(boolean refresh) {
-        this.container.setVisibility(View.GONE);
-        startProgressBar();
-        isLoadingAllCourses = true;
+    public void loadCoursesFragment() {
+        Bundle bundle = new Bundle();
+        boolean shouldRefresh = getAndUpdateRefreshedState(AllCoursesFragment.class);
+        bundle.putBoolean(AllCoursesFragment.SHOULD_REFRESH, shouldRefresh);
 
-        LiveData<List<List<Course>>> courseLiveData = ViewModelProviders.of(this, viewModelFactory)
-                .get(CourseViewModel.class)
-                .getCoursesByTerm(refresh);
-
-
-        courseLiveData.observe(this, courses -> {
-            stopProgressBar();
-
-            AllCoursesFragment coursesFragment = AllCoursesFragment.newInstance(courses, this);
-            loadFragment(coursesFragment, FRAGMENT_REPLACE, false, false);
-            container.setVisibility(View.VISIBLE);
-
-            isLoadingAllCourses = false;
-            courseLiveData.removeObservers(this);
-
-            if (refresh)
-                makeToast("Successfully refreshed courses", Toast.LENGTH_SHORT);
-        });
+        Fragment fragment = new AllCoursesFragment();
+        fragment.setArguments(bundle);
+        loadFragment(fragment, FRAGMENT_REPLACE, false, false);
     }
 
     /**
      * Loads all assignments tab
      */
-    public void loadAssignmentsFragment(boolean sortedByCourses, boolean refresh) {
+    public void loadAssignmentsFragment() {
+        Bundle bundle = new Bundle();
+        boolean shouldRefresh = getAndUpdateRefreshedState(AssignmentsFragment.class);
+        bundle.putBoolean(AssignmentsFragment.SHOULD_REFRESH, shouldRefresh);
 
-        this.container.setVisibility(View.GONE);
-        this.spinner.setVisibility(View.VISIBLE);
+        Fragment fragment = new AssignmentsFragment();
+        fragment.setArguments(bundle);
+        loadFragment(fragment, FRAGMENT_REPLACE, false, false);
+    }
 
-        LiveData<List<List<Course>>> courseLiveData = ViewModelProviders.of(this, viewModelFactory)
-                .get(AssignmentViewModel.class)
-                .getCoursesByTerm(refresh);
+    /**
+     * Loads the all grades fragment
+     */
+    public void loadGradesFragment() {
+        Bundle bundle = new Bundle();
+        boolean shouldRefresh = getAndUpdateRefreshedState(AllGradesFragment.class);
+        bundle.putBoolean(AllGradesFragment.SHOULD_REFRESH, shouldRefresh);
 
-        courseLiveData.observe(this, courses -> {
-            spinner.setVisibility(View.GONE);
-
-            Bundle bundle = new Bundle();
-            bundle.putSerializable(ASSIGNMENTS_TAG, (Serializable) courses);
-            bundle.putBoolean(AssignmentsFragment.ASSIGNMENTS_SORTED_BY_COURSES, sortedByCourses);
-
-            AssignmentsFragment fragment = new AssignmentsFragment();
-            fragment.setArguments(bundle);
-            loadFragment(fragment, FRAGMENT_REPLACE, false, false);
-
-            container.setVisibility(View.VISIBLE);
-            courseLiveData.removeObservers(this);
-
-            if (refresh)
-                makeToast("Successfully refreshed assignments", Toast.LENGTH_SHORT);
-        });
+        Fragment fragment = new AllGradesFragment();
+        fragment.setArguments(bundle);
+        loadFragment(fragment, FRAGMENT_REPLACE, false, false);
     }
 
     /**
@@ -331,21 +287,9 @@ public class MainActivity extends AppCompatActivity
         this.container.setVisibility(View.GONE);
         startProgressBar();
 
-        AnnouncementViewModel announcementViewModel = ViewModelProviders.of(this, viewModelFactory).get(AnnouncementViewModel.class);
-        CourseViewModel courseViewModel = ViewModelProviders.of(this, viewModelFactory).get(CourseViewModel.class);
-
-
-        LiveData<List<Announcement>> announcementsLiveData = announcementViewModel
-                        .getAllAnnouncements(NUM_ANNOUNCEMENTS_DEFAULT);
-
-        LiveData<List<List<Course>>> coursesLiveData = courseViewModel
-                        .getCoursesByTerm(false);
-
-
-        // announcements fragment will be observing on announcement live data
-        // here we are observing on courselivedata
-        beingObserved.add(announcementsLiveData);
-        beingObserved.add(coursesLiveData);
+        LiveData<List<List<Course>>> coursesLiveData =
+            ViewModelProviders.of(this, viewModelFactory).get(CourseViewModel.class)
+                .getCoursesByTerm(false);
 
         coursesLiveData.observe(this, courses -> {
 
@@ -364,40 +308,23 @@ public class MainActivity extends AppCompatActivity
 
             this.container.setVisibility(View.VISIBLE);
             stopProgressBar();
-        });
 
-
-    }
-
-
-    /**
-     * Loads the all grades fragment
-     */
-    public void loadGradesFragment() {
-        this.container.setVisibility(View.GONE);
-        startProgressBar();
-
-
-        LiveData<List<List<Course>>> courseLiveData =
-                ViewModelProviders.of(this, viewModelFactory)
-                        .get(GradeViewModel.class)
-                        .getCoursesByTerm(true);
-
-        beingObserved.add(courseLiveData);
-
-        courseLiveData.observe(this, courses -> {
-            stopProgressBar();
-
-            AllGradesFragment gradesFragment = AllGradesFragment.newInstance(courses);
-            loadFragment(gradesFragment, FRAGMENT_REPLACE, false, false);
-            container.setVisibility(View.VISIBLE);
-
+            coursesLiveData.removeObservers(this);
         });
     }
 
     //=======================
     // CONVENIENCE METHODS
     //=======================
+
+    private boolean getAndUpdateRefreshedState(Class clazz) {
+        if(refreshedFragments.contains(clazz)) {
+            return false;
+        } else {
+            refreshedFragments.add(clazz);
+            return true;
+        }
+    }
 
     private HashMap<String, Course> createSiteIdToCourseMap(List<List<Course>> courses) {
 
@@ -421,10 +348,6 @@ public class MainActivity extends AppCompatActivity
 
     public void stopProgressBar() {
         spinner.setVisibility(View.GONE);
-    }
-
-    public void makeToast(String message, int duration) {
-        Toast.makeText(this, message, duration).show();
     }
 
     protected void removeObservations() {

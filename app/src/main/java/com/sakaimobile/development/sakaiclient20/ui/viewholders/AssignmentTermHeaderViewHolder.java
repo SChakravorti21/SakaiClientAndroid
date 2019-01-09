@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
 import com.sakaimobile.development.sakaiclient20.ui.adapters.AssignmentAdapter;
+import com.sakaimobile.development.sakaiclient20.ui.helpers.TreeAnimationUtils;
 import com.unnamed.b.atv.model.TreeNode;
 
 import java.util.List;
@@ -64,7 +65,7 @@ public class AssignmentTermHeaderViewHolder
         View view = inflater.inflate(R.layout.term_with_recycler_view, null, false);
 
         // The course name
-        TextView courseView = view.findViewById(R.id.course_name);
+        TextView courseView = view.findViewById(R.id.term_name);
         courseView.setText(value.termName);
 
         // Initialize the RecyclerView with its data
@@ -119,10 +120,10 @@ public class AssignmentTermHeaderViewHolder
 
         if(active) {
             arrowView.setText(CHEVRON_DOWN);
-            recyclerView.setVisibility(View.VISIBLE);
+            TreeAnimationUtils.expandRecyclerView(recyclerView);
         } else {
             arrowView.setText(CHEVRON_RIGHT);
-            recyclerView.setVisibility(View.GONE);
+            TreeAnimationUtils.collapseRecyclerView(recyclerView);
         }
     }
 

@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
 import com.sakaimobile.development.sakaiclient20.ui.activities.MainActivity;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.SingleAssignmentFragment;
+import com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.SiteAssignmentsFragment;
 
 import java.util.List;
 
@@ -47,7 +48,7 @@ public class AssignmentsPagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         // Put the assignments in the arguments and instantiate the fragment
         Bundle bundle = new Bundle();
-        bundle.putSerializable(MainActivity.ASSIGNMENTS_TAG, assignments.get(position));
+        bundle.putSerializable(SingleAssignmentFragment.ASSIGNMENT_TAG, assignments.get(position));
 
         SingleAssignmentFragment fragment = new SingleAssignmentFragment();
         fragment.setArguments(bundle);

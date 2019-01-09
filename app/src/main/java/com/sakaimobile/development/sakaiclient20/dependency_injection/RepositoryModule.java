@@ -41,10 +41,12 @@ class RepositoryModule {
 
     @Provides
     static AssignmentRepository provideAssignmentRepository(
+            CourseDao courseDao,
             AssignmentDao assignmentDao,
             AttachmentDao attachmentDao,
-            AssignmentsService assignmentsService) {
-        return new AssignmentRepository(assignmentDao, attachmentDao, assignmentsService);
+            AssignmentsService assignmentsService
+    ) {
+        return new AssignmentRepository(courseDao, assignmentDao, attachmentDao, assignmentsService);
     }
 
     @Provides

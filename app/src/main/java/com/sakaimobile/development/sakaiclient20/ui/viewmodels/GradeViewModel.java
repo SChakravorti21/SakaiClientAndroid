@@ -78,15 +78,10 @@ public class GradeViewModel extends BaseViewModel {
      */
     @Override
     public void refreshAllData() {
-        this.compositeDisposable.add(
-                this.gradeRepository.refreshAllGrades()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                this::loadCourses,
-                                Throwable::printStackTrace
-                        )
-        );
+        this.gradeRepository.refreshAllGrades()
+                .doOnSubscribe(compositeDisposable::add)
+                .subscribeOn(Schedulers.io())
+                .subscribe();
     }
 
     /**

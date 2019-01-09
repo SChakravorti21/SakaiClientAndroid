@@ -7,14 +7,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.sakaimobile.development.sakaiclient20.R;
+import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.SitePage;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AnnouncementsFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.SiteGradesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.SiteResourcesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.WebFragment;
+import com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.SiteAssignmentsFragment;
 
+import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 
 public class SitePageActivity extends AppCompatActivity {
 
@@ -33,9 +39,11 @@ public class SitePageActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(v -> this.onBackPressed());
 
-
-        // set the toolbar title as siteType + coursename
-        getSupportActionBar().setTitle(String.format("%s: %s", siteType, course.title));
+        // The course might be null if we are coming from an assignments adapter
+        // i.e. from the main Assignments tab's TreeView
+        if(course != null)
+            // set the toolbar title as siteType + coursename
+            getSupportActionBar().setTitle(String.format("%s: %s", siteType, course.title));
 
 
         // load the appropriate fragment for the site type
@@ -45,6 +53,15 @@ public class SitePageActivity extends AppCompatActivity {
             startSiteAnnouncementsFragment(course);
         } else if (siteType.equals(getString(R.string.resources_site))) {
             startSiteResourcesFragment(course);
+        } else if (siteType.equals(getString(R.string.assignments_site))) {
+            if(course != null)
+                // If the course is not null, show assignment just for that course's site ID
+                startSiteAssignmentsFragment(course, null, 0);
+            else {
+                List<Assignment> assignments = (List<Assignment>) i.getSerializableExtra(getString(R.string.assignments_tag));
+                int initialPosition = i.getIntExtra(SiteAssignmentsFragment.INITIAL_VIEW_POSITION, 0);
+                startSiteAssignmentsFragment(null, assignments, initialPosition);
+            }
         } else {
             startWebViewFragment(siteType, course);
         }
@@ -81,6 +98,30 @@ public class SitePageActivity extends AppCompatActivity {
         bun.putString(getString(R.string.siteid_tag), course.siteId);
 
         SiteResourcesFragment fragment = new SiteResourcesFragment();
+        fragment.setArguments(bun);
+
+        addFragment(fragment);
+    }
+
+    private void startSiteAssignmentsFragment(Course course, List<Assignment> assignments, int initialPosition) {
+        // The SiteAssignmentsFragment expects a Map that ties site IDs to the
+        // assignment site page URL, so let's construct that map
+        Map<String, String> mapSiteIdToSitePageUrl = new HashMap<>();
+
+        if(course != null) {
+            // If the course is not null, then we only need to show assignments for one
+            // site ID
+            mapSiteIdToSitePageUrl.put(course.siteId, course.assignmentSitePageUrl);
+        } else {
+            for (Assignment assignment : assignments)
+                mapSiteIdToSitePageUrl.put(assignment.siteId, assignment.assignmentSitePageUrl);
+        }
+
+        Bundle bun = new Bundle();
+        bun.putSerializable(SiteAssignmentsFragment.SITE_IDS_TAG, (Serializable) mapSiteIdToSitePageUrl);
+        bun.putInt(SiteAssignmentsFragment.INITIAL_VIEW_POSITION, initialPosition);
+
+        SiteAssignmentsFragment fragment = new SiteAssignmentsFragment();
         fragment.setArguments(bun);
 
         addFragment(fragment);

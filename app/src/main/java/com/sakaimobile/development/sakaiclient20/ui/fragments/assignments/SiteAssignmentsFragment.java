@@ -1,21 +1,36 @@
 package com.sakaimobile.development.sakaiclient20.ui.fragments.assignments;
 
 
+import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
-import com.sakaimobile.development.sakaiclient20.ui.activities.MainActivity;
 import com.sakaimobile.development.sakaiclient20.ui.adapters.AssignmentsPagerAdapter;
+import com.sakaimobile.development.sakaiclient20.ui.viewmodels.AssignmentViewModel;
+import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
+
+import dagger.android.support.AndroidSupportInjection;
 
 /**
  * Created by Shoumyo Chakravorti.
@@ -28,15 +43,17 @@ import java.util.List;
  */
 public class SiteAssignmentsFragment extends Fragment {
 
+    public static final String SITE_IDS_TAG = "SITE_IDS";
+
     /**
      * Tag for passing the active assignment position to this {@link Fragment}.
      */
-    public static String ASSIGNMENT_NUMBER = "ASSIGNMENT_NUMBER";
+    public static String INITIAL_VIEW_POSITION = "INITIAL_VIEW_POSITION";
 
     /**
-     * The assignments for this course.
+     * The site IDs of the course(s) for which we will load assignments
      */
-    private List<Assignment> assignments;
+    private List<String> siteIds;
 
     /**
      * The position of the {@link Assignment} that should be shown first.
@@ -44,22 +61,37 @@ public class SiteAssignmentsFragment extends Fragment {
      */
     private int initialPosition;
 
-    /**
-     * Mandatory empty constructor.
-     */
-    public SiteAssignmentsFragment() {
-        // Required empty public constructor
-    }
+    @Inject ViewModelFactory viewModelFactory;
+    private AssignmentViewModel assignmentViewModel;
+
+    private ProgressBar progressBar;
+    private ViewPager assignmentsPager;
+    private Map<String, String> mapSiteIdToSitePageUrl;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+        this.siteIds = new ArrayList<>();
 
         Bundle arguments = getArguments();
         if(arguments != null) {
-            assignments = (List<Assignment>) arguments.getSerializable(MainActivity.ASSIGNMENTS_TAG);
-            initialPosition = arguments.getInt(ASSIGNMENT_NUMBER, 0);
+            this.mapSiteIdToSitePageUrl = (Map<String, String>) arguments.getSerializable(SITE_IDS_TAG);
+            initialPosition = arguments.getInt(INITIAL_VIEW_POSITION, 0);
+
+            // The map's key set contains all of the site IDs for which we will want
+            // to show assignments
+            this.siteIds.addAll(this.mapSiteIdToSitePageUrl.keySet());
         }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        AndroidSupportInjection.inject(this);
+        super.onAttach(context);
+
+        this.assignmentViewModel = ViewModelProviders.of(this, viewModelFactory)
+                .get(AssignmentViewModel.class);
     }
 
     @Override
@@ -69,24 +101,68 @@ public class SiteAssignmentsFragment extends Fragment {
         ViewGroup layout = (ViewGroup) inflater.inflate(R.layout.fragment_course_assignments,
                                                             container, false);
 
-        // Find the ViwPager and give it the adapter that tells how to instantiate
-        // Fragments for each assignment
-        ViewPager assignmentsPager = layout.findViewById(R.id.assignment_viewpager);
-        AssignmentsPagerAdapter pagerAdapter =
-                new AssignmentsPagerAdapter(getActivity().getSupportFragmentManager(),
-                                            assignments);
-        assignmentsPager.setAdapter(pagerAdapter);
-
-        // Even if initial position was not provided, it will default to zero and
-        // show the first assignment
-        assignmentsPager.setCurrentItem(initialPosition);
+        // Find the ViwPager and so that we can give it an adapter once LiveData triggers
+        this.assignmentsPager = layout.findViewById(R.id.assignment_viewpager);
+        this.progressBar = layout.findViewById(R.id.progressbar);
+        this.progressBar.setVisibility(View.GONE);
 
         // Set up the bottom indicators to show that there are multiple assignments
         // that can be viewed
         TabLayout indicators = layout.findViewById(R.id.view_pager_indicators);
-        indicators.setupWithViewPager(assignmentsPager, true);
+        indicators.setupWithViewPager(this.assignmentsPager, true);
 
         return layout;
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        this.assignmentViewModel.getSiteAssignments(siteIds)
+                .observe(getViewLifecycleOwner(), assignments -> {
+                    // Assignments is null when API call returns no assignments
+                    if(assignments == null) {
+                        Toast.makeText(getContext(), "No assignments found", Toast.LENGTH_LONG).show();
+                        this.progressBar.setVisibility(View.GONE);
+                        return;
+                    }
+
+                    // Assignments from database will not have the assignmentSitePageUrl
+                    // set since this information needs to be retrieved from the parent
+                    // course. This information is contained in our mapSiteIdToSitePageUrl instead.
+                    for(Assignment assignment : assignments)
+                        attachAssignmentSitePageUrl(assignment);
+
+                    AssignmentsPagerAdapter pagerAdapter = new AssignmentsPagerAdapter(
+                            getActivity().getSupportFragmentManager(),
+                            assignments);
+                    this.assignmentsPager.setAdapter(pagerAdapter);
+
+                    // Even if initial position was not provided, it will default to zero and
+                    // show the first assignment
+                    this.assignmentsPager.setCurrentItem(initialPosition);
+                    this.progressBar.setVisibility(View.GONE);
+                });
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.site_assignments_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.action_refresh:
+                this.initialPosition = this.assignmentsPager.getCurrentItem();
+                this.assignmentViewModel.refreshSiteData(this.siteIds);
+                this.progressBar.setVisibility(View.VISIBLE);
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void attachAssignmentSitePageUrl(Assignment assignment) {
+        assignment.assignmentSitePageUrl = this.mapSiteIdToSitePageUrl.get(assignment.siteId);
+    }
 }

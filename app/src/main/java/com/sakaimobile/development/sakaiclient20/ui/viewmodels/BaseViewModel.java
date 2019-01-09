@@ -28,12 +28,11 @@ abstract class BaseViewModel extends ViewModel {
     public LiveData<List<List<Course>>> getCoursesByTerm(boolean refresh) {
         if(this.coursesByTerm == null) {
             this.coursesByTerm = new MutableLiveData<>();
+            loadCourses();
         }
 
         if(refresh)
             refreshAllData();
-        else
-            loadCourses();
 
         return this.coursesByTerm;
     }
@@ -44,8 +43,8 @@ abstract class BaseViewModel extends ViewModel {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                    coursesByTerm::setValue,
-                    Throwable::printStackTrace
+                        this.coursesByTerm::setValue,
+                        Throwable::printStackTrace
                 )
         );
     }

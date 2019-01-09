@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:title="Sort"
+        android:id="@+id/assignment_sort_group"
         android:icon="@drawable/ic_filter_list_24dp"
         app:showAsAction="ifRoom">
        <menu>
@@ -22,5 +23,12 @@
                    android:icon="@drawable/ic_today_black_24dp"/>
            </group>
        </menu>
+    </item>
+    <item
+        android:title="Refresh"
+        android:id="@+id/action_refresh"
+        android:icon="@drawable/ic_refresh_black_24dp"
+        app:showAsAction="always">
+
     </item>
 </menu>

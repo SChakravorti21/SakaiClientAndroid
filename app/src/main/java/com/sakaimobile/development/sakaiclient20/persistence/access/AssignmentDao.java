@@ -17,12 +17,10 @@ import io.reactivex.Flowable;
 @Dao
 public abstract class AssignmentDao implements BaseDao<Assignment> {
 
+    //Wrap in transaction since Room technically performs multiple transactions
+    // for @Relations (used here with attachments)
     @Transaction
-    @Query("SELECT * FROM assignments ORDER BY dueTime")
-    public abstract Flowable<List<AssignmentWithAttachments>> getAllAssignments();
-
-    @Transaction //Wrap in transaction since Room technically performs multiple transactions
-    @Query("SELECT * FROM assignments WHERE siteId = :siteId")
-    public abstract Flowable<List<AssignmentWithAttachments>> getSiteAssignments(String siteId);
+    @Query("SELECT * FROM assignments WHERE siteId IN (:siteIds)")
+    public abstract Flowable<List<AssignmentWithAttachments>> getSiteAssignments(List<String> siteIds);
 
 }

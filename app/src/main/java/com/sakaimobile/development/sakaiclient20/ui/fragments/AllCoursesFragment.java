@@ -1,23 +1,31 @@
 package com.sakaimobile.development.sakaiclient20.ui.fragments;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.models.Term;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
+import com.sakaimobile.development.sakaiclient20.ui.helpers.AssignmentSortingUtils;
 import com.sakaimobile.development.sakaiclient20.ui.helpers.RutgersSubjectCodes;
-import com.sakaimobile.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.TreeViewItemClickListener;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.CourseHeaderViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.TermHeaderViewHolder;
+import com.sakaimobile.development.sakaiclient20.ui.viewmodels.CourseViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
@@ -30,25 +38,29 @@ import dagger.android.support.AndroidSupportInjection;
 
 public class AllCoursesFragment extends Fragment {
 
-    @Inject ViewModelFactory viewModelFactory;
-    private List<List<Course>> courses;
-    private AndroidTreeView treeView;
-    private OnActionPerformedListener actionPerformedListener;
+    public static final String SHOULD_REFRESH = "SHOULD_REFRESH";
 
-    public static AllCoursesFragment newInstance(
-            List<List<Course>> courses,
-            OnActionPerformedListener actionPerformedListener
-    ) {
-        AllCoursesFragment fragment = new AllCoursesFragment();
-        fragment.courses = courses;
-        fragment.actionPerformedListener = actionPerformedListener;
-        return fragment;
+    @Inject ViewModelFactory viewModelFactory;
+    private CourseViewModel courseViewModel;
+    private AndroidTreeView treeView;
+    private boolean shouldRefresh;
+
+    private FrameLayout treeContainer;
+    private ProgressBar progressBar;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+        this.shouldRefresh = getArguments().getBoolean(SHOULD_REFRESH);
     }
 
     @Override
     public void onAttach(Context context) {
         AndroidSupportInjection.inject(this);
         super.onAttach(context);
+        this.courseViewModel = ViewModelProviders.of(this, viewModelFactory)
+                .get(CourseViewModel.class);
     }
 
     /**
@@ -63,50 +75,89 @@ public class AllCoursesFragment extends Fragment {
      */
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_all_courses, null);
-        SwipeRefreshLayout swipeRefreshLayout = view.findViewById(R.id.swiperefresh);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.refreshable_treeview_fragment, null);
 
-        //add the treeview to the layout
-        createTreeView(this.courses);
-        swipeRefreshLayout.addView(treeView.getView());
+        // Set up refresh layout to make a new network request and re-instantiate the
+        // assignments fragment
+        this.treeContainer = view.findViewById(R.id.treeview_container);
+        this.progressBar = view.findViewById(R.id.progressbar);
+        this.progressBar.setIndeterminate(true);
 
-        //temporarily disable animations so the animations don't play when the state
-        //is being restored
-        treeView.setDefaultAnimation(false);
-
-        //state must be restored after the view is added to the layout
-        String state = SharedPrefsUtil.getTreeState(getContext(), SharedPrefsUtil.ALL_COURSES_TREE_TYPE);
-        treeView.restoreState(state);
-
-        //re-enable animations
-        treeView.setDefaultAnimation(true);
-
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            this.actionPerformedListener.loadCoursesFragment(true);
-        });
-
+        // View to ultimately be added to the screen
         return view;
+    }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
+        courseViewModel.getCoursesByTerm(shouldRefresh)
+                .observe(getViewLifecycleOwner(), courses -> {
+                    // If we are refreshing, there will be one initial false emission
+                    if(shouldRefresh) {
+                        shouldRefresh = false;
+                        return;
+                    }
+
+                    // Construct the tree view based on th
+                    // Make the TreeView visible inside the parent layout
+                    if(this.treeView == null) {
+                        this.treeView = new AndroidTreeView(getContext());
+                        this.treeView.setDefaultAnimation(true);
+
+                        TreeViewItemClickListener nodeClickListener = new TreeViewItemClickListener(this.treeView);
+                        this.treeView.setDefaultNodeClickListener(nodeClickListener);
+                    }
+
+                    this.renderTree(courses);
+                    this.progressBar.setVisibility(View.GONE);
+                });
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-
-        //here we should save tree state
-        SharedPrefsUtil.saveTreeState(getContext(), treeView, SharedPrefsUtil.ALL_COURSES_TREE_TYPE);
+        this.saveTreeState();
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.courses_fragment_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.action_refresh:
+                this.progressBar.setVisibility(View.VISIBLE);
+                this.saveTreeState();
+                this.courseViewModel.refreshAllData();
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void renderTree(List<List<Course>> courses) {
+        TreeNode root = createTreeView(courses);
+
+        this.treeContainer.removeAllViews();
+        this.treeView.setRoot(root);
+
+        String state = SharedPrefsUtil.getTreeState(getContext(), SharedPrefsUtil.ALL_COURSES_TREE_TYPE);;
+        this.treeView.restoreState(state);
+
+        this.treeContainer.addView(this.treeView.getView());
+    }
 
     /**
-     * Creates a treeview structure using a list of terms, and a hashmap mapping
+     * Creates a TreeView structure using a list of terms, and a HashMap mapping
      * term to list of courses for that term, which is gotten from DataHandler
      *
      * @param coursesSorted courses sorted by term (gotten from data handler)
      */
-    public void createTreeView(List<List<Course>> coursesSorted) {
+    public TreeNode createTreeView(List<List<Course>> coursesSorted) {
         TreeNode root = TreeNode.root();
         Context mContext = getContext();
 
@@ -114,7 +165,7 @@ public class AllCoursesFragment extends Fragment {
             Term courseTerm = (coursesSorted.size() > 0) ? coursesInTerm.get(0).term : null;
             String termString = courseTerm.toString();
 
-            //make a term header item, and make a treenode using it
+            //make a term header item, and make a TreeNode using it
             TermHeaderViewHolder.TermHeaderItem termNodeItem =
                     new TermHeaderViewHolder.TermHeaderItem(termString);
             TreeNode termNode =
@@ -122,7 +173,7 @@ public class AllCoursesFragment extends Fragment {
 
             //for each course, get its grades
             for (Course currCourse : coursesInTerm) {
-                //create a course header item and make a treenode using it
+                //create a course header item and make a TreeNode using it
                 String courseIconCode = RutgersSubjectCodes.mapCourseCodeToIcon.get(currCourse.subjectCode);
                 CourseHeaderViewHolder.CourseHeaderItem courseNodeItem =
                         new CourseHeaderViewHolder.CourseHeaderItem(
@@ -139,11 +190,9 @@ public class AllCoursesFragment extends Fragment {
                 //course specific information
                 courseNode.setClickListener((node, value) -> {
                     if (value instanceof CourseHeaderViewHolder.CourseHeaderItem) {
-                        String courseSiteId = ((CourseHeaderViewHolder.CourseHeaderItem) value).siteId;
-
                         //here we should save tree state
                         SharedPrefsUtil.saveTreeState(mContext, treeView, SharedPrefsUtil.ALL_COURSES_TREE_TYPE);
-                        actionPerformedListener.onCourseSelected(courseSiteId);
+                        onCourseSelected(currCourse);
                     }
                 });
 
@@ -153,9 +202,23 @@ public class AllCoursesFragment extends Fragment {
             root.addChild(termNode);
         }
 
-        treeView = new AndroidTreeView(getActivity(), root);
-        treeView.setDefaultAnimation(true);
-        treeView.setDefaultNodeClickListener(new TreeViewItemClickListener(treeView, root));
+        return root;
+    }
+
+    private void onCourseSelected(Course course) {
+        if(getActivity() == null || getActivity().getSupportFragmentManager() == null)
+            return;
+
+        getActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
+                .add(R.id.fragment_container, CourseSitesFragment.newInstance(course))
+                .addToBackStack(null)
+                .commit();
+    }
+
+    private void saveTreeState() {
+        SharedPrefsUtil.saveTreeState(getContext(), this.treeView, SharedPrefsUtil.ALL_COURSES_TREE_TYPE);
     }
 
 }

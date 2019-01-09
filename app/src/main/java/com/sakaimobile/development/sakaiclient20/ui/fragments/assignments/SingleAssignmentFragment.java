@@ -31,6 +31,8 @@ import java.util.List;
  */
 public class SingleAssignmentFragment extends Fragment implements View.OnClickListener {
 
+    public static final String ASSIGNMENT_TAG = "ASSIGNMENT_TAG";
+
     /**
      * The {@link Assignment} that feeds this {@link Fragment}'s data.
      */
@@ -50,7 +52,7 @@ public class SingleAssignmentFragment extends Fragment implements View.OnClickLi
         // Get the assignment for this fragment
         Bundle arguments = getArguments();
         if(arguments != null) {
-            this.assignment = (Assignment) arguments.getSerializable(MainActivity.ASSIGNMENTS_TAG);
+            this.assignment = (Assignment) arguments.getSerializable(SingleAssignmentFragment.ASSIGNMENT_TAG);
         }
     }
 
@@ -103,7 +105,7 @@ public class SingleAssignmentFragment extends Fragment implements View.OnClickLi
             case R.id.assignment_close_button:
                 // Return to the previous fragment in the back stack
                 AppCompatActivity activity = (AppCompatActivity) getActivity();
-                activity.getSupportFragmentManager().popBackStack();
+                activity.onBackPressed();
                 break;
         }
     }
@@ -150,7 +152,8 @@ public class SingleAssignmentFragment extends Fragment implements View.OnClickLi
         // If there are no attachments, do not show the attachments view.
         // Otherwise, construct the HTML and set the TextView's content from that.
         if(attachments == null || attachments.size() == 0) {
-            attachmentsView.setVisibility(View.GONE);
+            attachmentsView.setText(
+                    getSpannedFromHtml("<p>No attachments found for this assignment.</p>"));
         } else {
             StringBuilder attachmentsString = new StringBuilder();
             for (Attachment attachment : attachments) {

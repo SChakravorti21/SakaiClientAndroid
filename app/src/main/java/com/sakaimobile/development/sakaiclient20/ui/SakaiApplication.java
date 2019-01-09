@@ -2,16 +2,17 @@ package com.sakaimobile.development.sakaiclient20.ui;
 
 import android.app.Activity;
 import android.app.Application;
+import android.os.Build;
 import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.OnLifecycleEvent;
 import android.arch.lifecycle.ProcessLifecycleOwner;
 import android.content.Intent;
-import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.webkit.CookieManager;
 
 import com.crashlytics.android.Crashlytics;
+import com.sakaimobile.development.sakaiclient20.BuildConfig;
 import com.sakaimobile.development.sakaiclient20.dependency_injection.DaggerSakaiApplicationComponent;
 import com.sakaimobile.development.sakaiclient20.networking.services.SessionService;
 import com.sakaimobile.development.sakaiclient20.ui.activities.WebViewActivity;
@@ -38,7 +39,10 @@ public class SakaiApplication extends Application
     @Override
     public void onCreate() {
         super.onCreate();
-        Fabric.with(this, new Crashlytics());
+
+        if(!BuildConfig.DEBUG)
+            Fabric.with(this, new Crashlytics());
+
         DaggerSakaiApplicationComponent.builder()
                 .applicationContext(this)
                 .build()
