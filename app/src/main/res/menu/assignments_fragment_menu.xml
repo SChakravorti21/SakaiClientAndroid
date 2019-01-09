@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:title="Sort"
+        android:id="@+id/assignment_sort_group"
         android:icon="@drawable/ic_filter_list_24dp"
         app:showAsAction="ifRoom">
        <menu>

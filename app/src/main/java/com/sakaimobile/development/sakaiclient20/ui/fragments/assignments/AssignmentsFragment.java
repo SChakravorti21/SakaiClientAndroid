@@ -77,6 +77,11 @@ public class AssignmentsFragment extends Fragment {
     @Inject ViewModelFactory viewModelFactory;
     private AssignmentViewModel assignmentViewModel;
 
+    // This boolean flag is used to determine whether the sorting menu
+    // should be shown. If the tab is opened and the user immediately
+    // selected to sort by a different type, the app would crash,
+    // so we wait to show the sort menu group until the necessary data has loaded.
+    private boolean hasFinishedInitialDataLoad = false;
     private boolean shouldRefresh;
 
     /**
@@ -139,6 +144,13 @@ public class AssignmentsFragment extends Fragment {
 
                 this.renderTree();
                 this.progressBar.setVisibility(View.GONE);
+
+                // If this is the first time the observation is called,
+                // inflate the sort menu
+                if(!hasFinishedInitialDataLoad) {
+                    hasFinishedInitialDataLoad = true;
+                    getActivity().invalidateOptionsMenu();
+                }
             }
         );
     }
@@ -166,6 +178,17 @@ public class AssignmentsFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.assignments_fragment_menu, menu);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        // Do not allow the user to sort based on any type if
+        // we do not have the necessary data to create that view
+        if(hasFinishedInitialDataLoad) {
+            menu.findItem(R.id.assignment_sort_group).setVisible(true);
+        } else {
+            menu.findItem(R.id.assignment_sort_group).setVisible(false);
+        }
     }
 
     @Override
