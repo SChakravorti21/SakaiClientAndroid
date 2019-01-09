@@ -62,14 +62,13 @@ import static com.sakaimobile.development.sakaiclient20.ui.fragments.Announcemen
 
 public class MainActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener,
-        OnAnnouncementSelected, HasSupportFragmentInjector {
+        OnAnnouncementSelected {
 
     private static final short FRAGMENT_REPLACE = 0;
     private static final short FRAGMENT_ADD = 1;
 
     protected Set<LiveData> beingObserved;
     @Inject ViewModelFactory viewModelFactory;
-    @Inject DispatchingAndroidInjector<Fragment> supportFragmentInjector;
 
     private FrameLayout container;
     private ProgressBar spinner;
@@ -110,11 +109,6 @@ public class MainActivity extends AppCompatActivity
         beingObserved = new HashSet<>();
         refreshedFragments = new HashSet<>();
         loadCoursesFragment();
-    }
-
-    @Override
-    public AndroidInjector<Fragment> supportFragmentInjector() {
-        return supportFragmentInjector;
     }
 
     @Override
