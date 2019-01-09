@@ -3,6 +3,7 @@ package com.sakaimobile.development.sakaiclient20.ui.fragments;
 import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -118,15 +119,20 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
 
         createAdapter();
 
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
         // update the recycler adapter when new announcements come
-        announcementLiveData.observe(getActivity(), announcements -> {
+        announcementLiveData.observe(getViewLifecycleOwner(), announcements -> {
 
             addNewAnnouncementsToAdapter(announcements);
             announcementRecycler.setVisibility(View.VISIBLE);
             spinner.setVisibility(View.GONE);
         });
-
-        return view;
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.sakaimobile.development.sakaiclient20.ui.fragments;
 import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -53,7 +54,7 @@ public class SiteGradesFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
             case R.id.action_refresh:
                 gradeViewModel.refreshSiteData(siteId);
                 spinner.setVisibility(View.VISIBLE);
@@ -82,17 +83,20 @@ public class SiteGradesFragment extends Fragment {
 
         siteGradesListView = view.findViewById(R.id.site_grades_list_view);
 
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         // get the live data
-        LiveData<List<Grade>> gradeLiveData = gradeViewModel.getSiteGrades(siteId);
-
-        gradeLiveData.observe(this, grades -> {
-            feedGradesIntoListView(grades);
-            spinner.setVisibility(View.GONE);
-            siteGradesListView.setVisibility(View.VISIBLE);
-        });
-
-        return view;
+        gradeViewModel.getSiteGrades(siteId)
+                .observe(getViewLifecycleOwner(), grades -> {
+                    feedGradesIntoListView(grades);
+                    spinner.setVisibility(View.GONE);
+                    siteGradesListView.setVisibility(View.VISIBLE);
+                });
     }
 
     /**

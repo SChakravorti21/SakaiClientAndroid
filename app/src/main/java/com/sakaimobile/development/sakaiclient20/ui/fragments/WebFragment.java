@@ -95,21 +95,6 @@ public class WebFragment extends Fragment {
         // Present the expected URL
         webView.loadUrl(URL);
 
-//        webView.getSettings().setJavaScriptEnabled(true);
-//        webView.setWebViewClient(new WebViewClient() {
-//            @Override
-//            public void onPageFinished(WebView view, String url) {
-//                super.onPageFinished(view, url);
-//
-//                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-//                    webView.evaluateJavascript("javascript:flash('hi');", null);
-////                    webView.evaluateJavascript("javascript:$('.Mrphs-topHeader').hide()", null);
-//                } else {
-//                    webView.loadUrl("javascript:flash('hi');");
-////                    webView.loadUrl("javascript:$('.Mrphs-topHeader').hide()");
-//                }
-//            }
-//        });
     }
 
     /**

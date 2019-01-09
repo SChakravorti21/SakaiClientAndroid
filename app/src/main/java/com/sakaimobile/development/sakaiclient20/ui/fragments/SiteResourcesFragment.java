@@ -3,6 +3,7 @@ package com.sakaimobile.development.sakaiclient20.ui.fragments;
 import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -47,7 +48,7 @@ public class SiteResourcesFragment extends Fragment {
         setHasOptionsMenu(true);
 
         Bundle bun = getArguments();
-        if(bun != null)
+        if (bun != null)
             currentSiteId = bun.getString(getString(R.string.siteid_tag));
     }
 
@@ -58,13 +59,13 @@ public class SiteResourcesFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
             case R.id.action_refresh:
 
                 // this can be null if the user immediately clicks refresh while
                 // resources are loading for the first time
                 // don't refresh if this is the case
-                if(viewOfTree == null)
+                if (viewOfTree == null)
                     return false;
 
                 spinner.setVisibility(View.VISIBLE);
@@ -105,6 +106,13 @@ public class SiteResourcesFragment extends Fragment {
         // get the parent view container
         treeContainer = view.findViewById(R.id.container);
 
+        return view;
+    }
+
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         // setup the treeview
         final TreeNode root = TreeNode.root();
@@ -112,22 +120,15 @@ public class SiteResourcesFragment extends Fragment {
         resourcesTreeView.setDefaultAnimation(true);
 
 
+        resourceViewModel.getResourcesForSite(currentSiteId)
+                .observe(getViewLifecycleOwner(), resources -> {
 
-        // request the resources for the site
-        LiveData<List<Resource>> resourceLiveData =
-                resourceViewModel.getResourcesForSite(currentSiteId);
+                    // update the resources tree view
+                    updateResourcesTreeView(resources);
 
-        // observe on the resources data
-        resourceLiveData.observe(this, resources -> {
-
-            // update the resources tree view
-            updateResourcesTreeView(resources);
-
-            spinner.setVisibility(View.GONE);
-            viewOfTree.setVisibility(View.VISIBLE);
-        });
-
-        return view;
+                    spinner.setVisibility(View.GONE);
+                    viewOfTree.setVisibility(View.VISIBLE);
+                });
     }
 
     /**
@@ -249,7 +250,6 @@ public class SiteResourcesFragment extends Fragment {
                 .addToBackStack(null)
                 .commit();
     }
-
 
 
     private void saveResourceTreeState() {
