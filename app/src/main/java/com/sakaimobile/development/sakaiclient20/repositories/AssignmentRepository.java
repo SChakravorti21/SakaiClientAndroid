@@ -48,6 +48,8 @@ public class AssignmentRepository {
 
     public Flowable<List<Assignment>> getSiteAssignments(List<String> siteIds) {
         return assignmentDao.getSiteAssignments(siteIds)
+                // `debounce` because multiple inserts will trigger multiple
+                // emissions in quick succession
                 .debounce(100, TimeUnit.MILLISECONDS)
                 .map(AssignmentRepository::flattenCompositesToEntities)
                 .map(assignments -> {
@@ -59,9 +61,7 @@ public class AssignmentRepository {
     public Completable refreshAllAssignments() {
         // We need to update all assignments, but requesting directly
         // from the endpoint for all assignments is too slow. Instead,
-        // we construct requests to update assignments for each site (i.e. course),
-        // and run them in parallel. This reduces the request/persistence time significantly
-        // (slashes it in half).
+        // we request assignments for each course individually
         return courseDao.getAllSiteIds()
             .toObservable()
             .switchMapSingle(this::refreshMultipleSiteAssignments)
@@ -69,6 +69,9 @@ public class AssignmentRepository {
     }
 
     public Single<List<List<Assignment>>> refreshMultipleSiteAssignments(List<String> siteIds) {
+        // We construct requests to update assignments for each site (i.e. course),
+        // and run them in parallel. This reduces the request/persistence time significantly
+        // (slashes it in half).
         return Observable.fromIterable(siteIds)
                 .map(this::refreshSiteAssignments)
                 // Observe each network call on its own thread, running them in parallel
@@ -89,16 +92,15 @@ public class AssignmentRepository {
                 .map(AssignmentsResponse::getAssignments);
     }
 
-    private List<Assignment> persistAssignments(List<Assignment> assignments) {
-        if(assignments.isEmpty())
-            return assignments;
+    private void persistAssignments(List<Assignment> assignments) {
+        // If there is nothing to insert, we do not want to trigger
+        // a false database `Flowable` emission
+        if(assignments.isEmpty()) return;
 
         // Insert all assignments and their attachments into the database
         assignmentDao.insert(assignments);
         for(Assignment assignment : assignments)
             attachmentDao.insert(assignment.attachments);
-
-        return assignments;
     }
 
     static List<Assignment> flattenCompositesToEntities(List<AssignmentWithAttachments> assignmentComposites) {

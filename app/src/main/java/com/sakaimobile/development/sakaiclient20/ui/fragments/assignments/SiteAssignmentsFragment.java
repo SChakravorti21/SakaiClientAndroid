@@ -25,7 +25,6 @@ import com.sakaimobile.development.sakaiclient20.ui.viewmodels.AssignmentViewMod
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +48,7 @@ public class SiteAssignmentsFragment extends Fragment {
     /**
      * Tag for passing the active assignment position to this {@link Fragment}.
      */
-    public static String ASSIGNMENT_NUMBER = "ASSIGNMENT_NUMBER";
+    public static String INITIAL_VIEW_POSITION = "INITIAL_VIEW_POSITION";
 
     /**
      * The site IDs of the course(s) for which we will load assignments
@@ -78,8 +77,10 @@ public class SiteAssignmentsFragment extends Fragment {
         Bundle arguments = getArguments();
         if(arguments != null) {
             this.mapSiteIdToSitePageUrl = (Map<String, String>) arguments.getSerializable(SITE_IDS_TAG);
-            initialPosition = arguments.getInt(ASSIGNMENT_NUMBER, 0);
+            initialPosition = arguments.getInt(INITIAL_VIEW_POSITION, 0);
 
+            // The map's key set contains all of the site IDs for which we will want
+            // to show assignments
             this.siteIds.addAll(this.mapSiteIdToSitePageUrl.keySet());
         }
     }
@@ -119,12 +120,16 @@ public class SiteAssignmentsFragment extends Fragment {
 
         this.assignmentViewModel.getSiteAssignments(siteIds)
                 .observe(getViewLifecycleOwner(), assignments -> {
+                    // Assignments is null when API call returns no assignments
                     if(assignments == null) {
                         Toast.makeText(getContext(), "No assignments found", Toast.LENGTH_LONG).show();
                         this.progressBar.setVisibility(View.GONE);
                         return;
                     }
 
+                    // Assignments from database will not have the assignmentSitePageUrl
+                    // set since this information needs to be retrieved from the parent
+                    // course. This information is contained in our mapSiteIdToSitePageUrl instead.
                     for(Assignment assignment : assignments)
                         attachAssignmentSitePageUrl(assignment);
 

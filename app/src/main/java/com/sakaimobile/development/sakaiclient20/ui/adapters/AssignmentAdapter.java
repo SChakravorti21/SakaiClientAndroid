@@ -2,7 +2,6 @@ package com.sakaimobile.development.sakaiclient20.ui.adapters;
 
 import android.content.Intent;
 import android.os.Build;
-import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -17,7 +16,6 @@ import android.widget.TextView;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
-import com.sakaimobile.development.sakaiclient20.ui.activities.MainActivity;
 import com.sakaimobile.development.sakaiclient20.ui.activities.SitePageActivity;
 import com.sakaimobile.development.sakaiclient20.ui.custom_components.CustomLinkMovementMethod;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.SiteAssignmentsFragment;
@@ -225,11 +223,12 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
          * @param activity the parent {@link AppCompatActivity}
          */
         private void expandAssignment(AppCompatActivity activity) {
-            // start the sitepage activity to handle the appropriate site page
+            // Start the SitePageActivity to expand all assignment cards
             Intent i = new Intent(activity, SitePageActivity.class);
+            // Specify that we want to show the Assignments site page
             i.putExtra(activity.getString(R.string.site_type_tag), activity.getString(R.string.assignments_site));
             i.putExtra(activity.getString(R.string.assignments_tag), (Serializable) assignments);
-            i.putExtra(SiteAssignmentsFragment.ASSIGNMENT_NUMBER, position);
+            i.putExtra(SiteAssignmentsFragment.INITIAL_VIEW_POSITION, position);
 
             activity.startActivity(i);
         }
