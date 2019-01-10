@@ -1,6 +1,8 @@
 package com.sakaimobile.development.sakaiclient20.ui.fragments;
 
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -27,6 +29,7 @@ import com.sakaimobile.development.sakaiclient20.ui.adapters.AnnouncementsAdapte
 import com.sakaimobile.development.sakaiclient20.ui.listeners.LoadMoreListener;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.OnAnnouncementSelected;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.AnnouncementViewModel;
+import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,9 +43,9 @@ import dagger.android.support.AndroidSupportInjection;
 public class AnnouncementsFragment extends Fragment implements OnAnnouncementSelected {
 
     @Inject
-    AnnouncementViewModel announcementViewModel;
+    ViewModelFactory viewModelFactory;
 
-    public static final int NUM_ANNOUNCEMENTS_DEFAULT = 10;
+    private AnnouncementViewModel announcementViewModel;
 
     public static final int ALL_ANNOUNCEMENTS = 0;
     public static final int SITE_ANNOUNCEMENTS = 1;
@@ -50,12 +53,13 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
     // announcements to display
     private List<Announcement> allAnnouncements;
 
-    private HashMap<String, Course> siteIdToCourseMap;
 
     // recycler view displaying announcements
     private RecyclerView announcementRecycler;
     // adapter which puts announcements into recycler view
     private AnnouncementsAdapter adapter;
+    private HashMap<String, Course> siteIdToCourseMap; // needed for the adapter
+
 
     // loads more announcements and refreshes
     private LoadMoreListener loadMoreListener;
@@ -65,8 +69,6 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
 
     // whether or not there are more announcements to load
     private boolean hasLoadedAllAnnouncements = false;
-
-    private static final int ANNOUNCEMENTS_TO_GET_PER_REQUEST = 10;
 
     private LiveData<List<Announcement>> announcementLiveData;
 
@@ -79,22 +81,29 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
+
+        // get arguments from bundle
         Bundle bun = getArguments();
         String siteId = bun.getString(getString(R.string.siteid_tag));
         announcementType = (siteId == null) ? ALL_ANNOUNCEMENTS : SITE_ANNOUNCEMENTS;
         siteIdToCourseMap = (HashMap) bun.getSerializable(getString(R.string.siteid_to_course_map));
         allAnnouncements = new ArrayList<>();
 
+        // setup the view model
+        announcementViewModel = ViewModelProviders.of(this, viewModelFactory)
+                .get(AnnouncementViewModel.class);
 
+        // setup the correct live data and loadMoreListener depending on
+        // showing site or all announcements
         if (announcementType == ALL_ANNOUNCEMENTS) {
             loadMoreListener = new LoadsAllAnnouncements();
             announcementLiveData = announcementViewModel
-                    .getAllAnnouncements(NUM_ANNOUNCEMENTS_DEFAULT);
+                    .getNextSetOfAllAnnouncements();
 
         } else {
-            loadMoreListener = new LoadsSiteAnnouncements();
-            announcementLiveData = announcementViewModel
-                    .getSiteAnnouncements(siteId, NUM_ANNOUNCEMENTS_DEFAULT);
+//            loadMoreListener = new LoadsSiteAnnouncements();
+//            announcementLiveData = announcementViewModel
+//                    .getSiteAnnouncements(siteId, NUM_ANNOUNCEMENTS_DEFAULT);
         }
 
 
@@ -126,7 +135,7 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // update the recycler adapter when new announcements come
+        // each time the observation is triggered, we have gotten the next set of announcements
         announcementLiveData.observe(getViewLifecycleOwner(), announcements -> {
 
             addNewAnnouncementsToAdapter(announcements);
@@ -177,7 +186,7 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
 
 
     /**
-     * Adds the newly requested announcements to the adapter and notifies that
+     * Adds the newly gotten announcements to the adapter and notifies that
      * they were loaded
      *
      * @param newAnnouncements announcements to add
@@ -188,11 +197,8 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
         if (allAnnouncements.size() > 0)
             allAnnouncements.remove(allAnnouncements.size() - 1);
 
-        int initialSize = allAnnouncements.size();
-
-        // if there are no more new announcements to display
-        // mark as finished loading, remove the loading bar, then return
-        if (initialSize == newAnnouncements.size()) {
+        // if no more announcements to display, remove the loading bar and return
+        if(newAnnouncements.size() == 0) {
 
             adapter.finishedLoading();
             adapter.notifyItemRemoved(allAnnouncements.size());
@@ -201,14 +207,14 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
             return;
         }
 
-        // add the new announcements to our list of all announcements
-        for (int i = initialSize; i < newAnnouncements.size(); i++) {
-            //add the new items into all announcements
-            allAnnouncements.add(newAnnouncements.get(i));
-        }
+
+        int initialSize = allAnnouncements.size();
+
+        // add all the new announcements
+        allAnnouncements.addAll(newAnnouncements);
 
         // notify the adapter that we added some new items, so it can display
-        adapter.notifyItemRangeChanged(initialSize, newAnnouncements.size() - initialSize);
+        adapter.notifyItemRangeChanged(initialSize, newAnnouncements.size());
         adapter.finishedLoading();
     }
 
@@ -237,25 +243,21 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
                 adapter.notifyItemInserted(allAnnouncements.size() - 1);
             });
 
-            // get the number of announcements we have to request now,
-            // based on the current number showing and the number of additional ones
-            // we want
-            int numAnnouncementsToRequest = allAnnouncements.size() - 1 + ANNOUNCEMENTS_TO_GET_PER_REQUEST;
-
-            announcementViewModel.refreshAllAnnouncements(numAnnouncementsToRequest);
+            announcementViewModel.getNextSetOfAllAnnouncements();
 
         }
 
         @Override
         public void refresh() {
-            announcementViewModel.refreshAllAnnouncements(NUM_ANNOUNCEMENTS_DEFAULT);
+            // clear our current announcements and rerequest more
+            allAnnouncements.clear();
+            announcementViewModel.refreshAllAnnouncements();
         }
 
 
     }
 
     /**
-     * // TODO observe add new announcements to adapter
      * <p>
      * private class which holds the load more method to load more site announcements
      */
@@ -282,11 +284,11 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
             );
 
 
-            int numAnnouncementsToRequest = allAnnouncements.size() - 1 + ANNOUNCEMENTS_TO_GET_PER_REQUEST;
+//            int numAnnouncementsToRequest = allAnnouncements.size() - 1 + ANNOUNCEMENTS_TO_GET_PER_REQUEST;
 
             String siteId = allAnnouncements.get(0).siteId;
 
-            announcementViewModel.refreshSiteData(siteId, numAnnouncementsToRequest);
+//            announcementViewModel.refreshSiteData(siteId, numAnnouncementsToRequest);
 
         }
 
@@ -296,7 +298,7 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
 
             String siteId = allAnnouncements.get(0).siteId;
 
-            announcementViewModel.refreshSiteData(siteId, NUM_ANNOUNCEMENTS_DEFAULT);
+//            announcementViewModel.refreshSiteData(siteId, NUM_ANNOUNCEMENTS_DEFAULT);
         }
 
     }
