@@ -34,6 +34,7 @@ import javax.inject.Inject
 class SiteChatFragment : Fragment() {
 
     companion object {
+        // The tag by which the chat site URL is passed in the bundle
         const val CHAT_SITE_URL: String = "CHAT_SITE_URL"
     }
 
@@ -46,11 +47,14 @@ class SiteChatFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // The site page URL will be loaded in the WebView
+        // and directly send us to the chat room
         val args: Bundle = arguments!!
         sitePageUrl = args.getString(CHAT_SITE_URL) as String
     }
 
     override fun onAttach(context: Context?) {
+        // Inject the ChatService for POSTing messages
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
     }
@@ -63,10 +67,13 @@ class SiteChatFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // JS needs to be enabled for styling, updating, etc.
         val settings: WebSettings = chatRoomWebView.settings
         settings.javaScriptEnabled = true
         chatRoomWebView.webViewClient = object: WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
+                // Once the chat page loads, get the chat channel ID
+                // and CSRF token (needed to make POST requests)
                 super.onPageFinished(view, url)
                 evaluateChatVariables()
             }
@@ -84,15 +91,21 @@ class SiteChatFragment : Fragment() {
     }
 
     private fun postMessage() {
+        // If the EditText is not enabled yet, we haven't finished loading
+        // the chat URL
         if(!chatMessage.isEnabled)
             return
 
+        // POST the new chat message to Sakai, don't clear the EditText
+        // until we know the POST request was successful (wouldn't want user to lose
+        // their message)
         val message = chatMessage.text.toString()
         chatService.postChatMessage(chatChannelId, message, csrfToken)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(object: SingleObserver<ResponseBody> {
                     override fun onSuccess(t: ResponseBody) {
+                        // Make the new message visible by updating and scrolling down
                         updateMonitor()
                         chatMessage.text.clear()
                     }
@@ -112,21 +125,28 @@ class SiteChatFragment : Fragment() {
     @SuppressLint("NewApi")
     private fun evaluateChatVariables() {
         chatRoomWebView.evaluateJavascript("currentChatChannelId") {
+            // This callback returns a String of a JS String, so it will be surrounded
+            // in unnecessary double quotes, trim the quotes
             chatChannelId = it.substring(1 until it.length - 1)
             tryEnableInput()
         }
 
+        // While we're getting the CSRF token, also apply some styling to the WebView
         chatRoomWebView.evaluateJavascript("""
+            // Make only the chat view visible
             var monitor = document.querySelector('#Monitor');
             document.body.innerHTML = monitor.innerHTML;
 
+            // Make the chat view pretty
             $('body').css({'background': 'white'})
             $('.chatList').css({'padding': '0em'})
+            // (yes, all of this needs to be on one line, it doesn't work otherwise)
             $("<style type='text/css'> li { list-style: none; border: 1px grey solid; padding: 6px; margin: 8px 12px; border-radius: 6px; box-shadow:-3px 3px 3px lightgrey; }</style>").appendTo("head");
 
-            // Returns the csrf token
+            // Returns the CSRF token
             document.getElementById('topForm:csrftoken').value;
             """) {
+            // Same removal of unnecessary double quotes as above
             csrfToken = it.substring(1 until it.length - 1)
             tryEnableInput()
         }
@@ -134,6 +154,8 @@ class SiteChatFragment : Fragment() {
 
     @SuppressLint("NewApi")
     private fun updateMonitor() {
+        // This causes the chat monitor in the WebView to make its own GET request
+        // to check for new messages, after which we scroll down if there are any new messages
         chatRoomWebView.evaluateJavascript("""
             updateNow();
             $('html, body').animate({scrollTop:document.body.offsetHeight}, 400);
@@ -141,9 +163,15 @@ class SiteChatFragment : Fragment() {
     }
 
     private fun tryEnableInput() {
+        // BOTH the chat channel ID and CSRF token are necessary for POST requests,
+        // so do not allow the user to send a message until both values are evaluated
         if(chatChannelId != null && csrfToken != null) {
+            // Scroll down to bottom of chat (the chat is focused at the top by default)
             updateMonitor()
             chatMessage.isEnabled = true
+
+            // Hide progress bar and show WebView now that we are prepared to
+            // send messages
             progressbar.visibility = View.GONE
             chatRoomWebView.visibility = View.VISIBLE
         }
