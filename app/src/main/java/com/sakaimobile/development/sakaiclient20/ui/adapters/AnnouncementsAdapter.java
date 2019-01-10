@@ -35,7 +35,7 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     // how many announcements should be between the last visible one
     // and the last one before we request more
-    private static final int END_OFFSET_BEFORE_RELOAD = 5;
+    private static final int END_OFFSET_BEFORE_RELOAD = 3;
 
     // list of announcements to display
     private List<Announcement> announcements;

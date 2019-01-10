@@ -11,6 +11,7 @@ import com.sakaimobile.development.sakaiclient20.persistence.entities.Announceme
 import com.sakaimobile.development.sakaiclient20.repositories.AnnouncementRepository;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -80,6 +81,7 @@ public class AnnouncementViewModel extends ViewModel {
 
         announcementRepository
                 .getNextSetOfAllAnnouncements()
+                .delay(1, TimeUnit.SECONDS)
                 .doOnSubscribe(compositeDisposable::add)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

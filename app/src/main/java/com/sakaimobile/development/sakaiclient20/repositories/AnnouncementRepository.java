@@ -26,7 +26,7 @@ public class AnnouncementRepository {
     // this is stateful, which means that it will keep track the next set of announcements
     // to return without additional parameters
     private static int START_INDEX = 0;
-    private static final int NUM_ANNOUNCEMENTS_PER_SET = 30;
+    private static final int NUM_ANNOUNCEMENTS_PER_SET = 10;
 
 
     public AnnouncementRepository(AnnouncementDao announcementDao, AttachmentDao attachmentDao, AnnouncementsService announcementsService) {

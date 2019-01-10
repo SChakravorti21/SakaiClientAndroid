@@ -198,25 +198,24 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
         if (allAnnouncements.size() > 0)
             allAnnouncements.remove(allAnnouncements.size() - 1);
 
-        // if no more announcements to display, remove the loading bar and return
-        if(newAnnouncements.size() == 0) {
-
+        if (newAnnouncements.size() == 0) {
+            // if no more announcements to display, remove the loading bar
             adapter.finishedLoading();
             adapter.notifyItemRemoved(allAnnouncements.size());
             Toast.makeText(getContext(), getString(R.string.no_announcements), Toast.LENGTH_SHORT).show();
             hasLoadedAllAnnouncements = true;
-            return;
+        } else {
+            // if there are new announcements add them and then update adapter
+            int initialSize = allAnnouncements.size();
+
+            // add all the new announcements
+            allAnnouncements.addAll(newAnnouncements);
+
+            // notify the adapter that we added some new items, so it can display
+            adapter.notifyItemRangeChanged(initialSize, newAnnouncements.size());
+            adapter.finishedLoading();
         }
 
-
-        int initialSize = allAnnouncements.size();
-
-        // add all the new announcements
-        allAnnouncements.addAll(newAnnouncements);
-
-        // notify the adapter that we added some new items, so it can display
-        adapter.notifyItemRangeChanged(initialSize, newAnnouncements.size());
-        adapter.finishedLoading();
     }
 
 
@@ -252,6 +251,7 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
         public void refresh() {
             // clear our current announcements and rerequest more
             allAnnouncements.clear();
+            adapter.notifyDataSetChanged();
             announcementViewModel.refreshAllAnnouncements();
         }
 
