@@ -13,12 +13,14 @@ import android.view.ViewGroup
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.Toast
 
 import com.sakaimobile.development.sakaiclient20.R
 import com.sakaimobile.development.sakaiclient20.networking.services.ChatService
 import dagger.android.support.AndroidSupportInjection
 import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_site_chat.*
@@ -39,6 +41,7 @@ class SiteChatFragment : Fragment() {
     private lateinit var sitePageUrl: String
     private var chatChannelId: String? = null
     private var csrfToken: String? = null
+    private val compositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,6 +78,35 @@ class SiteChatFragment : Fragment() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        compositeDisposable.dispose()
+    }
+
+    private fun postMessage() {
+        if(!chatMessage.isEnabled)
+            return
+
+        val message = chatMessage.text.toString()
+        chatService.postChatMessage(chatChannelId, message, csrfToken)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object: SingleObserver<ResponseBody> {
+                    override fun onSuccess(t: ResponseBody) {
+                        updateMonitor()
+                        chatMessage.text.clear()
+                    }
+                    override fun onError(e: Throwable) {
+                        Toast.makeText(context, "Failed to send message!", Toast.LENGTH_SHORT)
+                                .show()
+                        e.printStackTrace()
+                    }
+                    override fun onSubscribe(d: Disposable) {
+                        compositeDisposable.add(d)
+                    }
+                })
+    }
+
     // Suppress lint because in SitePageActivity we ensure not to load this
     // fragment if the build version does not meet the minimum (API 19)
     @SuppressLint("NewApi")
@@ -85,10 +117,15 @@ class SiteChatFragment : Fragment() {
         }
 
         chatRoomWebView.evaluateJavascript("""
-            var csrftoken = document.getElementById('topForm:csrftoken').value;
-            var selectedElement = document.querySelector('#Monitor');
-            document.body.innerHTML = selectedElement.innerHTML;
-            csrftoken;
+            var monitor = document.querySelector('#Monitor');
+            document.body.innerHTML = monitor.innerHTML;
+
+            $('body').css({'background': 'white'})
+            $('.chatList').css({'padding': '0em'})
+            $("<style type='text/css'> li { list-style: none; border: 1px grey solid; padding: 6px; margin: 8px 12px; border-radius: 6px; box-shadow:-3px 3px 3px lightgrey; }</style>").appendTo("head");
+
+            // Returns the csrf token
+            document.getElementById('topForm:csrftoken').value;
             """) {
             csrfToken = it.substring(1 until it.length - 1)
             tryEnableInput()
@@ -103,33 +140,12 @@ class SiteChatFragment : Fragment() {
             """, null)
     }
 
-    private fun postMessage() {
-        if(!chatMessage.isEnabled)
-            return
-
-        val message = chatMessage.text.toString()
-        chatMessage.text.clear()
-        chatService.postChatMessage(chatChannelId, message, csrfToken)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(object: SingleObserver<ResponseBody> {
-                    override fun onSuccess(t: ResponseBody) {
-                        updateMonitor()
-                    }
-
-                    override fun onSubscribe(d: Disposable) {
-                    }
-
-                    override fun onError(e: Throwable) {
-                        e.printStackTrace()
-                    }
-                })
-    }
-
     private fun tryEnableInput() {
         if(chatChannelId != null && csrfToken != null) {
-            chatMessage.isEnabled = true
             updateMonitor()
+            chatMessage.isEnabled = true
+            progressbar.visibility = View.GONE
+            chatRoomWebView.visibility = View.VISIBLE
         }
     }
 }
