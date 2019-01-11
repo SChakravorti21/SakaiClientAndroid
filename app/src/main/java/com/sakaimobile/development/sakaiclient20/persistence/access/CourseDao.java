@@ -8,8 +8,12 @@ import android.arch.persistence.room.Transaction;
 import com.sakaimobile.development.sakaiclient20.persistence.composites.CourseWithAllData;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 
@@ -29,5 +33,15 @@ public abstract class CourseDao implements BaseDao<Course> {
 
     @Query("SELECT siteId FROM courses")
     public abstract Single<List<String>> getAllSiteIds();
+
+    @Query("DELETE FROM courses WHERE siteId NOT IN (:availableSiteIds)")
+    public abstract int removeExtraneousCourses(Set<String> availableSiteIds);
+
+    public boolean removeExtraneousCourses(List<Course> courses) {
+        Set<String> siteIds = new HashSet<>();
+        for(Course course : courses)
+            siteIds.add(course.siteId);
+        return removeExtraneousCourses(siteIds) > 0;
+    }
 
 }

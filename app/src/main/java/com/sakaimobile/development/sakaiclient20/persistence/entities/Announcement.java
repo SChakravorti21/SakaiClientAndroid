@@ -23,8 +23,7 @@ import java.util.List;
         indices = {
                 @Index(value = "siteId"),
                 @Index(value = "announcementId")
-        }
-)
+        })
 // TODO: implement parcelable
 public class Announcement implements Serializable {
 

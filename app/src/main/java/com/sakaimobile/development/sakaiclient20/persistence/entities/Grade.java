@@ -13,10 +13,10 @@ import java.io.Serializable;
 
 @Entity(tableName = "grades",
         foreignKeys = @ForeignKey(entity = Course.class,
-                                    parentColumns = "siteId",
-                                    childColumns = "siteId",
-                                    onDelete = ForeignKey.CASCADE,
-                                    onUpdate = ForeignKey.CASCADE),
+                parentColumns = "siteId",
+                childColumns = "siteId",
+                onDelete = ForeignKey.CASCADE,
+                onUpdate = ForeignKey.CASCADE),
         indices = @Index(value = "siteId"))
 public class Grade implements Serializable {
     // autogenerates means the id is incremented each time a new grade is added (our own id, not sakai's)
