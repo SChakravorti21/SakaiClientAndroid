@@ -20,7 +20,7 @@ public class AnnouncementRepository {
     private AnnouncementsService announcementsService;
 
     private static final int REQ_DAYS_BACK = 10000;
-    private static final int REQ_NUM_ANNOUNCEMENTS = 100000;
+    private static final int REQ_NUM_ANNOUNCEMENTS = 10000;
 
 
     // this is stateful, which means that it will keep track the next set of announcements
@@ -104,7 +104,7 @@ public class AnnouncementRepository {
 
         // delete all announcements from the previous session
         // they are outdated!!!!!!!!!
-        announcementDao.deleteAllAnnouncements();
+        // announcementDao.deleteAllAnnouncements();
 
         announcementDao.insert(announcements);
         for (Announcement announcement : announcements) {

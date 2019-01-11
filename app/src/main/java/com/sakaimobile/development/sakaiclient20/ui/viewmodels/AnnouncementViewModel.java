@@ -170,5 +170,6 @@ public class AnnouncementViewModel extends ViewModel {
     protected void onCleared() {
         super.onCleared();
         compositeDisposable.clear();
+        this.announcementRepository.resetAnnouncementsSetPosition();
     }
 }

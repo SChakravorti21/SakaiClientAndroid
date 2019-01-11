@@ -82,17 +82,12 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-
         // get arguments from bundle
         Bundle bun = getArguments();
         String siteId = bun.getString(getString(R.string.siteid_tag));
         announcementType = (siteId == null) ? ALL_ANNOUNCEMENTS : SITE_ANNOUNCEMENTS;
         siteIdToCourseMap = (HashMap) bun.getSerializable(getString(R.string.siteid_to_course_map));
         allAnnouncements = new ArrayList<>();
-
-        // setup the view model
-        announcementViewModel = ViewModelProviders.of(this, viewModelFactory)
-                .get(AnnouncementViewModel.class);
 
         // setup the correct live data and loadMoreListener depending on
         // showing site or all announcements
@@ -309,6 +304,10 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
     public void onAttach(Context context) {
         AndroidSupportInjection.inject(this);
         super.onAttach(context);
+
+        // setup the view model
+        announcementViewModel = ViewModelProviders.of(this, viewModelFactory)
+                .get(AnnouncementViewModel.class);
     }
 
     @Override
