@@ -24,7 +24,8 @@ import dagger.Provides;
 class DeserializerModule {
 
     @Named("course_deserializer")
-    @Provides Gson courseDeserializer() {
+    @Provides
+    static Gson courseDeserializer() {
         return new GsonBuilder()
                 .setLenient()
                 .registerTypeAdapter(Course.class, new CourseDeserializer())
@@ -33,7 +34,8 @@ class DeserializerModule {
 
 
     @Named("resource_deserializer")
-    @Provides Gson resourceDeserializer() {
+    @Provides
+    static Gson resourceDeserializer() {
         return new GsonBuilder()
                 .setLenient()
                 .registerTypeAdapter(Resource.class, new ResourceDeserializer())
@@ -41,7 +43,8 @@ class DeserializerModule {
     }
 
     @Named("assignment_deserializer")
-    @Provides Gson assignmentDeserializer() {
+    @Provides
+    static Gson assignmentDeserializer() {
         return new GsonBuilder()
                 .setLenient()
                 .registerTypeAdapter(Assignment.class, new AssignmentDeserializer())
@@ -49,7 +52,8 @@ class DeserializerModule {
     }
 
     @Named("attachment_deserializer")
-    @Provides Gson attachmentDeserializer() {
+    @Provides
+    static Gson attachmentDeserializer() {
         return new GsonBuilder()
                 .setLenient()
                 .registerTypeAdapter(Attachment.class, new AttachmentDeserializer())
@@ -57,7 +61,8 @@ class DeserializerModule {
     }
 
     @Named("grades_deserializer")
-    @Provides Gson gradesDeserializer() {
+    @Provides
+    static Gson gradesDeserializer() {
         return new GsonBuilder()
                 .setLenient()
                 .registerTypeAdapter(SiteGrades.class, new SiteGradesDeserializer())
@@ -65,7 +70,8 @@ class DeserializerModule {
     }
 
     @Named("announcement_deserializer")
-    @Provides Gson announcementDeserializer() {
+    @Provides
+    static Gson announcementDeserializer() {
         return new GsonBuilder()
                 .setLenient()
                 .registerTypeAdapter(Announcement.class, new AnnouncementDeserializer())

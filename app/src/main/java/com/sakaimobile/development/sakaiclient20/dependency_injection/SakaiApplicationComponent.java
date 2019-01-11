@@ -4,11 +4,14 @@ import android.content.Context;
 
 import com.sakaimobile.development.sakaiclient20.ui.SakaiApplication;
 
+import javax.inject.Singleton;
+
 import dagger.BindsInstance;
 import dagger.Component;
 import dagger.android.AndroidInjectionModule;
 import dagger.android.AndroidInjector;
 
+@Singleton
 @Component(modules = {
         AndroidInjectionModule.class,
         SakaiApplicationModule.class,
