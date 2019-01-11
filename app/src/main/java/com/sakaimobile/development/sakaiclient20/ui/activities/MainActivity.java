@@ -62,7 +62,7 @@ import static com.sakaimobile.development.sakaiclient20.ui.fragments.Announcemen
 
 public class MainActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener,
-        OnAnnouncementSelected {
+        OnAnnouncementSelected, AllCoursesFragment.OnCoursesRefreshListener {
 
     private static final short FRAGMENT_REPLACE = 0;
     private static final short FRAGMENT_ADD = 1;
@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity
     protected Set<LiveData> beingObserved;
     @Inject ViewModelFactory viewModelFactory;
 
+    private boolean allowNavigation;
     private FrameLayout container;
     private ProgressBar spinner;
     private Set<Class> refreshedFragments;
@@ -97,6 +98,8 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // Do not allow navigation until courses finish refreshing
+        this.allowNavigation = false;
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(this);
         BottomNavigationViewHelper.removeShiftMode(navigation);
@@ -116,6 +119,17 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
         registerDownloadReceiver();
         CustomLinkMovementMethod.setFragmentManager(getSupportFragmentManager());
+    }
+
+    @Override
+    public void onAttachFragment(Fragment fragment) {
+        super.onAttachFragment(fragment);
+        // Setting this listeners allows us to lock navigation while the courses
+        // are refreshing
+        if(fragment instanceof AllCoursesFragment) {
+            AllCoursesFragment coursesFragment = (AllCoursesFragment) fragment;
+            coursesFragment.setOnCoursesRefreshListener(this);
+        }
     }
 
     @Override
@@ -145,6 +159,9 @@ public class MainActivity extends AppCompatActivity
      */
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        if(!allowNavigation)
+            return false;
+
         // To be safe, remove any observations that might be active for the previous tab
         // since that might trigger an unwanted fragment transaction
         removeObservations();
@@ -187,6 +204,16 @@ public class MainActivity extends AppCompatActivity
         fragment.setArguments(b);
 
         loadFragment(fragment, FRAGMENT_ADD, true, R.anim.grow_enter, R.anim.pop_exit);
+    }
+
+    @Override
+    public void onCoursesRefreshStarted() {
+        allowNavigation = false;
+    }
+
+    @Override
+    public void onCoursesRefreshCompleted() {
+        allowNavigation = true;
     }
 
     //================================

@@ -81,7 +81,7 @@ public class CourseRepository {
         courseDao.removeExtraneousCourses(courses);
 
         // Insert all courses and their site pages into db
-        courseDao.insert(courses);
+        courseDao.upsert(courses);
         for(Course course : courses)
             sitePageDao.insert(course.sitePages);
 

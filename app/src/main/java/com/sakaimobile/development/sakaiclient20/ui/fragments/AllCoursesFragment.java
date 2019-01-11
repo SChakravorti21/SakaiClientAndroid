@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,7 +19,6 @@ import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.models.Term;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
-import com.sakaimobile.development.sakaiclient20.ui.helpers.AssignmentSortingUtils;
 import com.sakaimobile.development.sakaiclient20.ui.helpers.RutgersSubjectCodes;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.TreeViewItemClickListener;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.CourseHeaderViewHolder;
@@ -38,6 +36,11 @@ import dagger.android.support.AndroidSupportInjection;
 
 public class AllCoursesFragment extends Fragment {
 
+    public interface OnCoursesRefreshListener {
+        void onCoursesRefreshStarted();
+        void onCoursesRefreshCompleted();
+    }
+
     public static final String SHOULD_REFRESH = "SHOULD_REFRESH";
 
     @Inject ViewModelFactory viewModelFactory;
@@ -47,6 +50,7 @@ public class AllCoursesFragment extends Fragment {
 
     private FrameLayout treeContainer;
     private ProgressBar progressBar;
+    private OnCoursesRefreshListener onCoursesRefreshListener;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -112,6 +116,11 @@ public class AllCoursesFragment extends Fragment {
 
                     this.renderTree(courses);
                     this.progressBar.setVisibility(View.GONE);
+
+                    // Allow user to resume navigating around app if that functionality
+                    // had previously been locked
+                    if(this.onCoursesRefreshListener != null)
+                        this.onCoursesRefreshListener.onCoursesRefreshCompleted();
                 });
     }
 
@@ -131,6 +140,11 @@ public class AllCoursesFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.action_refresh:
+                // Lock the parent activity's navigational functions
+                // since all other fragments rely on course data in some way
+                if(this.onCoursesRefreshListener != null)
+                    this.onCoursesRefreshListener.onCoursesRefreshStarted();
+
                 this.progressBar.setVisibility(View.VISIBLE);
                 this.saveTreeState();
                 this.courseViewModel.refreshAllData();
@@ -149,6 +163,10 @@ public class AllCoursesFragment extends Fragment {
         this.treeView.restoreState(state);
 
         this.treeContainer.addView(this.treeView.getView());
+    }
+
+    public void setOnCoursesRefreshListener(OnCoursesRefreshListener listener) {
+        this.onCoursesRefreshListener = listener;
     }
 
     /**
