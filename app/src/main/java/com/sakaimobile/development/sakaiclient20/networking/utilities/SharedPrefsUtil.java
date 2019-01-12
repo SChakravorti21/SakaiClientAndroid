@@ -36,20 +36,18 @@ public class SharedPrefsUtil {
         if(tree == null)
             return;
 
-        SharedPreferences sharedPref = context.getSharedPreferences(TREE_SET, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-
         String state = tree.getSaveState();
-        editor.putString(treeType, state);
-        editor.apply();
+        context.getSharedPreferences(TREE_SET, Context.MODE_PRIVATE)
+                .edit()
+                .putString(treeType, state)
+                .apply();
     }
 
     public static void clearTreeStates(Context context) {
-        SharedPreferences sharedPref = context.getSharedPreferences(TREE_SET, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.clear();
-
-        editor.apply();
+        context.getSharedPreferences(TREE_SET, Context.MODE_PRIVATE)
+                .edit()
+                .clear()
+                .apply();
     }
 
 }
