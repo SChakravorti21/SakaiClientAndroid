@@ -19,6 +19,12 @@ public abstract class GradeDao implements BaseDao<Grade>{
     @Query("DELETE FROM grades WHERE siteId = :siteId")
     public abstract void deleteGradesForSite(String siteId);
 
+    /**
+     * It is necessary to first delete site grades before inserting new
+     * ones because the API does not provide anything resembling a primary key
+     * and we auto-generate it. Inserting without deleting would mean that
+     * inserting new grades would duplicate them, so we must delete the old ones first.
+     */
     @Transaction
     public void insertGradesForSite(String siteId, Grade... grades) {
         deleteGradesForSite(siteId);

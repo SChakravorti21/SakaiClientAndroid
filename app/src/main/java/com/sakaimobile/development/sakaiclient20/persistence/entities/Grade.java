@@ -19,7 +19,7 @@ import java.io.Serializable;
                 onUpdate = ForeignKey.CASCADE),
         indices = @Index(value = "siteId"))
 public class Grade implements Serializable {
-    // autogenerates means the id is incremented each time a new grade is added (our own id, not sakai's)
+    // Auto-generate means the id is incremented each time a new grade is added (our own id, not sakai's)
     @PrimaryKey(autoGenerate = true)
     public int id;
 
