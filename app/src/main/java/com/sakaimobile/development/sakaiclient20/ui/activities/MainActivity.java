@@ -117,7 +117,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        registerDownloadReceiver();
         CustomLinkMovementMethod.setFragmentManager(getSupportFragmentManager());
     }
 
@@ -135,7 +134,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(downloadReceiver);
         removeObservations();
     }
 
@@ -215,17 +213,6 @@ public class MainActivity extends AppCompatActivity
     public void onCoursesRefreshCompleted() {
         allowNavigation = true;
     }
-
-    //================================
-    // LIFECYCLE CONVENIENCE METHODS
-    //================================
-
-    public void registerDownloadReceiver() {
-        IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
-        this.downloadReceiver = new DownloadCompleteReceiver();
-        registerReceiver(downloadReceiver, filter);
-    }
-
 
     //=======================
     // FRAGMENT MANAGEMENT

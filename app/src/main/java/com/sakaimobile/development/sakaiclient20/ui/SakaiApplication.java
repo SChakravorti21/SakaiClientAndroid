@@ -2,6 +2,8 @@ package com.sakaimobile.development.sakaiclient20.ui;
 
 import android.app.Activity;
 import android.app.Application;
+import android.app.DownloadManager;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleObserver;
@@ -16,6 +18,7 @@ import com.sakaimobile.development.sakaiclient20.BuildConfig;
 import com.sakaimobile.development.sakaiclient20.dependency_injection.DaggerSakaiApplicationComponent;
 import com.sakaimobile.development.sakaiclient20.networking.services.SessionService;
 import com.sakaimobile.development.sakaiclient20.ui.activities.WebViewActivity;
+import com.sakaimobile.development.sakaiclient20.ui.custom_components.DownloadCompleteReceiver;
 
 import javax.inject.Inject;
 
@@ -33,12 +36,22 @@ public class SakaiApplication extends Application
 
     @Inject SessionService sessionService;
     @Inject DispatchingAndroidInjector<Activity> activityInjector;
-
     @Inject DispatchingAndroidInjector<Fragment> supportFragmentInjector;
+
+    @Override
+    public AndroidInjector<Activity> activityInjector() {
+        return activityInjector;
+    }
+
+    @Override
+    public AndroidInjector<Fragment> supportFragmentInjector() {
+        return supportFragmentInjector;
+    }
 
     @Override
     public void onCreate() {
         super.onCreate();
+        registerDownloadReceiver();
 
         if(!BuildConfig.DEBUG)
             Fabric.with(this, new Crashlytics());
@@ -97,14 +110,10 @@ public class SakaiApplication extends Application
         });
     }
 
-    @Override
-    public AndroidInjector<Activity> activityInjector() {
-        return activityInjector;
-    }
-
-    @Override
-    public AndroidInjector<Fragment> supportFragmentInjector() {
-        return supportFragmentInjector;
+    public void registerDownloadReceiver() {
+        IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
+        DownloadCompleteReceiver receiver = new DownloadCompleteReceiver();
+        registerReceiver(receiver, filter);
     }
 
 }
