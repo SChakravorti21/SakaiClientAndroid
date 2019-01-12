@@ -35,7 +35,9 @@ class SitePagesBuilder(jsonArray: JsonArray) : AbstractBuilder<JsonArray, List<S
                 json.getStringMember("id"),
                 json.getStringMember("siteId"),
                 json.getStringMember("title"),
-                json.getStringMember("url")
+                // default url of null ensures that UI will not show the site page
+                // if the url is not provided
+                json.getStringMember("url", default = null)
         )
     }
 

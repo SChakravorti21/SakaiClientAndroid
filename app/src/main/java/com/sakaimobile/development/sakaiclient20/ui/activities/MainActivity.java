@@ -1,9 +1,7 @@
 package com.sakaimobile.development.sakaiclient20.ui.activities;
 
-import android.app.DownloadManager;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -16,49 +14,27 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.sakaimobile.development.sakaiclient20.R;
-import com.sakaimobile.development.sakaiclient20.networking.services.SessionService;
-import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
-import com.sakaimobile.development.sakaiclient20.persistence.entities.Announcement;
-import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 import com.sakaimobile.development.sakaiclient20.ui.custom_components.CustomLinkMovementMethod;
-import com.sakaimobile.development.sakaiclient20.ui.custom_components.DownloadCompleteReceiver;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AllCoursesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AllGradesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AnnouncementsFragment;
-import com.sakaimobile.development.sakaiclient20.ui.fragments.CourseSitesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.SettingsFragment;
-import com.sakaimobile.development.sakaiclient20.ui.fragments.SingleAnnouncementFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.AssignmentsFragment;
-import com.sakaimobile.development.sakaiclient20.ui.helpers.AssignmentSortingUtils;
 import com.sakaimobile.development.sakaiclient20.ui.helpers.BottomNavigationViewHelper;
-import com.sakaimobile.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
-import com.sakaimobile.development.sakaiclient20.ui.listeners.OnAnnouncementSelected;
-import com.sakaimobile.development.sakaiclient20.ui.viewmodels.AnnouncementViewModel;
-import com.sakaimobile.development.sakaiclient20.ui.viewmodels.AssignmentViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.CourseViewModel;
-import com.sakaimobile.development.sakaiclient20.ui.viewmodels.GradeViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
-import dagger.android.AndroidInjector;
-import dagger.android.DispatchingAndroidInjector;
-import dagger.android.HasFragmentInjector;
-import dagger.android.support.HasSupportFragmentInjector;
-
-import static com.sakaimobile.development.sakaiclient20.ui.fragments.AnnouncementsFragment.NUM_ANNOUNCEMENTS_DEFAULT;
 
 public class MainActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener,
