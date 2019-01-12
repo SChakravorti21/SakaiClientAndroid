@@ -29,6 +29,7 @@ import java.lang.ref.WeakReference;
  */
 
 public class WebFragment extends Fragment {
+
     private static final String URL_PARAM = "URL_PARAM";
 
     /**
@@ -46,7 +47,7 @@ public class WebFragment extends Fragment {
      * performs the majority of the important functions, including showing
      * web pages, downloading content, and allowing the user to upload content.
      */
-    private WeakReference<FileCompatWebView> webView;
+    private FileCompatWebView webView;
 
     public WebFragment() {
         // Required empty public constructor
@@ -86,15 +87,12 @@ public class WebFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // Get a reference to the WebView that shows the page's contents
-        FileCompatWebView webView = view.findViewById(R.id.data_webview);
-        this.webView = new WeakReference<>(webView);
-
-        // Initialize the WebView to be able to download and upload content
-        webView.initialize(this);
+        // and initialize the WebView to be able to download and upload content
+        this.webView = view.findViewById(R.id.data_webview);
+        this.webView.initialize(this);
 
         // Present the expected URL
-        webView.loadUrl(URL);
-
+        this.webView.loadUrl(URL);
     }
 
     /**
@@ -111,8 +109,8 @@ public class WebFragment extends Fragment {
 
         // Hand off the result to the webView, which will figure out
         // if it is of any importance to this fragment
-        if(this.webView != null && this.webView.get() != null) {
-            this.webView.get().onActivityResult(requestCode, resultCode, intent);
+        if(this.webView != null) {
+            this.webView.onActivityResult(requestCode, resultCode, intent);
         }
     }
 
@@ -143,8 +141,8 @@ public class WebFragment extends Fragment {
         // the request for the permission).
         if(permissions[0].equals(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED
-                && this.webView != null && this.webView.get() != null) {
-            this.webView.get().retryDownloadFile();
+                && this.webView != null) {
+            this.webView.retryDownloadFile();
         } else {
             // Permission was not granted/action cannot be performed, so
             // this fragment should be popped off to return to the previous
