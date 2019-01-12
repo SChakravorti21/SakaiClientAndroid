@@ -18,7 +18,7 @@ class AttachmentDeserializer : JsonDeserializer<Attachment> {
         val json = raw.asJsonObject
 
         val url = json.getStringMember("url")
-        val attachment = Attachment(url)
+        val attachment = Attachment(url!!)
         attachment.name = json.getStringMember("name")
 
         return attachment

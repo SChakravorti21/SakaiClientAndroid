@@ -3,8 +3,11 @@ package com.sakaimobile.development.sakaiclient20.ui.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
@@ -25,7 +28,6 @@ import java.util.Map;
 
 public class SitePageActivity extends AppCompatActivity {
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,16 +37,17 @@ public class SitePageActivity extends AppCompatActivity {
         String siteType = i.getStringExtra(getString(R.string.site_type_tag));
         Course course = (Course) i.getSerializableExtra(getString(R.string.course_tag));
 
-        // setup toolbar
+        // setup toolbar, enable returning to parent activity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(v -> this.onBackPressed());
+        ActionBar supportActionBar = getSupportActionBar();
+        supportActionBar.setDisplayHomeAsUpEnabled(true);
 
         // The course might be null if we are coming from an assignments adapter
         // i.e. from the main Assignments tab's TreeView
+        // Set the toolbar title as siteType + course name
         if(course != null)
-            // set the toolbar title as siteType + coursename
-            getSupportActionBar().setTitle(String.format("%s: %s", siteType, course.title));
+            supportActionBar.setTitle(String.format("%s: %s", siteType, course.title));
 
 
         // load the appropriate fragment for the site type
@@ -74,6 +77,18 @@ public class SitePageActivity extends AppCompatActivity {
         CustomLinkMovementMethod.setFragmentManager(getSupportFragmentManager());
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to returning to parent activity
+            case android.R.id.home:
+                this.onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     private void startSiteGradesFragment(Course course) {
         Bundle bun = new Bundle();
         bun.putString(getString(R.string.siteid_tag), course.siteId);
@@ -85,7 +100,6 @@ public class SitePageActivity extends AppCompatActivity {
     }
 
     private void startSiteAnnouncementsFragment(Course course) {
-
         HashMap<String, Course> siteIdToCourse = new HashMap<>();
         siteIdToCourse.put(course.siteId, course);
 
@@ -134,7 +148,6 @@ public class SitePageActivity extends AppCompatActivity {
     }
 
     private void startWebViewFragment(String siteName, Course course) {
-
         String url = null;
         for (SitePage page : course.sitePages) {
             if (page.title.equals(siteName))

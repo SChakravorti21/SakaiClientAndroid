@@ -62,21 +62,18 @@ import static com.sakaimobile.development.sakaiclient20.ui.fragments.Announcemen
 
 public class MainActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener,
-        OnAnnouncementSelected, AllCoursesFragment.OnCoursesRefreshListener {
+        AllCoursesFragment.OnCoursesRefreshListener {
 
-    private static final short FRAGMENT_REPLACE = 0;
     private static final short FRAGMENT_ADD = 1;
+    private static final short FRAGMENT_REPLACE = 0;
 
-    protected Set<LiveData> beingObserved;
+    private CourseViewModel courseViewModel;
     @Inject ViewModelFactory viewModelFactory;
 
-    private boolean allowNavigation;
-    private FrameLayout container;
     private ProgressBar spinner;
+    private FrameLayout container;
+    private boolean allowNavigation;
     private Set<Class> refreshedFragments;
-
-    @Inject CourseViewModel courseViewModel;
-    DownloadCompleteReceiver downloadReceiver;
 
     //==============================
     // LIFECYCLE/INTERFACE METHODS
@@ -88,10 +85,10 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Get reference to the container
-        this.container = findViewById(R.id.fragment_container);
+        this.courseViewModel =
+                ViewModelProviders.of(this, viewModelFactory).get(CourseViewModel.class);
 
-        //starts spinner
+        this.container = findViewById(R.id.fragment_container);
         this.spinner = findViewById(R.id.nav_activity_progressbar);
         this.spinner.setVisibility(View.GONE);
 
@@ -104,12 +101,8 @@ public class MainActivity extends AppCompatActivity
         navigation.setOnNavigationItemSelectedListener(this);
         BottomNavigationViewHelper.removeShiftMode(navigation);
 
-        //clear the saved tree states in saved preferences so some nodes aren't opened by default
-        SharedPrefsUtil.clearTreeStates(this);
-
         // Request all site pages for the Home Fragment and then loads the fragment
-        //refresh since we are loading for the same time
-        beingObserved = new HashSet<>();
+        // refresh since we are loading for the same time
         refreshedFragments = new HashSet<>();
         loadCoursesFragment();
     }
@@ -129,12 +122,6 @@ public class MainActivity extends AppCompatActivity
             AllCoursesFragment coursesFragment = (AllCoursesFragment) fragment;
             coursesFragment.setOnCoursesRefreshListener(this);
         }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        removeObservations();
     }
 
     @Override
@@ -160,9 +147,6 @@ public class MainActivity extends AppCompatActivity
         if(!allowNavigation)
             return false;
 
-        // To be safe, remove any observations that might be active for the previous tab
-        // since that might trigger an unwanted fragment transaction
-        removeObservations();
         setActionBarTitle(getString(R.string.app_name));
         switch (item.getItemId()) {
             case R.id.navigation_home:
@@ -188,21 +172,6 @@ public class MainActivity extends AppCompatActivity
     //============================
     // INTERFACE IMPLEMENTATIONS
     //============================
-
-
-    @Override
-    public void onAnnouncementSelected(Announcement announcement, Map<String, Course> siteIdToCourse) {
-        Bundle b = new Bundle();
-        b.putSerializable(getString(R.string.single_announcement_tag), announcement);
-        // for some reason map isn't serializable, so i had to cast to HashMap
-        //TODO check before casting
-        b.putSerializable(getString(R.string.siteid_to_course_map), (HashMap) siteIdToCourse);
-
-        SingleAnnouncementFragment fragment = new SingleAnnouncementFragment();
-        fragment.setArguments(b);
-
-        loadFragment(fragment, FRAGMENT_ADD, true, R.anim.grow_enter, R.anim.pop_exit);
-    }
 
     @Override
     public void onCoursesRefreshStarted() {
@@ -301,10 +270,7 @@ public class MainActivity extends AppCompatActivity
         this.container.setVisibility(View.GONE);
         startProgressBar();
 
-        LiveData<List<List<Course>>> coursesLiveData =
-            ViewModelProviders.of(this, viewModelFactory).get(CourseViewModel.class)
-                .getCoursesByTerm(false);
-
+        LiveData<List<List<Course>>> coursesLiveData = courseViewModel.getCoursesByTerm(false);
         coursesLiveData.observe(this, courses -> {
 
             HashMap<String, Course> map = createSiteIdToCourseMap(courses);
@@ -341,7 +307,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private HashMap<String, Course> createSiteIdToCourseMap(List<List<Course>> courses) {
-
         HashMap<String, Course> siteIdToCourse = new HashMap<>();
 
         for (List<Course> term : courses) {
@@ -349,6 +314,7 @@ public class MainActivity extends AppCompatActivity
                 siteIdToCourse.put(course.siteId, course);
             }
         }
+
         return siteIdToCourse;
     }
 
@@ -364,10 +330,4 @@ public class MainActivity extends AppCompatActivity
         spinner.setVisibility(View.GONE);
     }
 
-    protected void removeObservations() {
-        for (LiveData liveData : beingObserved) {
-            liveData.removeObservers(this);
-        }
-        beingObserved.clear();
-    }
 }
