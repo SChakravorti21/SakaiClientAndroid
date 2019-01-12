@@ -27,7 +27,7 @@ public abstract class AnnouncementDao implements BaseDao<Announcement> {
     public abstract Flowable<List<AnnouncementWithAttachments>> getAllAnnouncementsInRange(int start, int count);
 
 
-    @Transaction
+//    @Transaction
 //    @Query("SELECT * from announcements WHERE siteId = :siteId ORDER BY createdOn DESC LIMIT :start, :count")
 //    public abstract Flowable<List<AnnouncementWithAttachments>> getXSiteAnnouncements(String siteId, int count);
 
@@ -35,10 +35,10 @@ public abstract class AnnouncementDao implements BaseDao<Announcement> {
 
     @Query("DELETE FROM announcements WHERE siteId = :siteId")
     public abstract void deleteAnnouncementsForSite(String siteId);
-
-    @Transaction
-    public void insertAnnouncementsForSite(String siteId, Announcement... announcements) {
-        deleteAnnouncementsForSite(siteId);
-        insert(announcements);
-    }
+//
+//    @Transaction
+//    public void insertAnnouncementsForSite(String siteId, Announcement... announcements) {
+//        deleteAnnouncementsForSite(siteId);
+//        insert(announcements);
+//    }
 }

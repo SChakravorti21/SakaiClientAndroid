@@ -5,7 +5,6 @@ import android.annotation.SuppressLint;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
-import android.util.Log;
 
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Announcement;
 import com.sakaimobile.development.sakaiclient20.repositories.AnnouncementRepository;
@@ -28,11 +27,15 @@ public class AnnouncementViewModel extends ViewModel {
 
     private MutableLiveData<List<Announcement>> announcementsLiveData;
 
+    private int startIndex;
+
 
     @Inject
     AnnouncementViewModel(AnnouncementRepository repo) {
         announcementRepository = repo;
         announcementsLiveData = new MutableLiveData<>();
+
+        startIndex = 0;
     }
 
 
@@ -80,7 +83,7 @@ public class AnnouncementViewModel extends ViewModel {
     private void loadNextSetOfAnnouncements() {
 
         announcementRepository
-                .getNextSetOfAllAnnouncements()
+                .getNextSetAllAnnouncements(startIndex)
                 .delay(1, TimeUnit.SECONDS)
                 .doOnSubscribe(compositeDisposable::add)
                 .subscribeOn(Schedulers.io())
@@ -91,7 +94,9 @@ public class AnnouncementViewModel extends ViewModel {
                         }
                 );
 
-
+        // increment the start index so the next time we ask for
+        // the next set of announcements, it will give the next ones
+        startIndex  = AnnouncementRepository.incrementStartIndex(startIndex);
     }
 
 
@@ -109,7 +114,7 @@ public class AnnouncementViewModel extends ViewModel {
                                         announcementsLiveData.setValue(null);
                                     else {
                                         // reset the position since we are refreshing them all
-                                        announcementRepository.resetAnnouncementsSetPosition();
+                                        startIndex = 0;
                                         loadNextSetOfAnnouncements();
                                     }
                                 },
@@ -170,6 +175,5 @@ public class AnnouncementViewModel extends ViewModel {
     protected void onCleared() {
         super.onCleared();
         compositeDisposable.clear();
-        this.announcementRepository.resetAnnouncementsSetPosition();
     }
 }

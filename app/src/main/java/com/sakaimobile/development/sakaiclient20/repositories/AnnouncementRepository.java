@@ -23,9 +23,6 @@ public class AnnouncementRepository {
     private static final int REQ_NUM_ANNOUNCEMENTS = 10000;
 
 
-    // this is stateful, which means that it will keep track the next set of announcements
-    // to return without additional parameters
-    private static int START_INDEX = 0;
     private static final int NUM_ANNOUNCEMENTS_PER_SET = 10;
 
 
@@ -40,28 +37,29 @@ public class AnnouncementRepository {
         return announcementDao.getAnnouncementCount();
     }
 
-    public void resetAnnouncementsSetPosition() {
-        START_INDEX = 0;
-    }
-
 
     /**
+     * The view model will call this method to increment its start index
+     * This method was created since I didn't want the view model to know anything about
+     * the number of announcements in a set, its abstracted away
      *
+     * @param startIndex view models start index in the announcement database
+     * @return index will now start at the beginning of the next set
+     */
+    public static int incrementStartIndex(int startIndex) {
+        return startIndex + NUM_ANNOUNCEMENTS_PER_SET;
+    }
+
+    /**
      * @return
      */
-    public Single<List<Announcement>> getNextSetOfAllAnnouncements() {
+    public Single<List<Announcement>> getNextSetAllAnnouncements(int startIndex) {
 
-        Single<List<Announcement>> announcements =
-                announcementDao
-                .getAllAnnouncementsInRange(START_INDEX, NUM_ANNOUNCEMENTS_PER_SET)
+        return announcementDao
+                .getAllAnnouncementsInRange(startIndex, NUM_ANNOUNCEMENTS_PER_SET)
                 .map(AnnouncementRepository::flattenCompositesToEntities)
                 .firstOrError();
 
-        // increment the start index so the next time we ask for
-        // the next set of announcements, it will give the next ones
-        START_INDEX += NUM_ANNOUNCEMENTS_PER_SET;
-
-        return announcements;
     }
 
     public Single<List<Announcement>> refreshAllAnnouncements() {

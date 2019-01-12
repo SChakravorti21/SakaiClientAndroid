@@ -1,7 +1,6 @@
 package com.sakaimobile.development.sakaiclient20.ui.fragments;
 
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
@@ -11,7 +10,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -71,7 +69,7 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
     // whether or not there are more announcements to load
     private boolean hasLoadedAllAnnouncements = false;
 
-    private LiveData<List<Announcement>> announcementLiveData;
+    private LiveData<List<Announcement>> announcementLiveData; // observe on it
 
     private ProgressBar spinner;
 
@@ -107,7 +105,7 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_announcements, null);
 
