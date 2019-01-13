@@ -15,11 +15,12 @@ import io.reactivex.schedulers.Schedulers;
 
 abstract class BaseViewModel extends ViewModel {
     CourseRepository courseRepository;
+    CompositeDisposable compositeDisposable;
     private MutableLiveData<List<List<Course>>> coursesByTerm;
-    CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     BaseViewModel(CourseRepository repo) {
         this.courseRepository = repo;
+        this.compositeDisposable = new CompositeDisposable();
     }
 
     abstract void refreshAllData();
@@ -31,13 +32,14 @@ abstract class BaseViewModel extends ViewModel {
             loadCourses();
         }
 
-        if(refresh)
+        if(refresh) {
             refreshAllData();
+        }
 
         return this.coursesByTerm;
     }
 
-    void loadCourses() {
+    private void loadCourses() {
         this.compositeDisposable.add(
             this.courseRepository.getCoursesSortedByTerm()
                 .subscribeOn(Schedulers.io())

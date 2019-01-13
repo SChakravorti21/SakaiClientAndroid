@@ -50,10 +50,7 @@ public class SingleAssignmentFragment extends Fragment implements View.OnClickLi
         super.onCreate(savedInstanceState);
 
         // Get the assignment for this fragment
-        Bundle arguments = getArguments();
-        if(arguments != null) {
-            this.assignment = (Assignment) arguments.getSerializable(SingleAssignmentFragment.ASSIGNMENT_TAG);
-        }
+        this.assignment = (Assignment) getArguments().getSerializable(SingleAssignmentFragment.ASSIGNMENT_TAG);
     }
 
     @Override
@@ -165,7 +162,6 @@ public class SingleAssignmentFragment extends Fragment implements View.OnClickLi
             }
 
             Spanned attachmentBody = getSpannedFromHtml(attachmentsString.toString());
-
             attachmentsView.setText(attachmentBody);
 
             // The MovementMethod handles creation of a WebFragment

@@ -18,11 +18,10 @@ public class Term implements Comparable<Term>, Serializable{
         this.year = Integer.parseInt(splitTerm[0]);
         this.termInt = Integer.parseInt(splitTerm[1]);
 
-        this.termString = intToTerm(this.termInt);
+        this.termString = termIntToSemester(this.termInt);
     }
 
-
-    private static String intToTerm(int termInt) {
+    private static String termIntToSemester(int termInt) {
         if (termInt == 0) {
             return "General";
         } else if (termInt >= 12) {
@@ -36,22 +35,24 @@ public class Term implements Comparable<Term>, Serializable{
         }
     }
 
-
     @Override
     public int compareTo(@NonNull Term other) {
-
+        // First compare the years
         if (this.year < other.year) {
             return -1;
-        } else if (this.year > other.year) {
+        }
+        if (this.year > other.year) {
             return 1;
         }
 
+        // If the year is the same, compare the semesters
         if (this.termInt < other.termInt) {
             return -1;
         } else if (this.termInt > other.termInt) {
             return 1;
         }
 
+        // Otherwise the semesters are also the same, terms are equal
         return 0;
 
     }
@@ -59,6 +60,16 @@ public class Term implements Comparable<Term>, Serializable{
     @Override
     public boolean equals(Object obj) {
         return obj != null && obj instanceof Term && this.compareTo((Term) obj) == 0;
+    }
+
+    @Override
+    public String toString() {
+        // "General" case
+        if(this.termInt == 0)
+            return this.termString;
+
+        // Otherwise combine the semester and year, eg. "Fall 2018"
+        return this.termString + "  " + this.year;
     }
 
     public int getYear() {
@@ -75,14 +86,6 @@ public class Term implements Comparable<Term>, Serializable{
 
     public String getTermString() {
         return this.termString;
-    }
-
-    @Override
-    public String toString() {
-        if(this.termInt == 0)
-            return this.termString;
-
-        return this.termString + "  " + this.year;
     }
 
 }

@@ -29,6 +29,7 @@ import java.lang.ref.WeakReference;
  * @// FIXME: 7/29/18 File upload works on https://nofile.io but not sakai.rutger.edu
  */
 public class AssignmentSubmissionDialogFragment extends BottomSheetDialogFragment {
+
     public static final String URL_PARAM = "URL_PARAM";
 
     /**
@@ -38,9 +39,9 @@ public class AssignmentSubmissionDialogFragment extends BottomSheetDialogFragmen
     private String url;
 
     /**
-     * A {@link WeakReference} to the view that displays the assignment content.
+     * A reference to the view that displays the assignment content.
      */
-    private WeakReference<FileCompatWebView> webView;
+    private FileCompatWebView webView;
 
     /**
      * Mandatory empty constructor
@@ -69,8 +70,7 @@ public class AssignmentSubmissionDialogFragment extends BottomSheetDialogFragmen
         super.onViewCreated(view, savedInstanceState);
 
         // Get the WebView and initialize it with the necessary URL
-        FileCompatWebView webView = view.findViewById(R.id.assignment_submission_view);
-        this.webView = new WeakReference<>(webView);
+        this.webView = view.findViewById(R.id.assignment_submission_view);
 
         // Initializes the WebView settings, WebViewClient, WebChromeClient,
         // and AttachmentsDownloadListener
@@ -91,9 +91,13 @@ public class AssignmentSubmissionDialogFragment extends BottomSheetDialogFragmen
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-        if(this.webView != null && this.webView.get() != null) {
-            this.webView.get().onActivityResult(requestCode, resultCode, intent);
-        }
+        this.webView.onActivityResult(requestCode, resultCode, intent);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        this.webView = null;
     }
 
     /**
@@ -119,9 +123,8 @@ public class AssignmentSubmissionDialogFragment extends BottomSheetDialogFragmen
         // Retry downloading the attachment if the permission to write to
         // external storage has been granted.
         if(permissions[0].equals(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED
-                && this.webView != null && this.webView.get() != null) {
-            this.webView.get().retryDownloadFile();
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            this.webView.retryDownloadFile();
         }
     }
 }

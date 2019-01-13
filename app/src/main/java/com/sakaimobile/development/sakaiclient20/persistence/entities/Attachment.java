@@ -1,6 +1,7 @@
 package com.sakaimobile.development.sakaiclient20.persistence.entities;
 
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
@@ -12,18 +13,18 @@ import java.io.Serializable;
  */
 
 @Entity(tableName = "attachments",
-//        foreignKeys = {
-//                @ForeignKey(entity = Assignment.class,
-//                        parentColumns = "assignmentId",
-//                        childColumns = "assignmentId",
-//                        onDelete = ForeignKey.CASCADE,
-//                        onUpdate = ForeignKey.CASCADE),
-//                @ForeignKey(entity = Announcement.class,
-//                        parentColumns = "announcementId",
-//                        childColumns = "announcementId",
-//                        onDelete = ForeignKey.CASCADE,
-//                        onUpdate = ForeignKey.CASCADE)
-//        },
+        foreignKeys = {
+                @ForeignKey(entity = Assignment.class,
+                        parentColumns = "assignmentId",
+                        childColumns = "assignmentId",
+                        onDelete = ForeignKey.CASCADE,
+                        onUpdate = ForeignKey.CASCADE),
+                @ForeignKey(entity = Announcement.class,
+                        parentColumns = "announcementId",
+                        childColumns = "announcementId",
+                        onDelete = ForeignKey.CASCADE,
+                        onUpdate = ForeignKey.CASCADE)
+        },
         indices = {
                 @Index(value = "assignmentId"),
                 @Index(value = "announcementId")
@@ -36,7 +37,7 @@ public class Attachment implements Serializable {
     public String assignmentId;
     public String announcementId;
 
-    public Attachment(String url) {
+    public Attachment(@NonNull String url) {
         this.url = url;
     }
 }
