@@ -34,19 +34,21 @@ public class AnnouncementRepository {
     }
 
 
-    public Flowable<List<Announcement>> getAllAnnouncements() {
+    public Single<List<Announcement>> getAllAnnouncements() {
         return announcementDao
                 .getAllAnnouncements()
                 .debounce(100, TimeUnit.MILLISECONDS)
-                .map(AnnouncementRepository::flattenCompositesToEntities);
+                .map(AnnouncementRepository::flattenCompositesToEntities)
+                .firstOrError();
     }
 
 
-    public Flowable<List<Announcement>> getSiteAnnouncements(String siteId) {
+    public Single<List<Announcement>> getSiteAnnouncements(String siteId) {
         return announcementDao
                 .getSiteAnnouncements(siteId)
                 .debounce(100, TimeUnit.MILLISECONDS)
-                .map(AnnouncementRepository::flattenCompositesToEntities);
+                .map(AnnouncementRepository::flattenCompositesToEntities)
+                .firstOrError();
     }
 
 

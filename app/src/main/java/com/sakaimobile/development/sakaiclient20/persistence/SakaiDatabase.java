@@ -35,7 +35,7 @@ import com.sakaimobile.development.sakaiclient20.persistence.typeconverters.Term
         Attachment.class,
         Announcement.class,
         Resource.class
-}, version = 9)
+}, version = 12)
 @TypeConverters({DateConverter.class, TermConverter.class})
 public abstract class SakaiDatabase extends RoomDatabase {
 

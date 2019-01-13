@@ -57,6 +57,8 @@ public class AnnouncementViewModel extends ViewModel {
                 .subscribe(announcements -> {
                     if (announcements.isEmpty())
                         announcementsLiveData.setValue(null);
+                    else
+                        announcementsLiveData.setValue(announcements);
                 });
     }
 

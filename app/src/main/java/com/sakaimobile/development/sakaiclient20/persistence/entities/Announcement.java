@@ -15,11 +15,12 @@ import java.util.Date;
 import java.util.List;
 
 @Entity(tableName = "announcements",
-        foreignKeys = @ForeignKey(entity = Course.class,
-                parentColumns = "siteId",
-                childColumns = "siteId",
-                onDelete = ForeignKey.CASCADE,
-                onUpdate = ForeignKey.CASCADE),
+//        foreignKeys = @ForeignKey(
+//                entity = Course.class,
+//                parentColumns = "siteId",
+//                childColumns = "siteId",
+//                onDelete = ForeignKey.CASCADE,
+//                onUpdate = ForeignKey.CASCADE),
         indices = {
                 @Index(value = "siteId"),
                 @Index(value = "announcementId")
@@ -70,7 +71,7 @@ public class Announcement implements Serializable {
             long daysPassedMs = currentDate.getTime() - createdDate.getTime();
             float days = (daysPassedMs / 1000 / 60 / 60 / 24);
 
-            if(days <= 0.5f)
+            if (days <= 0.5f)
                 shortFormattedDate = "today";
             else if (days <= 5f)
                 shortFormattedDate = (new SimpleDateFormat("EEE").format(createdDate));
@@ -93,7 +94,7 @@ public class Announcement implements Serializable {
 
             long daysPassedMs = currentDate.getTime() - createdDate.getTime();
             float days = (daysPassedMs / 1000 / 60 / 60 / 24);
-            int years = (int)(days / 365);
+            int years = (int) (days / 365);
 
 
             if (years < 1)
