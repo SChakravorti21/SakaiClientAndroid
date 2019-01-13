@@ -25,7 +25,6 @@ import java.util.List;
                 @Index(value = "announcementId")
         }
 )
-// TODO: implement parcelable
 public class Announcement implements Serializable {
 
     @Ignore

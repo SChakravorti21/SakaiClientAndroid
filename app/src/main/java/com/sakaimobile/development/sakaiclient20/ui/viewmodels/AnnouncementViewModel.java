@@ -10,7 +10,6 @@ import com.sakaimobile.development.sakaiclient20.persistence.entities.Announceme
 import com.sakaimobile.development.sakaiclient20.repositories.AnnouncementRepository;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -27,148 +26,79 @@ public class AnnouncementViewModel extends ViewModel {
 
     private MutableLiveData<List<Announcement>> announcementsLiveData;
 
-    private int startIndex;
-
 
     @Inject
     AnnouncementViewModel(AnnouncementRepository repo) {
         announcementRepository = repo;
         announcementsLiveData = new MutableLiveData<>();
-
-        startIndex = 0;
     }
 
 
     @SuppressLint("CheckResult")
-    public LiveData<List<Announcement>> getNextSetOfAllAnnouncements() {
-
-        // first check if the database is empty, if it is, must request
-        // all announcements then load the first set into the live data
-        announcementRepository.getNumAnnouncements()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(num -> {
-
-                    if (num == 0)
-                        refreshAllAnnouncements();
-                    else
-                        loadNextSetOfAnnouncements();
-
-                });
-
-        return announcementsLiveData;
-
-    }
-
-
-//    public LiveData<List<Announcement>> getSiteAnnouncements(String siteId, int num) {
-//
-//        // if the live data is null, initialize it, and try loading data
-//        if (announcementsLiveData == null) {
-//            announcementsLiveData = new MutableLiveData<>();
-//            loadSiteAnnouncements(siteId, num);
-//            announcementsSiteId = siteId;
-//        }
-//        // if the stored data is not for all announcements
-//        else if(!announcementsSiteId.equals(siteId)) {
-//            loadAllAnnouncements(num);
-//            announcementsSiteId = siteId;
-//        }
-//
-//        // correct live data
-//        return announcementsLiveData;
-//    }
-
-    @SuppressLint("CheckResult")
-    private void loadNextSetOfAnnouncements() {
-
+    public void refreshSiteAnnouncements(String siteId) {
         announcementRepository
-                .getNextSetAllAnnouncements(startIndex)
-                .delay(1, TimeUnit.SECONDS)
+                .refreshSiteAnnouncements(siteId)
                 .doOnSubscribe(compositeDisposable::add)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        announcements -> {
-                            announcementsLiveData.setValue(announcements);
-                        }
-                );
+                .subscribe(announcements -> {
+                    if (announcements.isEmpty())
+                        announcementsLiveData.setValue(null);
+                });
+    }
 
-        // increment the start index so the next time we ask for
-        // the next set of announcements, it will give the next ones
-        startIndex  = AnnouncementRepository.incrementStartIndex(startIndex);
+    @SuppressLint("CheckResult")
+    public void refreshAllAnnouncements() {
+        announcementRepository
+                .refreshAllAnnouncements()
+                .doOnSubscribe(compositeDisposable::add)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(announcements -> {
+                    if (announcements.isEmpty())
+                        announcementsLiveData.setValue(null);
+                });
     }
 
 
-    /**
-     * Refresh all announcements
-     */
-    public void refreshAllAnnouncements() {
+    public LiveData<List<Announcement>> getAllAnnouncements() {
         compositeDisposable.add(
-                announcementRepository.refreshAllAnnouncements()
+                announcementRepository
+                        .getAllAnnouncements()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                (announcements) -> {
-                                    if (announcements.size() == 0)
-                                        announcementsLiveData.setValue(null);
-                                    else {
-                                        // reset the position since we are refreshing them all
-                                        startIndex = 0;
-                                        loadNextSetOfAnnouncements();
-                                    }
-                                },
-                                Throwable::printStackTrace
+                                announcements -> {
+                                    if (announcements.isEmpty())
+                                        refreshAllAnnouncements();
+                                    else
+                                        announcementsLiveData.setValue(announcements);
+                                }
                         )
         );
+
+        return announcementsLiveData;
     }
 
-//
-//    /**
-//     * Loads site announcements from database into the hashmap
-//     * also update the all announcements list
-//     *
-//     * @param siteId siteId to get announcements for
-//     */
-//    private void loadSiteAnnouncements(String siteId, int num) {
-//        compositeDisposable.add(
-//                announcementRepository.getSiteAnnouncements(siteId)
-//                        .subscribeOn(Schedulers.io())
-//                        .observeOn(AndroidSchedulers.mainThread())
-//                        .subscribe(
-//                                siteAnnouncements -> {
-//                                    // if nothing in DB, refresh
-//                                    if (siteAnnouncements.isEmpty())
-//                                        refreshSiteData(siteId, num);
-//                                    else
-//                                        announcementsLiveData.setValue(siteAnnouncements);
-//                                },
-//                                Throwable::printStackTrace
-//                        )
-//        );
-////    }
-////
-//    /**
-//     * Refresh all site announcements
-//     *
-//     * @param siteId
-//     */
-//    public void refreshSiteData(String siteId, int num) {
-//        compositeDisposable.add(
-//                announcementRepository.refreshSiteAnnouncements(siteId, num)
-//                        .subscribeOn(Schedulers.io())
-//                        .observeOn(AndroidSchedulers.mainThread())
-//                        .subscribe(
-//                                announcements -> {
-//                                    if (announcements.size() == 0)
-//                                        announcementsLiveData.setValue(null);
-//                                    else
-//                                        loadSiteAnnouncements(siteId, num);
-//                                },
-//                                Throwable::printStackTrace
-//                        )
-//        );
-//    }
+
+    public LiveData<List<Announcement>> getSiteAnnouncements(String siteId) {
+        compositeDisposable.add(
+                announcementRepository
+                        .getSiteAnnouncements(siteId)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                announcements -> {
+                                    if (announcements.isEmpty())
+                                        refreshSiteAnnouncements(siteId);
+                                    else
+                                        announcementsLiveData.setValue(announcements);
+                                }
+                        )
+        );
+
+        return announcementsLiveData;
+    }
 
 
     @Override

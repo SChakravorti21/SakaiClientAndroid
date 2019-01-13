@@ -20,7 +20,7 @@ public interface AnnouncementsService {
     );
 
     @GET("announcement/site/{site_id}.json")
-    Single<AnnouncementsResponse> getAnnouncementsForSite(
+    Single<AnnouncementsResponse> getSiteAnnouncements(
             @Path(value="site_id", encoded = true) String siteId,
             @Query("d") int days,
             @Query("n") int numAnnouncements

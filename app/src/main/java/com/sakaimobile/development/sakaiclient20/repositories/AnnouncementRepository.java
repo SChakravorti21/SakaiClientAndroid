@@ -1,5 +1,7 @@
 package com.sakaimobile.development.sakaiclient20.repositories;
 
+import android.arch.lifecycle.LiveData;
+
 import com.sakaimobile.development.sakaiclient20.models.sakai.announcements.AnnouncementsResponse;
 import com.sakaimobile.development.sakaiclient20.networking.services.AnnouncementsService;
 import com.sakaimobile.development.sakaiclient20.persistence.access.AnnouncementDao;
@@ -9,8 +11,10 @@ import com.sakaimobile.development.sakaiclient20.persistence.entities.Announceme
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-import io.reactivex.Maybe;
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
 import io.reactivex.Single;
 
 public class AnnouncementRepository {
@@ -23,9 +27,6 @@ public class AnnouncementRepository {
     private static final int REQ_NUM_ANNOUNCEMENTS = 10000;
 
 
-    private static final int NUM_ANNOUNCEMENTS_PER_SET = 10;
-
-
     public AnnouncementRepository(AnnouncementDao announcementDao, AttachmentDao attachmentDao, AnnouncementsService announcementsService) {
         this.announcementDao = announcementDao;
         this.attachmentDao = attachmentDao;
@@ -33,35 +34,23 @@ public class AnnouncementRepository {
     }
 
 
-    public Single<Integer> getNumAnnouncements() {
-        return announcementDao.getAnnouncementCount();
-    }
-
-
-    /**
-     * The view model will call this method to increment its start index
-     * This method was created since I didn't want the view model to know anything about
-     * the number of announcements in a set, its abstracted away
-     *
-     * @param startIndex view models start index in the announcement database
-     * @return index will now start at the beginning of the next set
-     */
-    public static int incrementStartIndex(int startIndex) {
-        return startIndex + NUM_ANNOUNCEMENTS_PER_SET;
-    }
-
-    /**
-     * @return
-     */
-    public Single<List<Announcement>> getNextSetAllAnnouncements(int startIndex) {
-
+    public Flowable<List<Announcement>> getAllAnnouncements() {
         return announcementDao
-                .getAllAnnouncementsInRange(startIndex, NUM_ANNOUNCEMENTS_PER_SET)
-                .map(AnnouncementRepository::flattenCompositesToEntities)
-                .firstOrError();
-
+                .getAllAnnouncements()
+                .debounce(100, TimeUnit.MILLISECONDS)
+                .map(AnnouncementRepository::flattenCompositesToEntities);
     }
 
+
+    public Flowable<List<Announcement>> getSiteAnnouncements(String siteId) {
+        return announcementDao
+                .getSiteAnnouncements(siteId)
+                .debounce(100, TimeUnit.MILLISECONDS)
+                .map(AnnouncementRepository::flattenCompositesToEntities);
+    }
+
+
+    // refresh
     public Single<List<Announcement>> refreshAllAnnouncements() {
         return announcementsService
                 .getAllAnnouncements(REQ_DAYS_BACK, REQ_NUM_ANNOUNCEMENTS)
@@ -69,20 +58,12 @@ public class AnnouncementRepository {
                 .map(this::persistAnnouncements);
     }
 
-
-//    public Single<List<Announcement>> getSiteAnnouncements(String siteId) {
-//        return announcementDao
-//                .getSiteAnnouncements(siteId)
-//                .map(AnnouncementRepository::flattenCompositesToEntities)
-//                .firstOrError();
-//    }
-//
-//    public Single<List<Announcement>> refreshSiteAnnouncements(String siteId, int num) {
-//        return announcementsService
-//                .getAnnouncementsForSite(siteId, REQ_DAYS_BACK, REQ_NUM_ANNOUNCEMENTS)
-//                .map(AnnouncementsResponse::getAnnouncements)
-//                .map(this::persistAnnouncements);
-//    }
+    public Single<List<Announcement>> refreshSiteAnnouncements(String siteId) {
+        return announcementsService
+                .getSiteAnnouncements(siteId, REQ_DAYS_BACK, REQ_NUM_ANNOUNCEMENTS)
+                .map(AnnouncementsResponse::getAnnouncements)
+                .map(this::persistAnnouncements);
+    }
 
 
     static List<Announcement> flattenCompositesToEntities(List<AnnouncementWithAttachments> announcementWithAttachments) {
@@ -100,11 +81,11 @@ public class AnnouncementRepository {
 
     private List<Announcement> persistAnnouncements(List<Announcement> announcements) {
 
-        // delete all announcements from the previous session
-        // they are outdated!!!!!!!!!
-        // announcementDao.deleteAllAnnouncements();
-
+        // inserting the same announcements should delete the old ones
+        // since both will have the same announcementID
         announcementDao.insert(announcements);
+
+        // same case with its attachments
         for (Announcement announcement : announcements) {
             attachmentDao.insert(announcement.attachments);
         }

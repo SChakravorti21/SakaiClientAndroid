@@ -16,29 +16,13 @@ import io.reactivex.Single;
 @Dao
 public abstract class AnnouncementDao implements BaseDao<Announcement> {
 
-    @Query("DELETE FROM announcements")
-    public abstract void deleteAllAnnouncements();
+    @Transaction
+    @Query("SELECT * FROM announcements ORDER BY createdOn DESC")
+    public abstract Flowable<List<AnnouncementWithAttachments>> getAllAnnouncements();
 
-    @Query("SELECT COUNT(*) from announcements")
-    public abstract Single<Integer> getAnnouncementCount();
 
     @Transaction
-    @Query("SELECT * FROM announcements ORDER BY createdOn DESC LIMIT :start, :count")
-    public abstract Flowable<List<AnnouncementWithAttachments>> getAllAnnouncementsInRange(int start, int count);
+    @Query("SELECT * from announcements WHERE siteId = :siteId ORDER BY createdOn DESC")
+    public abstract Flowable<List<AnnouncementWithAttachments>> getSiteAnnouncements(String siteId);
 
-
-//    @Transaction
-//    @Query("SELECT * from announcements WHERE siteId = :siteId ORDER BY createdOn DESC LIMIT :start, :count")
-//    public abstract Flowable<List<AnnouncementWithAttachments>> getXSiteAnnouncements(String siteId, int count);
-
-
-
-    @Query("DELETE FROM announcements WHERE siteId = :siteId")
-    public abstract void deleteAnnouncementsForSite(String siteId);
-//
-//    @Transaction
-//    public void insertAnnouncementsForSite(String siteId, Announcement... announcements) {
-//        deleteAnnouncementsForSite(siteId);
-//        insert(announcements);
-//    }
 }

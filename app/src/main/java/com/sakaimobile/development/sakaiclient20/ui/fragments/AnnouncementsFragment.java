@@ -19,13 +19,11 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Announcement;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 import com.sakaimobile.development.sakaiclient20.ui.adapters.AnnouncementsAdapter;
-import com.sakaimobile.development.sakaiclient20.ui.listeners.LoadMoreListener;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.OnAnnouncementSelected;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.AnnouncementViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
@@ -60,14 +58,8 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
     private HashMap<String, Course> siteIdToCourseMap; // needed for the adapter
 
 
-    // loads more announcements and refreshes
-    private LoadMoreListener loadMoreListener;
-
     // announcement type (SITE or ALL)
     private int announcementType;
-
-    // whether or not there are more announcements to load
-    private boolean hasLoadedAllAnnouncements = false;
 
     private LiveData<List<Announcement>> announcementLiveData; // observe on it
 
@@ -90,9 +82,8 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
         // setup the correct live data and loadMoreListener depending on
         // showing site or all announcements
         if (announcementType == ALL_ANNOUNCEMENTS) {
-            loadMoreListener = new LoadsAllAnnouncements();
             announcementLiveData = announcementViewModel
-                    .getNextSetOfAllAnnouncements();
+                    .getNextSetAllAnnouncements();
 
         } else {
 //            loadMoreListener = new LoadsSiteAnnouncements();
@@ -149,7 +140,6 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
             case R.id.action_refresh:
                 announcementRecycler.setVisibility(View.GONE);
                 spinner.setVisibility(View.VISIBLE);
-                loadMoreListener.refresh();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -161,12 +151,10 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
 
         adapter = new AnnouncementsAdapter(
                 allAnnouncements,
-                announcementRecycler,
                 siteIdToCourseMap,
                 announcementType
         );
         adapter.setClickListener(this);
-        adapter.setLoadMoreListener(loadMoreListener);
 
         announcementRecycler.setAdapter(adapter);
 
@@ -178,124 +166,6 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
         announcementRecycler.scheduleLayoutAnimation();
     }
 
-
-    /**
-     * Adds the newly gotten announcements to the adapter and notifies that
-     * they were loaded
-     *
-     * @param newAnnouncements announcements to add
-     */
-    private void addNewAnnouncementsToAdapter(List<Announcement> newAnnouncements) {
-
-        //remove the null element we had added to signify a loading item
-        if (allAnnouncements.size() > 0)
-            allAnnouncements.remove(allAnnouncements.size() - 1);
-
-        if (newAnnouncements.size() == 0) {
-            // if no more announcements to display, remove the loading bar
-            adapter.finishedLoading();
-            adapter.notifyItemRemoved(allAnnouncements.size());
-            Toast.makeText(getContext(), getString(R.string.no_announcements), Toast.LENGTH_SHORT).show();
-            hasLoadedAllAnnouncements = true;
-        } else {
-            // if there are new announcements add them and then update adapter
-            int initialSize = allAnnouncements.size();
-
-            // add all the new announcements
-            allAnnouncements.addAll(newAnnouncements);
-
-            // notify the adapter that we added some new items, so it can display
-            adapter.notifyItemRangeChanged(initialSize, newAnnouncements.size());
-            adapter.finishedLoading();
-        }
-
-    }
-
-
-    /**
-     * private class which holds the load more method to load more all announcements
-     * also holds refreshing all announcements
-     */
-    private class LoadsAllAnnouncements implements LoadMoreListener {
-
-        @Override
-        public void loadMore() {
-
-            //if we have already loaded them all, don't do anything
-            if (hasLoadedAllAnnouncements) {
-                adapter.finishedLoading();
-                return;
-            }
-
-            //add the null so we can display a loading bar while we request
-            allAnnouncements.add(null);
-
-            //tell the adapter we added an item, so that it will actually show the loading bar
-            // was throwing a recycler view error, without the post
-            announcementRecycler.post(() -> {
-                adapter.notifyItemInserted(allAnnouncements.size() - 1);
-            });
-
-            announcementViewModel.getNextSetOfAllAnnouncements();
-
-        }
-
-        @Override
-        public void refresh() {
-            // clear our current announcements and rerequest more
-            allAnnouncements.clear();
-            adapter.notifyDataSetChanged();
-            announcementViewModel.refreshAllAnnouncements();
-        }
-
-
-    }
-
-    /**
-     * <p>
-     * private class which holds the load more method to load more site announcements
-     */
-    private class LoadsSiteAnnouncements implements LoadMoreListener {
-
-
-        @Override
-        public void loadMore() {
-
-            //if we have already loaded them all, don't do anything
-            if (hasLoadedAllAnnouncements) {
-                adapter.finishedLoading();
-                return;
-            }
-
-
-            //add the null show we can display a loading bar while we request
-            allAnnouncements.add(null);
-
-            //tell the adapter we added an item
-            // was throwing a recycler view error, without the post
-            announcementRecycler.post(() ->
-                    adapter.notifyItemInserted(allAnnouncements.size() - 1)
-            );
-
-
-//            int numAnnouncementsToRequest = allAnnouncements.size() - 1 + ANNOUNCEMENTS_TO_GET_PER_REQUEST;
-
-            String siteId = allAnnouncements.get(0).siteId;
-
-//            announcementViewModel.refreshSiteData(siteId, numAnnouncementsToRequest);
-
-        }
-
-
-        @Override
-        public void refresh() {
-
-            String siteId = allAnnouncements.get(0).siteId;
-
-//            announcementViewModel.refreshSiteData(siteId, NUM_ANNOUNCEMENTS_DEFAULT);
-        }
-
-    }
 
 
     @Override
