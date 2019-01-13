@@ -14,9 +14,21 @@ import com.unnamed.b.atv.model.TreeNode;
 
 public class ResourceDirectoryViewHolder extends TreeNode.BaseNodeViewHolder<ResourceDirectoryViewHolder.ResourceDirectoryItem> {
 
+    public static class ResourceDirectoryItem {
+        String dirName;
+        public ResourceDirectoryItem(String dirName) {
+            this.dirName = dirName;
+        }
+    }
+
+    private static final String FOLDER_OPEN = "\uf07c";
+    private static final String FOLDER_CLOSED = "\uf07b";
+
     private static final int PADDING_DP = 20;
     private static final int MAX_HUE = 360;
     private static final int HUE_DIFF = 25;
+
+    private TextView folderIcon;
 
     public ResourceDirectoryViewHolder(Context context) {
         super(context);
@@ -27,8 +39,11 @@ public class ResourceDirectoryViewHolder extends TreeNode.BaseNodeViewHolder<Res
         final LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.tree_node_resource_dir, null, false);
 
-        TextView txt = view.findViewById(R.id.resource_dir_txt);
-        txt.setText(value.dirName);
+        TextView directoryName = view.findViewById(R.id.resource_dir_txt);
+        directoryName.setText(value.dirName);
+
+        folderIcon = view.findViewById(R.id.folder_icon);
+        folderIcon.setText(FOLDER_CLOSED);
 
         // Need to programmatically define the width as being the device
         // screen width since there was no container that we could inflate the
@@ -58,11 +73,9 @@ public class ResourceDirectoryViewHolder extends TreeNode.BaseNodeViewHolder<Res
         return view;
     }
 
-    public static class ResourceDirectoryItem {
-        String dirName;
-        public ResourceDirectoryItem(String dirName) {
-            this.dirName = dirName;
-        }
+    @Override
+    public void toggle(boolean active) {
+        folderIcon.setText( active ? FOLDER_OPEN : FOLDER_CLOSED );
     }
 
     // gets the padding required for a given treenode

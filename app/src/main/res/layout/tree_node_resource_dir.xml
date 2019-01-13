@@ -10,14 +10,20 @@
     android:padding="5dp">
 
     <TextView
+        android:id="@+id/folder_icon"
+        style="@style/FontawesomeText.Resource"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
         android:id="@+id/resource_dir_txt"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         tools:text="Directory Name"
         android:textStyle="bold"
-        android:textColor="@color/sakai_medium_silver"
-        android:textSize="20sp"
+        android:textColor="@color/sakai_light_silver"
+        android:textSize="16sp"
         android:paddingBottom="8dp"
         android:paddingRight="8dp"
         android:paddingTop="8dp" />
