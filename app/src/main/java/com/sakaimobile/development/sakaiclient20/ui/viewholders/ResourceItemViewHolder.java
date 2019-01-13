@@ -28,25 +28,26 @@ public class ResourceItemViewHolder extends TreeNode.BaseNodeViewHolder<Resource
         // Need to programmatically define the width as being the device
         // screen width since there was no container that we could inflate the
         // view relative to.
-        Resources r = inflater.getContext().getResources();
+        Resources resources = inflater.getContext().getResources();
 
         // Convert pixels to density-independent units
         int widthPx = (int) TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
-                r.getDisplayMetrics().widthPixels,
-                r.getDisplayMetrics()
+                resources.getDisplayMetrics().widthPixels,
+                resources.getDisplayMetrics()
         );
 
-        LinearLayoutCompat.LayoutParams params =  new LinearLayoutCompat.LayoutParams(
+        view.setLayoutParams(new LinearLayoutCompat.LayoutParams(
                 widthPx,
                 LinearLayoutCompat.LayoutParams.WRAP_CONTENT
-        );
-        view.setLayoutParams(params);
-
+        ));
 
         // set padding on the view to make it look like a nested structure
-        int paddingPixel = ResourceDirectoryViewHolder.getPaddingForTreeNode(node, context);
-        view.setPadding(paddingPixel,15,15,15);
+        int paddingLeft = ResourceDirectoryViewHolder.getPaddingForTreeNode(node, resources);
+        view.setPadding(paddingLeft,
+                view.getPaddingTop(),
+                view.getPaddingRight(),
+                view.getPaddingBottom());
 
         return view;
     }

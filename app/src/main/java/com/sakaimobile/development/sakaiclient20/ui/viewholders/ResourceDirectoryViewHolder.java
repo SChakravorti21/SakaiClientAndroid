@@ -2,6 +2,7 @@ package com.sakaimobile.development.sakaiclient20.ui.viewholders;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -13,8 +14,9 @@ import com.unnamed.b.atv.model.TreeNode;
 
 public class ResourceDirectoryViewHolder extends TreeNode.BaseNodeViewHolder<ResourceDirectoryViewHolder.ResourceDirectoryItem> {
 
-    private static final int PADDINGSCALE_DP = 20;
-
+    private static final int PADDING_DP = 20;
+    private static final int MAX_HUE = 360;
+    private static final int HUE_DIFF = 25;
 
     public ResourceDirectoryViewHolder(Context context) {
         super(context);
@@ -31,43 +33,63 @@ public class ResourceDirectoryViewHolder extends TreeNode.BaseNodeViewHolder<Res
         // Need to programmatically define the width as being the device
         // screen width since there was no container that we could inflate the
         // view relative to.
-        Resources r = inflater.getContext().getResources();
+        Resources resources = inflater.getContext().getResources();
 
         // Convert pixels to density-independent units
         int widthPx = (int) TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
-                r.getDisplayMetrics().widthPixels,
-                r.getDisplayMetrics()
+                resources.getDisplayMetrics().widthPixels,
+                resources.getDisplayMetrics()
         );
 
-        LinearLayoutCompat.LayoutParams params =  new LinearLayoutCompat.LayoutParams(
+        view.setLayoutParams(new LinearLayoutCompat.LayoutParams(
                 widthPx,
                 LinearLayoutCompat.LayoutParams.WRAP_CONTENT
-        );
-        view.setLayoutParams(params);
-
+        ));
 
         // set padding on the view to make it look like a nested structure
-        int paddingPixel = ResourceDirectoryViewHolder.getPaddingForTreeNode(node, context);
-        view.setPadding(paddingPixel,15,15,15);
-
+        int paddingLeft = ResourceDirectoryViewHolder.getPaddingForTreeNode(node, resources);
+        view.setPadding(paddingLeft,
+                view.getPaddingTop(),
+                view.getPaddingRight(),
+                view.getPaddingBottom());
+        view.setBackgroundColor(getColorForNode(node, resources));
 
         return view;
     }
 
     public static class ResourceDirectoryItem {
-        public String dirName;
-
+        String dirName;
         public ResourceDirectoryItem(String dirName) {
             this.dirName = dirName;
         }
     }
 
     // gets the padding required for a given treenode
-    public static int getPaddingForTreeNode(TreeNode node, Context context) {
-
-        int paddingDp = PADDINGSCALE_DP * node.getLevel();
-        float density = context.getResources().getDisplayMetrics().density;
+    public static int getPaddingForTreeNode(TreeNode node, Resources resources) {
+        int paddingDp = PADDING_DP * node.getLevel();
+        float density = resources.getDisplayMetrics().density;
         return (int)(paddingDp * density);
+    }
+
+    /**
+     * @return A resolved color relative to the height of the given node
+     */
+    private static int getColorForNode(TreeNode node, Resources resources) {
+        // Get the default color
+        int sakaiMediumRed = resources.getColor(R.color.sakai_medium_red);
+
+        // If this is a top-level node (level of 1 indicate a top-level resource directory),
+        // then do not perform unnecessary computations
+        if(node.getLevel() == 1)
+            return sakaiMediumRed;
+
+        // In order for tree levels to be distinct from each other, we will increase the hue,
+        // moving around the color wheel
+        float[] hsv = new float[3];
+        Color.colorToHSV(sakaiMediumRed, hsv);
+        hsv[0] += (node.getLevel() - 1) * HUE_DIFF;
+        hsv[0] = hsv[0] % MAX_HUE;
+        return Color.HSVToColor(hsv);
     }
 }
