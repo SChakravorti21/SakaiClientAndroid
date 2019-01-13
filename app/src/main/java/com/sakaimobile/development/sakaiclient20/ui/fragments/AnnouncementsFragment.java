@@ -65,6 +65,8 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
 
     private ProgressBar spinner;
 
+    private String announcementsSiteId;
+
 
     @SuppressWarnings("unchecked")
     @Override
@@ -74,8 +76,8 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
 
         // get arguments from bundle
         Bundle bun = getArguments();
-        String siteId = bun.getString(getString(R.string.siteid_tag));
-        announcementType = (siteId == null) ? ALL_ANNOUNCEMENTS : SITE_ANNOUNCEMENTS;
+        announcementsSiteId = bun.getString(getString(R.string.siteid_tag));
+        announcementType = (announcementsSiteId == null) ? ALL_ANNOUNCEMENTS : SITE_ANNOUNCEMENTS;
         siteIdToCourseMap = (HashMap) bun.getSerializable(getString(R.string.siteid_to_course_map));
         allAnnouncements = new ArrayList<>();
 
@@ -83,15 +85,12 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
         // showing site or all announcements
         if (announcementType == ALL_ANNOUNCEMENTS) {
             announcementLiveData = announcementViewModel
-                    .getNextSetAllAnnouncements();
+                    .getAllAnnouncements();
 
         } else {
-//            loadMoreListener = new LoadsSiteAnnouncements();
-//            announcementLiveData = announcementViewModel
-//                    .getSiteAnnouncements(siteId, NUM_ANNOUNCEMENTS_DEFAULT);
+            announcementLiveData = announcementViewModel
+                    .getSiteAnnouncements(announcementsSiteId);
         }
-
-
     }
 
     @Nullable
@@ -120,7 +119,7 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // each time the observation is triggered, we have gotten the next set of announcements
+        // each time the observation is triggered, we have new announcements (after refreshing)
         announcementLiveData.observe(getViewLifecycleOwner(), announcements -> {
 
             addNewAnnouncementsToAdapter(announcements);
@@ -140,6 +139,12 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
             case R.id.action_refresh:
                 announcementRecycler.setVisibility(View.GONE);
                 spinner.setVisibility(View.VISIBLE);
+
+                if(announcementType == SITE_ANNOUNCEMENTS)
+                    announcementViewModel.refreshSiteAnnouncements(announcementsSiteId);
+                else
+                    announcementViewModel.refreshAllAnnouncements();
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -166,6 +171,11 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
         announcementRecycler.scheduleLayoutAnimation();
     }
 
+    private void addNewAnnouncementsToAdapter(List<Announcement> announcements) {
+        this.allAnnouncements.clear();
+        allAnnouncements.addAll(announcements);
+        adapter.notifyDataSetChanged();
+    }
 
 
     @Override
