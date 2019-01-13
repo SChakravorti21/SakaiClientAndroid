@@ -79,6 +79,14 @@ public class SiteGradesFragment extends Fragment {
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        spinner = null;
+        adapter = null;
+        siteGradesListView = null;
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.refresh_menu, menu);
     }

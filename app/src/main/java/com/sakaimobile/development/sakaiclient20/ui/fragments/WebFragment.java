@@ -114,6 +114,12 @@ public class WebFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        this.webView = null;
+    }
+
     /**
      * Called when a system permission is requested (such as reading from or writing to
      * external storage). For the purpose of {@code WebFragment}, the only important

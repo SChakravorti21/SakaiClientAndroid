@@ -52,4 +52,11 @@ public class SettingsFragment extends Fragment {
             startActivity(intent);
         });
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        this.logoutButton.setOnClickListener(null);
+        this.logoutButton = null;
+    }
 }

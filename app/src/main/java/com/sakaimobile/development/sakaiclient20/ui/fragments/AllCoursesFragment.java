@@ -131,6 +131,14 @@ public class AllCoursesFragment extends Fragment {
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        this.treeView = null;
+        this.progressBar = null;
+        this.treeContainer = null;
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.courses_fragment_menu, menu);

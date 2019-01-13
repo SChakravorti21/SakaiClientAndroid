@@ -59,7 +59,9 @@ public class ResourceViewModel extends ViewModel {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     resources -> {
-                        if(resources.size() == 0)
+                        // Resource size of 1 indicates that resources
+                        // have been set up for the site but it is an empty collection
+                        if(resources.size() == 1)
                             resourcesLiveData.setValue(null);
                     }, Throwable::printStackTrace
                 )

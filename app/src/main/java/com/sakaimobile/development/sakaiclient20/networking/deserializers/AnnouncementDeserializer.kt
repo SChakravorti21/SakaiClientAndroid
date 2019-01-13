@@ -29,7 +29,7 @@ class AnnouncementDeserializer : JsonDeserializer<Announcement> {
 
         announcement.attachments = jsonObject.get("attachments").asJsonArray.map { attachmentObject ->
             val attachment = context.deserialize<Attachment>(attachmentObject, Attachment::class.java)
-            attachment.assignmentId = announcement.announcementId
+            attachment.announcementId = announcement.announcementId
             attachment
         }
 

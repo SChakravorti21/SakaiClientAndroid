@@ -45,11 +45,11 @@ public class AllGradesFragment extends Fragment {
 
     @Inject ViewModelFactory viewModelFactory;
     private GradeViewModel gradeViewModel;
-    private AndroidTreeView treeView;
     private boolean shouldRefresh;
 
-    private FrameLayout treeContainer;
     private ProgressBar progressBar;
+    private AndroidTreeView treeView;
+    private FrameLayout treeContainer;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -112,6 +112,14 @@ public class AllGradesFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         this.saveTreeState();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        this.treeView = null;
+        this.progressBar = null;
+        this.treeContainer = null;
     }
 
     @Override

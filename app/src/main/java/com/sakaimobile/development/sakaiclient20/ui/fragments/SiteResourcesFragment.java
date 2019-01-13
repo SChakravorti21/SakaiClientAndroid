@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
@@ -78,12 +79,24 @@ public class SiteResourcesFragment extends Fragment {
 
         resourceViewModel.getResourcesForSite(currentSiteId)
                 .observe(getViewLifecycleOwner(), resources -> {
-                    // update the resources tree view
-                    updateResourcesTreeView(resources);
+                    if(resources == null || resources.size() == 1) {
+                        Toast.makeText(getContext(), "No resources found", Toast.LENGTH_SHORT).show();
+                    } else {
+                        // update the resources tree view
+                        updateResourcesTreeView(resources);
+                    }
 
                     spinner.setVisibility(View.GONE);
                     treeContainer.setVisibility(View.VISIBLE);
                 });
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        spinner = null;
+        treeContainer = null;
+        resourcesTreeView = null;
     }
 
     @Override
@@ -140,7 +153,7 @@ public class SiteResourcesFragment extends Fragment {
     private List<TreeNode> getChildren(List<Resource> resources, int start, int end) {
         List<TreeNode> children = new ArrayList<>();
 
-        for (int i = start; i < end; i++) {
+        for (int i = start; i < end && i < resources.size(); i++) {
             Resource resource = resources.get(i);
             if (resource.isDirectory) {
                 // build directory node

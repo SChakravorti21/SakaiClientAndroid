@@ -94,6 +94,12 @@ public class AssignmentSubmissionDialogFragment extends BottomSheetDialogFragmen
         this.webView.onActivityResult(requestCode, resultCode, intent);
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        this.webView = null;
+    }
+
     /**
      * Called when permissions are requested by the {@link android.support.v4.app.Fragment}
      * (this is done on behalf of this {@code Fragment} through the
