@@ -34,21 +34,17 @@ public class AnnouncementRepository {
     }
 
 
-    public Single<List<Announcement>> getAllAnnouncements() {
+    public Flowable<List<Announcement>> getAllAnnouncements() {
         return announcementDao
                 .getAllAnnouncements()
-                .debounce(100, TimeUnit.MILLISECONDS)
-                .map(AnnouncementRepository::flattenCompositesToEntities)
-                .firstOrError();
+                .map(AnnouncementRepository::flattenCompositesToEntities);
     }
 
 
-    public Single<List<Announcement>> getSiteAnnouncements(String siteId) {
+    public Flowable<List<Announcement>> getSiteAnnouncements(String siteId) {
         return announcementDao
                 .getSiteAnnouncements(siteId)
-                .debounce(100, TimeUnit.MILLISECONDS)
-                .map(AnnouncementRepository::flattenCompositesToEntities)
-                .firstOrError();
+                .map(AnnouncementRepository::flattenCompositesToEntities);
     }
 
 
@@ -87,10 +83,10 @@ public class AnnouncementRepository {
         // since both will have the same announcementID
         announcementDao.insert(announcements);
 
-        // same case with its attachments
-        for (Announcement announcement : announcements) {
-            attachmentDao.insert(announcement.attachments);
-        }
+//        // same case with its attachments
+//        for (Announcement announcement : announcements) {
+//            attachmentDao.insert(announcement.attachments);
+//        }
 
         return announcements;
     }

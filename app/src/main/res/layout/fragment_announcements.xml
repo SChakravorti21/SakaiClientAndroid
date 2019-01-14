@@ -41,16 +41,15 @@
         android:layout_marginBottom="8dp"
         android:clickable="true"
         android:focusable="auto"
+        android:visibility="gone"
         app:backgroundTint="@color/colorPrimary2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.948"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.966"
-        app:srcCompat="@drawable/ic_keyboard_arrow_up_black_24dp"
-        android:visibility="gone"
-        />
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/ic_keyboard_arrow_up_black_24dp" />
 
 
 </android.support.constraint.ConstraintLayout>

@@ -127,9 +127,9 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
         // each time the observation is triggered, we have new announcements (after refreshing)
         announcementLiveData.observe(getViewLifecycleOwner(), announcements -> {
 
-            addNewAnnouncementsToAdapter(announcements);
             announcementRecycler.setVisibility(View.VISIBLE);
             spinner.setVisibility(View.GONE);
+            addNewAnnouncementsToAdapter(announcements);
         });
 
 
