@@ -37,7 +37,7 @@ public class Attachment implements Serializable {
     public String assignmentId;
     public String announcementId;
 
-    public Attachment(String url) {
+    public Attachment(@NonNull String url) {
         this.url = url;
     }
 }

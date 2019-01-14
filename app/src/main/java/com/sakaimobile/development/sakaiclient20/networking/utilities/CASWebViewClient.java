@@ -6,6 +6,8 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import java.io.IOException;
+
 import okhttp3.Call;
 import okhttp3.Headers;
 import okhttp3.OkHttpClient;
@@ -56,7 +58,6 @@ public class CASWebViewClient extends WebViewClient {
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
         // Let our WebView handle page loading
         view.loadUrl(url);
-
         //return true indicates that the has handled the request
         return true;
     }
@@ -66,48 +67,46 @@ public class CASWebViewClient extends WebViewClient {
     public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
         // We only need to intercept once authentication is complete, as the
         // the cookies do not change afterwards
-        if (url.startsWith("https://sakai.rutgers.edu/portal") && !gotHeaders) {
+        if (url.startsWith("https://sakai.rutgers.edu/portal") && !gotHeaders)
             return handleRequest(url);
-        }
 
         return super.shouldInterceptRequest(view, url);
     }
 
     private WebResourceResponse handleRequest(String url) {
+        // After intercepting the request, we need to handle it
+        // ourselves. This is done by creating an OkHttp3 Call,
+        // which we add the Sakai cookies to. Without the cookies,
+        // Sakai does not acknowledge the request.
+        final Call call = httpClient.newCall(new Request.Builder()
+                .url(url)
+                .addHeader("Cookie", cookieManager.getCookie(cookieUrl))
+                .build()
+        );
+
+        final Response response;
         try {
-            // After intercepting the request, we need to handle it
-            // ourselves. This is done by creating an OkHttp3 Call,
-            // which we add the Sakai cookies to. Without the cookies,
-            // Sakai does not acknowledge the request.
-            final Call call = httpClient.newCall(new Request.Builder()
-                    .url(url)
-                    .addHeader("Cookie", cookieManager.getCookie(cookieUrl))
-                    .build()
-            );
-
-            // After getting the response from Sakai, we can get the
-            // headers if it has what we want. Specifically, we need
-            // the X-Sakai-Session cookie.
-            final Response response = call.execute();
-            Headers temp = response.headers();
-            if (temp.get("x-sakai-session") != null && !gotHeaders) {
-                Log.i("Headers", response.headers().toString());
-                gotHeaders = true;
-                sakaiLoadedListener.onSakaiMainPageLoaded(null);
-            }
-
-            // We need to return a WebResourceResponse, otherwise the
-            // WebView will think that the request is hanging. The WebView
-            // renders this response.
-            // We do not need to modify the mimeType or encoding of the response.
-            return new WebResourceResponse(null, null,
-                    response.body().byteStream()
-            );
-        } catch (Exception e) {
-            Log.e("Exception", e.getMessage());
-            // TODO: Handle bad request/response
-            // Perhaps by creating a separate method in the listener
+            response = call.execute();
+        } catch (IOException e) {
+            e.printStackTrace();
             return null;
         }
+
+        // After getting the response from Sakai, we can get the
+        // headers if it has what we want. Specifically, we need
+        // the X-Sakai-Session cookie.
+        String sakaiSessionHeader = response.headers().get("x-sakai-session");
+        if (sakaiSessionHeader != null && !gotHeaders) {
+            gotHeaders = true;
+            sakaiLoadedListener.onSakaiMainPageLoaded(null);
+        }
+
+        // We need to return a WebResourceResponse, otherwise the
+        // WebView will think that the request is hanging. The WebView
+        // renders this response.
+        // We do not need to modify the mimeType or encoding of the response.
+        return new WebResourceResponse(null, null,
+                response.body().byteStream()
+        );
     }
 }

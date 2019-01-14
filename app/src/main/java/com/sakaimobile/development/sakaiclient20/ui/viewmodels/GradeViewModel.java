@@ -18,7 +18,7 @@ import io.reactivex.schedulers.Schedulers;
 public class GradeViewModel extends BaseViewModel {
 
     private GradeRepository gradeRepository;
-    private HashMap<String, MutableLiveData<List<Grade>>> siteIdToGrades;
+    private MutableLiveData<List<Grade>> siteGrades;
 
     /**
      * Grades view model constructor
@@ -30,7 +30,7 @@ public class GradeViewModel extends BaseViewModel {
     GradeViewModel(CourseRepository courseRepository, GradeRepository gradeRepository) {
         super(courseRepository);
         this.gradeRepository = gradeRepository;
-        this.siteIdToGrades = new HashMap<>();
+        this.siteGrades = new MutableLiveData<>();
     }
 
     /**
@@ -42,33 +42,9 @@ public class GradeViewModel extends BaseViewModel {
      * @return live data containing grades list
      */
     public LiveData<List<Grade>> getSiteGrades(String siteId) {
-
-        if (!this.siteIdToGrades.containsKey(siteId)) {
-            this.siteIdToGrades.put(siteId, new MutableLiveData<>());
-            refreshSiteData(siteId);
-        }
-        return this.siteIdToGrades.get(siteId);
+        loadSiteGrades(siteId);
+        return this.siteGrades;
     }
-
-
-    /**
-     * Loads grades for a site from the grades repository into
-     * a hashmap mapping from the siteId to the grades list
-     *
-     * @param siteId site to load the grades for
-     */
-    public void loadSiteGrades(String siteId) {
-        this.compositeDisposable.add(
-                this.gradeRepository.getGradesForSite(siteId)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                this.siteIdToGrades.get(siteId)::setValue,
-                                Throwable::printStackTrace
-                        )
-        );
-    }
-
 
     /**
      * Refreshes all grades by telling the grades repository to make
@@ -85,6 +61,28 @@ public class GradeViewModel extends BaseViewModel {
     }
 
     /**
+     * Loads grades for a site from the grades repository into
+     * a hashmap mapping from the siteId to the grades list
+     *
+     * @param siteId site to load the grades for
+     */
+    private void loadSiteGrades(String siteId) {
+        this.compositeDisposable.add(
+            this.gradeRepository.getGradesForSite(siteId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    grades -> {
+                        if(grades.isEmpty())
+                            this.refreshSiteData(siteId);
+                        else
+                            this.siteGrades.setValue(grades);
+                    }, Throwable::printStackTrace
+                )
+        );
+    }
+
+    /**
      * Refreshes the grades for a given site
      * <p>
      * Loads the site grades given that the grades for that site are updated in the database
@@ -94,13 +92,15 @@ public class GradeViewModel extends BaseViewModel {
     @Override
     public void refreshSiteData(String siteId) {
         this.compositeDisposable.add(
-                this.gradeRepository.refreshSiteGrades(siteId)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                () -> loadSiteGrades(siteId),
-                                Throwable::printStackTrace
-                        )
+            this.gradeRepository.refreshSiteGrades(siteId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    grades -> {
+                        if(grades.isEmpty())
+                            this.siteGrades.setValue(null);
+                    }, Throwable::printStackTrace
+                )
         );
     }
 

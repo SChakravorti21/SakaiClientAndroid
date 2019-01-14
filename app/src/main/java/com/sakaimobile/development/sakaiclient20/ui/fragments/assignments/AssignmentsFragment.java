@@ -176,6 +176,14 @@ public class AssignmentsFragment extends Fragment {
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        this.treeView = null;
+        this.treeContainer = null;
+        this.progressBar = null;
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.assignments_fragment_menu, menu);
     }

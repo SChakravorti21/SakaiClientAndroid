@@ -76,7 +76,12 @@ public class CourseRepository {
     }
 
     private List<Course> persistCourses(List<Course> courses) {
-        courseDao.insert(courses);
+        // If a new user logs into the app or if the user is removed from a site,
+        // we do not want to persist that course (remove it and all related data from db)
+        courseDao.removeExtraneousCourses(courses);
+
+        // Insert all courses and their site pages into db
+        courseDao.upsert(courses);
         for(Course course : courses)
             sitePageDao.insert(course.sitePages);
 

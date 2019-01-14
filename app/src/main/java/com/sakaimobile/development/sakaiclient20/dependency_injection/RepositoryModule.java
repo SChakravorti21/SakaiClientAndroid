@@ -18,12 +18,15 @@ import com.sakaimobile.development.sakaiclient20.repositories.CourseRepository;
 import com.sakaimobile.development.sakaiclient20.repositories.GradeRepository;
 import com.sakaimobile.development.sakaiclient20.repositories.ResourceRepository;
 
+import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
 
 @Module(includes = {DaoModule.class, ServiceModule.class})
 class RepositoryModule {
 
+    @Singleton
     @Provides
     static CourseRepository provideCourseRepository(
             CourseDao courseDao,
@@ -32,6 +35,7 @@ class RepositoryModule {
         return new CourseRepository(courseDao, sitePageDao, coursesService);
     }
 
+    @Singleton
     @Provides
     static ResourceRepository provideResourceRepository(
             ResourceDao dao,
@@ -39,6 +43,7 @@ class RepositoryModule {
         return new ResourceRepository(dao, service);
     }
 
+    @Singleton
     @Provides
     static AssignmentRepository provideAssignmentRepository(
             CourseDao courseDao,
@@ -49,6 +54,7 @@ class RepositoryModule {
         return new AssignmentRepository(courseDao, assignmentDao, attachmentDao, assignmentsService);
     }
 
+    @Singleton
     @Provides
     static AnnouncementRepository provideAnnouncementRepository(
             AnnouncementDao announcementDao,
@@ -57,6 +63,7 @@ class RepositoryModule {
         return new AnnouncementRepository(announcementDao, attachmentDao, announcementsService);
     }
 
+    @Singleton
     @Provides
     static GradeRepository provideGradesRepository(
             GradeDao gradeDao,

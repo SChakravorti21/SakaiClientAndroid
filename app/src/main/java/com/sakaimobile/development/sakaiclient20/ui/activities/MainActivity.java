@@ -1,9 +1,7 @@
 package com.sakaimobile.development.sakaiclient20.ui.activities;
 
-import android.app.DownloadManager;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -16,38 +14,22 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.sakaimobile.development.sakaiclient20.R;
-import com.sakaimobile.development.sakaiclient20.networking.services.SessionService;
-import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
-import com.sakaimobile.development.sakaiclient20.persistence.entities.Announcement;
-import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 import com.sakaimobile.development.sakaiclient20.ui.custom_components.CustomLinkMovementMethod;
-import com.sakaimobile.development.sakaiclient20.ui.custom_components.DownloadCompleteReceiver;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AllCoursesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AllGradesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AnnouncementsFragment;
-import com.sakaimobile.development.sakaiclient20.ui.fragments.CourseSitesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.SettingsFragment;
-import com.sakaimobile.development.sakaiclient20.ui.fragments.SingleAnnouncementFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.AssignmentsFragment;
-import com.sakaimobile.development.sakaiclient20.ui.helpers.AssignmentSortingUtils;
 import com.sakaimobile.development.sakaiclient20.ui.helpers.BottomNavigationViewHelper;
-import com.sakaimobile.development.sakaiclient20.ui.listeners.OnActionPerformedListener;
-import com.sakaimobile.development.sakaiclient20.ui.listeners.OnAnnouncementSelected;
-import com.sakaimobile.development.sakaiclient20.ui.viewmodels.AnnouncementViewModel;
-import com.sakaimobile.development.sakaiclient20.ui.viewmodels.AssignmentViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.CourseViewModel;
-import com.sakaimobile.development.sakaiclient20.ui.viewmodels.GradeViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -56,20 +38,18 @@ import dagger.android.AndroidInjection;
 
 public class MainActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener,
-        OnAnnouncementSelected {
+        AllCoursesFragment.OnCoursesRefreshListener {
 
-    private static final short FRAGMENT_REPLACE = 0;
     private static final short FRAGMENT_ADD = 1;
+    private static final short FRAGMENT_REPLACE = 0;
 
-    protected Set<LiveData> beingObserved;
+    private CourseViewModel courseViewModel;
     @Inject ViewModelFactory viewModelFactory;
 
-    private FrameLayout container;
     private ProgressBar spinner;
+    private FrameLayout container;
+    private boolean allowNavigation;
     private Set<Class> refreshedFragments;
-
-    @Inject CourseViewModel courseViewModel;
-    DownloadCompleteReceiver downloadReceiver;
 
     //==============================
     // LIFECYCLE/INTERFACE METHODS
@@ -81,26 +61,24 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Get reference to the container
-        this.container = findViewById(R.id.fragment_container);
+        this.courseViewModel =
+                ViewModelProviders.of(this, viewModelFactory).get(CourseViewModel.class);
 
-        //starts spinner
+        this.container = findViewById(R.id.fragment_container);
         this.spinner = findViewById(R.id.nav_activity_progressbar);
         this.spinner.setVisibility(View.GONE);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // Do not allow navigation until courses finish refreshing
+        this.allowNavigation = false;
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(this);
         BottomNavigationViewHelper.removeShiftMode(navigation);
 
-        //clear the saved tree states in saved preferences so some nodes aren't opened by default
-        SharedPrefsUtil.clearTreeStates(this);
-
         // Request all site pages for the Home Fragment and then loads the fragment
-        //refresh since we are loading for the same time
-        beingObserved = new HashSet<>();
+        // refresh since we are loading for the same time
         refreshedFragments = new HashSet<>();
         loadCoursesFragment();
     }
@@ -108,15 +86,18 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        registerDownloadReceiver();
         CustomLinkMovementMethod.setFragmentManager(getSupportFragmentManager());
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        unregisterReceiver(downloadReceiver);
-        removeObservations();
+    public void onAttachFragment(Fragment fragment) {
+        super.onAttachFragment(fragment);
+        // Setting this listeners allows us to lock navigation while the courses
+        // are refreshing
+        if(fragment instanceof AllCoursesFragment) {
+            AllCoursesFragment coursesFragment = (AllCoursesFragment) fragment;
+            coursesFragment.setOnCoursesRefreshListener(this);
+        }
     }
 
     @Override
@@ -139,9 +120,9 @@ public class MainActivity extends AppCompatActivity
      */
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        // To be safe, remove any observations that might be active for the previous tab
-        // since that might trigger an unwanted fragment transaction
-        removeObservations();
+        if(!allowNavigation)
+            return false;
+
         setActionBarTitle(getString(R.string.app_name));
         switch (item.getItemId()) {
             case R.id.navigation_home:
@@ -168,31 +149,15 @@ public class MainActivity extends AppCompatActivity
     // INTERFACE IMPLEMENTATIONS
     //============================
 
+    @Override
+    public void onCoursesRefreshStarted() {
+        allowNavigation = false;
+    }
 
     @Override
-    public void onAnnouncementSelected(Announcement announcement, Map<String, Course> siteIdToCourse) {
-        Bundle b = new Bundle();
-        b.putSerializable(getString(R.string.single_announcement_tag), announcement);
-        // for some reason map isn't serializable, so i had to cast to HashMap
-        //TODO check before casting
-        b.putSerializable(getString(R.string.siteid_to_course_map), (HashMap) siteIdToCourse);
-
-        SingleAnnouncementFragment fragment = new SingleAnnouncementFragment();
-        fragment.setArguments(b);
-
-        loadFragment(fragment, FRAGMENT_ADD, true, R.anim.grow_enter, R.anim.pop_exit);
+    public void onCoursesRefreshCompleted() {
+        allowNavigation = true;
     }
-
-    //================================
-    // LIFECYCLE CONVENIENCE METHODS
-    //================================
-
-    public void registerDownloadReceiver() {
-        IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
-        this.downloadReceiver = new DownloadCompleteReceiver();
-        registerReceiver(downloadReceiver, filter);
-    }
-
 
     //=======================
     // FRAGMENT MANAGEMENT
@@ -281,10 +246,7 @@ public class MainActivity extends AppCompatActivity
         this.container.setVisibility(View.GONE);
         startProgressBar();
 
-        LiveData<List<List<Course>>> coursesLiveData =
-            ViewModelProviders.of(this, viewModelFactory).get(CourseViewModel.class)
-                .getCoursesByTerm(false);
-
+        LiveData<List<List<Course>>> coursesLiveData = courseViewModel.getCoursesByTerm(false);
         coursesLiveData.observe(this, courses -> {
 
             HashMap<String, Course> map = createSiteIdToCourseMap(courses);
@@ -321,7 +283,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private HashMap<String, Course> createSiteIdToCourseMap(List<List<Course>> courses) {
-
         HashMap<String, Course> siteIdToCourse = new HashMap<>();
 
         for (List<Course> term : courses) {
@@ -329,6 +290,7 @@ public class MainActivity extends AppCompatActivity
                 siteIdToCourse.put(course.siteId, course);
             }
         }
+
         return siteIdToCourse;
     }
 
@@ -344,10 +306,4 @@ public class MainActivity extends AppCompatActivity
         spinner.setVisibility(View.GONE);
     }
 
-    protected void removeObservations() {
-        for (LiveData liveData : beingObserved) {
-            liveData.removeObservers(this);
-        }
-        beingObserved.clear();
-    }
 }
