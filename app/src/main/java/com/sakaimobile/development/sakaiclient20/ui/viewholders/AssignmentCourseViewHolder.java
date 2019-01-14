@@ -64,7 +64,7 @@ public class AssignmentCourseViewHolder extends TreeNode.BaseNodeViewHolder<Assi
     @Override
     public View createNodeView(TreeNode node, CourseHeaderItem value) {
         final LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.course_with_recycler_view,
+        View view = inflater.inflate(R.layout.tree_node_course_recycler_view,
                 null, false);
 
         // The course courseIcon

@@ -20,7 +20,7 @@
 
     <color name="sakaiTint">#a90023</color>
     <color name="sakaiWhite">#FFFFFF</color>
-    <color name="sakaiLightText">#979797</color>
+    <color name="sakaiLightText">#a0a0a0</color>
     <color name="sakaiDarkGray">#434343</color>
 
     <color name="navigationTintColor">@color/sakaiTint</color>
@@ -39,6 +39,7 @@
     <color name="secondaryTextColor">@color/sakaiLightText</color>
     <color name="primaryBackgroundColor">#1d1d1d</color>
     <color name="secondaryBackgroundColor">@color/sakaiDarkGray</color>
+    <color name="secondaryBackgroundColorSoftened">#282828</color>
     <color name="tertiaryBackgroundColor">#808080</color>
 
     <color name="activityIndicatorColor">@color/sakaiWhite</color>

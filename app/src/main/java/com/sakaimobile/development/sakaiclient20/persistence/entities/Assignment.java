@@ -49,6 +49,7 @@ public class Assignment implements Serializable {
     // Information regarding the submission of assignment
     public String status;
     public Date dueTime;
+    public String dueTimeString;
     public boolean allowResubmission;
 
     // Information about who created the assignment

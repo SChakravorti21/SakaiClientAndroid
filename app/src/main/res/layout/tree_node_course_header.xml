@@ -4,6 +4,7 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingLeft="4dp"
     android:background="@drawable/tree_node_course_background"
     android:foreground="?android:attr/selectableItemBackground">
 

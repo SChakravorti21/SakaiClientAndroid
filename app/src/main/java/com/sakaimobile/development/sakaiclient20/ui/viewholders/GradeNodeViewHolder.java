@@ -21,7 +21,7 @@ public class GradeNodeViewHolder extends TreeNode.BaseNodeViewHolder<GradeNodeVi
     public View createNodeView(TreeNode node, GradeTreeItem value) {
 
         final LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.gradeitem_node, null, false);
+        View view = inflater.inflate(R.layout.tree_node_grade, null, false);
 
         view.setLayoutParams(
                 new LinearLayout.LayoutParams(

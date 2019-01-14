@@ -62,7 +62,7 @@ public class AssignmentTermHeaderViewHolder
     @Override
     public View createNodeView(TreeNode node, AssignmentTermHeaderViewHolder.TermHeaderItem value) {
         final LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.term_with_recycler_view, null, false);
+        View view = inflater.inflate(R.layout.tree_node_term_recycler_view, null, false);
 
         // The course name
         TextView courseView = view.findViewById(R.id.term_name);

@@ -31,7 +31,7 @@ public class GradeItemAdapter extends ArrayAdapter {
     private Set<Integer> animatedGradePositions;
 
     public GradeItemAdapter(Context context, List<Grade> assignmentsList) {
-        super(context, R.layout.gradeitem_node, assignmentsList);
+        super(context, R.layout.tree_node_grade, assignmentsList);
 
         this.assignmentsList = assignmentsList;
         this.animatedGradePositions = new HashSet<>();
@@ -61,7 +61,7 @@ public class GradeItemAdapter extends ArrayAdapter {
         Context context = getContext();
 
         if(convertView == null)
-            convertView = LayoutInflater.from(context).inflate(R.layout.gradeitem_node, parent, false);
+            convertView = LayoutInflater.from(context).inflate(R.layout.tree_node_grade, parent, false);
 
         //get name and grade textviews
         TextView nameTextView = convertView.findViewById(R.id.txt_assignment_name);

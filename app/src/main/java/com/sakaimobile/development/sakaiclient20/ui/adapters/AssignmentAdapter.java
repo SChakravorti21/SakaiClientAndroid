@@ -121,7 +121,7 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
         viewHolder.descriptionView.setMovementMethod(CustomLinkMovementMethod.getInstance());
 
         // Set the assignment due date
-        viewHolder.dueDateView.setText("Due: " + assignment.dueTime.toString());
+        viewHolder.dueDateView.setText("Due: " + assignment.dueTimeString);
 
         // Animate the view if it has not been done already
         if(position > lastRenderedPosition) {

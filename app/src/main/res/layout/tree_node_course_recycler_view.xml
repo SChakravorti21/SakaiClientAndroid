@@ -10,8 +10,9 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/sakai_light_silver"
-        android:foreground="?android:attr/selectableItemBackground">
+        android:background="@drawable/tree_node_course_background"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:paddingLeft="4dp">
 
         <TextView
             android:id="@+id/course_icon"
@@ -25,7 +26,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="8"
-            android:textColor="@color/sakai_light_black"
+            android:textColor="@color/secondaryTextColor"
             tools:text="Course 2018"
             android:textStyle="bold"
             android:textSize="18sp"
@@ -43,10 +44,7 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/assignments_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:background="@color/white">
+        android:layout_height="wrap_content" >
 
     </android.support.v7.widget.RecyclerView>
 
