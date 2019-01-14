@@ -11,7 +11,7 @@ import java.util.List;
 import io.reactivex.Flowable;
 
 @Dao
-public abstract class GradeDao implements BaseDao<Grade>{
+public abstract class GradeDao extends BaseDao<Grade>{
 
     @Query("SELECT * FROM grades WHERE siteId = :siteId")
     public abstract Flowable<List<Grade>> getGradesForSite(String siteId);

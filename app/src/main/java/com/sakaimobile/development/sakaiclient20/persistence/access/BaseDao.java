@@ -5,27 +5,67 @@ import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Update;
 
+import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Development on 8/5/18.
  */
 
-public interface BaseDao<TEntity> {
+public abstract class BaseDao<TEntity> {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(TEntity... entities);
+    public abstract void insert(TEntity... entities);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(List<TEntity> entities);
+    public abstract void insert(List<TEntity> entities);
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    void update(TEntity... entities);
+    public abstract void update(TEntity... entities);
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    void update(List<TEntity> entities);
+    public abstract void update(List<TEntity> entities);
 
     @Delete
-    void delete(TEntity... entities);
+    public abstract void delete(TEntity... entities);
+
+
+    ////////////////////////////////////////
+    //  PROTOCOL FOR UPSERTING COURSES
+    ////////////////////////////////////////
+
+    /**
+     * @return the status code of each insert for the corresponding entity (-1 if failed)
+     */
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    protected abstract List<Long> insertIgnoringConflicts(List<TEntity> entities);
+
+
+    /**
+     * An UPSERT implementation for upserting entities. This is necessary because
+     * we do NOT want to replace existing courses on insert, as that would cascade down the
+     * foreign keys and delete related entities (such as grades, assignments, etc).
+     * Since there is no UPSERT OnConflictStrategy, this behavior must be implemented ourselves.
+     *
+     * This is also needed to update announcements in the DB when refreshing which will
+     * improve performance
+     *
+     */
+    public void upsert(List<TEntity> entities) {
+        List<Long> insertResults = insertIgnoringConflicts(entities);
+        List<TEntity> toUpdate = new ArrayList<>();
+
+        // For any of the inserts that failed, if they failed because of a foreign key exception
+        // (in which case the status code is -1), then update them instead
+        for(int index = 0; index < insertResults.size(); index++) {
+            if(insertResults.get(index) == -1)
+                toUpdate.add(entities.get(index));
+        }
+
+        if(!toUpdate.isEmpty())
+            update(toUpdate);
+    }
 
 }

@@ -121,37 +121,35 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<AnnouncementsAdap
 
         Announcement currAnnouncement = announcements.get(position);
 
-        AnnouncementItemViewHolder announcementHolder = (AnnouncementItemViewHolder) holder;
-
-        announcementHolder.authorTxt.setText(currAnnouncement.createdBy);
+        holder.authorTxt.setText(currAnnouncement.createdBy);
 
         int subjCode = siteIdToCourse.get(currAnnouncement.siteId).subjectCode;
-        announcementHolder.courseIcon.setText(RutgersSubjectCodes.mapCourseCodeToIcon.get(subjCode));
+        holder.courseIcon.setText(RutgersSubjectCodes.mapCourseCodeToIcon.get(subjCode));
 
-        announcementHolder.date.setText(currAnnouncement.getShortFormattedDate());
+        holder.date.setText(currAnnouncement.getShortFormattedDate());
 
         //check to see the announcement type
         if (announcementType == AnnouncementsFragment.ALL_ANNOUNCEMENTS) {
 
             // if all announcements, show course title, then announcement title
-            announcementHolder.cardHeading2.setText(siteIdToCourse.get(currAnnouncement.siteId).title);
-            announcementHolder.cardHeading3.setText(currAnnouncement.title);
+            holder.cardHeading2.setText(siteIdToCourse.get(currAnnouncement.siteId).title);
+            holder.cardHeading3.setText(currAnnouncement.title);
 
         } else if (announcementType == AnnouncementsFragment.SITE_ANNOUNCEMENTS) {
 
             //if site announcements, show announcement title, then announcement body
-            announcementHolder.cardHeading2.setText(currAnnouncement.title);
+            holder.cardHeading2.setText(currAnnouncement.title);
 
             try {
                 //if its after android N, use this method for setting the html
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    announcementHolder.cardHeading3.setText(Html.fromHtml(currAnnouncement.body, Html.FROM_HTML_MODE_COMPACT));
+                    holder.cardHeading3.setText(Html.fromHtml(currAnnouncement.body, Html.FROM_HTML_MODE_COMPACT));
                 } else {
-                    announcementHolder.cardHeading3.setText(Html.fromHtml(currAnnouncement.body));
+                    holder.cardHeading3.setText(Html.fromHtml(currAnnouncement.body));
                 }
             } catch (RuntimeException e) {
 //                    java.lang.RuntimeException: PARAGRAPH span must start at paragraph boundary (832 follows  )
-                announcementHolder.cardHeading3.setText("");
+                holder.cardHeading3.setText("");
                 e.printStackTrace();
             }
 

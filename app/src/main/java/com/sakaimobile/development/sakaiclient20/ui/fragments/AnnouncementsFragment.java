@@ -110,6 +110,8 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
         announcementRecycler.setLayoutManager(layoutManager);
         announcementRecycler.setItemAnimator(new DefaultItemAnimator());
 
+        announcementRecycler.setItemViewCacheSize(20);
+
         // start the spinner
         spinner = view.findViewById(R.id.progress_circular);
         spinner.setVisibility(View.VISIBLE);
@@ -128,6 +130,7 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
         // each time the observation is triggered, we have new announcements (after refreshing)
         announcementLiveData.observe(getViewLifecycleOwner(), announcements -> {
 
+            scrollUpButton.show();
             announcementRecycler.setVisibility(View.VISIBLE);
             spinner.setVisibility(View.GONE);
             addNewAnnouncementsToAdapter(announcements);
@@ -150,6 +153,11 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
             case R.id.action_refresh:
                 announcementRecycler.setVisibility(View.GONE);
                 spinner.setVisibility(View.VISIBLE);
+                scrollUpButton.hide();
+
+                // save the state so we can scroll to the right position
+                // after reloading
+                saveScrollState();
 
                 if(announcementType == SITE_ANNOUNCEMENTS)
                     announcementViewModel.refreshSiteAnnouncements(announcementsSiteId);
@@ -191,8 +199,9 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
 
         // restore scroll state
         int pos = SharedPrefsUtil.getAnnouncementScrollState(getContext(), this.getClass().getCanonicalName());
-        announcementRecycler.getLayoutManager().smoothScrollToPosition(announcementRecycler, new RecyclerView.State(), pos);
 
+        if(pos < announcements.size())
+            announcementRecycler.getLayoutManager().smoothScrollToPosition(announcementRecycler, new RecyclerView.State(), pos);
     }
 
 
@@ -210,9 +219,7 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
     public void onDetach() {
         super.onDetach();
 
-        String className = this.getClass().getCanonicalName();
-        int scrollPos = adapter.getCurScrollPos();
-        SharedPrefsUtil.saveAnnouncementScrollState(getContext(), className, scrollPos);
+        saveScrollState();
     }
 
     @Override
@@ -233,6 +240,12 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
                 .addToBackStack(null)
                 .add(R.id.fragment_container, fragment)
                 .commit();
+    }
+
+    private void saveScrollState() {
+        String className = this.getClass().getCanonicalName();
+        int scrollPos = adapter.getCurScrollPos();
+        SharedPrefsUtil.saveAnnouncementScrollState(getContext(), className, scrollPos);
     }
 }
 

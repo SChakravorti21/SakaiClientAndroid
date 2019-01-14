@@ -14,7 +14,7 @@ import io.reactivex.Maybe;
 import io.reactivex.Single;
 
 @Dao
-public abstract class AnnouncementDao implements BaseDao<Announcement> {
+public abstract class AnnouncementDao extends BaseDao<Announcement> {
 
     @Transaction
     @Query("SELECT * FROM announcements ORDER BY createdOn DESC")

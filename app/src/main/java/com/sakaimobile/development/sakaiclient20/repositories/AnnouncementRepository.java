@@ -37,6 +37,7 @@ public class AnnouncementRepository {
     public Flowable<List<Announcement>> getAllAnnouncements() {
         return announcementDao
                 .getAllAnnouncements()
+                .debounce(500, TimeUnit.MILLISECONDS)
                 .map(AnnouncementRepository::flattenCompositesToEntities);
     }
 
@@ -44,6 +45,7 @@ public class AnnouncementRepository {
     public Flowable<List<Announcement>> getSiteAnnouncements(String siteId) {
         return announcementDao
                 .getSiteAnnouncements(siteId)
+                .debounce(500, TimeUnit.MILLISECONDS)
                 .map(AnnouncementRepository::flattenCompositesToEntities);
     }
 
@@ -77,17 +79,25 @@ public class AnnouncementRepository {
         return announcements;
     }
 
+    /**
+     * Persist the list of announcements gotten from network request in Room DB
+     * this DB is observed on ,so after persisting the view model should receive the update
+     * @param announcements list of new announcements to persist
+     * @return persisted announcements
+     */
     private List<Announcement> persistAnnouncements(List<Announcement> announcements) {
 
         // inserting the same announcements should delete the old ones
         // since both will have the same announcementID
-        announcementDao.insert(announcements);
+        announcementDao.upsert(announcements);
 
-//        // same case with its attachments
-//        for (Announcement announcement : announcements) {
-//            attachmentDao.insert(announcement.attachments);
-//        }
+        // same case with its attachments, try inserting them if its not empty
+        for (Announcement announcement : announcements) {
+            if (!announcement.attachments.isEmpty())
+                attachmentDao.upsert(announcement.attachments);
+        }
 
         return announcements;
     }
 }
+
