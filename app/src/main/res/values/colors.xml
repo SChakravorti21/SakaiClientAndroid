@@ -17,4 +17,34 @@
     <!-- Leaf Node colors -->
     <color name="leaf_background">#fffbf2</color>
     <color name="leaf_text">#664147</color>
+
+    <color name="sakaiTint">#a90023</color>
+    <color name="sakaiWhite">#FFFFFF</color>
+    <color name="sakaiLightText">#979797</color>
+    <color name="sakaiDarkGray">#434343</color>
+
+    <color name="navigationTintColor">@color/sakaiTint</color>
+    <color name="navigationTitleColor">@color/sakaiWhite</color>
+    <color name="navigationBackgroundColor">#101010</color>
+    
+    <color name="toolBarColor">@color/sakaiWhite</color>
+    <color name="tabBarTintColor">@color/sakaiTint</color>
+    <color name="tabBarUnselectedTintColor">@color/sakaiWhite</color>
+    <color name="tabBarBackgroundColor">#111111</color>
+
+    <color name="highlightColor">@color/sakaiTint</color>
+    <color name="tableViewSeparatorColor">@color/sakaiLightText</color>
+
+    <color name="primaryTextColor">#F8F8F8</color>
+    <color name="secondaryTextColor">@color/sakaiLightText</color>
+    <color name="primaryBackgroundColor">#1d1d1d</color>
+    <color name="secondaryBackgroundColor">@color/sakaiDarkGray</color>
+    <color name="tertiaryBackgroundColor">#808080</color>
+
+    <color name="activityIndicatorColor">@color/sakaiWhite</color>
+    <color name="borderColor">@color/sakaiLightText</color>
+    <color name="linkColor">#46BCDE</color>
+    <color name="pageIndicatorTintColor">@color/sakaiDarkGray</color>
+
+
 </resources>

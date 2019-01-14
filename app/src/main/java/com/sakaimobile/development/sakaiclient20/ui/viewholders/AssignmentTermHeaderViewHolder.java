@@ -31,8 +31,8 @@ import java.util.List;
 public class AssignmentTermHeaderViewHolder
         extends TreeNode.BaseNodeViewHolder<AssignmentTermHeaderViewHolder.TermHeaderItem> {
 
-    private static final String CHEVRON_DOWN = "\uF078";
-    private static final String CHEVRON_RIGHT = "\uF054";
+    private static final String CHEVRON_DOWN = "\uF107";
+    private static final String CHEVRON_RIGHT = "\uF105";
 
     /**
      * The {@link TextView} that indicates whether the node is expanded or collapsed.

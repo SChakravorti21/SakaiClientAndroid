@@ -4,7 +4,7 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/sakai_light_silver"
+    android:background="@drawable/tree_node_course_background"
     android:foreground="?android:attr/selectableItemBackground">
 
     <TextView
@@ -24,7 +24,7 @@
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
         android:paddingTop="8dp"
-        android:textColor="@color/sakai_light_black"
+        android:textColor="@color/secondaryTextColor"
         android:textSize="18sp"
         android:textStyle="bold"
         tools:text="Course 2018" />

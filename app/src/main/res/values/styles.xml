@@ -11,7 +11,8 @@
     </style>
 
     <style name="CourseIcons" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="android:textSize">25dp</item>
+        <item name="android:textColor">@color/primaryTextColor</item>
+        <item name="android:textSize">18sp</item>
         <item name="android:paddingLeft">10dp</item>
         <item name="android:fontFamily">@font/course_icons</item>
     </style>
@@ -23,14 +24,14 @@
     </style>
 
     <style name="FontawesomeText.Term" parent="FontawesomeText">
-        <item name="android:textColor">@color/sakai_medium_silver</item>
+        <item name="android:textColor">@color/primaryTextColor</item>
         <item name="android:textSize">24sp</item>
         <item name="android:paddingTop">8dp</item>
         <item name="android:paddingRight">12dp</item>
     </style>
 
     <style name="FontawesomeText.Course" parent="FontawesomeText">
-        <item name="android:textColor">@color/sakai_light_black</item>
+        <item name="android:textColor">@color/secondaryTextColor</item>
         <item name="android:textSize">18sp</item>
         <item name="android:paddingTop">8dp</item>
         <item name="android:paddingRight">24dp</item>
