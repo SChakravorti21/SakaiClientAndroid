@@ -19,7 +19,7 @@ import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPref
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 import com.sakaimobile.development.sakaiclient20.ui.helpers.AssignmentSortingUtils;
-import com.sakaimobile.development.sakaiclient20.ui.helpers.RutgersSubjectCodes;
+import com.sakaimobile.development.sakaiclient20.ui.helpers.CourseIconProvider;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.TreeViewItemClickListener;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.AssignmentCourseViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.AssignmentTermHeaderViewHolder;
@@ -266,7 +266,7 @@ public class AssignmentsFragment extends Fragment {
 
                 // Create a course header item, and make a tree node using it
                 String courseIconCode =
-                        RutgersSubjectCodes.mapCourseCodeToIcon.get(course.subjectCode);
+                        CourseIconProvider.getCourseIcon(course.subjectCode);
                 AssignmentCourseViewHolder.CourseHeaderItem courseHeaderItem =
                         new AssignmentCourseViewHolder.CourseHeaderItem(
                                 course.title,

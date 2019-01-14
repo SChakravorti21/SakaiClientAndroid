@@ -19,7 +19,7 @@ import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.models.Term;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
-import com.sakaimobile.development.sakaiclient20.ui.helpers.RutgersSubjectCodes;
+import com.sakaimobile.development.sakaiclient20.ui.helpers.CourseIconProvider;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.TreeViewItemClickListener;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.CourseHeaderViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.TermHeaderViewHolder;
@@ -200,7 +200,7 @@ public class AllCoursesFragment extends Fragment {
             //for each course, get its grades
             for (Course currCourse : coursesInTerm) {
                 //create a course header item and make a TreeNode using it
-                String courseIconCode = RutgersSubjectCodes.mapCourseCodeToIcon.get(currCourse.subjectCode);
+                String courseIconCode = CourseIconProvider.getCourseIcon(currCourse.subjectCode);
                 CourseHeaderViewHolder.CourseHeaderItem courseNodeItem =
                         new CourseHeaderViewHolder.CourseHeaderItem(
                                 currCourse.title,

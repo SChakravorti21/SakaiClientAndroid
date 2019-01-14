@@ -14,7 +14,7 @@ import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Announcement;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AnnouncementsFragment;
-import com.sakaimobile.development.sakaiclient20.ui.helpers.RutgersSubjectCodes;
+import com.sakaimobile.development.sakaiclient20.ui.helpers.CourseIconProvider;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.LoadMoreListener;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.OnAnnouncementSelected;
 
@@ -171,7 +171,7 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<RecyclerView.View
             announcementHolder.authorTxt.setText(currAnnouncement.createdBy);
 
             int subjCode = siteIdToCourse.get(currAnnouncement.siteId).subjectCode;
-            announcementHolder.courseIcon.setText(RutgersSubjectCodes.mapCourseCodeToIcon.get(subjCode));
+            announcementHolder.courseIcon.setText(CourseIconProvider.getCourseIcon(subjCode));
 
             announcementHolder.date.setText(currAnnouncement.getShortFormattedDate());
 

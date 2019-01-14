@@ -19,6 +19,7 @@ import com.sakaimobile.development.sakaiclient20.dependency_injection.DaggerSaka
 import com.sakaimobile.development.sakaiclient20.networking.services.SessionService;
 import com.sakaimobile.development.sakaiclient20.ui.activities.WebViewActivity;
 import com.sakaimobile.development.sakaiclient20.ui.custom_components.DownloadCompleteReceiver;
+import com.sakaimobile.development.sakaiclient20.ui.helpers.CourseIconProvider;
 import com.squareup.leakcanary.LeakCanary;
 
 import javax.inject.Inject;
@@ -61,6 +62,7 @@ public class SakaiApplication extends Application
 
         LeakCanary.install(this);
         registerDownloadReceiver();
+        CourseIconProvider.initializeCourseIcons(this);
 
         if(!BuildConfig.DEBUG)
             Fabric.with(this, new Crashlytics());

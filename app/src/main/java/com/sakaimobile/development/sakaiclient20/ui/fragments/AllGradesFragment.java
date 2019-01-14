@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,12 +20,11 @@ import com.sakaimobile.development.sakaiclient20.models.Term;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Grade;
-import com.sakaimobile.development.sakaiclient20.ui.helpers.RutgersSubjectCodes;
+import com.sakaimobile.development.sakaiclient20.ui.helpers.CourseIconProvider;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.TreeViewItemClickListener;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.CourseHeaderViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.GradeNodeViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.TermHeaderViewHolder;
-import com.sakaimobile.development.sakaiclient20.ui.viewmodels.CourseViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.GradeViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 import com.unnamed.b.atv.model.TreeNode;
@@ -175,7 +173,7 @@ public class AllGradesFragment extends Fragment {
             //for each course, get its grades
             for (Course currCourse : coursesInTerm) {
                 //create a course header item and make a treenode using it
-                String courseIconCode = RutgersSubjectCodes.mapCourseCodeToIcon.get(currCourse.subjectCode);
+                String courseIconCode = CourseIconProvider.getCourseIcon(currCourse.subjectCode);
                 CourseHeaderViewHolder.CourseHeaderItem courseNodeItem = new CourseHeaderViewHolder.CourseHeaderItem(
                         currCourse.title,
                         currCourse.siteId,
