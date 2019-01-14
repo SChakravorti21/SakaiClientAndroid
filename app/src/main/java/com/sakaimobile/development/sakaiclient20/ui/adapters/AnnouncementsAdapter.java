@@ -1,6 +1,8 @@
 package com.sakaimobile.development.sakaiclient20.ui.adapters;
 
 import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -17,6 +19,7 @@ import com.sakaimobile.development.sakaiclient20.ui.listeners.OnAnnouncementSele
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by atharva on 7/8/18
@@ -29,18 +32,35 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<AnnouncementsAdap
     // list of announcements to display
     private List<Announcement> announcements;
     // mapping siteIdToCourse, needed to get subject code and course title
-    private HashMap<String, Course> siteIdToCourse;
+    private Map<String, Course> siteIdToCourse;
     // click listener for each announcement card
     private OnAnnouncementSelected announcementclickListener;
 
 
     public AnnouncementsAdapter(List<Announcement> announcements,
-                                HashMap<String, Course> siteIdToCourse,
-                                int type) {
+                                Map<String, Course> siteIdToCourse,
+                                RecyclerView recyclerView,
+                                int type,
+                                View scrollToTopFab) {
 
         this.announcements = announcements;
         this.announcementType = type;
         this.siteIdToCourse = siteIdToCourse;
+
+        final LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                // if the first item is visible then make the FAB disappear
+                if(manager.findFirstCompletelyVisibleItemPosition() == 0)
+                    scrollToTopFab.setVisibility(View.GONE);
+                // otherwise make the FAB reappear
+                else
+                    scrollToTopFab.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     /**

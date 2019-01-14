@@ -6,6 +6,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -49,6 +50,8 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
 
     // announcements to display
     private List<Announcement> allAnnouncements;
+
+    private FloatingActionButton scrollUpButton;
 
 
     // recycler view displaying announcements
@@ -110,6 +113,8 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
         spinner = view.findViewById(R.id.progress_circular);
         spinner.setVisibility(View.VISIBLE);
 
+        scrollUpButton = view.findViewById(R.id.scrollUpButton);
+
         createAdapter();
 
         return view;
@@ -125,6 +130,11 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
             addNewAnnouncementsToAdapter(announcements);
             announcementRecycler.setVisibility(View.VISIBLE);
             spinner.setVisibility(View.GONE);
+        });
+
+
+        scrollUpButton.setOnClickListener((v) -> {
+            announcementRecycler.getLayoutManager().smoothScrollToPosition(announcementRecycler, new RecyclerView.State(), 0);
         });
     }
 
@@ -157,7 +167,9 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
         adapter = new AnnouncementsAdapter(
                 allAnnouncements,
                 siteIdToCourseMap,
-                announcementType
+                announcementRecycler,
+                announcementType,
+                scrollUpButton
         );
         adapter.setClickListener(this);
 
