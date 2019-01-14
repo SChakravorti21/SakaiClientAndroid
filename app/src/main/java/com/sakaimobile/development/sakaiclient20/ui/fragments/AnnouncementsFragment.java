@@ -22,6 +22,7 @@ import android.view.animation.LayoutAnimationController;
 import android.widget.ProgressBar;
 
 import com.sakaimobile.development.sakaiclient20.R;
+import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Announcement;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 import com.sakaimobile.development.sakaiclient20.ui.adapters.AnnouncementsAdapter;
@@ -187,6 +188,11 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
         this.allAnnouncements.clear();
         allAnnouncements.addAll(announcements);
         adapter.notifyDataSetChanged();
+
+        // restore scroll state
+        int pos = SharedPrefsUtil.getAnnouncementScrollState(getContext(), this.getClass().getCanonicalName());
+        announcementRecycler.getLayoutManager().smoothScrollToPosition(announcementRecycler, new RecyclerView.State(), pos);
+
     }
 
 
@@ -198,6 +204,15 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
         // setup the view model
         announcementViewModel = ViewModelProviders.of(this, viewModelFactory)
                 .get(AnnouncementViewModel.class);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+        String className = this.getClass().getCanonicalName();
+        int scrollPos = adapter.getCurScrollPos();
+        SharedPrefsUtil.saveAnnouncementScrollState(getContext(), className, scrollPos);
     }
 
     @Override

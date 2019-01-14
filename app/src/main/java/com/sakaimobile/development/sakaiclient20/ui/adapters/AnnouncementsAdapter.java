@@ -36,6 +36,7 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<AnnouncementsAdap
     // click listener for each announcement card
     private OnAnnouncementSelected announcementclickListener;
 
+    private LinearLayoutManager manager;
 
     public AnnouncementsAdapter(List<Announcement> announcements,
                                 Map<String, Course> siteIdToCourse,
@@ -47,7 +48,7 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<AnnouncementsAdap
         this.announcementType = type;
         this.siteIdToCourse = siteIdToCourse;
 
-        final LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
+        manager = (LinearLayoutManager) recyclerView.getLayoutManager();
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
@@ -62,6 +63,11 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<AnnouncementsAdap
             }
         });
     }
+
+    public int getCurScrollPos() {
+        return manager.findFirstCompletelyVisibleItemPosition();
+    }
+
 
     /**
      * View holder for each announcement card
