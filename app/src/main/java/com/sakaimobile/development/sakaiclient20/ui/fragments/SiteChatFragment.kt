@@ -3,9 +3,7 @@ package com.sakaimobile.development.sakaiclient20.ui.fragments
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Build
 import android.os.Bundle
-import android.support.annotation.RequiresApi
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -70,12 +68,33 @@ class SiteChatFragment : Fragment() {
         // JS needs to be enabled for styling, updating, etc.
         val settings: WebSettings = chatRoomWebView.settings
         settings.javaScriptEnabled = true
+
         chatRoomWebView.webViewClient = object: WebViewClient() {
+            // Keep track of whether the main URL has finished loading,
+            // as users cannot click on links unless they are visible
+            private var chatLoaded = false
+
+            override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
+                // Manually handle URL loading because otherwise it breaks the back stack
+                // Ensure that: the main chat page has finished loading (to avoid
+                // handling redirects) AND the page change is a result of the user clicking
+                // a link AND the url is not null (if null there is nothing we can do)
+                return if(chatLoaded
+                        && view?.hitTestResult?.type == WebView.HitTestResult.SRC_ANCHOR_TYPE
+                        && url != null) {
+                    startWebFragment(url)
+                    true
+                } else {
+                    super.shouldOverrideUrlLoading(view, url)
+                }
+            }
+
             override fun onPageFinished(view: WebView?, url: String?) {
                 // Once the chat page loads, get the chat channel ID
                 // and CSRF token (needed to make POST requests)
                 super.onPageFinished(view, url)
                 evaluateChatVariables()
+                chatLoaded = true
             }
         }
 
@@ -118,6 +137,24 @@ class SiteChatFragment : Fragment() {
                         compositeDisposable.add(d)
                     }
                 })
+    }
+
+    /**
+     * If the user clicks a link inside the chat room (which redirects to a page
+     * other than the chat itself), then we can open a WebFragment to handle it.
+     */
+    private fun startWebFragment(url: String) {
+        val fragmentManager = activity?.supportFragmentManager ?: return
+
+        // We want to show the WebFragment as if it is replacing the current
+        // fragment, but do not want this fragment to re-render after returning
+        fragmentManager.beginTransaction()
+                .setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
+                // hide and add _looks_ the same as replace
+                .hide(fragmentManager.fragments[0])
+                .add(R.id.fragment_container, WebFragment.newInstance(url))
+                .addToBackStack(null)
+                .commit()
     }
 
     // Suppress lint because in SitePageActivity we ensure not to load this
