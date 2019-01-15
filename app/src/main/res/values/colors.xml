@@ -40,7 +40,7 @@
     <color name="primaryBackgroundColor">#1d1d1d</color>
     <color name="secondaryBackgroundColor">@color/sakaiDarkGray</color>
     <color name="secondaryBackgroundColorSoftened">#282828</color>
-    <color name="tertiaryBackgroundColor">#808080</color>
+    <color name="tertiaryBackgroundColor">#303030</color>
 
     <color name="activityIndicatorColor">@color/sakaiWhite</color>
     <color name="borderColor">@color/sakaiLightText</color>

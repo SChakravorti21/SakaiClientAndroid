@@ -6,10 +6,11 @@
     android:layout_height="wrap_content" >
 
     <LinearLayout
+        android:id="@+id/term_name_container"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/sakai_medium_red"
+        android:background="@drawable/tree_node_term_background"
         android:foreground="?android:attr/selectableItemBackground" >
 
         <TextView
@@ -21,7 +22,7 @@
             android:padding="8dp"
             android:paddingLeft="16dp"
             android:layout_weight="1"
-            android:textColor="@color/sakai_medium_silver"
+            android:textColor="@color/primaryTextColor"
             android:textSize="24sp" />
 
         <TextView

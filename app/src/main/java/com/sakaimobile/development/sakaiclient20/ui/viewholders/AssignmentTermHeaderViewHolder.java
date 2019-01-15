@@ -101,11 +101,14 @@ public class AssignmentTermHeaderViewHolder
                 r.getDisplayMetrics()
         );
 
-        LinearLayoutCompat.LayoutParams params =  new LinearLayoutCompat.LayoutParams(
+        view.setLayoutParams(new LinearLayoutCompat.LayoutParams(
                 widthPx,
                 LinearLayoutCompat.LayoutParams.WRAP_CONTENT
-        );
-        view.setLayoutParams(params);
+        ));
+
+        if(node.isLastChild())
+            view.findViewById(R.id.term_name_container).setBackgroundResource(R.color.secondaryBackgroundColor);
+
         return view;
     }
 
