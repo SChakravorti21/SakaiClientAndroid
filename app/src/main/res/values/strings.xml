@@ -20,12 +20,6 @@
     <string name="gradebook">Gradebook</string>
     <string name="none_string">None</string>
 
-    <string name="gradebook_site">Gradebook</string>
-    <string name="announcements_site">Announcements</string>
-    <string name="resources_site">Resources</string>
-    <string name="assignments_site">Assignments</string>
-    <string name="chat_site">Chat Room</string>
-
     <string name="spring">Spring</string>
     <string name="summer">Summer</string>
     <string name="winter">Winter</string>

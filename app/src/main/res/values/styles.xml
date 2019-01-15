@@ -11,6 +11,10 @@
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
     </style>
 
+    <style name="ToolbarTheme" parent="AppTheme">
+        <item name="android:textColorSecondary">@color/navigationTitleColor</item>
+    </style>
+
     <style name="CourseIcons" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="android:textColor">@color/primaryTextColor</item>
         <item name="android:textSize">18sp</item>

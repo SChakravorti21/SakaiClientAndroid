@@ -8,13 +8,13 @@
 
 
     <android.support.v7.widget.Toolbar
-        app:titleTextColor="@color/white"
+        app:titleTextColor="@color/navigationTitleColor"
         app:navigationIcon="?android:attr/homeAsUpIndicator"
+        app:theme="@style/ToolbarTheme"
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?android:attr/actionBarSize"
-        android:background="@color/colorPrimary"
-        />
+        android:background="@color/navigationBackgroundColor" />
 
     <FrameLayout
         android:id="@+id/fragment_container"

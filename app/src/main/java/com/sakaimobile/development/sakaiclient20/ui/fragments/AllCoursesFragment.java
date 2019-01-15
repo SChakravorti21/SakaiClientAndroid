@@ -19,9 +19,11 @@ import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.models.Term;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
+import com.sakaimobile.development.sakaiclient20.persistence.entities.SitePage;
 import com.sakaimobile.development.sakaiclient20.ui.helpers.CourseIconProvider;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.TreeViewItemClickListener;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.CourseHeaderViewHolder;
+import com.sakaimobile.development.sakaiclient20.ui.viewholders.SitePageViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.TermHeaderViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.CourseViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
@@ -198,29 +200,28 @@ public class AllCoursesFragment extends Fragment {
                     new TreeNode(termNodeItem).setViewHolder(new TermHeaderViewHolder(mContext));
 
             //for each course, get its grades
-            for (Course currCourse : coursesInTerm) {
+            for (Course course : coursesInTerm) {
                 //create a course header item and make a TreeNode using it
-                String courseIconCode = CourseIconProvider.getCourseIcon(currCourse.subjectCode);
+                String courseIconCode = CourseIconProvider.getCourseIcon(course.subjectCode);
                 CourseHeaderViewHolder.CourseHeaderItem courseNodeItem =
                         new CourseHeaderViewHolder.CourseHeaderItem(
-                                currCourse.title,
-                                currCourse.siteId,
+                                course.title,
+                                course.siteId,
                                 courseIconCode
                         );
 
                 //set the custom view holder
                 TreeNode courseNode = new TreeNode(courseNodeItem)
-                        .setViewHolder(new CourseHeaderViewHolder(mContext, false));
+                        .setViewHolder(new CourseHeaderViewHolder(mContext, true));
 
-                //when click a course Node, open the CourseSitesFragment to show
-                //course specific information
-                courseNode.setClickListener((node, value) -> {
-                    if (value instanceof CourseHeaderViewHolder.CourseHeaderItem) {
-                        //here we should save tree state
-                        SharedPrefsUtil.saveTreeState(mContext, treeView, SharedPrefsUtil.ALL_COURSES_TREE_TYPE);
-                        onCourseSelected(currCourse);
-                    }
-                });
+                // Add all site pages as children of the course
+                for(SitePage sitePage : course.sitePages) {
+                    TreeNode sitePageNode =
+                            new TreeNode(new SitePageViewHolder.SitePageItem(sitePage.title, course))
+                                .setViewHolder(new SitePageViewHolder(mContext));
+
+                    courseNode.addChild(sitePageNode);
+                }
 
                 termNode.addChild(courseNode);
             }
@@ -229,18 +230,6 @@ public class AllCoursesFragment extends Fragment {
         }
 
         return root;
-    }
-
-    private void onCourseSelected(Course course) {
-        if(getActivity() == null || getActivity().getSupportFragmentManager() == null)
-            return;
-
-        getActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
-                .add(R.id.fragment_container, CourseSitesFragment.newInstance(course))
-                .addToBackStack(null)
-                .commit();
     }
 
     private void saveTreeState() {

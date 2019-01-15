@@ -226,7 +226,7 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
             // Start the SitePageActivity to expand all assignment cards
             Intent i = new Intent(activity, SitePageActivity.class);
             // Specify that we want to show the Assignments site page
-            i.putExtra(activity.getString(R.string.site_type_tag), activity.getString(R.string.assignments_site));
+            i.putExtra(activity.getString(R.string.site_type_tag), SitePageActivity.ASSIGNMENTS);
             i.putExtra(activity.getString(R.string.assignments_tag), (Serializable) assignments);
             i.putExtra(SiteAssignmentsFragment.INITIAL_VIEW_POSITION, position);
 
