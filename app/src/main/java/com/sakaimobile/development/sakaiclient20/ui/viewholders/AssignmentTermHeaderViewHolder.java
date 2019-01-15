@@ -106,6 +106,7 @@ public class AssignmentTermHeaderViewHolder
                 LinearLayoutCompat.LayoutParams.WRAP_CONTENT
         ));
 
+        // Don't want bottom border if this is the last term (looks kinda weird)
         if(node.isLastChild())
             view.findViewById(R.id.term_name_container).setBackgroundResource(R.color.secondaryBackgroundColor);
 
