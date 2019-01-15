@@ -1,6 +1,7 @@
 package com.sakaimobile.development.sakaiclient20.ui.activities;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
@@ -15,6 +16,7 @@ import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.SitePage;
 import com.sakaimobile.development.sakaiclient20.ui.custom_components.CustomLinkMovementMethod;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AnnouncementsFragment;
+import com.sakaimobile.development.sakaiclient20.ui.fragments.SiteChatFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.SiteGradesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.SiteResourcesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.WebFragment;
@@ -66,6 +68,8 @@ public class SitePageActivity extends AppCompatActivity {
                 int initialPosition = i.getIntExtra(SiteAssignmentsFragment.INITIAL_VIEW_POSITION, 0);
                 startSiteAssignmentsFragment(null, assignments, initialPosition);
             }
+        } else if (siteType.equals(getString(R.string.chat_site))) {
+            startChatRoomFragment(course);
         } else {
             startWebViewFragment(siteType, course);
         }
@@ -142,6 +146,38 @@ public class SitePageActivity extends AppCompatActivity {
         bun.putInt(SiteAssignmentsFragment.INITIAL_VIEW_POSITION, initialPosition);
 
         SiteAssignmentsFragment fragment = new SiteAssignmentsFragment();
+        fragment.setArguments(bun);
+
+        addFragment(fragment);
+    }
+
+    private void startChatRoomFragment(Course course) {
+        // Our chat fragment uses WebView#evaluateJavascript()
+        // to get the chat channel ID and CSRF token, and this method
+        // is restricted to API >= 19
+        String chatSiteType = getString(R.string.chat_site);
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            startWebViewFragment(chatSiteType, course);
+            return;
+        }
+
+        // Get the URL that needs to be shown in the char fragment
+        // (get the `url` property off of the chat site page)
+        String chatSitePageUrl = null;
+        for(SitePage sitePage : course.sitePages) {
+            if(sitePage.title.equals(chatSiteType)) {
+                chatSitePageUrl = sitePage.url;
+                break;
+            }
+        }
+
+        if(chatSitePageUrl == null)
+            throw new RuntimeException("Chat site page url cannot be null");
+
+        Bundle bun = new Bundle();
+        bun.putString(SiteChatFragment.CHAT_SITE_URL, chatSitePageUrl);
+
+        SiteChatFragment fragment = new SiteChatFragment();
         fragment.setArguments(bun);
 
         addFragment(fragment);
