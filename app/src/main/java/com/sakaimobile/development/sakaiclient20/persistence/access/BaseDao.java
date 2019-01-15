@@ -3,6 +3,7 @@ package com.sakaimobile.development.sakaiclient20.persistence.access;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
+import android.arch.persistence.room.Transaction;
 import android.arch.persistence.room.Update;
 
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
@@ -53,6 +54,7 @@ public abstract class BaseDao<TEntity> {
      * improve performance
      *
      */
+    @Transaction
     public void upsert(List<TEntity> entities) {
         List<Long> insertResults = insertIgnoringConflicts(entities);
         List<TEntity> toUpdate = new ArrayList<>();
