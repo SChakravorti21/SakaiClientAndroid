@@ -29,15 +29,6 @@ abstract class SakaiApplicationModule {
     abstract SitePageActivity contributeSitePageActivityInjector();
 
     @ContributesAndroidInjector
-    abstract SiteResourcesFragment contributeSiteResourcesFragmentInjector();
-
-    @ContributesAndroidInjector
-    abstract SiteGradesFragment contributesSiteGradesFragmentInjector();
-
-    @ContributesAndroidInjector
-    abstract SiteAssignmentsFragment contributesSiteAssignmentsFragmentInjector();
-
-    @ContributesAndroidInjector
     abstract AllCoursesFragment contributesFragmentInjector();
 
     @ContributesAndroidInjector
@@ -48,6 +39,15 @@ abstract class SakaiApplicationModule {
 
     @ContributesAndroidInjector
     abstract AssignmentsFragment contributesAssignmentsFragmentInjector();
+
+    @ContributesAndroidInjector
+    abstract SiteResourcesFragment contributeSiteResourcesFragmentInjector();
+
+    @ContributesAndroidInjector
+    abstract SiteGradesFragment contributesSiteGradesFragmentInjector();
+
+    @ContributesAndroidInjector
+    abstract SiteAssignmentsFragment contributesSiteAssignmentsFragmentInjector();
 
     @ContributesAndroidInjector
     abstract SiteChatFragment contributesSiteChatFragmentInjector();

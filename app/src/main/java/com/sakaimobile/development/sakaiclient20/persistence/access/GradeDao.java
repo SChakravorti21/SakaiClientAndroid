@@ -13,15 +13,18 @@ import io.reactivex.Flowable;
 @Dao
 public abstract class GradeDao implements BaseDao<Grade>{
 
-    @Query("SELECT * FROM grades")
-    public abstract Flowable<List<Grade>> getAllGrades();
-
     @Query("SELECT * FROM grades WHERE siteId = :siteId")
     public abstract Flowable<List<Grade>> getGradesForSite(String siteId);
 
     @Query("DELETE FROM grades WHERE siteId = :siteId")
     public abstract void deleteGradesForSite(String siteId);
 
+    /**
+     * It is necessary to first delete site grades before inserting new
+     * ones because the API does not provide anything resembling a primary key
+     * and we auto-generate it. Inserting without deleting would mean that
+     * inserting new grades would duplicate them, so we must delete the old ones first.
+     */
     @Transaction
     public void insertGradesForSite(String siteId, Grade... grades) {
         deleteGradesForSite(siteId);

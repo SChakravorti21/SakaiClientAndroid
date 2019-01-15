@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 @Entity(tableName = "announcements",
         foreignKeys = @ForeignKey(entity = Course.class,
@@ -23,8 +24,7 @@ import java.util.List;
         indices = {
                 @Index(value = "siteId"),
                 @Index(value = "announcementId")
-        }
-)
+        })
 // TODO: implement parcelable
 public class Announcement implements Serializable {
 
@@ -44,6 +44,8 @@ public class Announcement implements Serializable {
     public String createdBy;
     public long createdOn;
 
+    // Formatted dates are generated at runtime to be shown to the user
+    // since we use relative terms like "Today"
     @Ignore
     private String shortFormattedDate;
     @Ignore
@@ -62,49 +64,45 @@ public class Announcement implements Serializable {
      * @return formatted string (either Tues, or Jun 5 format)
      */
     public String getShortFormattedDate() {
+        //if it was already formatted then just get the formatted one.
+        if(shortFormattedDate != null)
+            return shortFormattedDate;
 
         //if the date has not been formatted yet, format it, save it, then return
-        if (shortFormattedDate == null) {
-            Date createdDate = new Date(createdOn);
-            Date currentDate = new Date(System.currentTimeMillis());
+        Date createdDate = new Date(createdOn);
+        Date currentDate = new Date(System.currentTimeMillis());
 
-            long daysPassedMs = currentDate.getTime() - createdDate.getTime();
-            float days = (daysPassedMs / 1000 / 60 / 60 / 24);
+        long daysPassedMs = currentDate.getTime() - createdDate.getTime();
+        float days = (daysPassedMs / 1000 / 60 / 60 / 24);
 
-            if(days <= 0.5f)
-                shortFormattedDate = "today";
-            else if (days <= 5f)
-                shortFormattedDate = (new SimpleDateFormat("EEE").format(createdDate));
-            else
-                shortFormattedDate = (new SimpleDateFormat("MMM d").format(createdDate));
-        }
+        if(days <= 0.5f)
+            shortFormattedDate = "today";
+        else if (days <= 5f)
+            shortFormattedDate = (new SimpleDateFormat("EEE", Locale.US).format(createdDate));
+        else
+            shortFormattedDate = (new SimpleDateFormat("MMM d", Locale.US).format(createdDate));
 
-
-        //if it was already formatted then just get the formatted one.
         return shortFormattedDate;
     }
 
 
     public String getLongFormattedDate() {
+        //if it was already formatted then just get the formatted one.
+        if(longFormattedDate != null)
+            return longFormattedDate;
 
         //if the date has not been formatted yet, format it, save it, then return
-        if (longFormattedDate == null) {
-            Date createdDate = new Date(createdOn);
-            Date currentDate = new Date(System.currentTimeMillis());
+        Date createdDate = new Date(createdOn);
+        Date currentDate = new Date(System.currentTimeMillis());
 
-            long daysPassedMs = currentDate.getTime() - createdDate.getTime();
-            float days = (daysPassedMs / 1000 / 60 / 60 / 24);
-            int years = (int)(days / 365);
+        long daysPassedMs = currentDate.getTime() - createdDate.getTime();
+        float days = (daysPassedMs / 1000 / 60 / 60 / 24);
+        int years = (int)(days / 365);
 
+        longFormattedDate = (years < 1)
+            ? (new SimpleDateFormat("MMM d 'at' h:mm a", Locale.US).format(createdDate))
+            : (new SimpleDateFormat("MMM d, yyyy 'at' h:mm a", Locale.US).format(createdDate));
 
-            if (years < 1)
-                longFormattedDate = (new SimpleDateFormat("MMM d 'at' h:mm a").format(createdDate));
-            else
-                longFormattedDate = (new SimpleDateFormat("MMM d, yyyy 'at' h:mm a").format(createdDate));
-        }
-
-
-        //if it was already formatted then just get the formatted one.
         return longFormattedDate;
     }
 

@@ -65,4 +65,10 @@ public class CourseSitesFragment extends Fragment {
         return inflated;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        this.sitePagesListView.setOnItemClickListener(null);
+        this.sitePagesListView = null;
+    }
 }
