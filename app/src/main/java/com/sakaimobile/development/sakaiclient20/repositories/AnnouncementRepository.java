@@ -8,6 +8,7 @@ import com.sakaimobile.development.sakaiclient20.persistence.access.Announcement
 import com.sakaimobile.development.sakaiclient20.persistence.access.AttachmentDao;
 import com.sakaimobile.development.sakaiclient20.persistence.composites.AnnouncementWithAttachments;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Announcement;
+import com.sakaimobile.development.sakaiclient20.persistence.entities.Attachment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,10 +93,11 @@ public class AnnouncementRepository {
         announcementDao.upsert(announcements);
 
         // same case with its attachments, try inserting them if its not empty
+        List<Attachment> attachments = new ArrayList<>();
         for (Announcement announcement : announcements) {
-            if (!announcement.attachments.isEmpty())
-                attachmentDao.upsert(announcement.attachments);
+            attachments.addAll(announcement.attachments);
         }
+        attachmentDao.upsert(attachments);
 
         return announcements;
     }
