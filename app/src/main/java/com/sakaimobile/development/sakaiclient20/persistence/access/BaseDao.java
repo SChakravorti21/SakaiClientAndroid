@@ -18,24 +18,14 @@ import java.util.List;
 public abstract class BaseDao<TEntity> {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public abstract void insert(TEntity... entities);
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract void insert(List<TEntity> entities);
-
-    @Update(onConflict = OnConflictStrategy.REPLACE)
-    public abstract void update(TEntity... entities);
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     public abstract void update(List<TEntity> entities);
 
-    @Delete
-    public abstract void delete(TEntity... entities);
-
-
-    ////////////////////////////////////////
-    //  PROTOCOL FOR UPSERTING COURSES
-    ////////////////////////////////////////
+    /////////////////////////////////////////////////////////
+    //  PROTOCOL FOR UPSERTING COURSES AND RELATED ENTITIES
+    /////////////////////////////////////////////////////////
 
     /**
      * @return the status code of each insert for the corresponding entity (-1 if failed)

@@ -49,15 +49,13 @@ public class GradeRepository {
     }
 
     private List<Grade> persistGrades(List<Grade> grades) {
-
         if(grades.size() == 0)
             return grades;
 
         // all of the grades in the given list are of the same course (Same siteId)
         String siteId = grades.get(0).siteId;
-
         // insert the grades
-        gradeDao.insertGradesForSite(siteId, grades.toArray(new Grade[0]));
+        gradeDao.insertGradesForSite(siteId, grades);
 
         return grades;
     }
