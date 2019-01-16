@@ -158,6 +158,7 @@ public class SiteResourcesFragment extends Fragment {
      */
     private List<TreeNode> getChildren(List<Resource> resources, int start, int end) {
         List<TreeNode> children = new ArrayList<>();
+        boolean isFirstFile = true;
 
         for (int i = start; i < end && i < resources.size(); i++) {
             Resource resource = resources.get(i);
@@ -173,7 +174,8 @@ public class SiteResourcesFragment extends Fragment {
                 i += resource.numDescendants;
             } else {
                 // add this file node as a child of the parent node
-                children.add(buildResourceFileNode(resource));
+                children.add(buildResourceFileNode(resource, isFirstFile));
+                isFirstFile = false;
             }
         }
 
@@ -187,9 +189,9 @@ public class SiteResourcesFragment extends Fragment {
      * @param resource item
      * @return treenode to add
      */
-    private TreeNode buildResourceFileNode(Resource resource) {
+    private TreeNode buildResourceFileNode(Resource resource, boolean isFirstFile) {
         ResourceItemViewHolder.ResourceFileItem fileItem =
-                new ResourceItemViewHolder.ResourceFileItem(resource.title, resource.url);
+                new ResourceItemViewHolder.ResourceFileItem(resource.title, resource.url, isFirstFile);
 
         TreeNode fileNode = new TreeNode(fileItem).setViewHolder(new ResourceItemViewHolder(getContext()));
         fileNode.setClickListener((node, value) ->

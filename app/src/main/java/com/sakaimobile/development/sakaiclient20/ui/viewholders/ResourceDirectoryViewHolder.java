@@ -24,7 +24,7 @@ public class ResourceDirectoryViewHolder extends TreeNode.BaseNodeViewHolder<Res
     private static final String FOLDER_OPEN = "\uf07c";
     private static final String FOLDER_CLOSED = "\uf07b";
 
-    private static final int PADDING_DP = 20;
+    private static final int PADDING_DP = 28;
     private static final int MAX_HUE = 360;
     private static final int HUE_DIFF = 25;
 
