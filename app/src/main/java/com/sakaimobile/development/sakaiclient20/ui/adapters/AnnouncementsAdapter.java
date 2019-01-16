@@ -40,27 +40,13 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<AnnouncementsAdap
     public AnnouncementsAdapter(List<Announcement> announcements,
                                 Map<String, Course> siteIdToCourse,
                                 RecyclerView recyclerView,
-                                int type,
-                                View scrollToTopFab) {
+                                int type) {
 
         this.announcements = announcements;
         this.announcementType = type;
         this.siteIdToCourse = siteIdToCourse;
 
         manager = (LinearLayoutManager) recyclerView.getLayoutManager();
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-
-                // if the first item is visible then make the FAB disappear
-                if(manager.findFirstCompletelyVisibleItemPosition() == 0)
-                    scrollToTopFab.setVisibility(View.GONE);
-                // otherwise make the FAB reappear
-                else
-                    scrollToTopFab.setVisibility(View.VISIBLE);
-            }
-        });
     }
 
     public int getCurScrollPos() {

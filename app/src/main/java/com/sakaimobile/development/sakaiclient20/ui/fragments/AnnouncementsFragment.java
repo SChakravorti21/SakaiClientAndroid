@@ -116,7 +116,8 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
 
         scrollUpButton = view.findViewById(R.id.scrollUpButton);
 
-        createAdapter();
+        // create the adapter which the recycler view will use to display announcements
+        createAnnouncementsAdapter();
 
         return view;
     }
@@ -138,6 +139,26 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
         scrollUpButton.setOnClickListener((v) -> {
             announcementRecycler.getLayoutManager().smoothScrollToPosition(announcementRecycler, new RecyclerView.State(), 0);
         });
+
+
+        // grow/shrink the FAB when scrolling
+        LinearLayoutManager manager = (LinearLayoutManager) announcementRecycler.getLayoutManager();
+        announcementRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                // if the first item is visible then make the FAB disappear
+                // or if the user is scrolling down
+                if(dy > 0 || manager.findFirstCompletelyVisibleItemPosition() == 0)
+                    scrollUpButton.hide();
+                    // otherwise make the FAB reappear
+                else
+                    scrollUpButton.show();
+            }
+        });
+
+
     }
 
     @Override
@@ -169,14 +190,13 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
     }
 
 
-    private void createAdapter() {
+    private void createAnnouncementsAdapter() {
 
         adapter = new AnnouncementsAdapter(
                 allAnnouncements,
                 siteIdToCourseMap,
                 announcementRecycler,
-                announcementType,
-                scrollUpButton
+                announcementType
         );
         adapter.setClickListener(this);
 
@@ -189,6 +209,8 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
 
         announcementRecycler.scheduleLayoutAnimation();
     }
+
+
 
     private void addNewAnnouncementsToAdapter(List<Announcement> announcements) {
         this.allAnnouncements.clear();
