@@ -49,7 +49,7 @@ public class SingleAnnouncementFragment extends Fragment {
         TextView contentTxt = view.findViewById(R.id.announcement_content);
         TextView dateTxt = view.findViewById(R.id.date_text);
 
-        //if the cardHeading3 won't fit on the text box, make it scrollable
+        //if the title won't fit on the text box, make it scrollable
         titleTxt.setText(currAnnouncement.title);
         titleTxt.setHorizontallyScrolling(true);
         titleTxt.setMovementMethod(new ScrollingMovementMethod());

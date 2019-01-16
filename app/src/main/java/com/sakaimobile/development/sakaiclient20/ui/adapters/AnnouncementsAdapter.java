@@ -17,7 +17,6 @@ import com.sakaimobile.development.sakaiclient20.ui.fragments.AnnouncementsFragm
 import com.sakaimobile.development.sakaiclient20.ui.helpers.RutgersSubjectCodes;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.OnAnnouncementSelected;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -78,8 +77,8 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<AnnouncementsAdap
         TextView courseIcon;
         TextView authorTxt;
         TextView date;
-        TextView cardHeading2;
-        TextView cardHeading3;
+        TextView courseNameTxt;
+        TextView announcementTitleTxt;
 
 
         AnnouncementItemViewHolder(View cardView) {
@@ -89,9 +88,9 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<AnnouncementsAdap
             //save all of the views we will need to change
             authorTxt = cardView.findViewById(R.id.author_name);
             courseIcon = cardView.findViewById(R.id.course_icon);
-            cardHeading3 = cardView.findViewById(R.id.title_txt);
+            announcementTitleTxt = cardView.findViewById(R.id.title_txt);
             date = cardView.findViewById(R.id.date_text);
-            cardHeading2 = cardView.findViewById(R.id.course_name);
+            courseNameTxt = cardView.findViewById(R.id.course_name);
 
             cardView.setOnClickListener(this);
 
@@ -132,24 +131,24 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<AnnouncementsAdap
         if (announcementType == AnnouncementsFragment.ALL_ANNOUNCEMENTS) {
 
             // if all announcements, show course title, then announcement title
-            holder.cardHeading2.setText(siteIdToCourse.get(currAnnouncement.siteId).title);
-            holder.cardHeading3.setText(currAnnouncement.title);
+            holder.courseNameTxt.setText(siteIdToCourse.get(currAnnouncement.siteId).title);
+            holder.announcementTitleTxt.setText(currAnnouncement.title);
 
         } else if (announcementType == AnnouncementsFragment.SITE_ANNOUNCEMENTS) {
 
             //if site announcements, show announcement title, then announcement body
-            holder.cardHeading2.setText(currAnnouncement.title);
+            holder.courseNameTxt.setText(currAnnouncement.title);
 
             try {
                 //if its after android N, use this method for setting the html
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    holder.cardHeading3.setText(Html.fromHtml(currAnnouncement.body, Html.FROM_HTML_MODE_COMPACT));
+                    holder.announcementTitleTxt.setText(Html.fromHtml(currAnnouncement.body, Html.FROM_HTML_MODE_COMPACT));
                 } else {
-                    holder.cardHeading3.setText(Html.fromHtml(currAnnouncement.body));
+                    holder.announcementTitleTxt.setText(Html.fromHtml(currAnnouncement.body));
                 }
             } catch (RuntimeException e) {
 //                    java.lang.RuntimeException: PARAGRAPH span must start at paragraph boundary (832 follows  )
-                holder.cardHeading3.setText("");
+                holder.announcementTitleTxt.setText("");
                 e.printStackTrace();
             }
 

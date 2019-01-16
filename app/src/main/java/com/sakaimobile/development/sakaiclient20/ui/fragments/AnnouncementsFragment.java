@@ -110,8 +110,6 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
         announcementRecycler.setLayoutManager(layoutManager);
         announcementRecycler.setItemAnimator(new DefaultItemAnimator());
 
-        announcementRecycler.setItemViewCacheSize(20);
-
         // start the spinner
         spinner = view.findViewById(R.id.progress_circular);
         spinner.setVisibility(View.VISIBLE);
