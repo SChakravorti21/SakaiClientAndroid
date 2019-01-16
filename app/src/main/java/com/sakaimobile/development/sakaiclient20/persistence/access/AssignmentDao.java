@@ -15,7 +15,7 @@ import io.reactivex.Flowable;
  * Created by Development on 8/5/18.
  */
 @Dao
-public abstract class AssignmentDao implements BaseDao<Assignment> {
+public abstract class AssignmentDao extends BaseDao<Assignment> {
 
     //Wrap in transaction since Room technically performs multiple transactions
     // for @Relations (used here with attachments)

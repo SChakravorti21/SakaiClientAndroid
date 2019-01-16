@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@android:color/transparent"
     android:clickable="true"
     android:focusable="true">
@@ -44,7 +45,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:layout_weight="2"
-                    android:text="ANNOUNCEMENT TITLE"
+                    tools:text="New Announcement!"
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     android:textStyle="bold"
@@ -57,7 +58,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:layout_weight="1.5"
-                    android:text="course name here"
+                    tools:text="Intro to College 101"
                     android:textColor="@color/white"
                     android:textSize="15sp"
                     android:scrollbars="horizontal"/>
@@ -68,7 +69,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:layout_weight="1.5"
-                    android:text="author name here"
+                    tools:text="Professor John Doe"
                     android:textColor="@color/white"
                     android:textSize="12sp"
                     android:scrollbars="horizontal"/>
@@ -91,12 +92,20 @@
                 android:paddingTop="10dp"
                 >
 
-                <TextView
-                    android:id="@+id/announcement_content"
+                <ScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque mollis, lectus id dictum blandit, elit elit auctor metus, in ultrices velit justo in odio. Maecenas metus nibh, elementum quis orci sit amet, sodales tincidunt est. Nam mollis aliquet lorem ac sodales. Pellentesque posuere convallis tellus, vitae dignissim felis fermentum sit.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque mollis, lectus id dictum blandit, elit elit auctor metus, in ultrices velit justo in odio. Maecenas metus nibh, elementum quis orci sit amet, sodales tincidunt est. Nam mollis aliquet lorem ac sodales. Pellentesque posuere convallis tellus, vitae dignissim felis fermentum sit."
-                    android:textSize="15sp" />
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/announcement_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque mollis, lectus id dictum blandit, elit elit auctor metus, in ultrices velit justo in odio. Maecenas metus nibh, elementum quis orci sit amet, sodales tincidunt est. Nam mollis aliquet lorem ac sodales. Pellentesque posuere convallis tellus, vitae dignissim felis fermentum sit.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque mollis, lectus id dictum blandit, elit elit auctor metus, in ultrices velit justo in odio. Maecenas metus nibh, elementum quis orci sit amet, sodales tincidunt est. Nam mollis aliquet lorem ac sodales. Pellentesque posuere convallis tellus, vitae dignissim felis fermentum sit."
+                        android:textSize="15sp" />
+
+                </ScrollView>
+
+
 
 
             </LinearLayout>
@@ -116,7 +125,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center_horizontal|center_vertical"
-                    android:text="DATE POSTED"
+                    tools:text="September 3rd, 2021"
                     android:textColor="@color/white"
                     android:textSize="15sp" />
 

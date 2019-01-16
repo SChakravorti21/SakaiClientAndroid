@@ -7,6 +7,7 @@ import com.sakaimobile.development.sakaiclient20.persistence.access.AttachmentDa
 import com.sakaimobile.development.sakaiclient20.persistence.access.CourseDao;
 import com.sakaimobile.development.sakaiclient20.persistence.composites.AssignmentWithAttachments;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
+import com.sakaimobile.development.sakaiclient20.persistence.entities.Attachment;
 import com.sakaimobile.development.sakaiclient20.ui.helpers.AssignmentSortingUtils;
 
 import java.util.ArrayList;
@@ -97,10 +98,13 @@ public class AssignmentRepository {
         // a false database `Flowable` emission
         if(assignments.isEmpty()) return;
 
-        // Insert all assignments and their attachments into the database
-        assignmentDao.insert(assignments);
+        List<Attachment> allAttachments = new ArrayList<>();
         for(Assignment assignment : assignments)
-            attachmentDao.insert(assignment.attachments);
+            allAttachments.addAll(assignment.attachments);
+
+        // Insert all assignments and their attachments into the database
+        assignmentDao.upsert(assignments);
+        attachmentDao.upsert(allAttachments);
     }
 
     static List<Assignment> flattenCompositesToEntities(List<AssignmentWithAttachments> assignmentComposites) {

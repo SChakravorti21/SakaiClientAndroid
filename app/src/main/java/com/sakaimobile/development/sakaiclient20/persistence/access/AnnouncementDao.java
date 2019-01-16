@@ -10,27 +10,19 @@ import com.sakaimobile.development.sakaiclient20.persistence.entities.Announceme
 import java.util.List;
 
 import io.reactivex.Flowable;
+import io.reactivex.Maybe;
+import io.reactivex.Single;
 
 @Dao
-public abstract class AnnouncementDao implements BaseDao<Announcement> {
-
-    @Query("DELETE FROM announcements")
-    public abstract void deleteAllAnnouncements();
+public abstract class AnnouncementDao extends BaseDao<Announcement> {
 
     @Transaction
     @Query("SELECT * FROM announcements ORDER BY createdOn DESC")
     public abstract Flowable<List<AnnouncementWithAttachments>> getAllAnnouncements();
 
-    @Transaction
-    @Query("SELECT * FROM announcements WHERE siteId = :siteId ORDER BY createdOn DESC")
-    public abstract Flowable<List<AnnouncementWithAttachments>> getAnnouncementsForSite(String siteId);
-
-    @Query("DELETE FROM announcements WHERE siteId = :siteId")
-    public abstract void deleteAnnouncementsForSite(String siteId);
 
     @Transaction
-    public void insertAnnouncementsForSite(String siteId, Announcement... announcements) {
-        deleteAnnouncementsForSite(siteId);
-        insert(announcements);
-    }
+    @Query("SELECT * from announcements WHERE siteId = :siteId ORDER BY createdOn DESC")
+    public abstract Flowable<List<AnnouncementWithAttachments>> getSiteAnnouncements(String siteId);
+
 }

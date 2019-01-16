@@ -11,6 +11,7 @@ import com.sakaimobile.development.sakaiclient20.persistence.access.SitePageDao;
 import com.sakaimobile.development.sakaiclient20.persistence.composites.CourseWithAllData;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
+import com.sakaimobile.development.sakaiclient20.persistence.entities.SitePage;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -80,10 +81,14 @@ public class CourseRepository {
         // we do not want to persist that course (remove it and all related data from db)
         courseDao.removeExtraneousCourses(courses);
 
+        // Construct a single list of all site pages since bulk insert is much faster
+        List<SitePage> allSitePages = new ArrayList<>();
+        for(Course course : courses)
+            allSitePages.addAll(course.sitePages);
+
         // Insert all courses and their site pages into db
         courseDao.upsert(courses);
-        for(Course course : courses)
-            sitePageDao.insert(course.sitePages);
+        sitePageDao.upsert(allSitePages);
 
         return courses;
     }
