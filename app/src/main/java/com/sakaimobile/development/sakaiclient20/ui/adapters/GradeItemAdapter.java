@@ -26,16 +26,12 @@ public class GradeItemAdapter extends ArrayAdapter {
 
     private final int PADDING_LEFT_PX;
     private final int PADDING_VERTICAL_PX;
-
     private final List<Grade> assignmentsList;
-    private Set<Integer> animatedGradePositions;
 
     public GradeItemAdapter(Context context, List<Grade> assignmentsList) {
         super(context, R.layout.tree_node_grade, assignmentsList);
 
         this.assignmentsList = assignmentsList;
-        this.animatedGradePositions = new HashSet<>();
-
         this.PADDING_LEFT_PX = convertDpToPx(PADDING_LEFT_DP);
         this.PADDING_VERTICAL_PX = convertDpToPx(PADDING_VERTICAL_DP);
     }
@@ -80,15 +76,6 @@ public class GradeItemAdapter extends ArrayAdapter {
 
         //set padding on the name view
         nameTextView.setPadding(PADDING_LEFT_PX, PADDING_VERTICAL_PX, 0, PADDING_VERTICAL_PX);
-
-        // Only animate the view if it hasn't been animated before
-        if(!animatedGradePositions.contains(position)) {
-            Animation anim = AnimationUtils.loadAnimation(context, R.anim.listview_anim);
-            anim.setStartOffset(100);
-            convertView.startAnimation(anim);
-            animatedGradePositions.add(position);
-        }
-
         return convertView;
     }
 }
