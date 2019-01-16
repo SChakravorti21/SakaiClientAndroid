@@ -13,6 +13,7 @@ public class SharedPrefsUtil {
 
     private static String TREE_SET = "TREE_SET";
     private static String ANNOUNCEMENTS_SET = "ANNOUNCEMENTS_SET";
+    private static String ANNOUNCEMENTS_POSITION = "ANNOUNCEMENTS_POSITION";
 
     public static String ALL_GRADES_TREE_TYPE = "ALL_GRADES";
     public static String ASSIGNMENTS_BY_COURSES_TREE_TYPE = "ASSIGNMENTS_BY_COURSES";
@@ -21,18 +22,16 @@ public class SharedPrefsUtil {
     public static String SITE_RESOURCES_TREE_TYPE = "SITE_RESOURCES";
 
 
-    public static void saveAnnouncementScrollState(Context context, String announcementClass, int scrollPos) {
-        SharedPreferences sharedPref = context.getSharedPreferences(ANNOUNCEMENTS_SET, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-
-        editor.putInt(announcementClass, scrollPos);
-        editor.apply();
+    public static void saveAnnouncementScrollState(Context context, int scrollPos) {
+        context.getSharedPreferences(ANNOUNCEMENTS_SET, Context.MODE_PRIVATE)
+                .edit()
+                .putInt(ANNOUNCEMENTS_POSITION, scrollPos)
+                .apply();
     }
 
-    public static int getAnnouncementScrollState(Context context, String announcementClass) {
-        SharedPreferences sharedPref = context.getSharedPreferences(ANNOUNCEMENTS_SET, Context.MODE_PRIVATE);
-
-        return sharedPref.getInt(announcementClass, 0);
+    public static int getAnnouncementScrollState(Context context) {
+        return context.getSharedPreferences(ANNOUNCEMENTS_SET, Context.MODE_PRIVATE)
+                .getInt(ANNOUNCEMENTS_POSITION, 0);
     }
 
     public static String getTreeState(Context context, String treeType) {

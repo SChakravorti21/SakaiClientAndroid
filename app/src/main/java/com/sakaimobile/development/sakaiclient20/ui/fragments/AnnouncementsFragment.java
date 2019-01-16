@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
@@ -88,12 +89,10 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
         // setup the correct live data and loadMoreListener depending on
         // showing site or all announcements
         if (announcementType == ALL_ANNOUNCEMENTS) {
-            announcementLiveData = announcementViewModel
-                    .getAllAnnouncements();
+            announcementLiveData = announcementViewModel.getAllAnnouncements();
 
         } else {
-            announcementLiveData = announcementViewModel
-                    .getSiteAnnouncements(announcementsSiteId);
+            announcementLiveData = announcementViewModel.getSiteAnnouncements(announcementsSiteId);
         }
     }
 
@@ -128,6 +127,11 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
 
         // each time the observation is triggered, we have new announcements (after refreshing)
         announcementLiveData.observe(getViewLifecycleOwner(), announcements -> {
+            if(announcements == null) {
+                Toast.makeText(getContext(), "No announcements found", Toast.LENGTH_SHORT).show();
+                spinner.setVisibility(View.GONE);
+                return;
+            }
 
             scrollUpButton.show();
             announcementRecycler.setVisibility(View.VISIBLE);
@@ -191,7 +195,6 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
 
 
     private void createAnnouncementsAdapter() {
-
         adapter = new AnnouncementsAdapter(
                 allAnnouncements,
                 siteIdToCourseMap,
@@ -199,14 +202,12 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
                 announcementType
         );
         adapter.setClickListener(this);
-
         announcementRecycler.setAdapter(adapter);
 
 
         //rerun animations for card entry
         final LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(getContext(), R.anim.layout_anim_enter);
         announcementRecycler.setLayoutAnimation(controller);
-
         announcementRecycler.scheduleLayoutAnimation();
     }
 
@@ -218,10 +219,11 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
         adapter.notifyDataSetChanged();
 
         // restore scroll state
-        int pos = SharedPrefsUtil.getAnnouncementScrollState(getContext(), this.getClass().getCanonicalName());
-
-        if(pos < announcements.size())
-            announcementRecycler.getLayoutManager().smoothScrollToPosition(announcementRecycler, new RecyclerView.State(), pos);
+        if(announcementType == ALL_ANNOUNCEMENTS) {
+            int pos = SharedPrefsUtil.getAnnouncementScrollState(getContext());
+            if (pos >= 0 && pos < announcements.size())
+                announcementRecycler.scrollToPosition(pos);
+        }
     }
 
 
@@ -238,7 +240,6 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
     @Override
     public void onDetach() {
         super.onDetach();
-
         saveScrollState();
     }
 
@@ -253,8 +254,7 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
         fragment.setArguments(b);
 
         // load fragment
-        getActivity()
-                .getSupportFragmentManager()
+        getActivity().getSupportFragmentManager()
                 .beginTransaction()
                 .setCustomAnimations(R.anim.grow_enter, R.anim.pop_exit, R.anim.pop_enter, R.anim.pop_exit)
                 .addToBackStack(null)
@@ -263,9 +263,8 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
     }
 
     private void saveScrollState() {
-        String className = this.getClass().getCanonicalName();
-        int scrollPos = adapter.getCurScrollPos();
-        SharedPrefsUtil.saveAnnouncementScrollState(getContext(), className, scrollPos);
+        if(announcementType == ALL_ANNOUNCEMENTS)
+            SharedPrefsUtil.saveAnnouncementScrollState(getContext(), adapter.getCurScrollPos());
     }
 }
 
