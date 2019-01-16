@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/grade_background"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:orientation="horizontal" >
+
+    <View
+        android:layout_width="4dp"
+        android:layout_height="match_parent"
+        android:background="@color/highlightColor"/>
+
+    <TextView
+        android:id="@+id/txt_assignment_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:padding="12dp"
+        tools:text="assignment"
+        android:textColor="@color/primaryTextColor"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/txt_grade"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        tools:text="grade"
+        android:textColor="@color/primaryTextColor"
+        android:textSize="16sp" />
+
+</LinearLayout>

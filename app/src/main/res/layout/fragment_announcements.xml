@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/announcements_container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/primaryBackgroundColor">
 
     <ProgressBar
         android:id="@+id/progress_circular"
@@ -23,8 +24,7 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/announcements_recycler"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layoutAnimation="@anim/layout_anim_enter">
+        android:layout_height="match_parent">
     </android.support.v7.widget.RecyclerView>
 
 

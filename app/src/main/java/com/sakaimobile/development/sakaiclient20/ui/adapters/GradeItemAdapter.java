@@ -61,7 +61,7 @@ public class GradeItemAdapter extends ArrayAdapter {
         Context context = getContext();
 
         if(convertView == null)
-            convertView = LayoutInflater.from(context).inflate(R.layout.tree_node_grade, parent, false);
+            convertView = LayoutInflater.from(context).inflate(R.layout.grade_item, parent, false);
 
         //get name and grade textviews
         TextView nameTextView = convertView.findViewById(R.id.txt_assignment_name);
