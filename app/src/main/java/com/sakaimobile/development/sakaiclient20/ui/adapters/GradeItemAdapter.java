@@ -23,32 +23,12 @@ public class GradeItemAdapter extends ArrayAdapter {
 
     private static final float PADDING_LEFT_DP = 10f;
     private static final float PADDING_VERTICAL_DP = 8f;
-
-    private final int PADDING_LEFT_PX;
-    private final int PADDING_VERTICAL_PX;
     private final List<Grade> assignmentsList;
 
     public GradeItemAdapter(Context context, List<Grade> assignmentsList) {
         super(context, R.layout.tree_node_grade, assignmentsList);
 
         this.assignmentsList = assignmentsList;
-        this.PADDING_LEFT_PX = convertDpToPx(PADDING_LEFT_DP);
-        this.PADDING_VERTICAL_PX = convertDpToPx(PADDING_VERTICAL_DP);
-    }
-
-
-    /**
-     * Convert dp to pixel for the phone
-     *
-     * @param dp number of dp
-     * @return the dp in pixels
-     */
-    private int convertDpToPx(float dp) {
-        return (int) TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            dp,
-            getContext().getResources().getDisplayMetrics()
-        );
     }
 
     @NonNull
@@ -73,9 +53,6 @@ public class GradeItemAdapter extends ArrayAdapter {
                 ? context.getString(R.string.grade_item_null, assignment.points)
                 : context.getString(R.string.grade_item, assignment.grade, assignment.points);
         gradeTextView.setText(gradeString);
-
-        //set padding on the name view
-        nameTextView.setPadding(PADDING_LEFT_PX, PADDING_VERTICAL_PX, 0, PADDING_VERTICAL_PX);
         return convertView;
     }
 }

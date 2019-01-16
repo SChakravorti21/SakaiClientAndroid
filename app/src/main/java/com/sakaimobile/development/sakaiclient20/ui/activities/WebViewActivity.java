@@ -42,7 +42,7 @@ public class WebViewActivity extends AppCompatActivity {
                     // Start background task to keep cookies active
                     // WorkManager should ensure that the task continues running
                     // even if the app is sent to the background.
-                    LoginPersistenceWorker.startLoginPersistenceTask();
+                    // LoginPersistenceWorker.startLoginPersistenceTask();
                 }
 
                 // Once the main page loads, we should have all the cookies and

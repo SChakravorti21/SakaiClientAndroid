@@ -107,8 +107,8 @@ public class AllGradesFragment extends Fragment {
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
+    public void onPause() {
+        super.onPause();
         this.saveTreeState();
     }
 

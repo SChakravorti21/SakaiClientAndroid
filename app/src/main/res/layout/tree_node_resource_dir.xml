@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:foreground="?android:attr/selectableItemBackground"
     android:orientation="horizontal"
-    android:background="@color/sakai_medium_red"
+    android:background="@drawable/tree_node_resource_background"
     android:padding="5dp">
 
     <TextView
@@ -22,7 +22,7 @@
         android:layout_weight="1"
         tools:text="Directory Name"
         android:textStyle="bold"
-        android:textColor="@color/sakai_light_silver"
+        android:textColor="@color/secondaryTextColor"
         android:textSize="16sp"
         android:paddingBottom="8dp"
         android:paddingRight="8dp"

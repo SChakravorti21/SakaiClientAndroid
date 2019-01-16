@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Resource;
+import com.sakaimobile.development.sakaiclient20.ui.listeners.TreeViewItemClickListener;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.ResourceDirectoryViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.ResourceItemViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ResourceViewModel;
@@ -73,6 +74,11 @@ public class SiteResourcesFragment extends Fragment {
         // setup the treeview
         resourcesTreeView = new AndroidTreeView(getActivity(), TreeNode.root());
         resourcesTreeView.setDefaultAnimation(true);
+
+        // Default node click listener that only allows one node in each level to
+        // be open at a given time
+        TreeViewItemClickListener nodeClickListener = new TreeViewItemClickListener(resourcesTreeView);
+        resourcesTreeView.setDefaultNodeClickListener(nodeClickListener);
         // Save the resource tree state when the TreeView is created
         // because we do NOT want to share tree structures between different courses
         saveResourceTreeState();

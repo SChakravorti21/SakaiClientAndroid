@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="5dp"
-    android:background="@color/leaf_background"
+    android:background="@drawable/tree_node_resource_background"
     android:foreground="?android:attr/selectableItemBackground" >
 
     <TextView
@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:text="File Name"
         android:textSize="16sp"
-        android:textColor="@color/leaf_text"
+        android:textColor="@color/secondaryTextColor"
         android:paddingBottom="8dp"
         android:paddingRight="8dp"
         android:paddingTop="8dp" />

@@ -116,9 +116,8 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
             description = Html.fromHtml(instructions, Html.FROM_HTML_MODE_LEGACY);
         } else {
             description = Html.fromHtml(instructions);
-        };
+        }
         viewHolder.descriptionView.setText(description);
-        viewHolder.descriptionView.setMovementMethod(CustomLinkMovementMethod.getInstance());
 
         // Set the assignment due date
         viewHolder.dueDateView.setText("Due: " + assignment.dueTimeString);

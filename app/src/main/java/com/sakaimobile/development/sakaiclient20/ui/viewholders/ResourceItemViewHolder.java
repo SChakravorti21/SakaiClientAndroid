@@ -20,7 +20,7 @@ public class ResourceItemViewHolder extends TreeNode.BaseNodeViewHolder<Resource
     @Override
     public View createNodeView(TreeNode node, ResourceFileItem value) {
         final LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.tree_node_file, null, false);
+        View view = inflater.inflate(R.layout.tree_node_resource_file, null, false);
 
         TextView txt = view.findViewById(R.id.resource_file_txt);
         txt.setText(value.fileName);

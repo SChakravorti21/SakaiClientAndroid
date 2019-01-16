@@ -37,6 +37,7 @@ public class ResourceDirectoryViewHolder extends TreeNode.BaseNodeViewHolder<Res
     @Override
     public View createNodeView(TreeNode node, ResourceDirectoryItem value) {
         final LayoutInflater inflater = LayoutInflater.from(context);
+        Resources resources = inflater.getContext().getResources();
         View view = inflater.inflate(R.layout.tree_node_resource_dir, null, false);
 
         TextView directoryName = view.findViewById(R.id.resource_dir_txt);
@@ -44,11 +45,11 @@ public class ResourceDirectoryViewHolder extends TreeNode.BaseNodeViewHolder<Res
 
         folderIcon = view.findViewById(R.id.folder_icon);
         folderIcon.setText(FOLDER_CLOSED);
+        folderIcon.setTextColor(getColorForNode(node, resources));
 
         // Need to programmatically define the width as being the device
         // screen width since there was no container that we could inflate the
         // view relative to.
-        Resources resources = inflater.getContext().getResources();
 
         // Convert pixels to density-independent units
         int widthPx = (int) TypedValue.applyDimension(
@@ -68,7 +69,6 @@ public class ResourceDirectoryViewHolder extends TreeNode.BaseNodeViewHolder<Res
                 view.getPaddingTop(),
                 view.getPaddingRight(),
                 view.getPaddingBottom());
-        view.setBackgroundColor(getColorForNode(node, resources));
 
         return view;
     }

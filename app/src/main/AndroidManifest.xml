@@ -13,16 +13,21 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        >
-        <activity android:name=".ui.activities.MainActivity" />
-        <activity android:name=".ui.activities.WebViewActivity">
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".ui.activities.WebViewActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.activities.MainActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".ui.activities.SitePageActivity"
+            android:screenOrientation="portrait"/>
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -38,7 +43,6 @@
             android:name="io.fabric.ApiKey"
             android:value="ebf2c3e22b5ce9abda48ea296c12d2aebaf2b1c8" />
 
-        <activity android:name=".ui.activities.SitePageActivity"></activity>
     </application>
 
 </manifest>
