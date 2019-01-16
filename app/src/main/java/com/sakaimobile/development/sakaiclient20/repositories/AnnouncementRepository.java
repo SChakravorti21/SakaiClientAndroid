@@ -68,7 +68,6 @@ public class AnnouncementRepository {
 
 
     static List<Announcement> flattenCompositesToEntities(List<AnnouncementWithAttachments> announcementWithAttachments) {
-
         List<Announcement> announcements = new ArrayList<>(announcementWithAttachments.size());
 
         for (AnnouncementWithAttachments composite : announcementWithAttachments) {
@@ -87,17 +86,14 @@ public class AnnouncementRepository {
      * @return persisted announcements
      */
     private List<Announcement> persistAnnouncements(List<Announcement> announcements) {
+        // Construct a single list of attachments to insert since bulk insert is much faster
+        List<Attachment> allAttachments = new ArrayList<>();
+        for (Announcement announcement : announcements)
+            allAttachments.addAll(announcement.attachments);
 
-        // inserting the same announcements should delete the old ones
-        // since both will have the same announcementID
+        // insert announcements and attachments if they are new, update otherwise
         announcementDao.upsert(announcements);
-
-        // same case with its attachments, try inserting them if its not empty
-        List<Attachment> attachments = new ArrayList<>();
-        for (Announcement announcement : announcements) {
-            attachments.addAll(announcement.attachments);
-        }
-        attachmentDao.upsert(attachments);
+        attachmentDao.upsert(allAttachments);
 
         return announcements;
     }

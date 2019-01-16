@@ -26,7 +26,7 @@ public abstract class GradeDao extends BaseDao<Grade>{
      * inserting new grades would duplicate them, so we must delete the old ones first.
      */
     @Transaction
-    public void insertGradesForSite(String siteId, Grade... grades) {
+    public void insertGradesForSite(String siteId, List<Grade> grades) {
         deleteGradesForSite(siteId);
         insert(grades);
     }

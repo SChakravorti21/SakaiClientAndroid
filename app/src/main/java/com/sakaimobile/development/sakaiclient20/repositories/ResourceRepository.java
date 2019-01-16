@@ -65,7 +65,7 @@ public class ResourceRepository {
         if(resources.size() == 0)
             return resources;
 
-        resourceDao.insert(resources.toArray(new Resource[0]));
+        resourceDao.insert(resources);
         return resources;
     }
 }
