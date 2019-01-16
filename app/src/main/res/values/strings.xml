@@ -24,6 +24,7 @@
     <string name="announcements_site">Announcements</string>
     <string name="resources_site">Resources</string>
     <string name="assignments_site">Assignments</string>
+    <string name="chat_site">Chat Room</string>
 
     <string name="spring">Spring</string>
     <string name="summer">Summer</string>
@@ -66,7 +67,6 @@
     <string name="site_type_tag" translatable="false">SITE_TYPE</string>
     <string name="course_tag" translatable="false">COURSE_TAG</string>
     <string name="assignments_tag" translatable="false">ASSIGNMENTS_TAG</string>
-
 
 
     <string name="no_announcements">There are no announcements available.</string>
