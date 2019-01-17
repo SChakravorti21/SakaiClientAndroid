@@ -3,11 +3,17 @@ package com.sakaimobile.development.sakaiclient20.ui.fragments;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.transition.Transition;
+import android.support.transition.TransitionInflater;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,7 +25,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sakaimobile.development.sakaiclient20.R;
@@ -31,6 +39,7 @@ import com.sakaimobile.development.sakaiclient20.ui.listeners.OnAnnouncementSele
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.AnnouncementViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -244,22 +253,29 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
     }
 
     @Override
-    public void onAnnouncementSelected(Announcement announcement, Map<String, Course> siteIdToCourse) {
+    public void onAnnouncementSelected(Announcement announcement, Course course,
+                                       View cardView, int position) {
         Bundle b = new Bundle();
-        b.putSerializable(getString(R.string.single_announcement_tag), announcement);
-        // for some reason map isn't serializable, so i had to cast to hashmap
-        b.putSerializable(getString(R.string.siteid_to_course_map), (HashMap) siteIdToCourse);
+        b.putSerializable(SingleAnnouncementFragment.SINGLE_ANNOUNCEMENT, announcement);
+        b.putSerializable(SingleAnnouncementFragment.ANNOUNCEMENT_COURSE, course);
+        b.putInt(SingleAnnouncementFragment.ANNOUNCEMENT_POSITION, position);
 
-        SingleAnnouncementFragment fragment = new SingleAnnouncementFragment();
-        fragment.setArguments(b);
+        SingleAnnouncementFragment announcementFragment = new SingleAnnouncementFragment();
+        announcementFragment.setArguments(b);
 
-        // load fragment
-        getActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .setCustomAnimations(R.anim.grow_enter, R.anim.pop_exit, R.anim.pop_enter, R.anim.pop_exit)
-                .addToBackStack(null)
-                .add(R.id.fragment_container, fragment)
-                .commit();
+        FragmentTransaction ft = getFragmentManager()
+                                    .beginTransaction()
+                                    .hide(this)
+                                    .add(R.id.fragment_container, announcementFragment)
+                                    .setReorderingAllowed(true)
+                                    .addToBackStack(null);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            // Add second fragment by replacing first
+            ft.addSharedElement(cardView, ViewCompat.getTransitionName(cardView));
+        }
+
+        ft.commit();
     }
 
     private void saveScrollState() {

@@ -1,10 +1,8 @@
 package com.sakaimobile.development.sakaiclient20.ui.adapters;
 
-import android.os.Build;
-import android.support.annotation.NonNull;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +11,7 @@ import android.widget.TextView;
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Announcement;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
-import com.sakaimobile.development.sakaiclient20.ui.fragments.AnnouncementsFragment;
+import com.sakaimobile.development.sakaiclient20.ui.fragments.SingleAnnouncementFragment;
 import com.sakaimobile.development.sakaiclient20.ui.helpers.CourseIconProvider;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.OnAnnouncementSelected;
 
@@ -86,7 +84,8 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<AnnouncementsAdap
         public void onClick(View v) {
             int pos = getAdapterPosition();
             Announcement announcementToExpand = announcements.get(pos);
-            announcementclickListener.onAnnouncementSelected(announcementToExpand, siteIdToCourse);
+            Course course = siteIdToCourse.get(announcementToExpand.siteId);
+            announcementclickListener.onAnnouncementSelected(announcementToExpand, course, v, pos);
         }
     }
 
@@ -101,46 +100,18 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<AnnouncementsAdap
 
     @Override
     public void onBindViewHolder(AnnouncementItemViewHolder holder, int position) {
-
         //set the data inside the card
-
         Announcement currAnnouncement = announcements.get(position);
-
-        holder.authorTxt.setText(currAnnouncement.createdBy);
 
         int subjCode = siteIdToCourse.get(currAnnouncement.siteId).subjectCode;
         holder.courseIcon.setText(CourseIconProvider.getCourseIcon(subjCode));
 
+        holder.authorTxt.setText(currAnnouncement.createdBy);
         holder.date.setText(currAnnouncement.getShortFormattedDate());
+        holder.courseNameTxt.setText(siteIdToCourse.get(currAnnouncement.siteId).title);
+        holder.announcementTitleTxt.setText(currAnnouncement.title);
 
-        //check to see the announcement type
-        if (announcementType == AnnouncementsFragment.ALL_ANNOUNCEMENTS) {
-
-            // if all announcements, show course title, then announcement title
-            holder.courseNameTxt.setText(siteIdToCourse.get(currAnnouncement.siteId).title);
-            holder.announcementTitleTxt.setText(currAnnouncement.title);
-
-        } else if (announcementType == AnnouncementsFragment.SITE_ANNOUNCEMENTS) {
-
-            //if site announcements, show announcement title, then announcement body
-            holder.courseNameTxt.setText(currAnnouncement.title);
-
-            try {
-                //if its after android N, use this method for setting the html
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    holder.announcementTitleTxt.setText(Html.fromHtml(currAnnouncement.body, Html.FROM_HTML_MODE_COMPACT));
-                } else {
-                    holder.announcementTitleTxt.setText(Html.fromHtml(currAnnouncement.body));
-                }
-            } catch (RuntimeException e) {
-//                    java.lang.RuntimeException: PARAGRAPH span must start at paragraph boundary (832 follows  )
-                holder.announcementTitleTxt.setText("");
-                e.printStackTrace();
-            }
-
-        }
-
-
+        ViewCompat.setTransitionName(holder.itemView, SingleAnnouncementFragment.ANNOUNCEMENT_TRANSITION + position);
     }
 
 
