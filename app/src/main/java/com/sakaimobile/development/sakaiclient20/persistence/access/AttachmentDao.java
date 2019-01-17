@@ -5,6 +5,6 @@ import android.arch.persistence.room.Dao;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Attachment;
 
 @Dao
-public abstract class AttachmentDao implements BaseDao<Attachment> {
+public abstract class AttachmentDao extends BaseDao<Attachment> {
 
 }

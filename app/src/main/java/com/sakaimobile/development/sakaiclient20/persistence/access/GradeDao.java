@@ -11,7 +11,7 @@ import java.util.List;
 import io.reactivex.Flowable;
 
 @Dao
-public abstract class GradeDao implements BaseDao<Grade>{
+public abstract class GradeDao extends BaseDao<Grade>{
 
     @Query("SELECT * FROM grades WHERE siteId = :siteId")
     public abstract Flowable<List<Grade>> getGradesForSite(String siteId);
@@ -26,7 +26,7 @@ public abstract class GradeDao implements BaseDao<Grade>{
      * inserting new grades would duplicate them, so we must delete the old ones first.
      */
     @Transaction
-    public void insertGradesForSite(String siteId, Grade... grades) {
+    public void insertGradesForSite(String siteId, List<Grade> grades) {
         deleteGradesForSite(siteId);
         insert(grades);
     }

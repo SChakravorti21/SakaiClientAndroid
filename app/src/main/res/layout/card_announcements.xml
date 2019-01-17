@@ -48,7 +48,7 @@
             style="@style/autoscroll" />
 
         <TextView
-            style="@style/autoscroll"
+            style="@style/cutoff"
             android:id="@+id/course_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -58,7 +58,7 @@
             android:textColor="@color/secondaryTextColor"/>
 
         <TextView
-            style="@style/autoscroll"
+            style="@style/cutoff"
             android:id="@+id/title_txt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

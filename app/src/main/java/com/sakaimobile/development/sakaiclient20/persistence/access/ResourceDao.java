@@ -10,7 +10,7 @@ import java.util.List;
 import io.reactivex.Flowable;
 
 @Dao
-public abstract class ResourceDao implements BaseDao<Resource> {
+public abstract class ResourceDao extends BaseDao<Resource> {
 
     @Query("SELECT * FROM resources WHERE siteId = :siteId")
     public abstract Flowable<List<Resource>> getSiteResources(String siteId);
