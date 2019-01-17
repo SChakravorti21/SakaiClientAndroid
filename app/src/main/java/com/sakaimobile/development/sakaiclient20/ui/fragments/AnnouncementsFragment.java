@@ -8,10 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.transition.Transition;
-import android.support.transition.TransitionInflater;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -25,9 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sakaimobile.development.sakaiclient20.R;
@@ -39,11 +34,9 @@ import com.sakaimobile.development.sakaiclient20.ui.listeners.OnAnnouncementSele
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.AnnouncementViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -103,6 +96,13 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
         } else {
             announcementLiveData = announcementViewModel.getSiteAnnouncements(announcementsSiteId);
         }
+
+        // Now that we have gotten all the data we need, clear the bundle.
+        // Otherwise, we'll probably get a runtime exception (TransactionTooLarge)
+        // if the user attempts to open any announcement attachments.
+        // It's fine to clear the bundle because onCreate will not be called again if
+        // we return from a different application
+        bun.clear();
     }
 
     @Nullable
@@ -122,7 +122,7 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
         spinner = view.findViewById(R.id.progress_circular);
         spinner.setVisibility(View.VISIBLE);
 
-        scrollUpButton = view.findViewById(R.id.scrollUpButton);
+        scrollUpButton = view.findViewById(R.id.scroll_up_button);
 
         // create the adapter which the recycler view will use to display announcements
         createAnnouncementsAdapter();
