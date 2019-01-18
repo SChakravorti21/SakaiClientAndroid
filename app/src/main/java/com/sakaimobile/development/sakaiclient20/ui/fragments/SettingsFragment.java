@@ -2,6 +2,7 @@ package com.sakaimobile.development.sakaiclient20.ui.fragments;
 
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,20 +16,33 @@ import android.webkit.CookieManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.sakaimobile.development.sakaiclient20.BuildConfig;
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.ui.activities.WebViewActivity;
 
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class SettingsFragment extends Fragment {
 
+    private static final String ABOUT_URL = "https://rutgerssakai.github.io/SakaiMobile/";
+    private static final String PRIVACY_URL = "https://rutgerssakai.github.io/SakaiMobile/privacy.html";
+    private static final String RATE_URI = "market://details?id=" + BuildConfig.APPLICATION_ID;
+    private static final String DEVELOPER_EMAIL = "rutgerssakaiapp@gmail.com";
+
+    private static final String DEFAULT_MAIL_BODY = new StringBuilder()
+            .append("Dear Rutgers Sakai Mobile developers,\n\n")
+            .append("Here is some feedback to improve the app:\n")
+            .append("\n\n\n")
+            .append("Regards,").toString();
+
+
     private SparseArray<String> appInfoItemID_to_name;
     private SparseArray<String> appInfoItemID_to_icon;
+    private SparseArray<View.OnClickListener> appInfoItemID_to_clickListener;
 
     private Button logoutButton;
 
@@ -81,12 +95,20 @@ public class SettingsFragment extends Fragment {
         appInfoItemID_to_icon.put(R.id.shoutouts_item, "\uf118");
         appInfoItemID_to_icon.put(R.id.contactus_item, "\uf1fa");
         appInfoItemID_to_icon.put(R.id.rate_item, "\uf005");
+
+        appInfoItemID_to_clickListener = new SparseArray<>();
+        appInfoItemID_to_clickListener.put(R.id.about_item, (v) -> loadURL(ABOUT_URL));
+        appInfoItemID_to_clickListener.put(R.id.privacy_item, (v) -> loadURL(PRIVACY_URL));
+
+        appInfoItemID_to_clickListener.put(R.id.contactus_item, this::openSendMailPage);
+        appInfoItemID_to_clickListener.put(R.id.rate_item, (v) -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(RATE_URI))));
+
     }
 
     private void setAppInfoItemsData(View parentView) {
 
         LinearLayout linearLayout = parentView.findViewById(R.id.appinfo_linearlayout);
-        for(int i = 0; i < linearLayout.getChildCount(); i++) {
+        for (int i = 0; i < linearLayout.getChildCount(); i++) {
             View item = linearLayout.getChildAt(i);
             int itemId = item.getId();
 
@@ -95,7 +117,33 @@ public class SettingsFragment extends Fragment {
 
             TextView infoTxt = item.findViewById(R.id.info_txt);
             infoTxt.setText(appInfoItemID_to_name.get(itemId));
-        }
 
+            item.setOnClickListener(appInfoItemID_to_clickListener.get(itemId));
+        }
     }
+
+
+    private void openSendMailPage(View v) {
+        Intent i = new Intent(Intent.ACTION_SENDTO);
+        i.setData(Uri.parse("mailto:" + DEVELOPER_EMAIL));
+        i.putExtra(Intent.EXTRA_SUBJECT, "Rutgers Sakai Android: Feedback");
+        i.putExtra(Intent.EXTRA_TEXT, DEFAULT_MAIL_BODY);
+        try {
+            startActivity(Intent.createChooser(i, "Send feedback to developers"));
+        } catch (android.content.ActivityNotFoundException ex) {
+            Toast.makeText(getActivity(), "There are no email clients installed.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    private void loadURL(String url) {
+
+        WebFragment webFragment = WebFragment.newInstance(url);
+
+        getFragmentManager()
+                .beginTransaction()
+                .add(R.id.fragment_container, webFragment)
+                .commit();
+    }
+
 }
