@@ -41,6 +41,7 @@ public class SettingsFragment extends Fragment {
             .append("Regards,").toString();
 
 
+    // maps the View ID to the text and to the icon
     private SparseArray<String> appInfoItemID_to_name;
     private SparseArray<String> appInfoItemID_to_icon;
 
@@ -101,7 +102,6 @@ public class SettingsFragment extends Fragment {
     private void onClickAppInfoItem(View v) {
 
         switch(v.getId()) {
-
             case R.id.about_item:
                 openURL(ABOUT_URL);
                 return;

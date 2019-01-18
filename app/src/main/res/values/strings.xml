@@ -2,6 +2,7 @@
     <string name="app_name">Sakai Mobile</string>
 
     <string name="app_version">Version 1.0.0</string>
+    <string name="logo_made_with">Logo made with Logomakr.com</string>
 
     <string name="logout">Logout</string>
 
@@ -70,7 +71,6 @@
     <string name="site_type_tag" translatable="false">SITE_TYPE</string>
     <string name="course_tag" translatable="false">COURSE_TAG</string>
     <string name="assignments_tag" translatable="false">ASSIGNMENTS_TAG</string>
-
 
 
     <string name="no_announcements">There are no announcements available.</string>
