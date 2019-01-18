@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.sakaimobile.development.sakaiclient20.BuildConfig;
 import com.sakaimobile.development.sakaiclient20.R;
+import com.sakaimobile.development.sakaiclient20.ui.activities.CreditsActivity;
 import com.sakaimobile.development.sakaiclient20.ui.activities.WebViewActivity;
 
 
@@ -34,11 +35,11 @@ public class SettingsFragment extends Fragment {
     private static final String RATE_URI = "market://details?id=" + BuildConfig.APPLICATION_ID;
     private static final String DEVELOPER_EMAIL = "rutgerssakaiapp@gmail.com";
 
-    private static final String DEFAULT_MAIL_BODY = new StringBuilder()
-            .append("Dear Rutgers Sakai Mobile developers,\n\n")
-            .append("Here is some feedback to improve the app:\n")
-            .append("\n\n\n")
-            .append("Regards,").toString();
+    private static final String DEFAULT_MAIL_BODY =
+            "Dear Rutgers Sakai Mobile developers,\n\n" +
+            "Here is some feedback to improve the app:\n" +
+            "\n\n\n" +
+            "Regards,";
 
 
     // maps the View ID to the text and to the icon
@@ -59,6 +60,7 @@ public class SettingsFragment extends Fragment {
         this.logoutButton = view.findViewById(R.id.logout_button);
         ViewCompat.setBackgroundTintList(logoutButton, ContextCompat.getColorStateList(getContext(), R.color.sakai_medium_red));
 
+        // init the maps then set the data in the views
         initAppInfoMaps();
         setAppInfoItemsData(view);
 
@@ -80,9 +82,14 @@ public class SettingsFragment extends Fragment {
         });
     }
 
-
+    /**
+     * Maps from the ID of the app info View to
+     * the String representation and correct icon
+     */
     private void initAppInfoMaps() {
 
+        // Sparse Arrays are more efficient than HashMaps for integer keys
+        // since it doesn't need to autobox the keys (good for small datasets)
         appInfoItemID_to_name = new SparseArray<>();
         appInfoItemID_to_name.put(R.id.about_item, "About");
         appInfoItemID_to_name.put(R.id.privacy_item, "Privacy Policy");
@@ -99,6 +106,10 @@ public class SettingsFragment extends Fragment {
 
     }
 
+    /**
+     * Generic on click listener for each AppInfoItem
+     * @param v clicked view
+     */
     private void onClickAppInfoItem(View v) {
 
         switch(v.getId()) {
@@ -120,6 +131,11 @@ public class SettingsFragment extends Fragment {
 
     }
 
+    /**
+     * Sets the data in each AppInfoItem (which are assumed to be children of the LinearLayout
+     * found in the fragment)
+     * @param parentView inflated fragment view
+     */
     private void setAppInfoItemsData(View parentView) {
 
         LinearLayout linearLayout = parentView.findViewById(R.id.appinfo_linearlayout);
@@ -139,13 +155,14 @@ public class SettingsFragment extends Fragment {
 
 
     private void startCreditsActivity() {
-
-
-
+        Intent intent = new Intent(getActivity(), CreditsActivity.class);
+        startActivity(intent);
     }
 
 
-
+    /**
+     * Opens a mail client for the user to easily send feedback to developers
+     */
     private void openSendMailPage() {
         Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
         emailIntent.setData(Uri.parse("mailto:" + DEVELOPER_EMAIL));
@@ -159,6 +176,10 @@ public class SettingsFragment extends Fragment {
     }
 
 
+    /**
+     * Opens a given URL in chrome browser
+     * @param url
+     */
     private void openURL(String url) {
 
         Intent viewIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));

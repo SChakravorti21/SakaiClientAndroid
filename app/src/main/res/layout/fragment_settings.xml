@@ -3,7 +3,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/settingsScrollView"
+    android:id="@+id/scrollView3"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.fragments.SettingsFragment">
@@ -49,7 +49,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/preferences_fragment"
-            app:layout_constraintVertical_bias="0.039" />
+            app:layout_constraintVertical_bias="0.034" />
 
         <TextView
             android:id="@+id/appVersionTxt"
@@ -66,10 +66,10 @@
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.023"
+            app:layout_constraintHorizontal_bias="0.058"
             app:layout_constraintStart_toEndOf="@+id/app_icon"
             app:layout_constraintTop_toBottomOf="@+id/preferences_fragment"
-            app:layout_constraintVertical_bias="0.085" />
+            app:layout_constraintVertical_bias="0.087" />
 
 
         <TextView
