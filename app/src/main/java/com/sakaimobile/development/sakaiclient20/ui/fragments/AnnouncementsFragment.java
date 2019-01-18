@@ -37,6 +37,7 @@ import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -44,36 +45,25 @@ import dagger.android.support.AndroidSupportInjection;
 
 public class AnnouncementsFragment extends Fragment implements OnAnnouncementSelected {
 
-    @Inject
-    ViewModelFactory viewModelFactory;
-
-    private AnnouncementViewModel announcementViewModel;
-
     public static final int ALL_ANNOUNCEMENTS = 0;
     public static final int SITE_ANNOUNCEMENTS = 1;
 
-    // announcements to display
-    private List<Announcement> allAnnouncements;
-
-    private FloatingActionButton scrollUpButton;
-
-
-    // recycler view displaying announcements
-    private RecyclerView announcementRecycler;
-    // adapter which puts announcements into recycler view
-    private AnnouncementsAdapter adapter;
-    private HashMap<String, Course> siteIdToCourseMap; // needed for the adapter
-
+    @Inject ViewModelFactory viewModelFactory;
+    private AnnouncementViewModel announcementViewModel;
+    private LiveData<List<Announcement>> announcementLiveData; // observe on it
 
     // announcement type (SITE or ALL)
     private int announcementType;
-
-    private LiveData<List<Announcement>> announcementLiveData; // observe on it
+    private String announcementsSiteId;
+    // announcements to display
+    private List<Announcement> allAnnouncements;
+    // Needed for the adapter to show icons
+    private Map<String, Course> siteIdToCourseMap;
 
     private ProgressBar spinner;
-
-    private String announcementsSiteId;
-
+    private AnnouncementsAdapter adapter;
+    private RecyclerView announcementRecycler;
+    private FloatingActionButton scrollUpButton;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -92,7 +82,6 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
         // showing site or all announcements
         if (announcementType == ALL_ANNOUNCEMENTS) {
             announcementLiveData = announcementViewModel.getAllAnnouncements();
-
         } else {
             announcementLiveData = announcementViewModel.getSiteAnnouncements(announcementsSiteId);
         }
@@ -108,25 +97,22 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_announcements, null);
 
         // setup recycler view
-        announcementRecycler = view.findViewById(R.id.announcements_recycler);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        announcementRecycler = view.findViewById(R.id.announcements_recycler);
         announcementRecycler.setLayoutManager(layoutManager);
         announcementRecycler.setItemAnimator(new DefaultItemAnimator());
 
         // start the spinner
         spinner = view.findViewById(R.id.progress_circular);
         spinner.setVisibility(View.VISIBLE);
-
         scrollUpButton = view.findViewById(R.id.scroll_up_button);
 
         // create the adapter which the recycler view will use to display announcements
         createAnnouncementsAdapter();
-
         return view;
     }
 
@@ -148,11 +134,10 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
             addNewAnnouncementsToAdapter(announcements);
         });
 
-
         scrollUpButton.setOnClickListener((v) -> {
-            announcementRecycler.getLayoutManager().smoothScrollToPosition(announcementRecycler, new RecyclerView.State(), 0);
+            announcementRecycler.getLayoutManager()
+                    .smoothScrollToPosition(announcementRecycler, new RecyclerView.State(), 0);
         });
-
 
         // grow/shrink the FAB when scrolling
         LinearLayoutManager manager = (LinearLayoutManager) announcementRecycler.getLayoutManager();
@@ -160,7 +145,6 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-
                 // if the first item is visible then make the FAB disappear
                 // or if the user is scrolling down
                 if(dy > 0 || manager.findFirstCompletelyVisibleItemPosition() == 0)
@@ -170,8 +154,32 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
                     scrollUpButton.show();
             }
         });
+    }
 
+    @Override
+    public void onAttach(Context context) {
+        AndroidSupportInjection.inject(this);
+        super.onAttach(context);
 
+        // setup the view model
+        announcementViewModel = ViewModelProviders.of(this, viewModelFactory)
+                .get(AnnouncementViewModel.class);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        this.saveScrollState();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        announcementRecycler.clearOnScrollListeners();
+        scrollUpButton.setOnClickListener(null);
+        announcementRecycler = null;
+        scrollUpButton = null;
+        spinner = null;
     }
 
     @Override
@@ -202,7 +210,6 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
         }
     }
 
-
     private void createAnnouncementsAdapter() {
         adapter = new AnnouncementsAdapter(
                 allAnnouncements,
@@ -213,14 +220,11 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
         adapter.setClickListener(this);
         announcementRecycler.setAdapter(adapter);
 
-
         //rerun animations for card entry
         final LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(getContext(), R.anim.layout_anim_enter);
         announcementRecycler.setLayoutAnimation(controller);
         announcementRecycler.scheduleLayoutAnimation();
     }
-
-
 
     private void addNewAnnouncementsToAdapter(List<Announcement> announcements) {
         this.allAnnouncements.clear();
@@ -233,23 +237,6 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
             if (pos >= 0 && pos < announcements.size())
                 announcementRecycler.scrollToPosition(pos);
         }
-    }
-
-
-    @Override
-    public void onAttach(Context context) {
-        AndroidSupportInjection.inject(this);
-        super.onAttach(context);
-
-        // setup the view model
-        announcementViewModel = ViewModelProviders.of(this, viewModelFactory)
-                .get(AnnouncementViewModel.class);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        saveScrollState();
     }
 
     @Override
