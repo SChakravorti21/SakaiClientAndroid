@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">Sakai Mobile</string>
 
+    <string name="app_version">Version 1.0.0</string>
+
+    <string name="logout">Logout</string>
+
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password (optional)</string>
