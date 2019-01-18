@@ -43,7 +43,6 @@ public class SettingsFragment extends Fragment {
 
     private SparseArray<String> appInfoItemID_to_name;
     private SparseArray<String> appInfoItemID_to_icon;
-    private SparseArray<View.OnClickListener> appInfoItemID_to_clickListener;
 
     private Button logoutButton;
 
@@ -86,23 +85,38 @@ public class SettingsFragment extends Fragment {
         appInfoItemID_to_name = new SparseArray<>();
         appInfoItemID_to_name.put(R.id.about_item, "About");
         appInfoItemID_to_name.put(R.id.privacy_item, "Privacy Policy");
-        appInfoItemID_to_name.put(R.id.shoutouts_item, "Thanks To");
+        appInfoItemID_to_name.put(R.id.credits_item, "Thanks To");
         appInfoItemID_to_name.put(R.id.contactus_item, "Contact Us");
         appInfoItemID_to_name.put(R.id.rate_item, "Rate Rutgers Sakai Mobile");
 
         appInfoItemID_to_icon = new SparseArray<>();
         appInfoItemID_to_icon.put(R.id.about_item, "\uf518");
         appInfoItemID_to_icon.put(R.id.privacy_item, "\uf084");
-        appInfoItemID_to_icon.put(R.id.shoutouts_item, "\uf118");
+        appInfoItemID_to_icon.put(R.id.credits_item, "\uf118");
         appInfoItemID_to_icon.put(R.id.contactus_item, "\uf1fa");
         appInfoItemID_to_icon.put(R.id.rate_item, "\uf005");
 
-        appInfoItemID_to_clickListener = new SparseArray<>();
-        appInfoItemID_to_clickListener.put(R.id.about_item, (v) -> openURL(ABOUT_URL));
-        appInfoItemID_to_clickListener.put(R.id.privacy_item, (v) -> openURL(PRIVACY_URL));
+    }
 
-        appInfoItemID_to_clickListener.put(R.id.contactus_item, this::openSendMailPage);
-        appInfoItemID_to_clickListener.put(R.id.rate_item, (v) -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(RATE_URI))));
+    private void onClickAppInfoItem(View v) {
+
+        switch(v.getId()) {
+
+            case R.id.about_item:
+                openURL(ABOUT_URL);
+                return;
+            case R.id.privacy_item:
+                openURL(PRIVACY_URL);
+                return;
+            case R.id.credits_item:
+                startCreditsActivity();
+                return;
+            case R.id.contactus_item:
+                openSendMailPage();
+                return;
+            case R.id.rate_item:
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(RATE_URI)));
+        }
 
     }
 
@@ -119,12 +133,20 @@ public class SettingsFragment extends Fragment {
             TextView infoTxt = item.findViewById(R.id.info_txt);
             infoTxt.setText(appInfoItemID_to_name.get(itemId));
 
-            item.setOnClickListener(appInfoItemID_to_clickListener.get(itemId));
+            item.setOnClickListener(this::onClickAppInfoItem);
         }
     }
 
 
-    private void openSendMailPage(View v) {
+    private void startCreditsActivity() {
+
+
+
+    }
+
+
+
+    private void openSendMailPage() {
         Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
         emailIntent.setData(Uri.parse("mailto:" + DEVELOPER_EMAIL));
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Rutgers Sakai Android: Feedback");

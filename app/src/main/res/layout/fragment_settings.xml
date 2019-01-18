@@ -92,7 +92,7 @@
                 layout="@layout/appinfo_item" />
 
             <include
-                android:id="@+id/shoutouts_item"
+                android:id="@+id/credits_item"
                 layout="@layout/appinfo_item" />
 
             <include
