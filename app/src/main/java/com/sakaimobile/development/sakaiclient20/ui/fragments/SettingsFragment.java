@@ -1,6 +1,7 @@
 package com.sakaimobile.development.sakaiclient20.ui.fragments;
 
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -97,8 +98,8 @@ public class SettingsFragment extends Fragment {
         appInfoItemID_to_icon.put(R.id.rate_item, "\uf005");
 
         appInfoItemID_to_clickListener = new SparseArray<>();
-        appInfoItemID_to_clickListener.put(R.id.about_item, (v) -> loadURL(ABOUT_URL));
-        appInfoItemID_to_clickListener.put(R.id.privacy_item, (v) -> loadURL(PRIVACY_URL));
+        appInfoItemID_to_clickListener.put(R.id.about_item, (v) -> openURL(ABOUT_URL));
+        appInfoItemID_to_clickListener.put(R.id.privacy_item, (v) -> openURL(PRIVACY_URL));
 
         appInfoItemID_to_clickListener.put(R.id.contactus_item, this::openSendMailPage);
         appInfoItemID_to_clickListener.put(R.id.rate_item, (v) -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(RATE_URI))));
@@ -124,26 +125,31 @@ public class SettingsFragment extends Fragment {
 
 
     private void openSendMailPage(View v) {
-        Intent i = new Intent(Intent.ACTION_SENDTO);
-        i.setData(Uri.parse("mailto:" + DEVELOPER_EMAIL));
-        i.putExtra(Intent.EXTRA_SUBJECT, "Rutgers Sakai Android: Feedback");
-        i.putExtra(Intent.EXTRA_TEXT, DEFAULT_MAIL_BODY);
+        Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
+        emailIntent.setData(Uri.parse("mailto:" + DEVELOPER_EMAIL));
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Rutgers Sakai Android: Feedback");
+        emailIntent.putExtra(Intent.EXTRA_TEXT, DEFAULT_MAIL_BODY);
         try {
-            startActivity(Intent.createChooser(i, "Send feedback to developers"));
+            startActivity(Intent.createChooser(emailIntent, "Send feedback to developers"));
         } catch (android.content.ActivityNotFoundException ex) {
             Toast.makeText(getActivity(), "There are no email clients installed.", Toast.LENGTH_SHORT).show();
         }
     }
 
 
-    private void loadURL(String url) {
+    private void openURL(String url) {
 
-        WebFragment webFragment = WebFragment.newInstance(url);
+        Intent viewIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        viewIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        viewIntent.setPackage("com.android.chrome");
 
-        getFragmentManager()
-                .beginTransaction()
-                .add(R.id.fragment_container, webFragment)
-                .commit();
+        try {
+            startActivity(viewIntent);
+        } catch (ActivityNotFoundException e) {
+            // Chrome is probably not installed so let the user choose
+            viewIntent.setPackage(null);
+            startActivity(viewIntent);
+        }
     }
 
 }
