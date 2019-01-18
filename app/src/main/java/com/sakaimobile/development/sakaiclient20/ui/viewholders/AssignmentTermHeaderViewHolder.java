@@ -21,11 +21,11 @@ import java.util.List;
 /**
  * Created by Shoumyo Chakravorti on 7/8/18.
  *
- * Performs much of the same functions as {@link AssignmentCourseViewHolder},
+ * Performs much of the same functions as {@link CourseViewHolder},
  * except this type of a {@link com.unnamed.b.atv.model.TreeNode.BaseNodeViewHolder}
  * holds {@link Assignment} objects that have been sorted by date within their own terms.
  *
- * @see AssignmentCourseViewHolder
+ * @see CourseViewHolder
  */
 
 public class AssignmentTermHeaderViewHolder
@@ -56,7 +56,7 @@ public class AssignmentTermHeaderViewHolder
      * Inflates the view for this node, with the {@link RecyclerView} collapsed
      * by default.
      * @param node The node that dictates this view's layout
-     * @param value The {@link AssignmentCourseViewHolder.CourseHeaderItem} used to fill the views
+     * @param value The {@link CourseViewHolder.CourseHeaderItem} used to fill the views
      * @return A {@link View} representing this node
      */
     @Override

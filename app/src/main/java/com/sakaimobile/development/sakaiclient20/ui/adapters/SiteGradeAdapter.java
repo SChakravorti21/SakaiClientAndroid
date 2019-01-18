@@ -19,13 +19,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class GradeItemAdapter extends ArrayAdapter {
+public class SiteGradeAdapter extends ArrayAdapter {
 
     private static final float PADDING_LEFT_DP = 10f;
     private static final float PADDING_VERTICAL_DP = 8f;
     private final List<Grade> assignmentsList;
 
-    public GradeItemAdapter(Context context, List<Grade> assignmentsList) {
+    public SiteGradeAdapter(Context context, List<Grade> assignmentsList) {
         super(context, R.layout.tree_node_grade, assignmentsList);
 
         this.assignmentsList = assignmentsList;

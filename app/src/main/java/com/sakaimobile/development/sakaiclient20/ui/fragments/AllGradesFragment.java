@@ -20,9 +20,11 @@ import com.sakaimobile.development.sakaiclient20.models.Term;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Grade;
+import com.sakaimobile.development.sakaiclient20.ui.adapters.TreeGradeAdapter;
 import com.sakaimobile.development.sakaiclient20.ui.helpers.CourseIconProvider;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.TreeViewItemClickListener;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.CourseHeaderViewHolder;
+import com.sakaimobile.development.sakaiclient20.ui.viewholders.CourseViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.GradeNodeViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.TermHeaderViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.GradeViewModel;
@@ -172,38 +174,21 @@ public class AllGradesFragment extends Fragment {
 
             //for each course, get its grades
             for (Course currCourse : coursesInTerm) {
+                if (currCourse.grades == null || currCourse.grades.size() == 0)
+                    continue;
+
+                termHasAnyGrades = true;
                 //create a course header item and make a treenode using it
                 String courseIconCode = CourseIconProvider.getCourseIcon(currCourse.subjectCode);
-                CourseHeaderViewHolder.CourseHeaderItem courseNodeItem = new CourseHeaderViewHolder.CourseHeaderItem(
+                CourseViewHolder.CourseHeaderItem courseNodeItem = new CourseViewHolder.CourseHeaderItem(
                         currCourse.title,
-                        currCourse.siteId,
-                        courseIconCode
+                        courseIconCode,
+                        new TreeGradeAdapter(currCourse.grades)
                 );
 
                 //set the custom view holder
-                TreeNode courseNode = new TreeNode(courseNodeItem).setViewHolder(new CourseHeaderViewHolder(getContext(), true));
-
-                //only continue if the course has grades
-                List<Grade> gradebookObjectList = currCourse.grades;
-                if (gradebookObjectList != null && gradebookObjectList.size() > 0) {
-                    termHasAnyGrades = true;
-
-                    //for each grade item in the current course, create a node
-                    for (Grade grade : gradebookObjectList) {
-                        GradeNodeViewHolder.GradeTreeItem gradeNodeItem = new GradeNodeViewHolder.GradeTreeItem(
-                                grade.itemName,
-                                grade.grade,
-                                grade.points
-                        );
-
-                        //set the custom view holder
-                        TreeNode gradeNode = new TreeNode(gradeNodeItem).setViewHolder(new GradeNodeViewHolder(getContext()));
-
-                        courseNode.addChild(gradeNode);
-                    }
-
-                    termNode.addChild(courseNode);
-                }
+                TreeNode courseNode = new TreeNode(courseNodeItem).setViewHolder(new CourseViewHolder(getContext()));
+                termNode.addChild(courseNode);
             }
 
             //only add the term to the tree only if at least one course has one grade item

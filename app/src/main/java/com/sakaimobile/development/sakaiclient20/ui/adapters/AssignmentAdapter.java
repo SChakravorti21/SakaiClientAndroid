@@ -19,6 +19,7 @@ import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment
 import com.sakaimobile.development.sakaiclient20.ui.activities.SitePageActivity;
 import com.sakaimobile.development.sakaiclient20.ui.custom_components.CustomLinkMovementMethod;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.SiteAssignmentsFragment;
+import com.sakaimobile.development.sakaiclient20.ui.viewmodels.AssignmentViewModel;
 
 import java.io.Serializable;
 import java.util.List;
@@ -35,7 +36,7 @@ import java.util.List;
  * {@link com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.SingleAssignmentFragment},
  * allowing the user to view the full assignments and view other assignments of the course.
  */
-public class AssignmentAdapter extends RecyclerView.Adapter {
+public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.AssignmentViewHolder> {
 
     /**
      * The {@link Assignment} objects for this term or course.
@@ -75,8 +76,7 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
      * any single assignment).
      */
     @Override
-    public AssignmentViewHolder onCreateViewHolder(ViewGroup parent,
-                                                   int viewType) {
+    public AssignmentViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // create a new view. The entire CardView must be passed into
         // the AssignmentViewHolder constructor since it is the parent of all inner elements.
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
@@ -92,13 +92,11 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
      * Invoked by the {@link android.support.v7.widget.RecyclerView.LayoutManager},
      * binds the data of an {@link Assignment} to its {@link View} through the
      * {@link AssignmentViewHolder}.
-     * @param holder the {@link AssignmentViewHolder} with the sub-{@link View}s to populate
+     * @param viewHolder the {@link AssignmentViewHolder} with the sub-{@link View}s to populate
      * @param position the index of the {@link Assignment} in {@code assignments}.
      */
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        AssignmentViewHolder viewHolder = (AssignmentViewHolder) holder;
-
+    public void onBindViewHolder(AssignmentViewHolder viewHolder, int position) {
         // Update the AssignmentViewHolder's position so that the click
         // listener can dictate how to initialize the SiteAssignmentsFragment
         viewHolder.setPosition(position);
@@ -124,7 +122,7 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
 
         // Animate the view if it has not been done already
         if(position > lastRenderedPosition) {
-            startAnimation(holder.itemView, position);
+            startAnimation(viewHolder.itemView, position);
         }
     }
 
@@ -134,7 +132,7 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
      * @param holder
      */
     @Override
-    public void onViewDetachedFromWindow(RecyclerView.ViewHolder holder) {
+    public void onViewDetachedFromWindow(AssignmentViewHolder holder) {
         super.onViewDetachedFromWindow(holder);
         holder.itemView.clearAnimation();
     }

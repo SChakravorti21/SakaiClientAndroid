@@ -18,7 +18,13 @@
         android:paddingRight="8dp"
         tools:text="assignment"
         android:textColor="@color/primaryTextColor"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit ="marquee_forever"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:scrollHorizontally="true"/>
 
     <TextView
         android:id="@+id/txt_grade"
