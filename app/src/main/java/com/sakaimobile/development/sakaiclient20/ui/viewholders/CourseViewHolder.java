@@ -82,10 +82,10 @@ public class CourseViewHolder extends TreeNode.BaseNodeViewHolder<CourseViewHold
         recyclerView.setAdapter(value.adapter);
         recyclerView.setHasFixedSize(true); // supposedly improves performance
 
-        // The RecyclerView should only occupy one row, so use a GridLayoutManager
-        // to dictate this style of a layout.
-        RecyclerView.LayoutManager layoutManager = null;
+        RecyclerView.LayoutManager layoutManager;
         if(value.adapter instanceof AssignmentAdapter) {
+            // The RecyclerView should only occupy one row, so use a GridLayoutManager
+            // to dictate this style of a layout.
             layoutManager = new GridLayoutManager(
                     context,
                     1, // span count here is number of rows
@@ -94,11 +94,11 @@ public class CourseViewHolder extends TreeNode.BaseNodeViewHolder<CourseViewHold
             );
         } else {
             layoutManager = new LinearLayoutManager(context);
+            // There is no need to scroll vertically (all items should fit inside the view)
             recyclerView.setVerticalScrollBarEnabled(false);
+            // Scrolling is not needed anyways, and nested scrolling also messes up fling scroll
             recyclerView.setNestedScrollingEnabled(false);
-            layoutManager.requestLayout();
         }
-
         recyclerView.setLayoutManager(layoutManager);
 
         // Initialize the arrow view for toggling the list

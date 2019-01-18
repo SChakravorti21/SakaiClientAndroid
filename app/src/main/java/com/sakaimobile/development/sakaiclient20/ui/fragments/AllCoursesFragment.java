@@ -20,9 +20,11 @@ import com.sakaimobile.development.sakaiclient20.models.Term;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.SitePage;
+import com.sakaimobile.development.sakaiclient20.ui.adapters.TreeSitePageAdapter;
 import com.sakaimobile.development.sakaiclient20.ui.helpers.CourseIconProvider;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.TreeViewItemClickListener;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.CourseHeaderViewHolder;
+import com.sakaimobile.development.sakaiclient20.ui.viewholders.CourseViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.SitePageViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.TermHeaderViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.CourseViewModel;
@@ -203,26 +205,16 @@ public class AllCoursesFragment extends Fragment {
             for (Course course : coursesInTerm) {
                 //create a course header item and make a TreeNode using it
                 String courseIconCode = CourseIconProvider.getCourseIcon(course.subjectCode);
-                CourseHeaderViewHolder.CourseHeaderItem courseNodeItem =
-                        new CourseHeaderViewHolder.CourseHeaderItem(
+                CourseViewHolder.CourseHeaderItem courseNodeItem =
+                        new CourseViewHolder.CourseHeaderItem(
                                 course.title,
-                                course.siteId,
-                                courseIconCode
+                                courseIconCode,
+                                new TreeSitePageAdapter(course)
                         );
 
                 //set the custom view holder
                 TreeNode courseNode = new TreeNode(courseNodeItem)
-                        .setViewHolder(new CourseHeaderViewHolder(mContext, true));
-
-                // Add all site pages as children of the course
-                for(SitePage sitePage : course.sitePages) {
-                    TreeNode sitePageNode =
-                            new TreeNode(new SitePageViewHolder.SitePageItem(sitePage.title, course))
-                                .setViewHolder(new SitePageViewHolder(mContext));
-
-                    courseNode.addChild(sitePageNode);
-                }
-
+                        .setViewHolder(new CourseViewHolder(mContext));
                 termNode.addChild(courseNode);
             }
 
