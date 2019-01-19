@@ -6,6 +6,7 @@
     android:id="@+id/scrollView3"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/primaryBackgroundColor"
     tools:context=".ui.fragments.SettingsFragment">
 
     <android.support.constraint.ConstraintLayout
@@ -62,7 +63,7 @@
             android:layout_marginRight="8dp"
             android:layout_marginBottom="8dp"
             android:text="@string/app_version"
-            android:textColor="@color/sakai_light_black"
+            android:textColor="@color/primaryTextColor"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -81,7 +82,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
             android:text="@string/logo_made_with"
-            android:textColor="@color/sakai_light_black"
+            android:textColor="@color/secondaryTextColor"
             android:textSize="15sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

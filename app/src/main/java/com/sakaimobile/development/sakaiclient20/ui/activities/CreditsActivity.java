@@ -51,7 +51,7 @@ public class CreditsActivity extends AppCompatActivity {
                 })
         );
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_selectable_list_item, creditsList);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.credits_item, R.id.creditNameTxt, creditsList);
         creditsListView.setAdapter(adapter);
 
     }

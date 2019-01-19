@@ -43,8 +43,8 @@ public class SettingsFragment extends Fragment {
 
 
     // maps the View ID to the text and to the icon
-    private SparseArray<String> appInfoItemID_to_name;
-    private SparseArray<String> appInfoItemID_to_icon;
+    private SparseArray<String> appInfoItemIDToName;
+    private SparseArray<String> appInfoItemIDToIcon;
 
     private Button logoutButton;
 
@@ -97,19 +97,19 @@ public class SettingsFragment extends Fragment {
 
         // Sparse Arrays are more efficient than HashMaps for integer keys
         // since it doesn't need to autobox the keys (good for small datasets)
-        appInfoItemID_to_name = new SparseArray<>();
-        appInfoItemID_to_name.put(R.id.about_item, "About");
-        appInfoItemID_to_name.put(R.id.privacy_item, "Privacy Policy");
-        appInfoItemID_to_name.put(R.id.credits_item, "Thanks To");
-        appInfoItemID_to_name.put(R.id.contactus_item, "Contact Us");
-        appInfoItemID_to_name.put(R.id.rate_item, "Rate Rutgers Sakai Mobile");
+        appInfoItemIDToName = new SparseArray<>();
+        appInfoItemIDToName.put(R.id.about_item, "About");
+        appInfoItemIDToName.put(R.id.privacy_item, "Privacy Policy");
+        appInfoItemIDToName.put(R.id.credits_item, "Thanks To");
+        appInfoItemIDToName.put(R.id.contactus_item, "Contact Us");
+        appInfoItemIDToName.put(R.id.rate_item, "Rate Rutgers Sakai Mobile");
 
-        appInfoItemID_to_icon = new SparseArray<>();
-        appInfoItemID_to_icon.put(R.id.about_item, "\uf518");
-        appInfoItemID_to_icon.put(R.id.privacy_item, "\uf084");
-        appInfoItemID_to_icon.put(R.id.credits_item, "\uf118");
-        appInfoItemID_to_icon.put(R.id.contactus_item, "\uf1fa");
-        appInfoItemID_to_icon.put(R.id.rate_item, "\uf005");
+        appInfoItemIDToIcon = new SparseArray<>();
+        appInfoItemIDToIcon.put(R.id.about_item, "\uf518");
+        appInfoItemIDToIcon.put(R.id.privacy_item, "\uf084");
+        appInfoItemIDToIcon.put(R.id.credits_item, "\uf118");
+        appInfoItemIDToIcon.put(R.id.contactus_item, "\uf1fa");
+        appInfoItemIDToIcon.put(R.id.rate_item, "\uf005");
 
     }
 
@@ -151,10 +151,10 @@ public class SettingsFragment extends Fragment {
             int itemId = item.getId();
 
             TextView iconTxt = item.findViewById(R.id.info_icon);
-            iconTxt.setText(appInfoItemID_to_icon.get(itemId));
+            iconTxt.setText(appInfoItemIDToIcon.get(itemId));
 
             TextView infoTxt = item.findViewById(R.id.info_txt);
-            infoTxt.setText(appInfoItemID_to_name.get(itemId));
+            infoTxt.setText(appInfoItemIDToName.get(itemId));
 
             item.setOnClickListener(this::onClickAppInfoItem);
         }

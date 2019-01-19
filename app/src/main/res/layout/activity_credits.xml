@@ -4,26 +4,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/primaryBackgroundColor"
     tools:context=".ui.activities.CreditsActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?android:attr/actionBarSize"
-        android:background="@color/colorPrimary"
+        android:background="@color/navigationBackgroundColor"
         app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="?android:attr/homeAsUpIndicator"
         app:title="Thanks To..."
-        app:titleTextColor="@color/white" />
+        app:titleTextColor="@color/primaryTextColor"
+        android:theme="@style/ToolbarTheme"
+         />
 
     <ListView
         android:id="@+id/credits_list_view"
         android:layout_width="match_parent"
         android:layout_height="736dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar" />

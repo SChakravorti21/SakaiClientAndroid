@@ -13,7 +13,7 @@
         android:background="@color/highlightColor"/>
 
     <TextView
-        android:id="@+id/txt_assignment_name"
+        android:id="@+id/creditNameTxt"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -21,16 +21,7 @@
         android:paddingBottom="24dp"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        tools:text="Programming Assignment 1: Introduction to C"
-        android:textColor="@color/primaryTextColor"
-        android:textSize="16sp" />
-
-    <TextView
-        android:id="@+id/txt_grade"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        tools:text="grade"
+        tools:text="Company ABC"
         android:textColor="@color/primaryTextColor"
         android:textSize="16sp" />
 

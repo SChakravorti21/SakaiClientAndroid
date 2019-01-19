@@ -10,25 +10,24 @@
 
     <TextView
         android:id="@+id/info_icon"
+        style="@style/FontawesomeText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/FontawesomeText"
-        tools:text="X"
-        android:textColor="@color/sakai_light_black"
-        android:paddingLeft="0dp"
         android:paddingStart="0dp"
-        android:paddingRight="10dp"
+        android:paddingLeft="0dp"
         android:paddingEnd="10dp"
-        android:textSize="16sp" />
+        android:paddingRight="10dp"
+        android:textSize="16sp"
+        tools:text="X" />
 
     <TextView
         android:id="@+id/info_txt"
-        android:layout_weight="1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        tools:text="INFO ITEM INFO ITEM"
-        android:textColor="@color/sakai_light_black"
-        android:textSize="16sp" />
+        android:layout_weight="1"
+        android:textColor="@color/secondaryTextColor"
+        android:textSize="16sp"
+        tools:text="INFO ITEM INFO ITEM" />
 
     <TextView
         style="@style/FontawesomeText"
