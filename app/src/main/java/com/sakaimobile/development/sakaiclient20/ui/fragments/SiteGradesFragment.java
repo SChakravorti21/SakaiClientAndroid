@@ -18,12 +18,11 @@ import android.widget.Toast;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Grade;
-import com.sakaimobile.development.sakaiclient20.ui.adapters.GradeItemAdapter;
+import com.sakaimobile.development.sakaiclient20.ui.adapters.SiteGradeAdapter;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.GradeViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
 import java.util.List;
-import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -36,7 +35,7 @@ public class SiteGradesFragment extends Fragment {
 
     private String siteId;
     private ProgressBar spinner;
-    private GradeItemAdapter adapter;
+    private SiteGradeAdapter adapter;
     private ListView siteGradesListView;
 
     @Override
@@ -112,7 +111,7 @@ public class SiteGradesFragment extends Fragment {
         if (grades != null && grades.size() > 0) {
             // Only create the adapter if necessary, otherwise re-use the same one
             if(adapter == null) {
-                adapter = new GradeItemAdapter(getActivity(), grades);
+                adapter = new SiteGradeAdapter(getActivity(), grades);
                 siteGradesListView.setAdapter(adapter);
             } else {
                 adapter.clear();

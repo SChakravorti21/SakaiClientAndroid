@@ -18,10 +18,11 @@ import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
+import com.sakaimobile.development.sakaiclient20.ui.adapters.AssignmentAdapter;
 import com.sakaimobile.development.sakaiclient20.ui.helpers.AssignmentSortingUtils;
-import com.sakaimobile.development.sakaiclient20.ui.helpers.RutgersSubjectCodes;
+import com.sakaimobile.development.sakaiclient20.ui.helpers.CourseIconProvider;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.TreeViewItemClickListener;
-import com.sakaimobile.development.sakaiclient20.ui.viewholders.AssignmentCourseViewHolder;
+import com.sakaimobile.development.sakaiclient20.ui.viewholders.CourseViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.AssignmentTermHeaderViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.TermHeaderViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.AssignmentViewModel;
@@ -266,17 +267,17 @@ public class AssignmentsFragment extends Fragment {
 
                 // Create a course header item, and make a tree node using it
                 String courseIconCode =
-                        RutgersSubjectCodes.mapCourseCodeToIcon.get(course.subjectCode);
-                AssignmentCourseViewHolder.CourseHeaderItem courseHeaderItem =
-                        new AssignmentCourseViewHolder.CourseHeaderItem(
+                        CourseIconProvider.getCourseIcon(course.subjectCode);
+                CourseViewHolder.CourseHeaderItem courseHeaderItem =
+                        new CourseViewHolder.CourseHeaderItem(
                                 course.title,
                                 courseIconCode,
-                                course.assignments
+                                new AssignmentAdapter(course.assignments)
                         );
 
                 TreeNode courseNode = new TreeNode(courseHeaderItem);
                 // Set the course header view holder to inflate the appropriate view
-                courseNode.setViewHolder(new AssignmentCourseViewHolder(currContext));
+                courseNode.setViewHolder(new CourseViewHolder(currContext));
 
                 // Add the course to the term
                 termNode.addChild(courseNode);

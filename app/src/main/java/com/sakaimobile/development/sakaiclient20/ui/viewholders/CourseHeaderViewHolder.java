@@ -17,8 +17,8 @@ import com.unnamed.b.atv.model.TreeNode;
 
 public class CourseHeaderViewHolder extends TreeNode.BaseNodeViewHolder<CourseHeaderViewHolder.CourseHeaderItem> {
 
-    private static final String CHEVRON_DOWN = "\uF078";
-    private static final String CHEVRON_RIGHT = "\uF054";
+    private static final String CHEVRON_DOWN = "\uF107";
+    private static final String CHEVRON_RIGHT = "\uF105";
     private boolean isToggleable;
     private Context context;
 

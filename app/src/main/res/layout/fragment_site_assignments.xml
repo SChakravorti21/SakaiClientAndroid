@@ -4,6 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/primaryBackgroundColor"
     tools:fragment="com.sakaimobile.development.sakaiclientandroid.fragments.assignments.SiteAssignmentsFragment">
 
     <!-- View pager for swiping through the assignments -->
@@ -11,7 +12,6 @@
         android:id="@+id/assignment_viewpager"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFFFFF"
         android:paddingTop="24dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,11 +21,13 @@
     <android.support.design.widget.TabLayout
         android:id="@+id/view_pager_indicators"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="12dp"
-        android:background="#FFFFFF"
-        app:tabBackground="@drawable/tab_selector"
+        android:layout_height="48dp"
+        android:background="@color/primaryBackgroundColor"
+        android:paddingBottom="32dp"
         app:tabGravity="center"
+        app:tabPaddingTop="0dp"
+        app:tabIndicatorHeight="0dp"
+        app:tabBackground="@drawable/tab_selector"
         app:layout_constraintTop_toBottomOf="@id/assignment_viewpager"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -43,9 +43,8 @@ abstract class BaseViewModel extends ViewModel {
         this.compositeDisposable.add(
             this.courseRepository.getCoursesSortedByTerm()
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        this.coursesByTerm::setValue,
+                        this.coursesByTerm::postValue,
                         Throwable::printStackTrace
                 )
         );

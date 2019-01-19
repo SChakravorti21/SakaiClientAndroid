@@ -3,11 +3,14 @@ package com.sakaimobile.development.sakaiclient20.ui.fragments;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -42,36 +45,25 @@ import dagger.android.support.AndroidSupportInjection;
 
 public class AnnouncementsFragment extends Fragment implements OnAnnouncementSelected {
 
-    @Inject
-    ViewModelFactory viewModelFactory;
-
-    private AnnouncementViewModel announcementViewModel;
-
     public static final int ALL_ANNOUNCEMENTS = 0;
     public static final int SITE_ANNOUNCEMENTS = 1;
 
-    // announcements to display
-    private List<Announcement> allAnnouncements;
-
-    private FloatingActionButton scrollUpButton;
-
-
-    // recycler view displaying announcements
-    private RecyclerView announcementRecycler;
-    // adapter which puts announcements into recycler view
-    private AnnouncementsAdapter adapter;
-    private HashMap<String, Course> siteIdToCourseMap; // needed for the adapter
-
+    @Inject ViewModelFactory viewModelFactory;
+    private AnnouncementViewModel announcementViewModel;
+    private LiveData<List<Announcement>> announcementLiveData; // observe on it
 
     // announcement type (SITE or ALL)
     private int announcementType;
-
-    private LiveData<List<Announcement>> announcementLiveData; // observe on it
+    private String announcementsSiteId;
+    // announcements to display
+    private List<Announcement> allAnnouncements;
+    // Needed for the adapter to show icons
+    private Map<String, Course> siteIdToCourseMap;
 
     private ProgressBar spinner;
-
-    private String announcementsSiteId;
-
+    private AnnouncementsAdapter adapter;
+    private RecyclerView announcementRecycler;
+    private FloatingActionButton scrollUpButton;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -90,34 +82,37 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
         // showing site or all announcements
         if (announcementType == ALL_ANNOUNCEMENTS) {
             announcementLiveData = announcementViewModel.getAllAnnouncements();
-
         } else {
             announcementLiveData = announcementViewModel.getSiteAnnouncements(announcementsSiteId);
         }
+
+        // Now that we have gotten all the data we need, clear the bundle.
+        // Otherwise, we'll probably get a runtime exception (TransactionTooLarge)
+        // if the user attempts to open any announcement attachments.
+        // It's fine to clear the bundle because onCreate will not be called again if
+        // we return from a different application
+        bun.clear();
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_announcements, null);
 
         // setup recycler view
-        announcementRecycler = view.findViewById(R.id.announcements_recycler);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        announcementRecycler = view.findViewById(R.id.announcements_recycler);
         announcementRecycler.setLayoutManager(layoutManager);
         announcementRecycler.setItemAnimator(new DefaultItemAnimator());
 
         // start the spinner
         spinner = view.findViewById(R.id.progress_circular);
         spinner.setVisibility(View.VISIBLE);
-
-        scrollUpButton = view.findViewById(R.id.scrollUpButton);
+        scrollUpButton = view.findViewById(R.id.scroll_up_button);
 
         // create the adapter which the recycler view will use to display announcements
         createAnnouncementsAdapter();
-
         return view;
     }
 
@@ -139,11 +134,10 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
             addNewAnnouncementsToAdapter(announcements);
         });
 
-
         scrollUpButton.setOnClickListener((v) -> {
-            announcementRecycler.getLayoutManager().smoothScrollToPosition(announcementRecycler, new RecyclerView.State(), 0);
+            announcementRecycler.getLayoutManager()
+                    .smoothScrollToPosition(announcementRecycler, new RecyclerView.State(), 0);
         });
-
 
         // grow/shrink the FAB when scrolling
         LinearLayoutManager manager = (LinearLayoutManager) announcementRecycler.getLayoutManager();
@@ -151,7 +145,6 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-
                 // if the first item is visible then make the FAB disappear
                 // or if the user is scrolling down
                 if(dy > 0 || manager.findFirstCompletelyVisibleItemPosition() == 0)
@@ -161,8 +154,32 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
                     scrollUpButton.show();
             }
         });
+    }
 
+    @Override
+    public void onAttach(Context context) {
+        AndroidSupportInjection.inject(this);
+        super.onAttach(context);
 
+        // setup the view model
+        announcementViewModel = ViewModelProviders.of(this, viewModelFactory)
+                .get(AnnouncementViewModel.class);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        this.saveScrollState();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        announcementRecycler.clearOnScrollListeners();
+        scrollUpButton.setOnClickListener(null);
+        announcementRecycler = null;
+        scrollUpButton = null;
+        spinner = null;
     }
 
     @Override
@@ -193,7 +210,6 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
         }
     }
 
-
     private void createAnnouncementsAdapter() {
         adapter = new AnnouncementsAdapter(
                 allAnnouncements,
@@ -204,14 +220,11 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
         adapter.setClickListener(this);
         announcementRecycler.setAdapter(adapter);
 
-
         //rerun animations for card entry
         final LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(getContext(), R.anim.layout_anim_enter);
         announcementRecycler.setLayoutAnimation(controller);
         announcementRecycler.scheduleLayoutAnimation();
     }
-
-
 
     private void addNewAnnouncementsToAdapter(List<Announcement> announcements) {
         this.allAnnouncements.clear();
@@ -226,40 +239,30 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
         }
     }
 
-
     @Override
-    public void onAttach(Context context) {
-        AndroidSupportInjection.inject(this);
-        super.onAttach(context);
-
-        // setup the view model
-        announcementViewModel = ViewModelProviders.of(this, viewModelFactory)
-                .get(AnnouncementViewModel.class);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        saveScrollState();
-    }
-
-    @Override
-    public void onAnnouncementSelected(Announcement announcement, Map<String, Course> siteIdToCourse) {
+    public void onAnnouncementSelected(Announcement announcement, Course course,
+                                       View cardView, int position) {
         Bundle b = new Bundle();
-        b.putSerializable(getString(R.string.single_announcement_tag), announcement);
-        // for some reason map isn't serializable, so i had to cast to hashmap
-        b.putSerializable(getString(R.string.siteid_to_course_map), (HashMap) siteIdToCourse);
+        b.putSerializable(SingleAnnouncementFragment.SINGLE_ANNOUNCEMENT, announcement);
+        b.putSerializable(SingleAnnouncementFragment.ANNOUNCEMENT_COURSE, course);
+        b.putInt(SingleAnnouncementFragment.ANNOUNCEMENT_POSITION, position);
 
-        SingleAnnouncementFragment fragment = new SingleAnnouncementFragment();
-        fragment.setArguments(b);
+        SingleAnnouncementFragment announcementFragment = new SingleAnnouncementFragment();
+        announcementFragment.setArguments(b);
 
-        // load fragment
-        getActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .setCustomAnimations(R.anim.grow_enter, R.anim.pop_exit, R.anim.pop_enter, R.anim.pop_exit)
-                .addToBackStack(null)
-                .add(R.id.fragment_container, fragment)
-                .commit();
+        FragmentTransaction ft = getFragmentManager()
+                                    .beginTransaction()
+                                    .hide(this)
+                                    .add(R.id.fragment_container, announcementFragment)
+                                    .setReorderingAllowed(true)
+                                    .addToBackStack(null);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            // Add second fragment by replacing first
+            ft.addSharedElement(cardView, ViewCompat.getTransitionName(cardView));
+        }
+
+        ft.commit();
     }
 
     private void saveScrollState() {

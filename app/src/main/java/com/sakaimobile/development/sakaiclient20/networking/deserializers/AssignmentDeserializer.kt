@@ -35,8 +35,9 @@ class AssignmentDeserializer : JsonDeserializer<Assignment> {
 
         assignment.status = json.getStringMember("status")
 
-        val dueTimeMilliseconds = json.get("dueTime").asJsonObject.get("time").asLong
-        assignment.dueTime = Date(dueTimeMilliseconds)
+        val dueTimeObject = json.get("dueTime").asJsonObject
+        assignment.dueTime = Date(dueTimeObject.get("time").asLong)
+        assignment.dueTimeString = dueTimeObject.getStringMember("display")
         assignment.allowResubmission = json.get("allowResubmission").asBoolean
 
         assignment.creator = json.getStringMember("creator")

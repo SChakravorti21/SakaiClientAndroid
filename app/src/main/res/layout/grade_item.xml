@@ -4,35 +4,35 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/leaf_background"
+    android:background="@drawable/grade_background"
     android:foreground="?android:attr/selectableItemBackground"
-    android:orientation="horizontal"
-    android:padding="10dp">
+    android:orientation="horizontal" >
+
+    <View
+        android:layout_width="4dp"
+        android:layout_height="match_parent"
+        android:background="@color/highlightColor"/>
 
     <TextView
-
         android:id="@+id/txt_assignment_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:paddingRight="4dp"
-        android:paddingBottom="8dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="24dp"
         android:paddingLeft="16dp"
-        android:paddingTop="4dp"
-        tools:text="assignment"
-        android:textColor="@color/sakai_light_black"
+        android:paddingRight="16dp"
+        tools:text="Programming Assignment 1: Introduction to C"
+        android:textColor="@color/primaryTextColor"
         android:textSize="16sp" />
 
     <TextView
         android:id="@+id/txt_grade"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="8dp"
-        android:layout_gravity="right"
-        android:paddingBottom="8dp"
-        android:paddingTop="8dp"
+        android:padding="16dp"
         tools:text="grade"
-        android:textColor="@color/sakai_light_black"
+        android:textColor="@color/primaryTextColor"
         android:textSize="16sp" />
 
 </LinearLayout>

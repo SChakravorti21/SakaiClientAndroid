@@ -19,9 +19,13 @@ import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.models.Term;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
-import com.sakaimobile.development.sakaiclient20.ui.helpers.RutgersSubjectCodes;
+import com.sakaimobile.development.sakaiclient20.persistence.entities.SitePage;
+import com.sakaimobile.development.sakaiclient20.ui.adapters.TreeSitePageAdapter;
+import com.sakaimobile.development.sakaiclient20.ui.helpers.CourseIconProvider;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.TreeViewItemClickListener;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.CourseHeaderViewHolder;
+import com.sakaimobile.development.sakaiclient20.ui.viewholders.CourseViewHolder;
+import com.sakaimobile.development.sakaiclient20.ui.viewholders.SitePageViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.TermHeaderViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.CourseViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
@@ -125,8 +129,8 @@ public class AllCoursesFragment extends Fragment {
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
+    public void onPause() {
+        super.onPause();
         this.saveTreeState();
     }
 
@@ -198,30 +202,19 @@ public class AllCoursesFragment extends Fragment {
                     new TreeNode(termNodeItem).setViewHolder(new TermHeaderViewHolder(mContext));
 
             //for each course, get its grades
-            for (Course currCourse : coursesInTerm) {
+            for (Course course : coursesInTerm) {
                 //create a course header item and make a TreeNode using it
-                String courseIconCode = RutgersSubjectCodes.mapCourseCodeToIcon.get(currCourse.subjectCode);
-                CourseHeaderViewHolder.CourseHeaderItem courseNodeItem =
-                        new CourseHeaderViewHolder.CourseHeaderItem(
-                                currCourse.title,
-                                currCourse.siteId,
-                                courseIconCode
+                String courseIconCode = CourseIconProvider.getCourseIcon(course.subjectCode);
+                CourseViewHolder.CourseHeaderItem courseNodeItem =
+                        new CourseViewHolder.CourseHeaderItem(
+                                course.title,
+                                courseIconCode,
+                                new TreeSitePageAdapter(course)
                         );
 
                 //set the custom view holder
                 TreeNode courseNode = new TreeNode(courseNodeItem)
-                        .setViewHolder(new CourseHeaderViewHolder(mContext, false));
-
-                //when click a course Node, open the CourseSitesFragment to show
-                //course specific information
-                courseNode.setClickListener((node, value) -> {
-                    if (value instanceof CourseHeaderViewHolder.CourseHeaderItem) {
-                        //here we should save tree state
-                        SharedPrefsUtil.saveTreeState(mContext, treeView, SharedPrefsUtil.ALL_COURSES_TREE_TYPE);
-                        onCourseSelected(currCourse);
-                    }
-                });
-
+                        .setViewHolder(new CourseViewHolder(mContext));
                 termNode.addChild(courseNode);
             }
 
@@ -229,18 +222,6 @@ public class AllCoursesFragment extends Fragment {
         }
 
         return root;
-    }
-
-    private void onCourseSelected(Course course) {
-        if(getActivity() == null || getActivity().getSupportFragmentManager() == null)
-            return;
-
-        getActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
-                .add(R.id.fragment_container, CourseSitesFragment.newInstance(course))
-                .addToBackStack(null)
-                .commit();
     }
 
     private void saveTreeState() {

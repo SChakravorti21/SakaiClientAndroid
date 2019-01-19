@@ -98,7 +98,7 @@ public class SiteAssignmentsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        ViewGroup layout = (ViewGroup) inflater.inflate(R.layout.fragment_course_assignments,
+        ViewGroup layout = (ViewGroup) inflater.inflate(R.layout.fragment_site_assignments,
                                                             container, false);
 
         // Find the ViwPager and so that we can give it an adapter once LiveData triggers

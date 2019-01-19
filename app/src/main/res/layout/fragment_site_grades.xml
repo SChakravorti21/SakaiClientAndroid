@@ -2,7 +2,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/primaryBackgroundColor">
 
 
     <ProgressBar
@@ -21,7 +22,6 @@
         android:id="@+id/site_grades_list_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
     </ListView>
 
 </android.support.constraint.ConstraintLayout>

@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Resource;
+import com.sakaimobile.development.sakaiclient20.ui.listeners.TreeViewItemClickListener;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.ResourceDirectoryViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.ResourceItemViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ResourceViewModel;
@@ -73,6 +74,11 @@ public class SiteResourcesFragment extends Fragment {
         // setup the treeview
         resourcesTreeView = new AndroidTreeView(getActivity(), TreeNode.root());
         resourcesTreeView.setDefaultAnimation(true);
+
+        // Default node click listener that only allows one node in each level to
+        // be open at a given time
+        TreeViewItemClickListener nodeClickListener = new TreeViewItemClickListener(resourcesTreeView);
+        resourcesTreeView.setDefaultNodeClickListener(nodeClickListener);
         // Save the resource tree state when the TreeView is created
         // because we do NOT want to share tree structures between different courses
         saveResourceTreeState();
@@ -152,6 +158,7 @@ public class SiteResourcesFragment extends Fragment {
      */
     private List<TreeNode> getChildren(List<Resource> resources, int start, int end) {
         List<TreeNode> children = new ArrayList<>();
+        boolean isFirstFile = true;
 
         for (int i = start; i < end && i < resources.size(); i++) {
             Resource resource = resources.get(i);
@@ -167,7 +174,8 @@ public class SiteResourcesFragment extends Fragment {
                 i += resource.numDescendants;
             } else {
                 // add this file node as a child of the parent node
-                children.add(buildResourceFileNode(resource));
+                children.add(buildResourceFileNode(resource, isFirstFile));
+                isFirstFile = false;
             }
         }
 
@@ -181,9 +189,9 @@ public class SiteResourcesFragment extends Fragment {
      * @param resource item
      * @return treenode to add
      */
-    private TreeNode buildResourceFileNode(Resource resource) {
+    private TreeNode buildResourceFileNode(Resource resource, boolean isFirstFile) {
         ResourceItemViewHolder.ResourceFileItem fileItem =
-                new ResourceItemViewHolder.ResourceFileItem(resource.title, resource.url);
+                new ResourceItemViewHolder.ResourceFileItem(resource.title, resource.url, isFirstFile);
 
         TreeNode fileNode = new TreeNode(fileItem).setViewHolder(new ResourceItemViewHolder(getContext()));
         fileNode.setClickListener((node, value) ->

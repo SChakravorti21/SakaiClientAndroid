@@ -93,6 +93,11 @@ class SiteChatFragment : Fragment() {
                 // Once the chat page loads, get the chat channel ID
                 // and CSRF token (needed to make POST requests)
                 super.onPageFinished(view, url)
+                // It is possible that the user backed out of the site page, so don't
+                // do anything if the chat WebView is null
+                if(chatRoomWebView == null)
+                    return
+
                 evaluateChatVariables()
                 chatLoaded = true
             }

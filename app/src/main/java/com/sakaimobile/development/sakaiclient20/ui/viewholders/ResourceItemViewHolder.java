@@ -6,12 +6,15 @@ import android.support.v7.widget.LinearLayoutCompat;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.unnamed.b.atv.model.TreeNode;
 
 public class ResourceItemViewHolder extends TreeNode.BaseNodeViewHolder<ResourceItemViewHolder.ResourceFileItem> {
+
+    private static final String FILE_DOWNLOAD = "\uf381";
 
     public ResourceItemViewHolder(Context context) {
         super(context);
@@ -20,44 +23,62 @@ public class ResourceItemViewHolder extends TreeNode.BaseNodeViewHolder<Resource
     @Override
     public View createNodeView(TreeNode node, ResourceFileItem value) {
         final LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.tree_node_file, null, false);
+        View view = inflater.inflate(R.layout.tree_node_resource_file, null, false);
+
+        // Inflate the stepper that connects adjacent files
+        FrameLayout stepperContainer = view.findViewById(R.id.stepper_container);
+        View stepperView;
+        if(value.isFirstFile) {
+            stepperView = inflater.inflate(R.layout.tree_node_resource_stepper_first, stepperContainer, false);
+        } else if(node.isLastChild()) {
+            stepperView = inflater.inflate(R.layout.tree_node_resource_stepper_last, stepperContainer, false);
+        } else {
+            stepperView = inflater.inflate(R.layout.tree_node_resource_stepper_middle, stepperContainer, false);
+        }
+        stepperContainer.addView(stepperView);
 
         TextView txt = view.findViewById(R.id.resource_file_txt);
         txt.setText(value.fileName);
 
+        TextView downloadIcon = view.findViewById(R.id.download_icon);
+        downloadIcon.setText(FILE_DOWNLOAD);
+
         // Need to programmatically define the width as being the device
         // screen width since there was no container that we could inflate the
         // view relative to.
-        Resources r = inflater.getContext().getResources();
+        Resources resources = inflater.getContext().getResources();
 
         // Convert pixels to density-independent units
         int widthPx = (int) TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
-                r.getDisplayMetrics().widthPixels,
-                r.getDisplayMetrics()
+                resources.getDisplayMetrics().widthPixels,
+                resources.getDisplayMetrics()
         );
 
-        LinearLayoutCompat.LayoutParams params =  new LinearLayoutCompat.LayoutParams(
+        view.setLayoutParams(new LinearLayoutCompat.LayoutParams(
                 widthPx,
                 LinearLayoutCompat.LayoutParams.WRAP_CONTENT
-        );
-        view.setLayoutParams(params);
-
+        ));
 
         // set padding on the view to make it look like a nested structure
-        int paddingPixel = ResourceDirectoryViewHolder.getPaddingForTreeNode(node, context);
-        view.setPadding(paddingPixel,15,15,15);
+        int paddingLeft = ResourceDirectoryViewHolder.getPaddingForTreeNode(node, resources);
+        view.setPadding(paddingLeft,
+                view.getPaddingTop(),
+                view.getPaddingRight(),
+                view.getPaddingBottom());
 
         return view;
     }
 
     public static class ResourceFileItem {
-        public String fileName;
+        String fileName;
         public String url;
+        boolean isFirstFile;
 
-        public ResourceFileItem(String fileName, String url) {
+        public ResourceFileItem(String fileName, String url, boolean isFirstFile) {
             this.fileName = fileName;
             this.url = url;
+            this.isFirstFile = isFirstFile;
         }
     }
 
