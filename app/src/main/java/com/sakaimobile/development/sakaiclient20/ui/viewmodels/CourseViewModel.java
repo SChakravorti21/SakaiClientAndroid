@@ -1,5 +1,7 @@
 package com.sakaimobile.development.sakaiclient20.ui.viewmodels;
 
+import android.annotation.SuppressLint;
+
 import com.sakaimobile.development.sakaiclient20.repositories.CourseRepository;
 
 import org.apache.commons.lang3.NotImplementedException;
@@ -15,12 +17,14 @@ public class CourseViewModel extends BaseViewModel {
         super(repo);
     }
 
+    @SuppressLint("CheckResult")
     @Override
     public void refreshAllData() {
         this.courseRepository.refreshAllCourses()
                 .doOnSubscribe(compositeDisposable::add)
+                .doOnError(this::emitError)
                 .subscribeOn(Schedulers.io())
-                .subscribe();
+                .subscribe(() -> {}, Throwable::printStackTrace);
     }
 
     @Override

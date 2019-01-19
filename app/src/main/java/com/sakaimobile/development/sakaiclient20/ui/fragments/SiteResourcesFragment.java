@@ -34,7 +34,7 @@ import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
 
-public class SiteResourcesFragment extends Fragment {
+public class SiteResourcesFragment extends BaseFragment {
 
     private String currentSiteId;
     @Inject ViewModelFactory viewModelFactory;
@@ -70,6 +70,12 @@ public class SiteResourcesFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        this.initRefreshFailureListener(resourceViewModel, () -> {
+            this.spinner.setVisibility(View.GONE);
+            this.treeContainer.setVisibility(View.VISIBLE);
+            return null;
+        });
 
         // setup the treeview
         resourcesTreeView = new AndroidTreeView(getActivity(), TreeNode.root());
@@ -117,7 +123,7 @@ public class SiteResourcesFragment extends Fragment {
                 saveResourceTreeState();
                 spinner.setVisibility(View.VISIBLE);
                 treeContainer.setVisibility(View.GONE);
-                resourceViewModel.refreshSiteResources(currentSiteId);
+                resourceViewModel.refreshSiteData(currentSiteId);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

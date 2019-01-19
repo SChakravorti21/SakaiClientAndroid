@@ -13,12 +13,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
-import com.sakaimobile.development.sakaiclient20.ui.adapters.AssignmentAdapter;
+import com.sakaimobile.development.sakaiclient20.ui.adapters.TreeAssignmentAdapter;
+import com.sakaimobile.development.sakaiclient20.ui.fragments.BaseFragment;
 import com.sakaimobile.development.sakaiclient20.ui.helpers.AssignmentSortingUtils;
 import com.sakaimobile.development.sakaiclient20.ui.helpers.CourseIconProvider;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.TreeViewItemClickListener;
@@ -35,6 +37,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
+import kotlin.Unit;
 
 /**
  * Created by Shoumyo Chakravorti.
@@ -46,7 +49,7 @@ import dagger.android.support.AndroidSupportInjection;
  * courses (which, in turn, are visible under their respective terms).
  */
 
-public class AssignmentsFragment extends Fragment {
+public class AssignmentsFragment extends BaseFragment {
 
     public static final String SHOULD_REFRESH = "SHOULD_REFRESH";
 
@@ -117,6 +120,12 @@ public class AssignmentsFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        this.initRefreshFailureListener(assignmentViewModel, () -> {
+            this.progressBar.setVisibility(View.GONE);
+            this.treeContainer.setVisibility(View.VISIBLE);
+            return null;
+        });
 
         this.assignmentViewModel
             .getCoursesByTerm(shouldRefresh)
@@ -272,7 +281,7 @@ public class AssignmentsFragment extends Fragment {
                         new CourseViewHolder.CourseHeaderItem(
                                 course.title,
                                 courseIconCode,
-                                new AssignmentAdapter(course.assignments)
+                                new TreeAssignmentAdapter(course.assignments)
                         );
 
                 TreeNode courseNode = new TreeNode(courseHeaderItem);

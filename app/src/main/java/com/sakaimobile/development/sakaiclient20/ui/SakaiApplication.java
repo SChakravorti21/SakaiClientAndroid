@@ -29,8 +29,10 @@ import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasActivityInjector;
 import dagger.android.support.HasSupportFragmentInjector;
 import io.fabric.sdk.android.Fabric;
+import io.reactivex.android.plugins.RxAndroidPlugins;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 
 public class SakaiApplication extends Application
@@ -61,8 +63,14 @@ public class SakaiApplication extends Application
         }
 
         LeakCanary.install(this);
+        // The download receiver listens for completed file downloads to open them
         registerDownloadReceiver();
+        // The context is needed to initialize the course icon provider since they are
+        // listed in a JSON asset file
         CourseIconProvider.initializeCourseIcons(this);
+        // Although we perform error-handling and let the user know of such errors,
+        // sometimes RxJava is unable to deliver an exception, which crashes the app
+        RxJavaPlugins.setErrorHandler(Throwable::printStackTrace);
 
         if(!BuildConfig.DEBUG)
             Fabric.with(this, new Crashlytics());

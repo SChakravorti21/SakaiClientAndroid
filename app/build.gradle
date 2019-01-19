@@ -4,34 +4,31 @@ buildscript {
     }
 
     dependencies {
-        classpath 'io.fabric.tools:gradle:1.+'
+        classpath 'io.fabric.tools:gradle:1.27.0'
     }
 }
+
 //noinspection GradleDependency
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
 }
 
-
-apply plugin: 'kotlin-android'
-
-apply plugin: 'kotlin-android-extensions'
-
 android {
     signingConfigs {
         config {
+            storeFile file('/Users/shoumyo/Documents/StudioProjects/keystore')
+            storePassword SAKAI_CLIENT_STORE_PASSWORD
             keyAlias 'key0'
-            keyPassword 'masahirosakurai'
-            storeFile file('/home/akench/keystores/sakaiapp.jks')
-            storePassword 'MasahiroSakurai123'
+            keyPassword SAKAI_CLIENT_KEY_PASSWORD
         }
     }
     compileSdkVersion 28
     defaultConfig {
-        vectorDrawables.useSupportLibrary = true
         applicationId "com.sakaimobile.development.sakaiclient20"
         minSdkVersion 16
         targetSdkVersion 28
@@ -43,6 +40,8 @@ android {
                 arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
             }
         }
+        vectorDrawables.useSupportLibrary = true
+        manifestPlaceholders = [fabric_io_id: SAKAI_CLIENT_FABRIC_API_KEY]
     }
     buildTypes {
         release {
@@ -128,6 +127,7 @@ dependencies {
     // optional - Test helpers
     androidTestImplementation "android.arch.work:work-testing:$work_version"
 
+    // Crashlytics for crash/error reporting
     implementation 'com.crashlytics.sdk.android:crashlytics:2.9.8'
 
     // LeakCanary for memory leak detection

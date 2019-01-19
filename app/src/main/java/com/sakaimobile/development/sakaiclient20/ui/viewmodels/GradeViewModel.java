@@ -1,5 +1,6 @@
 package com.sakaimobile.development.sakaiclient20.ui.viewmodels;
 
+import android.annotation.SuppressLint;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 
@@ -52,12 +53,14 @@ public class GradeViewModel extends BaseViewModel {
      * <p>
      * Then it calls load courses (now that the new grades are in the database)
      */
+    @SuppressLint("CheckResult")
     @Override
     public void refreshAllData() {
         this.gradeRepository.refreshAllGrades()
                 .doOnSubscribe(compositeDisposable::add)
+                .doOnError(this::emitError)
                 .subscribeOn(Schedulers.io())
-                .subscribe();
+                .subscribe(() -> {}, Throwable::printStackTrace);
     }
 
     /**
@@ -89,19 +92,20 @@ public class GradeViewModel extends BaseViewModel {
      *
      * @param siteId
      */
+    @SuppressLint("CheckResult")
     @Override
     public void refreshSiteData(String siteId) {
-        this.compositeDisposable.add(
-            this.gradeRepository.refreshSiteGrades(siteId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    grades -> {
-                        if(grades.isEmpty())
-                            this.siteGrades.setValue(null);
-                    }, Throwable::printStackTrace
-                )
-        );
+        this.gradeRepository.refreshSiteGrades(siteId)
+            .doOnSubscribe(compositeDisposable::add)
+            .doOnError(this::emitError)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                grades -> {
+                    if(grades.isEmpty())
+                        this.siteGrades.setValue(null);
+                }, Throwable::printStackTrace
+            );
     }
 
 
