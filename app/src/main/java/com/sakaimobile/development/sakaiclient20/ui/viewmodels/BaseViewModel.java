@@ -9,21 +9,15 @@ import com.sakaimobile.development.sakaiclient20.repositories.CourseRepository;
 
 import java.util.List;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
-abstract class BaseViewModel extends ViewModel {
-
-    protected enum SakaiErrorState {
-        NO_ERROR,
-        FAILURE
-    }
+public abstract class BaseViewModel extends ViewModel {
 
     CourseRepository courseRepository;
     CompositeDisposable compositeDisposable;
     private MutableLiveData<List<List<Course>>> coursesByTerm;
-    protected MutableLiveData<SakaiErrorState> errorState;
+    private MutableLiveData<SakaiErrorState> errorState;
 
     BaseViewModel() {
         this.errorState = new MutableLiveData<>();
@@ -43,7 +37,7 @@ abstract class BaseViewModel extends ViewModel {
     }
 
     void emitError(Throwable throwable) {
-        this.errorState.setValue(SakaiErrorState.FAILURE);
+        this.errorState.postValue(SakaiErrorState.FAILURE);
     }
 
     public LiveData<List<List<Course>>> getCoursesByTerm(boolean refresh) {

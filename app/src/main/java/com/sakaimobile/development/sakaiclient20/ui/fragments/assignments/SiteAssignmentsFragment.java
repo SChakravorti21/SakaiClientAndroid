@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
 import com.sakaimobile.development.sakaiclient20.ui.adapters.SiteAssignmentPagerAdapter;
+import com.sakaimobile.development.sakaiclient20.ui.fragments.BaseFragment;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.AssignmentViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
@@ -41,7 +42,7 @@ import dagger.android.support.AndroidSupportInjection;
  * through a {@link ViewPager}. The position of the current assignment
  * and panning to other assignments is supported through a {@link TabLayout}.
  */
-public class SiteAssignmentsFragment extends Fragment {
+public class SiteAssignmentsFragment extends BaseFragment {
 
     public static final String SITE_IDS_TAG = "SITE_IDS";
 
@@ -117,6 +118,12 @@ public class SiteAssignmentsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        this.initRefreshFailureListener(assignmentViewModel, () -> {
+            this.progressBar.setVisibility(View.GONE);
+            this.assignmentsPager.setVisibility(View.VISIBLE);
+            return null;
+        });
 
         this.assignmentViewModel.getSiteAssignments(siteIds)
                 .observe(getViewLifecycleOwner(), assignments -> {

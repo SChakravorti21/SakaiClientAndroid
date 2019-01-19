@@ -36,7 +36,7 @@ import javax.inject.Inject;
 import dagger.android.support.AndroidSupportInjection;
 
 
-public class AllGradesFragment extends Fragment {
+public class AllGradesFragment extends BaseFragment {
 
     public static final String SHOULD_REFRESH = "SHOULD_REFRESH";
 
@@ -81,6 +81,12 @@ public class AllGradesFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        this.initRefreshFailureListener(gradeViewModel, () -> {
+            this.progressBar.setVisibility(View.GONE);
+            this.treeContainer.setVisibility(View.VISIBLE);
+            return null;
+        });
 
         gradeViewModel.getCoursesByTerm(shouldRefresh)
                 .observe(getViewLifecycleOwner(), courses -> {

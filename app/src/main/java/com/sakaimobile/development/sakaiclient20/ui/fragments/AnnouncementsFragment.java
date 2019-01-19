@@ -43,7 +43,7 @@ import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
 
-public class AnnouncementsFragment extends Fragment implements OnAnnouncementSelected {
+public class AnnouncementsFragment extends BaseFragment implements OnAnnouncementSelected {
 
     public static final int ALL_ANNOUNCEMENTS = 0;
     public static final int SITE_ANNOUNCEMENTS = 1;
@@ -119,6 +119,12 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        this.initRefreshFailureListener(announcementViewModel, () -> {
+            this.spinner.setVisibility(View.GONE);
+            this.announcementRecycler.setVisibility(View.VISIBLE);
+            return null;
+        });
 
         // each time the observation is triggered, we have new announcements (after refreshing)
         announcementLiveData.observe(getViewLifecycleOwner(), announcements -> {

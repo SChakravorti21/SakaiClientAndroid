@@ -35,7 +35,7 @@ import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
 
-public class AllCoursesFragment extends Fragment {
+public class AllCoursesFragment extends BaseFragment {
 
     public interface OnCoursesRefreshListener {
         void onCoursesRefreshStarted();
@@ -96,6 +96,12 @@ public class AllCoursesFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        this.initRefreshFailureListener(courseViewModel, () -> {
+            this.progressBar.setVisibility(View.GONE);
+            this.treeContainer.setVisibility(View.VISIBLE);
+            return null;
+        });
 
         courseViewModel.getCoursesByTerm(shouldRefresh)
                 .observe(getViewLifecycleOwner(), courses -> {

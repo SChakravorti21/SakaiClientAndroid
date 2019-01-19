@@ -28,7 +28,7 @@ import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
 
-public class SiteGradesFragment extends Fragment {
+public class SiteGradesFragment extends BaseFragment {
 
     @Inject ViewModelFactory viewModelFactory;
     private GradeViewModel gradeViewModel;
@@ -67,6 +67,12 @@ public class SiteGradesFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        this.initRefreshFailureListener(gradeViewModel, () -> {
+            this.spinner.setVisibility(View.GONE);
+            this.siteGradesListView.setVisibility(View.VISIBLE);
+            return null;
+        });
 
         // get the live data
         gradeViewModel.getSiteGrades(siteId)
