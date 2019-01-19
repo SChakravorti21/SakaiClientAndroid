@@ -29,7 +29,7 @@ public class CreditsActivity extends AppCompatActivity {
             "https://logomakr.com/",
             "https://github.com/ReactiveX/RxAndroid",
             "https://github.com/bmelnychuk/AndroidTreeView",
-            "https://github.cappendom/square/retrofit",
+            "https://github.com/square/retrofit",
             "https://github.com/square/okhttp"
     };
 
