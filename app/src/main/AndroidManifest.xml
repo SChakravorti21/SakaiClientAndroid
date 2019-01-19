@@ -28,6 +28,8 @@
         <activity
             android:name=".ui.activities.SitePageActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".ui.activities.CreditsActivity"
+            android:screenOrientation="portrait"/>
 
         <provider
             android:name="android.support.v4.content.FileProvider"

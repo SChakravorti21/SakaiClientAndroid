@@ -25,7 +25,7 @@
     <color name="navigationTintColor">@color/sakaiTint</color>
     <color name="navigationTitleColor">@color/sakaiWhite</color>
     <color name="navigationBackgroundColor">#101010</color>
-    
+
     <color name="toolBarColor">@color/sakaiWhite</color>
     <color name="tabBarTintColor">@color/sakaiTint</color>
     <color name="tabBarUnselectedTintColor">@color/sakaiWhite</color>
