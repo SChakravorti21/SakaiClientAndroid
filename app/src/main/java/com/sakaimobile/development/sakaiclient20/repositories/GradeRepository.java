@@ -9,6 +9,7 @@ import com.sakaimobile.development.sakaiclient20.persistence.entities.Grade;
 import java.util.List;
 
 import io.reactivex.Completable;
+import io.reactivex.Flowable;
 import io.reactivex.Single;
 
 public class GradeRepository {
@@ -21,19 +22,15 @@ public class GradeRepository {
         this.gradeService = service;
     }
 
-    public Single<List<Grade>> getGradesForSite(String siteId) {
-        return gradeDao
-                .getGradesForSite(siteId)
-                .firstOrError();
+    public Flowable<List<Grade>> getGradesForSite(String siteId) {
+        return gradeDao.getGradesForSite(siteId);
     }
 
-    public Completable refreshSiteGrades(String siteId) {
+    public Single<List<Grade>> refreshSiteGrades(String siteId) {
         return this.gradeService
                 .getGradeForSite(siteId)
                 .map(SiteGrades::getGradesList)
-                .map(this::persistGrades)
-                .toObservable()
-                .ignoreElements();
+                .map(this::persistGrades);
     }
 
     public Completable refreshAllGrades() {
@@ -52,15 +49,13 @@ public class GradeRepository {
     }
 
     private List<Grade> persistGrades(List<Grade> grades) {
-
         if(grades.size() == 0)
             return grades;
 
         // all of the grades in the given list are of the same course (Same siteId)
         String siteId = grades.get(0).siteId;
-
         // insert the grades
-        gradeDao.insertGradesForSite(siteId, grades.toArray(new Grade[0]));
+        gradeDao.insertGradesForSite(siteId, grades);
 
         return grades;
     }

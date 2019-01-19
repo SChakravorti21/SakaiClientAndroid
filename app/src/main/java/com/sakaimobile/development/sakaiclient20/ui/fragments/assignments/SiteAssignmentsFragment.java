@@ -146,6 +146,13 @@ public class SiteAssignmentsFragment extends Fragment {
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        this.progressBar = null;
+        this.assignmentsPager = null;
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.site_assignments_menu, menu);
     }

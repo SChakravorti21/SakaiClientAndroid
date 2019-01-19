@@ -83,15 +83,9 @@ public class AttachmentDownloadListener implements DownloadListener {
      * @param url The URL of the file to download
      */
     private void downloadFile(String url) {
-        // Check for invalid url
-        if(url == null || url.isEmpty())
+        // Check for invalid url and check if the fragment is still alive
+        if(url == null || url.isEmpty() || this.fragment.get() == null)
             return;
-
-        // Check if the fragment is still alive
-        Fragment fragment = this.fragment != null ? this.fragment.get() : null;
-        if(fragment == null) {
-            return;
-        }
 
         // Parse the URI and create a download request
         Uri downloadUri = Uri.parse(url);
@@ -99,22 +93,23 @@ public class AttachmentDownloadListener implements DownloadListener {
 
         // Request header is necessary for the download to be successful, as it indicates
         // to Sakai that the user has permission to access this document.
-        request.addRequestHeader("Cookie", getCookies());
+        Fragment fragment = this.fragment.get();
+        request.addRequestHeader("Cookie", getCookies(fragment));
 
         // Title that will show up in the download manager/notification region
-        request.setTitle(downloadUri.getLastPathSegment());
+        String title = downloadUri.getLastPathSegment();
+        request.setTitle(title);
         // Allows the file to be found by the device
         request.allowScanningByMediaScanner();
         request.setVisibleInDownloadsUi(true);
         // Indicates in the notification region that the download is in progress/completed
         request.setShowRunningNotification(true);
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,
-                downloadUri.getLastPathSegment());
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, title);
 
         // Get the DownloadManager and enqueue the request to download this file
-        DownloadManager downloadManager = (DownloadManager) fragment.getContext()
-                .getSystemService(Context.DOWNLOAD_SERVICE);
+        DownloadManager downloadManager =
+                (DownloadManager) fragment.getContext().getSystemService(Context.DOWNLOAD_SERVICE);
 
         if(downloadManager != null) {
             long downloadId = downloadManager.enqueue(request);
@@ -133,10 +128,10 @@ public class AttachmentDownloadListener implements DownloadListener {
             errorToast.show();
         }
 
-        // Detach the fragment because it won;t be displaying any information
+        // Detach the fragment because it won't be displaying any information
         // The WebFragment is always added to the back stack, so we need to pop
         // the back stack for the back button to function as expected
-        fragment.getActivity().getSupportFragmentManager().popBackStack();
+        fragment.getActivity().onBackPressed();
     }
 
     /**
@@ -147,7 +142,7 @@ public class AttachmentDownloadListener implements DownloadListener {
      * @return Whether the permission to download a file has already been granted
      */
     private boolean checkAndRequestPermissions() {
-        Fragment fragment = this.fragment != null ? this.fragment.get() : null;
+        Fragment fragment = this.fragment.get();
         if(fragment == null) {
             // No point in checking the permissions if the fragment is no longer
             // in the foreground anyways
@@ -173,11 +168,9 @@ public class AttachmentDownloadListener implements DownloadListener {
      *  the permission to download files as well.
      * @return The cookies in a {@link String} format.
      */
-    private String getCookies() {
-        Fragment fragment = this.fragment != null ? this.fragment.get() : null;
-        if(fragment == null) {
+    private String getCookies(Fragment fragment) {
+        if(fragment == null)
             return null;
-        }
 
         // Since the CookieManager was managed by reference earlier
         // in a WebViewClient, the cookies should remain updated

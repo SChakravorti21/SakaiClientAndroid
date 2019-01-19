@@ -1,6 +1,5 @@
 package com.sakaimobile.development.sakaiclient20.persistence.access;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Transaction;
@@ -8,7 +7,9 @@ import android.arch.persistence.room.Transaction;
 import com.sakaimobile.development.sakaiclient20.persistence.composites.CourseWithAllData;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import io.reactivex.Flowable;
 import io.reactivex.Single;
@@ -17,7 +18,7 @@ import io.reactivex.Single;
  * Created by Development on 8/11/18.
  */
 @Dao
-public abstract class CourseDao implements BaseDao<Course> {
+public abstract class CourseDao extends BaseDao<Course> {
 
     @Transaction
     @Query("SELECT * FROM courses")
@@ -30,4 +31,20 @@ public abstract class CourseDao implements BaseDao<Course> {
     @Query("SELECT siteId FROM courses")
     public abstract Single<List<String>> getAllSiteIds();
 
+    ////////////////////////////////////////
+    //  PROTOCOL FOR REMOVING OLD COURSES
+    ////////////////////////////////////////
+
+    @Query("DELETE FROM courses WHERE siteId NOT IN (:availableSiteIds)")
+    public abstract int removeExtraneousCourses(Set<String> availableSiteIds);
+
+    public boolean removeExtraneousCourses(List<Course> courses) {
+        Set<String> siteIds = new HashSet<>();
+        for(Course course : courses)
+            siteIds.add(course.siteId);
+        return removeExtraneousCourses(siteIds) > 0;
+    }
+
+
 }
+

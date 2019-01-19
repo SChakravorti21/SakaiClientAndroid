@@ -82,6 +82,13 @@ public class SettingsFragment extends Fragment {
         });
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        this.logoutButton.setOnClickListener(null);
+        this.logoutButton = null;
+    }
+
     /**
      * Maps from the ID of the app info View to
      * the String representation and correct icon

@@ -35,7 +35,7 @@ import com.sakaimobile.development.sakaiclient20.persistence.typeconverters.Term
         Attachment.class,
         Announcement.class,
         Resource.class
-}, version = 8)
+}, version = 9)
 @TypeConverters({DateConverter.class, TermConverter.class})
 public abstract class SakaiDatabase extends RoomDatabase {
 
@@ -43,23 +43,21 @@ public abstract class SakaiDatabase extends RoomDatabase {
     private static volatile SakaiDatabase mInstance;
     private static final String DB_NAME = "Sakai.db";
 
+    public abstract GradeDao getGradeDao();
     public abstract CourseDao getCourseDao();
     public abstract ResourceDao getResourceDao();
     public abstract SitePageDao getSitePageDao();
     public abstract AssignmentDao getAssignmentDao();
     public abstract AttachmentDao getAttachmentDao();
-    public abstract GradeDao getGradeDao();
     public abstract AnnouncementDao getAnnouncementDao();
-
 
     public static SakaiDatabase getInstance(Context context) {
         if (mInstance == null) {
             synchronized (lock) {
                 if (mInstance == null) {
-                    mInstance = Room
-                            .databaseBuilder(context, SakaiDatabase.class, DB_NAME)
-                            .fallbackToDestructiveMigration()
-                            .build();
+                    mInstance = Room.databaseBuilder(context, SakaiDatabase.class, DB_NAME)
+                                    .fallbackToDestructiveMigration()
+                                    .build();
                 }
             }
         }

@@ -1,6 +1,7 @@
 package com.sakaimobile.development.sakaiclient20.persistence.entities;
 
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
@@ -18,13 +19,14 @@ import java.util.List;
  */
 
 @Entity(tableName = "assignments",
-//        foreignKeys = @ForeignKey(entity = Course.class,
-//                                    parentColumns = "siteId",
-//                                    childColumns = "siteId",
-//                                    onDelete = ForeignKey.CASCADE,
-//                                    onUpdate = ForeignKey.CASCADE),
-        indices = { @Index(value = "siteId"),
-                    @Index(value = "assignmentId")
+        foreignKeys = @ForeignKey(entity = Course.class,
+                parentColumns = "siteId",
+                childColumns = "siteId",
+                onDelete = ForeignKey.CASCADE,
+                onUpdate = ForeignKey.CASCADE),
+        indices = {
+                @Index(value = "siteId"),
+                @Index(value = "assignmentId")
         })
 public class Assignment implements Serializable {
 

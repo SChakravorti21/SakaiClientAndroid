@@ -7,6 +7,7 @@ import com.sakaimobile.development.sakaiclient20.persistence.entities.Resource;
 
 import java.util.List;
 
+import io.reactivex.Flowable;
 import io.reactivex.Single;
 
 public class ResourceRepository {
@@ -24,10 +25,8 @@ public class ResourceRepository {
      * @param siteId siteId of resources
      * @return list of resources, can be observed on
      */
-    public Single<List<Resource>> getSiteResources(String siteId) {
-        return resourceDao
-                .getSiteResources(siteId)
-                .firstOrError();
+    public Flowable<List<Resource>> getSiteResources(String siteId) {
+        return resourceDao.getSiteResources(siteId);
     }
 
     /**
@@ -50,9 +49,9 @@ public class ResourceRepository {
      * @return resource list with siteIds set
      */
     private List<Resource> setSiteIdOfResources(String siteId, List<Resource> resources) {
-        for(Resource resource : resources) {
+        for(Resource resource : resources)
             resource.siteId = siteId;
-        }
+
         return resources;
     }
 
@@ -66,7 +65,7 @@ public class ResourceRepository {
         if(resources.size() == 0)
             return resources;
 
-        resourceDao.insert(resources.toArray(new Resource[0]));
+        resourceDao.insert(resources);
         return resources;
     }
 }

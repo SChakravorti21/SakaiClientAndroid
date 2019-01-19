@@ -17,7 +17,6 @@ import okhttp3.Response;
 public class HeaderInterceptor implements Interceptor {
 
     private final String cookieUrl;
-
     private final String cookies;
 
     public HeaderInterceptor(String url) {
@@ -27,19 +26,13 @@ public class HeaderInterceptor implements Interceptor {
 
     @Override
     public Response intercept(Chain chain) throws IOException {
-        // Get the request from the interception
-        Request request = chain.request();
-
-        Request.Builder builder = request.newBuilder()
-                .addHeader("Cookie", cookies);
-
-        // Add the necessary cookies to the header for Sakai to acknowledge
-        // the request
-        request = builder.build();
-        logHeaders(request);
-
-        Response response = chain.proceed(request);
-        return response;
+        // Get the request from the interception and add
+        // the necessary cookies to the header for Sakai to acknowledge the request
+        Request request = chain.request()
+                .newBuilder()
+                .addHeader("Cookie", cookies)
+                .build();
+        return chain.proceed(request);
     }
 
     private String getCookies() {
@@ -49,19 +42,5 @@ public class HeaderInterceptor implements Interceptor {
         // so this method does not need to parse any extra cookies.
         CookieManager cookieManager = CookieManager.getInstance();
         return cookieManager.getCookie(cookieUrl);
-    }
-
-    /**
-     * Given a Request object, logs all headers attached to it. Used
-     * solely for debugging purposes.
-     *
-     * @param request The Request object to analyze
-     */
-    private void logHeaders(Request request) {
-        Log.i("Intercepted request", "logging headers");
-        Headers allHeaders = request.headers();
-        for (String name : allHeaders.names()) {
-            Log.i("Injected " + name, allHeaders.get(name));
-        }
     }
 }

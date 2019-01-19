@@ -6,9 +6,9 @@ import java.util.List;
 
 public class SiteGrades {
 
-    private List<Grade> gradesList;
     public String siteId;
-    public String siteName;
+    private String siteName;
+    private List<Grade> gradesList;
 
     public SiteGrades(String siteId, String siteName, List<Grade> gradesList) {
         this.siteId = siteId;
@@ -16,14 +16,6 @@ public class SiteGrades {
         this.gradesList = gradesList;
     }
 
-    public String getSiteId() { return this.siteId; }
-
-    public String getSiteName() { return this.siteName; }
-
     public List<Grade> getGradesList() { return this.gradesList; }
-
-    public void setGradesList(List<Grade> newGrades) {
-        this.gradesList = newGrades;
-    }
 
 }

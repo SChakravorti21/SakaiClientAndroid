@@ -1,16 +1,22 @@
 package com.sakaimobile.development.sakaiclient20.ui.activities;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.SitePage;
+import com.sakaimobile.development.sakaiclient20.ui.custom_components.CustomLinkMovementMethod;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AnnouncementsFragment;
+import com.sakaimobile.development.sakaiclient20.ui.fragments.SiteChatFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.SiteGradesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.SiteResourcesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.WebFragment;
@@ -24,7 +30,6 @@ import java.util.Map;
 
 public class SitePageActivity extends AppCompatActivity {
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,16 +39,17 @@ public class SitePageActivity extends AppCompatActivity {
         String siteType = i.getStringExtra(getString(R.string.site_type_tag));
         Course course = (Course) i.getSerializableExtra(getString(R.string.course_tag));
 
-        // setup toolbar
+        // setup toolbar, enable returning to parent activity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(v -> this.onBackPressed());
+        ActionBar supportActionBar = getSupportActionBar();
+        supportActionBar.setDisplayHomeAsUpEnabled(true);
 
         // The course might be null if we are coming from an assignments adapter
         // i.e. from the main Assignments tab's TreeView
+        // Set the toolbar title as siteType + course name
         if(course != null)
-            // set the toolbar title as siteType + coursename
-            getSupportActionBar().setTitle(String.format("%s: %s", siteType, course.title));
+            supportActionBar.setTitle(String.format("%s: %s", siteType, course.title));
 
 
         // load the appropriate fragment for the site type
@@ -62,11 +68,30 @@ public class SitePageActivity extends AppCompatActivity {
                 int initialPosition = i.getIntExtra(SiteAssignmentsFragment.INITIAL_VIEW_POSITION, 0);
                 startSiteAssignmentsFragment(null, assignments, initialPosition);
             }
+        } else if (siteType.equals(getString(R.string.chat_site))) {
+            startChatRoomFragment(course);
         } else {
             startWebViewFragment(siteType, course);
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        CustomLinkMovementMethod.setFragmentManager(getSupportFragmentManager());
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to returning to parent activity
+            case android.R.id.home:
+                this.onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     private void startSiteGradesFragment(Course course) {
         Bundle bun = new Bundle();
@@ -79,7 +104,6 @@ public class SitePageActivity extends AppCompatActivity {
     }
 
     private void startSiteAnnouncementsFragment(Course course) {
-
         HashMap<String, Course> siteIdToCourse = new HashMap<>();
         siteIdToCourse.put(course.siteId, course);
 
@@ -127,8 +151,39 @@ public class SitePageActivity extends AppCompatActivity {
         addFragment(fragment);
     }
 
-    private void startWebViewFragment(String siteName, Course course) {
+    private void startChatRoomFragment(Course course) {
+        // Our chat fragment uses WebView#evaluateJavascript()
+        // to get the chat channel ID and CSRF token, and this method
+        // is restricted to API >= 19
+        String chatSiteType = getString(R.string.chat_site);
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            startWebViewFragment(chatSiteType, course);
+            return;
+        }
 
+        // Get the URL that needs to be shown in the char fragment
+        // (get the `url` property off of the chat site page)
+        String chatSitePageUrl = null;
+        for(SitePage sitePage : course.sitePages) {
+            if(sitePage.title.equals(chatSiteType)) {
+                chatSitePageUrl = sitePage.url;
+                break;
+            }
+        }
+
+        if(chatSitePageUrl == null)
+            throw new RuntimeException("Chat site page url cannot be null");
+
+        Bundle bun = new Bundle();
+        bun.putString(SiteChatFragment.CHAT_SITE_URL, chatSitePageUrl);
+
+        SiteChatFragment fragment = new SiteChatFragment();
+        fragment.setArguments(bun);
+
+        addFragment(fragment);
+    }
+
+    private void startWebViewFragment(String siteName, Course course) {
         String url = null;
         for (SitePage page : course.sitePages) {
             if (page.title.equals(siteName))
