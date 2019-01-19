@@ -18,8 +18,8 @@ import com.unnamed.b.atv.model.TreeNode;
 public class TermHeaderViewHolder extends
         TreeNode.BaseNodeViewHolder<TermHeaderViewHolder.TermHeaderItem> {
 
-    private static final String CHEVRON_DOWN = "\uF078";
-    private static final String CHEVRON_RIGHT = "\uF054";
+    private static final String CHEVRON_DOWN = "\uF107";
+    private static final String CHEVRON_RIGHT = "\uF105";
 
     private TextView arrowView;
 
@@ -54,11 +54,14 @@ public class TermHeaderViewHolder extends
         );
 
         // Apply the layout parameters
-        LinearLayoutCompat.LayoutParams params = new LinearLayoutCompat.LayoutParams(
+        view.setLayoutParams(new LinearLayoutCompat.LayoutParams(
                 widthPx,
                 LinearLayoutCompat.LayoutParams.WRAP_CONTENT
-        );
-        view.setLayoutParams(params);
+        ));
+
+        // If this is the last term, do not show the bottom border (looks weird)
+        if(node.isLastChild())
+            view.setBackgroundResource(R.color.secondaryBackgroundColor);
 
         return view;
     }

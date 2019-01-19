@@ -20,12 +20,6 @@
     <string name="gradebook">Gradebook</string>
     <string name="none_string">None</string>
 
-    <string name="gradebook_site">Gradebook</string>
-    <string name="announcements_site">Announcements</string>
-    <string name="resources_site">Resources</string>
-    <string name="assignments_site">Assignments</string>
-    <string name="chat_site">Chat Room</string>
-
     <string name="spring">Spring</string>
     <string name="summer">Summer</string>
     <string name="winter">Winter</string>
@@ -60,7 +54,6 @@
     <string name="all_announcements_tag" translatable="false">ALL_ANNOUNCEMENTS</string>
     <string name="site_announcements_tag" translatable="false">SITE_ANNOUNCEMENTS</string>
     <string name="siteid_to_course_map" translatable="false">SITEIDTOCOURSE</string>
-    <string name="single_announcement_tag" translatable="false">SINGLE_ANNOUNCEMENT</string>
     <string name="site_resources_tag" translatable="false">SITERESOURCES</string>
     <string name="site_grades_tag" translatable="false">SITEGRADES</string>
 

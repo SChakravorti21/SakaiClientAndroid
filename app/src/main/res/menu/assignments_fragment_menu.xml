@@ -5,7 +5,8 @@
         android:title="Sort"
         android:id="@+id/assignment_sort_group"
         android:icon="@drawable/ic_filter_list_24dp"
-        app:showAsAction="ifRoom">
+        app:showAsAction="ifRoom"
+        app:iconTint="@color/navigationTintColor">
        <menu>
            <group
                android:visible="true">
@@ -14,13 +15,13 @@
                <item
                    android:id="@+id/action_sort_by_course"
                    android:title="Sort By Course"
-                   android:icon="@drawable/ic_class_black_24dp"/>
+                   android:icon="@drawable/ic_class_black_24dp" />
 
                <!-- Sorting by date -->
                <item
                    android:id="@+id/action_sort_by_date"
                    android:title="Sort By Date"
-                   android:icon="@drawable/ic_today_black_24dp"/>
+                   android:icon="@drawable/ic_today_black_24dp" />
            </group>
        </menu>
     </item>
@@ -28,7 +29,8 @@
         android:title="Refresh"
         android:id="@+id/action_refresh"
         android:icon="@drawable/ic_refresh_black_24dp"
-        app:showAsAction="always">
+        app:showAsAction="always"
+        app:iconTint="@color/navigationTintColor">
 
     </item>
 </menu>

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutCompat;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -12,11 +13,9 @@ import android.widget.TextView;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
-import com.sakaimobile.development.sakaiclient20.ui.adapters.AssignmentAdapter;
+import com.sakaimobile.development.sakaiclient20.ui.adapters.TreeAssignmentAdapter;
 import com.sakaimobile.development.sakaiclient20.ui.helpers.TreeAnimationUtils;
 import com.unnamed.b.atv.model.TreeNode;
-
-import java.util.List;
 
 /**
  * Created by Shoumyo Chakravorti on 6/9/18.
@@ -25,16 +24,16 @@ import java.util.List;
  * specialized {@link android.support.v7.widget.RecyclerView.ViewHolder} for a course that
  * contains {@link Assignment} objects. There are two halves to the view: the course header
  * indicating the course, and the {@link RecyclerView} that contains the cards for the assignments.
- * Assignments are populated using an {@link AssignmentAdapter}, and clicking an {@link Assignment}
+ * Assignments are populated using an {@link TreeAssignmentAdapter}, and clicking an {@link Assignment}
  * card opens up a
  * {@link com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.SiteAssignmentsFragment}
  * that has been focused to the selected assignment's
  * {@link com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.SingleAssignmentFragment}.
  */
-public class AssignmentCourseViewHolder extends TreeNode.BaseNodeViewHolder<AssignmentCourseViewHolder.CourseHeaderItem> {
+public class CourseViewHolder extends TreeNode.BaseNodeViewHolder<CourseViewHolder.CourseHeaderItem> {
 
-    private static final String CHEVRON_DOWN = "\uF078";
-    private static final String CHEVRON_RIGHT = "\uF054";
+    private static final String CHEVRON_DOWN = "\uF107";
+    private static final String CHEVRON_RIGHT = "\uF105";
 
     /**
      * The {@link TextView} that indicates whether the node is expanded or collapsed.
@@ -50,7 +49,7 @@ public class AssignmentCourseViewHolder extends TreeNode.BaseNodeViewHolder<Assi
      * Mandatory {@link com.unnamed.b.atv.model.TreeNode.BaseNodeViewHolder} constructor.
      * @param context The context of the tree view.
      */
-    public AssignmentCourseViewHolder(Context context) {
+    public CourseViewHolder(Context context) {
         super(context);
     }
 
@@ -64,7 +63,7 @@ public class AssignmentCourseViewHolder extends TreeNode.BaseNodeViewHolder<Assi
     @Override
     public View createNodeView(TreeNode node, CourseHeaderItem value) {
         final LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.course_with_recycler_view,
+        View view = inflater.inflate(R.layout.tree_node_course_recycler_view,
                 null, false);
 
         // The course courseIcon
@@ -78,18 +77,26 @@ public class AssignmentCourseViewHolder extends TreeNode.BaseNodeViewHolder<Assi
         // Initialize the RecyclerView with its data
         recyclerView = view.findViewById(R.id.assignments_recycler_view);
         recyclerView.setVisibility(View.GONE); // initially hide the RecyclerView
+        recyclerView.setAdapter(value.adapter);
         recyclerView.setHasFixedSize(true); // supposedly improves performance
-        recyclerView.setAdapter(new AssignmentAdapter(value.assignments));
 
-        // The RecyclerView should only occupy one row, so use a GridLayoutManager
-        // to dictate this style of a layout.
-        GridLayoutManager layoutManager = new GridLayoutManager(
-                context,
-                1, // span count here is number of rows
-                GridLayoutManager.HORIZONTAL, // fill cards from left to right
-                false // do not reverse the layout
-        );
-
+        RecyclerView.LayoutManager layoutManager;
+        if(value.adapter instanceof TreeAssignmentAdapter) {
+            // The RecyclerView should only occupy one row, so use a GridLayoutManager
+            // to dictate this style of a layout.
+            layoutManager = new GridLayoutManager(
+                    context,
+                    1, // span count here is number of rows
+                    GridLayoutManager.HORIZONTAL, // fill cards from left to right
+                    false // do not reverse the layout
+            );
+        } else {
+            layoutManager = new LinearLayoutManager(context);
+            // There is no need to scroll vertically (all items should fit inside the view)
+            recyclerView.setVerticalScrollBarEnabled(false);
+            // Scrolling is not needed anyways, and nested scrolling also messes up fling scroll
+            recyclerView.setNestedScrollingEnabled(false);
+        }
         recyclerView.setLayoutManager(layoutManager);
 
         // Initialize the arrow view for toggling the list
@@ -141,22 +148,18 @@ public class AssignmentCourseViewHolder extends TreeNode.BaseNodeViewHolder<Assi
     }
 
     /**
-     * Represents the content for a single {@link AssignmentCourseViewHolder} node.
+     * Represents the content for a single {@link CourseViewHolder} node.
      * Contains the course name, course courseIcon, and the list of {@link Assignment}s for the course.
      */
     public static class CourseHeaderItem {
         private String courseName;
         private String courseIcon;
+        private RecyclerView.Adapter adapter;
 
-        /**
-         * The assignments associated with the course.
-         */
-        private List<Assignment> assignments;
-
-        public CourseHeaderItem(String courseName, String courseIcon, List<Assignment> assignments) {
+        public CourseHeaderItem(String courseName, String courseIcon, RecyclerView.Adapter adapter) {
             this.courseName = courseName;
             this.courseIcon = courseIcon;
-            this.assignments = assignments;
+            this.adapter = adapter;
         }
     }
 }

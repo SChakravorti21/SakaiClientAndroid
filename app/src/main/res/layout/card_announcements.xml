@@ -1,100 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:foreground="?android:attr/selectableItemBackground"
     android:layout_width="match_parent"
-    android:layout_height="110dp"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:cardCornerRadius="10dp"
-    app:cardElevation="10dp"
-    android:layout_margin="5dp">
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@drawable/announcement_background" >
 
+    <View
+        android:layout_width="4dp"
+        android:layout_height="match_parent"
+        android:background="@color/highlightColor" />
 
+    <!-- Course icon is fixed width because not all courses have icons -->
+    <TextView
+        android:id="@+id/course_icon"
+        android:layout_width="36dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textSize="32sp"
+        android:gravity="center"
+        android:paddingLeft="8dp"
+        style="@style/CourseIcons"
+        tools:text="O" />
+
+    <!--top line-->
     <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp">
 
-        <!--top line-->
-        <LinearLayout
+        <TextView
+            android:id="@+id/author_name"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1.1"
-            android:paddingTop="2.3dp"
-            android:background="@color/colorPrimary"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/primaryTextColor"
+            android:paddingBottom="4dp"
+            tools:text="author"
+            style="@style/autoscroll" />
 
-            <TextView
-                android:paddingTop="2dp"
-                android:id="@+id/course_icon"
-                style="@style/CourseIcons"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:text="O" />
-
-            <TextView
-                android:id="@+id/author_name"
-                style="@style/cutoff"
-                android:layout_width="0dp"
-                android:layout_height="30dp"
-                android:layout_weight="1"
-                android:text="author"
-                android:textSize="17sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/date_text"
-                android:layout_width="100dp"
-                android:layout_height="30dp"
-                android:gravity="end"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:textSize="15sp" />
-
-        </LinearLayout>
-
-        <LinearLayout
+        <TextView
+            style="@style/cutoff"
+            android:id="@+id/course_name"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1.3"
-            android:paddingLeft="10dp"
-            android:paddingTop="10dp"
-            >
+            android:layout_height="wrap_content"
+            tools:text="COURSE"
+            android:textSize="14sp"
+            android:paddingBottom="4dp"
+            android:textColor="@color/secondaryTextColor"/>
 
-            <TextView
-                style="@style/cutoff"
-                android:id="@+id/course_name"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="COURSE"
-                android:textSize="16sp"
-                android:textStyle="italic" />
-        </LinearLayout>
-
-        <!--title-->
-        <LinearLayout
-            android:orientation="horizontal"
+        <TextView
+            style="@style/cutoff"
+            android:id="@+id/title_txt"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:paddingBottom="5dp"
-            >
-
-            <TextView
-                style="@style/cutoff"
-                android:id="@+id/title_txt"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="TITLE TITLE TITLE" />
-        </LinearLayout>
-
-
-
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            tools:text="TITLE TITLE TITLE"
+            android:textColor="@color/secondaryTextColor"/>
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/date_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="15sp"
+        android:textColor="@color/secondaryTextColor"
+        android:layout_gravity="center_horizontal"
+        android:paddingTop="12dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        tools:text="Dec 20"/>
 
-
-</android.support.v7.widget.CardView>
+</LinearLayout>

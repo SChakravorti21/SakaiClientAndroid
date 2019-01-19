@@ -17,7 +17,6 @@ import android.widget.TextView;
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
 import com.sakaimobile.development.sakaiclient20.ui.activities.SitePageActivity;
-import com.sakaimobile.development.sakaiclient20.ui.custom_components.CustomLinkMovementMethod;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.SiteAssignmentsFragment;
 
 import java.io.Serializable;
@@ -35,7 +34,7 @@ import java.util.List;
  * {@link com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.SingleAssignmentFragment},
  * allowing the user to view the full assignments and view other assignments of the course.
  */
-public class AssignmentAdapter extends RecyclerView.Adapter {
+public class TreeAssignmentAdapter extends RecyclerView.Adapter<TreeAssignmentAdapter.AssignmentViewHolder> {
 
     /**
      * The {@link Assignment} objects for this term or course.
@@ -51,7 +50,7 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
      * Constructor to keep instantiate the {@link Assignment} objects to create views.
      * @param assignments the list of {@link Assignment}s for this {@link RecyclerView}
      */
-    public AssignmentAdapter(List<Assignment> assignments) {
+    public TreeAssignmentAdapter(List<Assignment> assignments) {
         this.assignments = assignments;
     }
 
@@ -75,8 +74,7 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
      * any single assignment).
      */
     @Override
-    public AssignmentViewHolder onCreateViewHolder(ViewGroup parent,
-                                                   int viewType) {
+    public AssignmentViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // create a new view. The entire CardView must be passed into
         // the AssignmentViewHolder constructor since it is the parent of all inner elements.
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
@@ -92,13 +90,11 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
      * Invoked by the {@link android.support.v7.widget.RecyclerView.LayoutManager},
      * binds the data of an {@link Assignment} to its {@link View} through the
      * {@link AssignmentViewHolder}.
-     * @param holder the {@link AssignmentViewHolder} with the sub-{@link View}s to populate
+     * @param viewHolder the {@link AssignmentViewHolder} with the sub-{@link View}s to populate
      * @param position the index of the {@link Assignment} in {@code assignments}.
      */
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        AssignmentViewHolder viewHolder = (AssignmentViewHolder) holder;
-
+    public void onBindViewHolder(AssignmentViewHolder viewHolder, int position) {
         // Update the AssignmentViewHolder's position so that the click
         // listener can dictate how to initialize the SiteAssignmentsFragment
         viewHolder.setPosition(position);
@@ -116,16 +112,15 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
             description = Html.fromHtml(instructions, Html.FROM_HTML_MODE_LEGACY);
         } else {
             description = Html.fromHtml(instructions);
-        };
+        }
         viewHolder.descriptionView.setText(description);
-        viewHolder.descriptionView.setMovementMethod(CustomLinkMovementMethod.getInstance());
 
         // Set the assignment due date
-        viewHolder.dueDateView.setText("Due: " + assignment.dueTime.toString());
+        viewHolder.dueDateView.setText("Due: " + assignment.dueTimeString);
 
         // Animate the view if it has not been done already
         if(position > lastRenderedPosition) {
-            startAnimation(holder.itemView, position);
+            startAnimation(viewHolder.itemView, position);
         }
     }
 
@@ -135,7 +130,7 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
      * @param holder
      */
     @Override
-    public void onViewDetachedFromWindow(RecyclerView.ViewHolder holder) {
+    public void onViewDetachedFromWindow(AssignmentViewHolder holder) {
         super.onViewDetachedFromWindow(holder);
         holder.itemView.clearAnimation();
     }
@@ -226,7 +221,7 @@ public class AssignmentAdapter extends RecyclerView.Adapter {
             // Start the SitePageActivity to expand all assignment cards
             Intent i = new Intent(activity, SitePageActivity.class);
             // Specify that we want to show the Assignments site page
-            i.putExtra(activity.getString(R.string.site_type_tag), activity.getString(R.string.assignments_site));
+            i.putExtra(activity.getString(R.string.site_type_tag), SitePageActivity.ASSIGNMENTS);
             i.putExtra(activity.getString(R.string.assignments_tag), (Serializable) assignments);
             i.putExtra(SiteAssignmentsFragment.INITIAL_VIEW_POSITION, position);
 

@@ -9,22 +9,36 @@ import com.sakaimobile.development.sakaiclient20.repositories.CourseRepository;
 
 import java.util.List;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
-abstract class BaseViewModel extends ViewModel {
+public abstract class BaseViewModel extends ViewModel {
+
     CourseRepository courseRepository;
     CompositeDisposable compositeDisposable;
     private MutableLiveData<List<List<Course>>> coursesByTerm;
+    private MutableLiveData<SakaiErrorState> errorState;
+
+    BaseViewModel() {
+        this.errorState = new MutableLiveData<>();
+        this.compositeDisposable = new CompositeDisposable();
+    }
 
     BaseViewModel(CourseRepository repo) {
+        this();
         this.courseRepository = repo;
-        this.compositeDisposable = new CompositeDisposable();
     }
 
     abstract void refreshAllData();
     abstract void refreshSiteData(String siteId);
+
+    public LiveData<SakaiErrorState> getErrorState() {
+        return errorState;
+    }
+
+    void emitError(Throwable throwable) {
+        this.errorState.postValue(SakaiErrorState.FAILURE);
+    }
 
     public LiveData<List<List<Course>>> getCoursesByTerm(boolean refresh) {
         if(this.coursesByTerm == null) {
@@ -43,9 +57,8 @@ abstract class BaseViewModel extends ViewModel {
         this.compositeDisposable.add(
             this.courseRepository.getCoursesSortedByTerm()
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        this.coursesByTerm::setValue,
+                        this.coursesByTerm::postValue,
                         Throwable::printStackTrace
                 )
         );

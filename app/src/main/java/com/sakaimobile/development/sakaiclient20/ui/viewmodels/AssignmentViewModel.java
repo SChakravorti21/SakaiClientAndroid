@@ -24,19 +24,20 @@ public class AssignmentViewModel extends BaseViewModel {
     @Inject
     public AssignmentViewModel(
             CourseRepository courseRepository,
-            AssignmentRepository assignmentRepository
-    ) {
+            AssignmentRepository assignmentRepository) {
         super(courseRepository);
         this.assignmentRepository = assignmentRepository;
         this.siteAssignments = new MutableLiveData<>();
     }
 
+    @SuppressLint("CheckResult")
     @Override
     public void refreshAllData() {
         this.assignmentRepository.refreshAllAssignments()
                 .doOnSubscribe(compositeDisposable::add)
+                .doOnError(this::emitError)
                 .subscribeOn(Schedulers.io())
-                .subscribe();
+                .subscribe(() -> {}, Throwable::printStackTrace);
     }
 
     /**
@@ -60,6 +61,7 @@ public class AssignmentViewModel extends BaseViewModel {
         this.assignmentRepository
                 .refreshMultipleSiteAssignments(siteIds)
                 .doOnSubscribe(compositeDisposable::add)
+                .doOnError(this::emitError)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -68,7 +70,7 @@ public class AssignmentViewModel extends BaseViewModel {
                             // set `null` to indicate no assignments were found
                             if(assignments.isEmpty() || containsEmptyLists(assignments))
                                 this.siteAssignments.setValue(null);
-                        }
+                        }, Throwable::printStackTrace
                 );
     }
 
@@ -92,8 +94,7 @@ public class AssignmentViewModel extends BaseViewModel {
                                 this.refreshSiteData(siteIds);
                             else
                                 this.siteAssignments.setValue(assignments);
-                        },
-                        Throwable::printStackTrace
+                        }, Throwable::printStackTrace
                 )
         );
 

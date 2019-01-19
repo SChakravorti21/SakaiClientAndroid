@@ -15,8 +15,8 @@
         android:paddingTop="32dp"
         android:paddingBottom="8dp"
         android:text="Submit Assignment"
-        android:background="@color/sakai_medium_red"
-        android:textColor="@color/sakai_medium_silver"
+        android:background="@color/secondaryBackgroundColor"
+        android:textColor="@color/primaryTextColor"
         android:textStyle="bold"/>
 
     <TextView
@@ -27,8 +27,8 @@
         android:paddingBottom="4dp"
         android:textSize="12sp"
         android:text="You can submit this assignment from here."
-        android:background="@color/sakai_medium_red"
-        android:textColor="@color/sakai_medium_silver"/>
+        android:background="@color/secondaryBackgroundColor"
+        android:textColor="@color/secondaryTextColor"/>
 
     <TextView
         android:layout_width="match_parent"
@@ -38,13 +38,8 @@
         android:paddingBottom="16dp"
         android:textSize="12sp"
         android:text="Drag up to view more details, or drag down to close."
-        android:background="@color/sakai_medium_red"
-        android:textColor="@color/sakai_medium_silver"/>
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="8dp"
-        android:background="@drawable/card_header_gradient"/>
+        android:background="@color/secondaryBackgroundColor"
+        android:textColor="@color/secondaryTextColor"/>
 
     <com.sakaimobile.development.sakaiclient20.ui.custom_components.FileCompatWebView
         android:id="@+id/assignment_submission_view"

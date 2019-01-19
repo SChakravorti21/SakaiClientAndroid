@@ -18,25 +18,24 @@ import android.widget.Toast;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Grade;
-import com.sakaimobile.development.sakaiclient20.ui.adapters.GradeItemAdapter;
+import com.sakaimobile.development.sakaiclient20.ui.adapters.SiteGradeAdapter;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.GradeViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
 import java.util.List;
-import java.util.Random;
 
 import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
 
-public class SiteGradesFragment extends Fragment {
+public class SiteGradesFragment extends BaseFragment {
 
     @Inject ViewModelFactory viewModelFactory;
     private GradeViewModel gradeViewModel;
 
     private String siteId;
     private ProgressBar spinner;
-    private GradeItemAdapter adapter;
+    private SiteGradeAdapter adapter;
     private ListView siteGradesListView;
 
     @Override
@@ -68,6 +67,12 @@ public class SiteGradesFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        this.initRefreshFailureListener(gradeViewModel, () -> {
+            this.spinner.setVisibility(View.GONE);
+            this.siteGradesListView.setVisibility(View.VISIBLE);
+            return null;
+        });
 
         // get the live data
         gradeViewModel.getSiteGrades(siteId)
@@ -112,7 +117,7 @@ public class SiteGradesFragment extends Fragment {
         if (grades != null && grades.size() > 0) {
             // Only create the adapter if necessary, otherwise re-use the same one
             if(adapter == null) {
-                adapter = new GradeItemAdapter(getActivity(), grades);
+                adapter = new SiteGradeAdapter(getActivity(), grades);
                 siteGradesListView.setAdapter(adapter);
             } else {
                 adapter.clear();

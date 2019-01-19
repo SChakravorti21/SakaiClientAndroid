@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
-import com.sakaimobile.development.sakaiclient20.ui.adapters.AssignmentAdapter;
+import com.sakaimobile.development.sakaiclient20.ui.adapters.TreeAssignmentAdapter;
 import com.sakaimobile.development.sakaiclient20.ui.helpers.TreeAnimationUtils;
 import com.unnamed.b.atv.model.TreeNode;
 
@@ -21,18 +21,18 @@ import java.util.List;
 /**
  * Created by Shoumyo Chakravorti on 7/8/18.
  *
- * Performs much of the same functions as {@link AssignmentCourseViewHolder},
+ * Performs much of the same functions as {@link CourseViewHolder},
  * except this type of a {@link com.unnamed.b.atv.model.TreeNode.BaseNodeViewHolder}
  * holds {@link Assignment} objects that have been sorted by date within their own terms.
  *
- * @see AssignmentCourseViewHolder
+ * @see CourseViewHolder
  */
 
 public class AssignmentTermHeaderViewHolder
         extends TreeNode.BaseNodeViewHolder<AssignmentTermHeaderViewHolder.TermHeaderItem> {
 
-    private static final String CHEVRON_DOWN = "\uF078";
-    private static final String CHEVRON_RIGHT = "\uF054";
+    private static final String CHEVRON_DOWN = "\uF107";
+    private static final String CHEVRON_RIGHT = "\uF105";
 
     /**
      * The {@link TextView} that indicates whether the node is expanded or collapsed.
@@ -56,13 +56,13 @@ public class AssignmentTermHeaderViewHolder
      * Inflates the view for this node, with the {@link RecyclerView} collapsed
      * by default.
      * @param node The node that dictates this view's layout
-     * @param value The {@link AssignmentCourseViewHolder.CourseHeaderItem} used to fill the views
+     * @param value The {@link CourseViewHolder.CourseHeaderItem} used to fill the views
      * @return A {@link View} representing this node
      */
     @Override
     public View createNodeView(TreeNode node, AssignmentTermHeaderViewHolder.TermHeaderItem value) {
         final LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.term_with_recycler_view, null, false);
+        View view = inflater.inflate(R.layout.tree_node_term_recycler_view, null, false);
 
         // The course name
         TextView courseView = view.findViewById(R.id.term_name);
@@ -72,7 +72,7 @@ public class AssignmentTermHeaderViewHolder
         recyclerView = view.findViewById(R.id.assignments_recycler_view);
         recyclerView.setVisibility(View.GONE); // initially hide the RecyclerView
         recyclerView.setHasFixedSize(true); // supposedly improves performance
-        recyclerView.setAdapter(new AssignmentAdapter(value.assignments));
+        recyclerView.setAdapter(new TreeAssignmentAdapter(value.assignments));
 
         // The RecyclerView should only occupy one row, so use a GridLayoutManager
         // to dictate this style of a layout.
@@ -101,11 +101,15 @@ public class AssignmentTermHeaderViewHolder
                 r.getDisplayMetrics()
         );
 
-        LinearLayoutCompat.LayoutParams params =  new LinearLayoutCompat.LayoutParams(
+        view.setLayoutParams(new LinearLayoutCompat.LayoutParams(
                 widthPx,
                 LinearLayoutCompat.LayoutParams.WRAP_CONTENT
-        );
-        view.setLayoutParams(params);
+        ));
+
+        // Don't want bottom border if this is the last term (looks kinda weird)
+        if(node.isLastChild())
+            view.findViewById(R.id.term_name_container).setBackgroundResource(R.color.secondaryBackgroundColor);
+
         return view;
     }
 

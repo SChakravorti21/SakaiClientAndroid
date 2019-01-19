@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,13 +19,11 @@ import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.models.Term;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
-import com.sakaimobile.development.sakaiclient20.persistence.entities.Grade;
-import com.sakaimobile.development.sakaiclient20.ui.helpers.RutgersSubjectCodes;
+import com.sakaimobile.development.sakaiclient20.ui.adapters.TreeGradeAdapter;
+import com.sakaimobile.development.sakaiclient20.ui.helpers.CourseIconProvider;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.TreeViewItemClickListener;
-import com.sakaimobile.development.sakaiclient20.ui.viewholders.CourseHeaderViewHolder;
-import com.sakaimobile.development.sakaiclient20.ui.viewholders.GradeNodeViewHolder;
+import com.sakaimobile.development.sakaiclient20.ui.viewholders.CourseViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.TermHeaderViewHolder;
-import com.sakaimobile.development.sakaiclient20.ui.viewmodels.CourseViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.GradeViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 import com.unnamed.b.atv.model.TreeNode;
@@ -39,7 +36,7 @@ import javax.inject.Inject;
 import dagger.android.support.AndroidSupportInjection;
 
 
-public class AllGradesFragment extends Fragment {
+public class AllGradesFragment extends BaseFragment {
 
     public static final String SHOULD_REFRESH = "SHOULD_REFRESH";
 
@@ -85,6 +82,12 @@ public class AllGradesFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        this.initRefreshFailureListener(gradeViewModel, () -> {
+            this.progressBar.setVisibility(View.GONE);
+            this.treeContainer.setVisibility(View.VISIBLE);
+            return null;
+        });
+
         gradeViewModel.getCoursesByTerm(shouldRefresh)
                 .observe(getViewLifecycleOwner(), courses -> {
                     // If we are refreshing, there will be one initial false emission
@@ -109,8 +112,8 @@ public class AllGradesFragment extends Fragment {
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
+    public void onPause() {
+        super.onPause();
         this.saveTreeState();
     }
 
@@ -174,38 +177,21 @@ public class AllGradesFragment extends Fragment {
 
             //for each course, get its grades
             for (Course currCourse : coursesInTerm) {
+                if (currCourse.grades == null || currCourse.grades.size() == 0)
+                    continue;
+
+                termHasAnyGrades = true;
                 //create a course header item and make a treenode using it
-                String courseIconCode = RutgersSubjectCodes.mapCourseCodeToIcon.get(currCourse.subjectCode);
-                CourseHeaderViewHolder.CourseHeaderItem courseNodeItem = new CourseHeaderViewHolder.CourseHeaderItem(
+                String courseIconCode = CourseIconProvider.getCourseIcon(currCourse.subjectCode);
+                CourseViewHolder.CourseHeaderItem courseNodeItem = new CourseViewHolder.CourseHeaderItem(
                         currCourse.title,
-                        currCourse.siteId,
-                        courseIconCode
+                        courseIconCode,
+                        new TreeGradeAdapter(currCourse.grades)
                 );
 
                 //set the custom view holder
-                TreeNode courseNode = new TreeNode(courseNodeItem).setViewHolder(new CourseHeaderViewHolder(getContext(), true));
-
-                //only continue if the course has grades
-                List<Grade> gradebookObjectList = currCourse.grades;
-                if (gradebookObjectList != null && gradebookObjectList.size() > 0) {
-                    termHasAnyGrades = true;
-
-                    //for each grade item in the current course, create a node
-                    for (Grade grade : gradebookObjectList) {
-                        GradeNodeViewHolder.GradeTreeItem gradeNodeItem = new GradeNodeViewHolder.GradeTreeItem(
-                                grade.itemName,
-                                grade.grade,
-                                grade.points
-                        );
-
-                        //set the custom view holder
-                        TreeNode gradeNode = new TreeNode(gradeNodeItem).setViewHolder(new GradeNodeViewHolder(getContext()));
-
-                        courseNode.addChild(gradeNode);
-                    }
-
-                    termNode.addChild(courseNode);
-                }
+                TreeNode courseNode = new TreeNode(courseNodeItem).setViewHolder(new CourseViewHolder(getContext()));
+                termNode.addChild(courseNode);
             }
 
             //only add the term to the tree only if at least one course has one grade item

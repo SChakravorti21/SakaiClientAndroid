@@ -30,45 +30,45 @@ import java.util.Map;
 
 public class SitePageActivity extends AppCompatActivity {
 
+    public static final String GRADEBOOK = "Gradebook";
+    public static final String ANNOUNCEMENTS = "Announcements";
+    public static final String RESOURCES = "Resources";
+    public static final String ASSIGNMENTS = "Assignments";
+    public static final String CHAT_ROOM = "Chat Room";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_site_page);
 
-        Intent i = getIntent();
-        String siteType = i.getStringExtra(getString(R.string.site_type_tag));
-        Course course = (Course) i.getSerializableExtra(getString(R.string.course_tag));
+        Intent intent = getIntent();
+        String siteType = intent.getStringExtra(getString(R.string.site_type_tag));
+        Course course = (Course) intent.getSerializableExtra(getString(R.string.course_tag));
 
         // setup toolbar, enable returning to parent activity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar supportActionBar = getSupportActionBar();
+        supportActionBar.setTitle(siteType);
         supportActionBar.setDisplayHomeAsUpEnabled(true);
 
-        // The course might be null if we are coming from an assignments adapter
-        // i.e. from the main Assignments tab's TreeView
-        // Set the toolbar title as siteType + course name
-        if(course != null)
-            supportActionBar.setTitle(String.format("%s: %s", siteType, course.title));
-
-
         // load the appropriate fragment for the site type
-        if (siteType.equals(getString(R.string.gradebook))) {
+        if (siteType.equals(GRADEBOOK)) {
             startSiteGradesFragment(course);
-        } else if (siteType.equals(getString(R.string.announcements_site))) {
+        } else if (siteType.equals(ANNOUNCEMENTS)) {
             startSiteAnnouncementsFragment(course);
-        } else if (siteType.equals(getString(R.string.resources_site))) {
+        } else if (siteType.equals(RESOURCES)) {
             startSiteResourcesFragment(course);
-        } else if (siteType.equals(getString(R.string.assignments_site))) {
+        } else if (siteType.equals(ASSIGNMENTS)) {
             if(course != null)
                 // If the course is not null, show assignment just for that course's site ID
                 startSiteAssignmentsFragment(course, null, 0);
             else {
-                List<Assignment> assignments = (List<Assignment>) i.getSerializableExtra(getString(R.string.assignments_tag));
-                int initialPosition = i.getIntExtra(SiteAssignmentsFragment.INITIAL_VIEW_POSITION, 0);
+                List<Assignment> assignments = (List<Assignment>) intent.getSerializableExtra(getString(R.string.assignments_tag));
+                int initialPosition = intent.getIntExtra(SiteAssignmentsFragment.INITIAL_VIEW_POSITION, 0);
                 startSiteAssignmentsFragment(null, assignments, initialPosition);
             }
-        } else if (siteType.equals(getString(R.string.chat_site))) {
+        } else if (siteType.equals(CHAT_ROOM)) {
             startChatRoomFragment(course);
         } else {
             startWebViewFragment(siteType, course);
@@ -155,9 +155,8 @@ public class SitePageActivity extends AppCompatActivity {
         // Our chat fragment uses WebView#evaluateJavascript()
         // to get the chat channel ID and CSRF token, and this method
         // is restricted to API >= 19
-        String chatSiteType = getString(R.string.chat_site);
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            startWebViewFragment(chatSiteType, course);
+            startWebViewFragment(CHAT_ROOM, course);
             return;
         }
 
@@ -165,7 +164,7 @@ public class SitePageActivity extends AppCompatActivity {
         // (get the `url` property off of the chat site page)
         String chatSitePageUrl = null;
         for(SitePage sitePage : course.sitePages) {
-            if(sitePage.title.equals(chatSiteType)) {
+            if(sitePage.title.equals(CHAT_ROOM)) {
                 chatSitePageUrl = sitePage.url;
                 break;
             }

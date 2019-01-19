@@ -7,6 +7,8 @@ import android.view.animation.Transformation;
 
 public final class TreeAnimationUtils {
 
+    private static final float HEIGHT_TO_SPEED_RATIO = 3.5f;
+
     /**
      * Expands the {@link RecyclerView} by measuring its initial and target height,
      * then applying an {@link Animation} that increases the view height from the initial
@@ -43,7 +45,7 @@ public final class TreeAnimationUtils {
 
         // Duration of 200 milliseconds is the same as the default toggle
         // animation time for all nodes
-        expansionAnimation.setDuration(200);
+        expansionAnimation.setDuration(getAnimationDuration(targetHeight));
         recyclerView.startAnimation(expansionAnimation);
     }
 
@@ -72,8 +74,12 @@ public final class TreeAnimationUtils {
             }
         };
 
-        collapseAnimation.setDuration(200);
+        collapseAnimation.setDuration(getAnimationDuration(initialHeight));
         recyclerView.startAnimation(collapseAnimation);
+    }
+
+    private static long getAnimationDuration(int height) {
+        return (long) (height / HEIGHT_TO_SPEED_RATIO);
     }
 
 }

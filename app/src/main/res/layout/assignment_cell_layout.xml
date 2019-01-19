@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="250dp"
-    android:layout_width="230dp"
+    android:layout_width="250dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:cardCornerRadius="6dp"
-    app:cardElevation="6dp"
+    app:cardCornerRadius="4dp"
+    app:cardElevation="20dp"
     app:cardPreventCornerOverlap="true"
     app:cardUseCompatPadding="true"
-    android:layout_marginLeft="0dp"
-    android:layout_marginRight="0dp"
-    android:layout_marginTop="6dp"
-    android:layout_marginBottom="6dp">
+    android:layout_marginLeft="-12dp"
+    android:layout_marginRight="-12dp"
+    android:layout_marginTop="-8dp"
+    android:layout_marginBottom="-8dp">
 
     <LinearLayout
         android:orientation="vertical"
@@ -23,7 +23,7 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/sakai_medium_red"
+            android:background="@color/tertiaryBackgroundColor"
             android:padding="16dp">
 
             <!-- Define both lines and maxlines so that
@@ -34,7 +34,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_gravity="fill"
-                android:textColor="@color/sakai_light_silver"
+                android:textColor="@color/primaryTextColor"
                 android:textStyle="bold"
                 android:maxLines="2"
                 android:paddingRight="12dp"/>
@@ -43,7 +43,6 @@
                 android:id="@+id/assignment_expand_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/sakai_light_silver"
                 android:background="?android:attr/selectableItemBackground"
                 android:text="\uf065"
                 android:textSize="16sp"
@@ -53,42 +52,28 @@
 
         </LinearLayout>
 
-        <!-- Card header gradient (for shadow effect) -->
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="4dp"
-            android:background="@drawable/card_header_gradient" />
-
         <TextView
             android:id="@+id/assignment_description"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:background="@color/white"
-            android:textColor="@color/sakai_light_black"
-            android:padding="12dp"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="4dp"/>
-
-        <!-- Card footer gradient (for elevation effect) -->
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="4dp"
-            android:background="@drawable/card_footer_gradient" />
+            android:background="@drawable/tree_node_assignment_card_background"
+            android:textColor="@color/secondaryTextColor"
+            android:padding="12dp" />
 
         <!-- Footer -->
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/sakai_medium_red"
+            android:background="@color/tertiaryBackgroundColor"
             android:padding="16dp">
 
             <TextView
                 android:id="@+id/assignment_date"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:textColor="@color/sakai_light_silver"/>
+                android:textColor="@color/primaryTextColor"/>
 
         </LinearLayout>
 

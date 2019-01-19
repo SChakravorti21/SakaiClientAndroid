@@ -5,16 +5,16 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.sakaimobile.development.sakaiclient20.ui.activities.MainActivity">
+    tools:context="com.sakaimobile.development.sakaiclient20.ui.activities.MainActivity"
+    android:background="@color/primaryBackgroundColor">
 
 
     <android.support.v7.widget.Toolbar
-        app:titleTextColor="@color/white"
+        app:titleTextColor="@color/navigationTitleColor"
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?android:attr/actionBarSize"
-        android:background="@color/colorPrimary"
-        />
+        android:background="@color/navigationBackgroundColor" />
 
     <ProgressBar
         android:id="@+id/nav_activity_progressbar"
@@ -44,21 +44,11 @@
 
     </FrameLayout>
 
-    <View
-        android:id="@+id/shadow"
-        android:layout_width="0dp"
-        android:layout_height="10dp"
-        android:layout_above="@id/navigation"
-        android:background="@drawable/shadow"
-        app:layout_constraintBottom_toTopOf="@+id/navigation"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
+        android:background="@color/tabBarBackgroundColor"
         app:itemIconTint="@drawable/nav_item_selector"
         app:itemTextColor="@drawable/nav_item_selector"
         app:layout_constraintBottom_toBottomOf="parent"

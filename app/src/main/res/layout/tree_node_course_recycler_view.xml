@@ -1,34 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/sakai_medium_red"
-        android:foreground="?android:attr/selectableItemBackground" >
+        android:background="@drawable/tree_node_course_background"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:paddingLeft="4dp">
 
         <TextView
-            android:id="@+id/term_name"
+            android:id="@+id/course_icon"
+            style="@style/CourseIcons"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            tools:text="Spring 2018"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:id="@+id/course_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="8"
+            android:textColor="@color/secondaryTextColor"
+            tools:text="Course 2018"
             android:textStyle="bold"
+            android:textSize="18sp"
             android:padding="8dp"
-            android:paddingLeft="16dp"
-            android:layout_weight="1"
-            android:textColor="@color/sakai_medium_silver"
-            android:textSize="24sp" />
+            android:maxLines="1"/>
 
         <TextView
             android:id="@+id/arrow_image"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            style="@style/FontawesomeText.Term" />
+            style="@style/FontawesomeText.Course" />
 
     </LinearLayout>
 
