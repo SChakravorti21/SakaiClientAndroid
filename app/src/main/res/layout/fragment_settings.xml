@@ -38,15 +38,16 @@
             app:layout_constraintTop_toBottomOf="@+id/appinfo_linearlayout" />
 
         <ImageView
+
             android:id="@+id/app_icon"
-            android:layout_width="70dp"
-            android:layout_height="69dp"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
             android:layout_marginStart="80dp"
             android:layout_marginLeft="80dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:contentDescription="@string/app_name"
-            android:src="@drawable/app_icon"
+            android:src="@mipmap/ic_launcher"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/preferences_fragment"
