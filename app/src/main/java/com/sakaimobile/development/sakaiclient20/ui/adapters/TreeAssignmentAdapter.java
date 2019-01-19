@@ -17,9 +17,7 @@ import android.widget.TextView;
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
 import com.sakaimobile.development.sakaiclient20.ui.activities.SitePageActivity;
-import com.sakaimobile.development.sakaiclient20.ui.custom_components.CustomLinkMovementMethod;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.SiteAssignmentsFragment;
-import com.sakaimobile.development.sakaiclient20.ui.viewmodels.AssignmentViewModel;
 
 import java.io.Serializable;
 import java.util.List;
@@ -36,7 +34,7 @@ import java.util.List;
  * {@link com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.SingleAssignmentFragment},
  * allowing the user to view the full assignments and view other assignments of the course.
  */
-public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.AssignmentViewHolder> {
+public class TreeAssignmentAdapter extends RecyclerView.Adapter<TreeAssignmentAdapter.AssignmentViewHolder> {
 
     /**
      * The {@link Assignment} objects for this term or course.
@@ -52,7 +50,7 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.As
      * Constructor to keep instantiate the {@link Assignment} objects to create views.
      * @param assignments the list of {@link Assignment}s for this {@link RecyclerView}
      */
-    public AssignmentAdapter(List<Assignment> assignments) {
+    public TreeAssignmentAdapter(List<Assignment> assignments) {
         this.assignments = assignments;
     }
 

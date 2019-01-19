@@ -18,7 +18,7 @@ import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
-import com.sakaimobile.development.sakaiclient20.ui.adapters.AssignmentAdapter;
+import com.sakaimobile.development.sakaiclient20.ui.adapters.TreeAssignmentAdapter;
 import com.sakaimobile.development.sakaiclient20.ui.helpers.AssignmentSortingUtils;
 import com.sakaimobile.development.sakaiclient20.ui.helpers.CourseIconProvider;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.TreeViewItemClickListener;
@@ -272,7 +272,7 @@ public class AssignmentsFragment extends Fragment {
                         new CourseViewHolder.CourseHeaderItem(
                                 course.title,
                                 courseIconCode,
-                                new AssignmentAdapter(course.assignments)
+                                new TreeAssignmentAdapter(course.assignments)
                         );
 
                 TreeNode courseNode = new TreeNode(courseHeaderItem);

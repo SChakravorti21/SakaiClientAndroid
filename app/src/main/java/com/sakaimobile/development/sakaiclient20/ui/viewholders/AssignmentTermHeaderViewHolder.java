@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
-import com.sakaimobile.development.sakaiclient20.ui.adapters.AssignmentAdapter;
+import com.sakaimobile.development.sakaiclient20.ui.adapters.TreeAssignmentAdapter;
 import com.sakaimobile.development.sakaiclient20.ui.helpers.TreeAnimationUtils;
 import com.unnamed.b.atv.model.TreeNode;
 
@@ -72,7 +72,7 @@ public class AssignmentTermHeaderViewHolder
         recyclerView = view.findViewById(R.id.assignments_recycler_view);
         recyclerView.setVisibility(View.GONE); // initially hide the RecyclerView
         recyclerView.setHasFixedSize(true); // supposedly improves performance
-        recyclerView.setAdapter(new AssignmentAdapter(value.assignments));
+        recyclerView.setAdapter(new TreeAssignmentAdapter(value.assignments));
 
         // The RecyclerView should only occupy one row, so use a GridLayoutManager
         // to dictate this style of a layout.

@@ -20,7 +20,7 @@ import java.util.List;
  * {@link android.support.v4.view.ViewPager} of a
  * {@link com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.SiteAssignmentsFragment}.
  */
-public class AssignmentsPagerAdapter extends FragmentStatePagerAdapter {
+public class SiteAssignmentPagerAdapter extends FragmentStatePagerAdapter {
 
     /**
      * The list of {@link Assignment}s for the current course being viewed.
@@ -33,8 +33,8 @@ public class AssignmentsPagerAdapter extends FragmentStatePagerAdapter {
      *                        {@link com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.SingleAssignmentFragment}s.
      * @param assignments the list of {@link Assignment} objects for this course
      */
-    public AssignmentsPagerAdapter(FragmentManager fragmentManager,
-                                   List<Assignment> assignments) {
+    public SiteAssignmentPagerAdapter(FragmentManager fragmentManager,
+                                      List<Assignment> assignments) {
         super(fragmentManager);
         this.assignments = assignments;
     }

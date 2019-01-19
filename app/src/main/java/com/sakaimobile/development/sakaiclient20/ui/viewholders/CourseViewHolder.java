@@ -13,11 +13,9 @@ import android.widget.TextView;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
-import com.sakaimobile.development.sakaiclient20.ui.adapters.AssignmentAdapter;
+import com.sakaimobile.development.sakaiclient20.ui.adapters.TreeAssignmentAdapter;
 import com.sakaimobile.development.sakaiclient20.ui.helpers.TreeAnimationUtils;
 import com.unnamed.b.atv.model.TreeNode;
-
-import java.util.List;
 
 /**
  * Created by Shoumyo Chakravorti on 6/9/18.
@@ -26,7 +24,7 @@ import java.util.List;
  * specialized {@link android.support.v7.widget.RecyclerView.ViewHolder} for a course that
  * contains {@link Assignment} objects. There are two halves to the view: the course header
  * indicating the course, and the {@link RecyclerView} that contains the cards for the assignments.
- * Assignments are populated using an {@link AssignmentAdapter}, and clicking an {@link Assignment}
+ * Assignments are populated using an {@link TreeAssignmentAdapter}, and clicking an {@link Assignment}
  * card opens up a
  * {@link com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.SiteAssignmentsFragment}
  * that has been focused to the selected assignment's
@@ -83,7 +81,7 @@ public class CourseViewHolder extends TreeNode.BaseNodeViewHolder<CourseViewHold
         recyclerView.setHasFixedSize(true); // supposedly improves performance
 
         RecyclerView.LayoutManager layoutManager;
-        if(value.adapter instanceof AssignmentAdapter) {
+        if(value.adapter instanceof TreeAssignmentAdapter) {
             // The RecyclerView should only occupy one row, so use a GridLayoutManager
             // to dictate this style of a layout.
             layoutManager = new GridLayoutManager(

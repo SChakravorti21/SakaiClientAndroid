@@ -14,17 +14,37 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
 abstract class BaseViewModel extends ViewModel {
+
+    protected enum SakaiErrorState {
+        NO_ERROR,
+        FAILURE
+    }
+
     CourseRepository courseRepository;
     CompositeDisposable compositeDisposable;
     private MutableLiveData<List<List<Course>>> coursesByTerm;
+    protected MutableLiveData<SakaiErrorState> errorState;
+
+    BaseViewModel() {
+        this.errorState = new MutableLiveData<>();
+        this.compositeDisposable = new CompositeDisposable();
+    }
 
     BaseViewModel(CourseRepository repo) {
+        this();
         this.courseRepository = repo;
-        this.compositeDisposable = new CompositeDisposable();
     }
 
     abstract void refreshAllData();
     abstract void refreshSiteData(String siteId);
+
+    public LiveData<SakaiErrorState> getErrorState() {
+        return errorState;
+    }
+
+    void emitError(Throwable throwable) {
+        this.errorState.setValue(SakaiErrorState.FAILURE);
+    }
 
     public LiveData<List<List<Course>>> getCoursesByTerm(boolean refresh) {
         if(this.coursesByTerm == null) {

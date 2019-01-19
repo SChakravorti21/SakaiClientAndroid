@@ -20,7 +20,7 @@ import android.widget.Toast;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
-import com.sakaimobile.development.sakaiclient20.ui.adapters.AssignmentsPagerAdapter;
+import com.sakaimobile.development.sakaiclient20.ui.adapters.SiteAssignmentPagerAdapter;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.AssignmentViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
@@ -133,7 +133,7 @@ public class SiteAssignmentsFragment extends Fragment {
                     for(Assignment assignment : assignments)
                         attachAssignmentSitePageUrl(assignment);
 
-                    AssignmentsPagerAdapter pagerAdapter = new AssignmentsPagerAdapter(
+                    SiteAssignmentPagerAdapter pagerAdapter = new SiteAssignmentPagerAdapter(
                             getActivity().getSupportFragmentManager(),
                             assignments);
                     this.assignmentsPager.setAdapter(pagerAdapter);

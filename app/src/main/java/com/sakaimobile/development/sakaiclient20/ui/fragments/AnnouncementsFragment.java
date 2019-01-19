@@ -200,9 +200,9 @@ public class AnnouncementsFragment extends Fragment implements OnAnnouncementSel
                 saveScrollState();
 
                 if(announcementType == SITE_ANNOUNCEMENTS)
-                    announcementViewModel.refreshSiteAnnouncements(announcementsSiteId);
+                    announcementViewModel.refreshSiteData(announcementsSiteId);
                 else
-                    announcementViewModel.refreshAllAnnouncements();
+                    announcementViewModel.refreshAllData();
 
                 return true;
             default:

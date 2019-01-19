@@ -117,7 +117,7 @@ public class SiteResourcesFragment extends Fragment {
                 saveResourceTreeState();
                 spinner.setVisibility(View.VISIBLE);
                 treeContainer.setVisibility(View.GONE);
-                resourceViewModel.refreshSiteResources(currentSiteId);
+                resourceViewModel.refreshSiteData(currentSiteId);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

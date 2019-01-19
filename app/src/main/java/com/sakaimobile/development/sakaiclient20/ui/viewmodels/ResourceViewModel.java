@@ -1,11 +1,14 @@
 package com.sakaimobile.development.sakaiclient20.ui.viewmodels;
 
+import android.annotation.SuppressLint;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Resource;
 import com.sakaimobile.development.sakaiclient20.repositories.ResourceRepository;
+
+import org.apache.commons.lang3.NotImplementedException;
 
 import java.util.List;
 
@@ -15,16 +18,15 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class ResourceViewModel extends ViewModel {
+public class ResourceViewModel extends BaseViewModel {
 
     private ResourceRepository resourceRepository;
-    private CompositeDisposable compositeDisposable;
     private MutableLiveData<List<Resource>> resourcesLiveData;
 
     @Inject
     ResourceViewModel(ResourceRepository resourceRepository) {
+        super();
         this.resourceRepository = resourceRepository;
-        this.compositeDisposable = new CompositeDisposable();
     }
 
     /**
@@ -52,20 +54,22 @@ public class ResourceViewModel extends ViewModel {
      *
      * @param siteId siteId
      */
-    public void refreshSiteResources(String siteId) {
-        compositeDisposable.add(
-            resourceRepository.refreshSiteResources(siteId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
+    @SuppressLint("CheckResult")
+    @Override
+    public void refreshSiteData(String siteId) {
+        resourceRepository.refreshSiteResources(siteId)
+            .doOnSubscribe(compositeDisposable::add)
+            .doOnError(this::emitError)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
                     resources -> {
                         // Resource size of 1 indicates that resources
                         // have been set up for the site but it is an empty collection
                         if(resources.size() == 1)
                             resourcesLiveData.setValue(null);
                     }, Throwable::printStackTrace
-                )
-        );
+            );
     }
 
     /**
@@ -85,7 +89,7 @@ public class ResourceViewModel extends ViewModel {
                     resources -> {
                         // if nothing in DB, refresh
                         if(resources.isEmpty())
-                            refreshSiteResources(siteId);
+                            refreshSiteData(siteId);
                         else
                             resourcesLiveData.setValue(resources);
                     }, Throwable::printStackTrace
@@ -93,4 +97,8 @@ public class ResourceViewModel extends ViewModel {
         );
     }
 
+    @Override
+    void refreshAllData() {
+        throw new NotImplementedException("Never need to request resources for all courses at once");
+    }
 }
