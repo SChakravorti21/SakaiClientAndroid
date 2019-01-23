@@ -23,7 +23,6 @@ import com.sakaimobile.development.sakaiclient20.ui.fragments.AllGradesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AnnouncementsFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.SettingsFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.AssignmentsFragment;
-import com.sakaimobile.development.sakaiclient20.ui.helpers.BottomNavigationViewHelper;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.CourseViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
@@ -75,7 +74,6 @@ public class MainActivity extends AppCompatActivity
         this.allowNavigation = false;
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(this);
-        BottomNavigationViewHelper.removeShiftMode(navigation);
 
         // Request all site pages for the Home Fragment and then loads the fragment
         // refresh since we are loading for the same time
