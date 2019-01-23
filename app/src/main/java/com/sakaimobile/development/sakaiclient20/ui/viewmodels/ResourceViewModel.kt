@@ -99,33 +99,46 @@ class ResourceViewModel
     }
 
     private fun buildResourceTree(_data: List<Resource>?, numChildren: Int, onLevel: Int) : Pair<Int, List<TreeNode>> {
+        // If the list is empty, return an empty list to denote no children
         val data = _data?.takeIf { !it.isEmpty() } ?: return Pair(0, listOf())
+        // These are the children nodes we will be returning
         val tree: MutableList<TreeNode> = mutableListOf()
+        // boolean used for ResourceItemViewHolder to determine the styling to apply
+        // to downloadable resources
         var isFirstFile = true
+        // index is managed separately from the loop because we might need to skip
+        // over an entire chunk of the input resources if they form a whole subtree
         var index = 0
 
         for (i in 0 until numChildren) {
+            // prevent out-of-bounds exceptions
             val resourceIndex = index.takeIf { it < data.size } ?: break
+            // Edge case: sometimes resources are uploaded by instructors but hidden from
+            // students, so numChildren is actually inaccurate. We do not want to include
+            // child nodes if they do not belong to the parent (i.e. are not at the appropriate depth)
             val resource = data[resourceIndex].takeIf { it.level == onLevel } ?: return Pair(index, tree)
-            val node: TreeNode
-
-            if(resource.isDirectory) {
-                node = TreeNode(ResourceDirectoryViewHolder.ResourceDirectoryItem(resource.title))
-                // The direct descendants for this directory are
-                // from start to end inclusive
-                val start = index + 1
-                val end = Math.min(index + resource.size + 1, data.size)
-                val children = data.subList(start, end)
-                val (subtreeSize, childrenNodes) = buildResourceTree(children,
-                                                                    resource.numChildren,
-                                                            resource.level + 1)
-                node.addChildren(childrenNodes)
-                index += subtreeSize
-            } else {
-                node = TreeNode(ResourceItemViewHolder.ResourceFileItem(resource.title,
-                                                                        resource.url,
-                                                                        isFirstFile))
-                isFirstFile = false
+            val node: TreeNode = when(resource.isDirectory) {
+                true -> {
+                    // The direct descendants for this directory are from start to end inclusive
+                    // start: the resource right after this one (since list is flattened tree)
+                    // end: either the next chunk of `resource.size` elements, or up to the
+                    //      end of the list, whichever has fewer elements
+                    val start = index + 1
+                    val end = Math.min(index + resource.size + 1, data.size)
+                    val children = data.subList(start, end) // [start, end)
+                    val (subtreeSize, childrenNodes) = buildResourceTree(children,
+                            resource.numChildren,
+                            resource.level + 1)
+                    index += subtreeSize
+                    TreeNode(ResourceDirectoryViewHolder.ResourceDirectoryItem(resource.title))
+                            .apply { addChildren(childrenNodes) }
+                }
+                false -> {
+                    val fileItem = TreeNode(ResourceItemViewHolder.ResourceFileItem(resource.title,
+                            resource.url, isFirstFile))
+                    isFirstFile = false
+                    fileItem
+                }
             }
 
             tree += node

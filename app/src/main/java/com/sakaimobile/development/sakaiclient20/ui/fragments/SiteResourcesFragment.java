@@ -132,10 +132,10 @@ public class SiteResourcesFragment extends BaseFragment {
     /**
      * Updates the resources tree view by removing old nodes and adding new nodes
      * from the resources list
-     *
-     * @param flatResources new list of resources
+     * @param root root of the tree constructed by the ViewModel
      */
     private void updateResourcesTreeView(TreeNode root) {
+        // Ensure directories and files are shown appropriately
         attachViewHolders(root);
 
         // set the new root
@@ -148,7 +148,12 @@ public class SiteResourcesFragment extends BaseFragment {
         treeContainer.addView(resourcesTreeView.getView());
     }
 
+    /**
+     * Provides the appropriate ViewHolders for tree nodes based on whether
+     * it is a directory or file. Ensures that clicking on a file downloads it.
+     */
     private void attachViewHolders(TreeNode node) {
+        // Not a base case, but just an NPE check
         if(node == null) return;
 
         if(node.getValue() instanceof ResourceDirectoryViewHolder.ResourceDirectoryItem) {
@@ -160,8 +165,9 @@ public class SiteResourcesFragment extends BaseFragment {
             );
         }
 
-        for(TreeNode child : node.getChildren())
+        for(TreeNode child : node.getChildren()) {
             attachViewHolders(child);
+        }
     }
 
     /**
