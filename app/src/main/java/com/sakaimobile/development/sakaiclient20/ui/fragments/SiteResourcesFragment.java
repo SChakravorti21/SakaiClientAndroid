@@ -5,7 +5,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -133,14 +132,11 @@ public class SiteResourcesFragment extends BaseFragment {
     /**
      * Updates the resources tree view by removing old nodes and adding new nodes
      * from the resources list
-     *
-     * @param flatResources new list of resources
+     * @param root root of the tree constructed by the ViewModel
      */
-    private void updateResourcesTreeView(List<Resource> flatResources) {
-        // create new tree root
-        TreeNode root = TreeNode.root();
-        List<TreeNode> children = getChildren(flatResources, 1, flatResources.size());
-        root.addChildren(children);
+    private void updateResourcesTreeView(TreeNode root) {
+        // Ensure directories and files are shown appropriately
+        attachViewHolders(root);
 
         // set the new root
         resourcesTreeView.setRoot(root);
@@ -152,74 +148,27 @@ public class SiteResourcesFragment extends BaseFragment {
         treeContainer.addView(resourcesTreeView.getView());
     }
 
-
     /**
-     * Recursively gets the children for a "node" given the list of resources
-     *
-     * @param resources list, must be in a proper traversal format, otherwise algorithm won't work
-     *                  vist, then go to all children, recursively
-     * @param start     start of the list to get children of
-     * @param end       end of the part of the list representing the descendants
-     * @return a list of nodes which are the children of the node at resources[start]
+     * Provides the appropriate ViewHolders for tree nodes based on whether
+     * it is a directory or file. Ensures that clicking on a file downloads it.
      */
-    private List<TreeNode> getChildren(List<Resource> resources, int start, int end) {
-        List<TreeNode> children = new ArrayList<>();
-        boolean isFirstFile = true;
+    private void attachViewHolders(TreeNode node) {
+        // Not a base case, but just an NPE check
+        if(node == null) return;
 
-        for (int i = start; i < end && i < resources.size(); i++) {
-            Resource resource = resources.get(i);
-            if (resource.isDirectory) {
-                // build directory node
-                TreeNode dirNode = buildResourceDirNode(resource);
-                // add the directory as the child of the parent node
-                children.add(dirNode);
-                // recursively get the children of this directory, and add them
-                List<TreeNode> dirChildren = getChildren(resources, i + 1, i + 1 + resource.numDescendants);
-                dirNode.addChildren(dirChildren);
-                // move forward index
-                i += resource.numDescendants;
-            } else {
-                // add this file node as a child of the parent node
-                children.add(buildResourceFileNode(resource, isFirstFile));
-                isFirstFile = false;
-            }
+        if(node.getValue() instanceof ResourceDirectoryViewHolder.ResourceDirectoryItem) {
+            node.setViewHolder(new ResourceDirectoryViewHolder(getContext()));
+        } else {
+            node.setViewHolder(new ResourceItemViewHolder(getContext()));
+            node.setClickListener((fileNode, value) ->
+                downloadFile((ResourceItemViewHolder.ResourceFileItem) value)
+            );
         }
 
-        return children;
+        for(TreeNode child : node.getChildren()) {
+            attachViewHolders(child);
+        }
     }
-
-
-    /**
-     * Build a node for a resource file item
-     *
-     * @param resource item
-     * @return treenode to add
-     */
-    private TreeNode buildResourceFileNode(Resource resource, boolean isFirstFile) {
-        ResourceItemViewHolder.ResourceFileItem fileItem =
-                new ResourceItemViewHolder.ResourceFileItem(resource.title, resource.url, isFirstFile);
-
-        TreeNode fileNode = new TreeNode(fileItem).setViewHolder(new ResourceItemViewHolder(getContext()));
-        fileNode.setClickListener((node, value) ->
-                downloadFile((ResourceItemViewHolder.ResourceFileItem) value)
-        );
-
-        return fileNode;
-    }
-
-    /**
-     * Build a node for a resource directory, only using the resource title
-     *
-     * @param resource item
-     * @return treenode to add
-     */
-    private TreeNode buildResourceDirNode(Resource resource) {
-        ResourceDirectoryViewHolder.ResourceDirectoryItem dirItem =
-                new ResourceDirectoryViewHolder.ResourceDirectoryItem(resource.title);
-
-        return new TreeNode(dirItem).setViewHolder(new ResourceDirectoryViewHolder(getContext()));
-    }
-
 
     /**
      * Downloads a file inside a given resource file item node

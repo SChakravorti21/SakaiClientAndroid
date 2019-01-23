@@ -28,14 +28,18 @@ public class ResourceItemViewHolder extends TreeNode.BaseNodeViewHolder<Resource
         // Inflate the stepper that connects adjacent files
         FrameLayout stepperContainer = view.findViewById(R.id.stepper_container);
         View stepperView;
-        if(value.isFirstFile) {
+        if(value.isFirstFile && node.isLastChild()) {
+            stepperView = null;
+        } else if(value.isFirstFile) {
             stepperView = inflater.inflate(R.layout.tree_node_resource_stepper_first, stepperContainer, false);
         } else if(node.isLastChild()) {
             stepperView = inflater.inflate(R.layout.tree_node_resource_stepper_last, stepperContainer, false);
         } else {
             stepperView = inflater.inflate(R.layout.tree_node_resource_stepper_middle, stepperContainer, false);
         }
-        stepperContainer.addView(stepperView);
+
+        if(stepperView != null)
+            stepperContainer.addView(stepperView);
 
         TextView txt = view.findViewById(R.id.resource_file_txt);
         txt.setText(value.fileName);

@@ -27,16 +27,17 @@ class ResourceDeserializer : JsonDeserializer<Resource> {
         // check resource repository.refreshSiteResources()
 
         resource.numChildren = json.get("numChildren").asInt
-        resource.container = json.getStringMember("container")
         resource.title = json.getStringMember("title")
         resource.type = json.getStringMember("type")
+        resource.container = json.getStringMember("container")
+        resource.level = resource.container.split("/").dropLastWhile { it.isEmpty() }.size - 4
 
         if (resource.type == COLLECTION) {
+            resource.size = json.get("size").asInt
             resource.isDirectory = true
-            resource.numDescendants = json.get("size").asInt
         } else {
             resource.isDirectory = false
-            resource.numDescendants = 0
+            resource.size = 0
         }
 
         return resource

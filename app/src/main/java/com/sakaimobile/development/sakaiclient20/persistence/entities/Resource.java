@@ -28,21 +28,24 @@ public class Resource implements Serializable {
     // path to parent container, showing directory structure
     public String container;
 
-
     // if the resource element is a directory or file
     public boolean isDirectory;
 
-    // number of children files, if a directory
+    // number of direct descendants, if a directory
     public int numChildren;
 
-    // total number of descendants, if a directory
-    public int numDescendants;
+    // TOTAL number of descendants (direct + indirect), if a directory
+    public int size;
 
     // type of type, pdf, img ..., or directory (collection)
     public String type;
 
     // ID of site that this belongs to
     public String siteId;
+
+    // The tree level at which this resource resides -- calculated
+    // at deserialization time
+    public int level;
 
     public Resource(String url) {
         this.url = url;
