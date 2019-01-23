@@ -4,9 +4,12 @@ import android.annotation.SuppressLint
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
+import android.util.Log
 
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Resource
 import com.sakaimobile.development.sakaiclient20.repositories.ResourceRepository
+import com.sakaimobile.development.sakaiclient20.ui.viewholders.ResourceDirectoryViewHolder
+import com.sakaimobile.development.sakaiclient20.ui.viewholders.ResourceItemViewHolder
 import com.unnamed.b.atv.model.TreeNode
 
 import org.apache.commons.lang3.NotImplementedException
@@ -20,7 +23,7 @@ import io.reactivex.schedulers.Schedulers
 class ResourceViewModel
 @Inject constructor(private val resourceRepository: ResourceRepository) : BaseViewModel() {
 
-    private val resourcesLiveData: MutableLiveData<List<Resource>> = MutableLiveData()
+    private val resourcesLiveData: MutableLiveData<TreeNode> = MutableLiveData()
 
     override fun refreshAllData() {
         throw NotImplementedException("Never need to request resources for all courses at once")
@@ -31,7 +34,7 @@ class ResourceViewModel
      * @param siteId resources for this site ID
      * @return live data to observe on
      */
-    fun getResourcesForSite(siteId: String): LiveData<List<Resource>> {
+    fun getResourcesForSite(siteId: String): LiveData<TreeNode> {
         loadSiteResources(siteId)
         return resourcesLiveData
     }
@@ -80,12 +83,55 @@ class ResourceViewModel
                 .subscribe(
                         { resources ->
                             // if nothing in DB, refresh
-                            if (resources.isEmpty())
+                            if (resources.isEmpty()) {
                                 refreshSiteData(siteId)
-                            else
-                                resourcesLiveData!!.setValue(resources)
+                            } else {
+                                val root = resources[0]
+                                val (_, children) = buildResourceTree(
+                                        resources.subList(1, resources.size),
+                                        root.numChildren, 0)
+                                val treeRoot = TreeNode.root().apply { addChildren(children) }
+                                resourcesLiveData.value = treeRoot
+                            }
                         }, { it.printStackTrace() }
                 )
         )
+    }
+
+    private fun buildResourceTree(_data: List<Resource>?, numChildren: Int, onLevel: Int) : Pair<Int, List<TreeNode>> {
+        val data = _data?.takeIf { !it.isEmpty() } ?: return Pair(0, listOf())
+        val tree: MutableList<TreeNode> = mutableListOf()
+        var isFirstFile = true
+        var index = 0
+
+        for (i in 0 until numChildren) {
+            val resourceIndex = index.takeIf { it < data.size } ?: break
+            val resource = data[resourceIndex].takeIf { it.level == onLevel } ?: return Pair(index, tree)
+            val node: TreeNode
+
+            if(resource.isDirectory) {
+                node = TreeNode(ResourceDirectoryViewHolder.ResourceDirectoryItem(resource.title))
+                // The direct descendants for this directory are
+                // from start to end inclusive
+                val start = index + 1
+                val end = Math.min(index + resource.size + 1, data.size)
+                val children = data.subList(start, end)
+                val (subtreeSize, childrenNodes) = buildResourceTree(children,
+                                                                    resource.numChildren,
+                                                            resource.level + 1)
+                node.addChildren(childrenNodes)
+                index += subtreeSize
+            } else {
+                node = TreeNode(ResourceItemViewHolder.ResourceFileItem(resource.title,
+                                                                        resource.url,
+                                                                        isFirstFile))
+                isFirstFile = false
+            }
+
+            tree += node
+            index++
+        }
+
+        return Pair(data.size, tree)
     }
 }
