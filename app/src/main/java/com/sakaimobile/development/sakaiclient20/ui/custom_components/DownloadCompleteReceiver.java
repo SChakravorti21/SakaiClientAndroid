@@ -98,6 +98,7 @@ public class DownloadCompleteReceiver extends BroadcastReceiver {
                 // and our app won't crash if it doesn't find a default app to open with).
                 Intent openIntent = Intent.createChooser(selectViewerIntent,
                         "Select an application to open this file:");
+                openIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(openIntent);
             }
         }
