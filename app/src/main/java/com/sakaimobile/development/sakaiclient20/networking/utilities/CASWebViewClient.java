@@ -1,5 +1,7 @@
 package com.sakaimobile.development.sakaiclient20.networking.utilities;
 
+import android.graphics.Bitmap;
+import android.os.Build;
 import android.util.Log;
 import android.webkit.CookieManager;
 import android.webkit.WebResourceResponse;
@@ -21,7 +23,7 @@ import okhttp3.Response;
 public class CASWebViewClient extends WebViewClient {
 
     public interface SakaiLoadedListener {
-        void onSakaiMainPageLoaded(Headers h);
+        void onSakaiMainPageLoaded(String username, String password);
     }
 
     // This listener let's our WebViewActivity know that
@@ -39,6 +41,7 @@ public class CASWebViewClient extends WebViewClient {
     private OkHttpClient httpClient;
     // Keeping track of relevant headers
     private boolean gotHeaders;
+    private String username, password;
 
     public CASWebViewClient(String url, SakaiLoadedListener loadedListener) {
         super();
@@ -98,7 +101,7 @@ public class CASWebViewClient extends WebViewClient {
         String sakaiSessionHeader = response.headers().get("x-sakai-session");
         if (sakaiSessionHeader != null && !gotHeaders) {
             gotHeaders = true;
-            sakaiLoadedListener.onSakaiMainPageLoaded(null);
+            sakaiLoadedListener.onSakaiMainPageLoaded(username, password);
         }
 
         // We need to return a WebResourceResponse, otherwise the
@@ -108,5 +111,22 @@ public class CASWebViewClient extends WebViewClient {
         return new WebResourceResponse(null, null,
                 response.body().byteStream()
         );
+    }
+
+    @Override
+    public void onPageStarted(WebView view, String url, Bitmap favicon) {
+        super.onPageStarted(view, url, favicon);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            view.evaluateJavascript("document.querySelector('#username').value", username -> {
+                if(username != null && !"null".equals(username) && username.length() > 2) {
+                    this.username = username.substring(1, username.length() - 1);
+                }
+            });
+            view.evaluateJavascript("document.querySelector('#password').value", password -> {
+                if(password != null && !"null".equals(password) && password.length() > 2) {
+                    this.password = password.substring(1, password.length() - 1);
+                }
+            });
+        }
     }
 }

@@ -8,9 +8,12 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.SparseArray;
+import android.view.autofill.AutofillValue;
 import android.webkit.CookieManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.credentials.Credential;
@@ -18,6 +21,7 @@ import com.google.android.gms.auth.api.credentials.CredentialRequest;
 import com.google.android.gms.auth.api.credentials.CredentialRequestResponse;
 import com.google.android.gms.auth.api.credentials.Credentials;
 import com.google.android.gms.auth.api.credentials.CredentialsClient;
+import com.google.android.gms.auth.api.credentials.CredentialsOptions;
 import com.google.android.gms.auth.api.credentials.IdentityProviders;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.CommonStatusCodes;
@@ -30,10 +34,13 @@ import com.sakaimobile.development.sakaiclient20.networking.utilities.LoginPersi
 
 public class WebViewActivity extends AppCompatActivity {
 
-    private static final String SAKAI_ACCOUNT_TYPE = "https://cas.rutgers.edu";
+    private static final String SAKAI_ACCOUNT_TYPE = "https://sakai.rutgers.edu";
     private static final int RC_READ = 9823;
+    private static final int RC_SAVE = 9824;
 
-    CredentialsClient credentialsClient;
+    private WebView loginWebView;
+    private CredentialsClient credentialsClient;
+    private boolean isAutoLoggingIn = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,29 +49,17 @@ public class WebViewActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.webview_toolbar);
         setSupportActionBar(toolbar);
 
+        // Initialize Credentials Client for Smart Lock integration
+        CredentialsOptions options = new CredentialsOptions.Builder()
+                .forceEnableSaveDialog()
+                .build();
+        this.credentialsClient = Credentials.getClient(this, options);
+
         // Create a custom WebView client that will listen for when
         // authentication is complete and the main activity can be started
-        final WebView loginWebView = findViewById(R.id.login_web_view);
-        loginWebView.setWebViewClient(new CASWebViewClient(
-            getString(R.string.COOKIE_URL_2),
-            savedHeaders -> {
-                // Ensure that the cookies persist even when the app is closed
-                // (Allows users to restart the app without logging in again
-                // since the cookies allow login to be bypassed if valid)
-                // Unfortunately only works on API 21+ (but that's good enough for us)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    CookieManager.getInstance().flush();
-                    // Start background task to keep cookies active
-                    // LoginPersistenceWorker.startLoginPersistenceTask();
-                }
-
-                Intent intent = new Intent(WebViewActivity.this, MainActivity.class);
-                startActivity(intent);
-
-                // Exit app if the user presses the back button from the MainActivity
-                finish();
-            }
-        ));
+        this.loginWebView = findViewById(R.id.login_web_view);
+        WebViewClient webViewClient = new CASWebViewClient(getString(R.string.COOKIE_URL_2), this::onLoginSuccess);
+        loginWebView.setWebViewClient(webViewClient);
 
         //The CAS system requires Javascript for the login to even load
         loginWebView.getSettings().setJavaScriptEnabled(true);
@@ -73,8 +68,65 @@ public class WebViewActivity extends AppCompatActivity {
         this.initializeAutoLogin();
     }
 
+    private void onLoginSuccess(String username, String password) {
+        // Evaluate javascript does not work on API Level < 19
+        if(this.isAutoLoggingIn || username == null || password == null) {
+            showContent();
+            return;
+        }
+
+        Credential credential = new Credential.Builder(username)
+                .setPassword(password)
+                .build();
+
+        credentialsClient.save(credential).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Log.d("", "SAVE: OK");
+                Toast.makeText(WebViewActivity.this, "Credentials saved", Toast.LENGTH_SHORT).show();
+                showContent();
+                return;
+            }
+
+            Exception e = task.getException();
+            if (e instanceof ResolvableApiException) {
+                // Try to resolve the save request. This will prompt the user if
+                // the credential is new.
+                ResolvableApiException rae = (ResolvableApiException) e;
+                try {
+                    rae.startResolutionForResult(WebViewActivity.this, RC_SAVE);
+                } catch (IntentSender.SendIntentException intentSenderException) {
+                    // Could not resolve the request
+                    Log.e("", "Failed to send resolution.", e);
+                    Toast.makeText(WebViewActivity.this, "Save failed", Toast.LENGTH_SHORT).show();
+                    showContent();
+                }
+            } else {
+                // Request has no resolution
+                Toast.makeText(WebViewActivity.this, "Save failed", Toast.LENGTH_SHORT).show();
+                showContent();
+            }
+        });
+    }
+
+    private void showContent() {
+        // Ensure that the cookies persist even when the app is closed
+        // (Allows users to restart the app without logging in again
+        // since the cookies allow login to be bypassed if valid)
+        // Unfortunately only works on API 21+ (but that's good enough for us)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            CookieManager.getInstance().flush();
+            // Start background task to keep cookies active
+            // LoginPersistenceWorker.startLoginPersistenceTask();
+        }
+
+        Intent intent = new Intent(WebViewActivity.this, MainActivity.class);
+        startActivity(intent);
+
+        // Exit app if the user presses the back button from the MainActivity
+        finish();
+    }
+
     private void initializeAutoLogin() {
-        credentialsClient = Credentials.getClient(this);
         CredentialRequest credentialRequest = new CredentialRequest.Builder()
                 .setAccountTypes(SAKAI_ACCOUNT_TYPE)
                 .setPasswordLoginSupported(true)
@@ -83,7 +135,7 @@ public class WebViewActivity extends AppCompatActivity {
         credentialsClient.request(credentialRequest).addOnCompleteListener(task -> {
             if (task.isSuccessful() && task.getResult() != null) {
                 // See "Handle successful credential requests"
-                onCredentialRetrieved(task.getResult().getCredential());
+                signInWithCredentials(task.getResult().getCredential());
                 return;
             }
 
@@ -106,16 +158,20 @@ public class WebViewActivity extends AppCompatActivity {
         });
     }
 
-    private void onCredentialRetrieved(Credential credential) {
-        String accountType = credential.getAccountType();
-        if (accountType != null && accountType.equals(SAKAI_ACCOUNT_TYPE)) {
-            // Sign the user in with information from the Credential.
-            signInWithPassword(credential.getId(), credential.getPassword());
-        }
-    }
-
-    private void signInWithPassword(String id, String password) {
+    private void signInWithCredentials(Credential credential) {
         // TODO
+        this.isAutoLoggingIn = true;
+        String username = credential.getId();
+        String password = credential.getPassword();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            String query = "document.querySelector('#username').value = '%s';" +
+                           "document.querySelector('#password').value = '%s';" +
+                           "document.querySelector('input.btn-submit[value=\"LOGIN\"]').click();";
+            query = String.format(query, username, password);
+            this.loginWebView.evaluateJavascript(query, null);
+            this.loginWebView.setEnabled(false);
+        }
     }
 
     private void resolveResult(ResolvableApiException rae, int requestCode) {
@@ -132,10 +188,18 @@ public class WebViewActivity extends AppCompatActivity {
         if (requestCode == RC_READ) {
             if (resultCode == RESULT_OK) {
                 Credential credential = data.getParcelableExtra(Credential.EXTRA_KEY);
-                onCredentialRetrieved(credential);
+                signInWithCredentials(credential);
             } else {
                 Log.e("Login", "Credential Read: NOT OK");
                 Toast.makeText(this, "No saved credentials found, please log in manually.", Toast.LENGTH_SHORT).show();
+            }
+        } else if (requestCode == RC_SAVE) {
+            if (resultCode == RESULT_OK) {
+                Log.d("Login", "SAVE: OK");
+                Toast.makeText(this, "Credentials saved", Toast.LENGTH_SHORT).show();
+                showContent();
+            } else {
+                Log.e("Login", "SAVE: Canceled by user");
             }
         }
     }

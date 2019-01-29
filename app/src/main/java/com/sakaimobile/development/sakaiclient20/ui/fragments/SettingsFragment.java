@@ -19,6 +19,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.credentials.Credentials;
+import com.google.android.gms.auth.api.credentials.CredentialsClient;
 import com.sakaimobile.development.sakaiclient20.BuildConfig;
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.ui.activities.CreditsActivity;
@@ -75,6 +77,7 @@ public class SettingsFragment extends Fragment {
             // will allow user to login again (instead of automatically logging
             // in with saved cookies)
             CookieManager.getInstance().removeAllCookie();
+            Credentials.getClient(getContext()).disableAutoSignIn();
             // Start the login activity, clearing all activities in back stack
             Intent intent = new Intent(getContext(), WebViewActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
