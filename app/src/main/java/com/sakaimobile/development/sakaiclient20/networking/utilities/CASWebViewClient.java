@@ -2,7 +2,6 @@ package com.sakaimobile.development.sakaiclient20.networking.utilities;
 
 import android.graphics.Bitmap;
 import android.os.Build;
-import android.util.Log;
 import android.webkit.CookieManager;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
@@ -11,7 +10,6 @@ import android.webkit.WebViewClient;
 import java.io.IOException;
 
 import okhttp3.Call;
-import okhttp3.Headers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -23,7 +21,7 @@ import okhttp3.Response;
 public class CASWebViewClient extends WebViewClient {
 
     public interface SakaiLoadedListener {
-        void onSakaiMainPageLoaded(String username, String password);
+        void onLoginSuccess(String username, String password);
     }
 
     // This listener let's our WebViewActivity know that
@@ -101,7 +99,7 @@ public class CASWebViewClient extends WebViewClient {
         String sakaiSessionHeader = response.headers().get("x-sakai-session");
         if (sakaiSessionHeader != null && !gotHeaders) {
             gotHeaders = true;
-            sakaiLoadedListener.onSakaiMainPageLoaded(username, password);
+            sakaiLoadedListener.onLoginSuccess(username, password);
         }
 
         // We need to return a WebResourceResponse, otherwise the
@@ -116,7 +114,11 @@ public class CASWebViewClient extends WebViewClient {
     @Override
     public void onPageStarted(WebView view, String url, Bitmap favicon) {
         super.onPageStarted(view, url, favicon);
+        // It is possible that we are moving away from this page,
+        // so in case it is the login page, extract the username and password
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            // JS-evaluated strings have double quotes surrounding them, necessitating
+            // all the null and length checks
             view.evaluateJavascript("document.querySelector('#username').value", username -> {
                 if(username != null && !"null".equals(username) && username.length() > 2) {
                     this.username = username.substring(1, username.length() - 1);
