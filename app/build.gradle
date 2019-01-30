@@ -32,8 +32,8 @@ android {
         applicationId "com.sakaimobile.development.sakaiclient20"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 6
-        versionName "1.0"
+        versionCode 8
+        versionName "1.1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         javaCompileOptions {
             annotationProcessorOptions {
@@ -129,6 +129,7 @@ dependencies {
 
     // Crashlytics for crash/error reporting
     implementation 'com.crashlytics.sdk.android:crashlytics:2.9.8'
+    // Google Play Services used for Smart Lock integration
     implementation 'com.google.android.gms:play-services-auth:16.0.1'
 
     // LeakCanary for memory leak detection
