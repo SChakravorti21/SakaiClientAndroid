@@ -2,6 +2,7 @@ package com.sakaimobile.development.sakaiclient20.ui.fragments;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.transition.Transition;
 import android.support.transition.TransitionInflater;
@@ -51,10 +52,10 @@ public class SingleAnnouncementFragment extends Fragment {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Transition moveTransition = TransitionInflater.from(getContext()).inflateTransition(android.R.transition.move);
-            Transition fadeTransition = TransitionInflater.from(getContext()).inflateTransition(android.R.transition.slide_right);
+            Transition slideTransition = TransitionInflater.from(getContext()).inflateTransition(android.R.transition.slide_right);
             setSharedElementEnterTransition(moveTransition);
             setSharedElementReturnTransition(null);
-            setReturnTransition(fadeTransition);
+            setReturnTransition(slideTransition);
         }
     }
 
@@ -82,5 +83,15 @@ public class SingleAnnouncementFragment extends Fragment {
         HtmlUtils.constructAttachmentsView(attachmentsView, currAnnouncement.attachments);
 
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        view.findViewById(R.id.announcement_close_button).setOnClickListener(v -> {
+            // Pop this fragment off the back stack (using onBackPressed in case
+            // this fragment is ever refactored to an Activity)
+            if(getActivity() != null) getActivity().onBackPressed();
+        });
     }
 }
