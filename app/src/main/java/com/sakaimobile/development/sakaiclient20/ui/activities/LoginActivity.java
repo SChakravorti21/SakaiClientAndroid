@@ -2,14 +2,17 @@ package com.sakaimobile.development.sakaiclient20.ui.activities;
 
 import android.content.Intent;
 import android.content.IntentSender;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.credentials.Credential;
@@ -23,12 +26,15 @@ import com.google.android.gms.common.api.ResolvableApiException;
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.CASWebViewClient;
 
-public class WebViewActivity extends AppCompatActivity implements CASWebViewClient.SakaiLoadedListener {
+public class LoginActivity extends AppCompatActivity implements CASWebViewClient.SakaiLoadedListener {
 
     private static final int RC_READ = 9823;
     private static final int RC_SAVE = 9824;
 
     private WebView loginWebView;
+    private ProgressBar loadingIndicator;
+    private View webViewOverlay;
+
     private CredentialsClient credentialsClient;
     private boolean isAutoLoggingIn = false;
 
@@ -49,12 +55,14 @@ public class WebViewActivity extends AppCompatActivity implements CASWebViewClie
         // Create a custom WebView client that will listen for when
         // authentication is complete and the main activity can be started
         this.loginWebView = findViewById(R.id.login_web_view);
+        this.loadingIndicator = findViewById(R.id.loading_indicator);
+        this.webViewOverlay = findViewById(R.id.webview_overlay);
         WebViewClient webViewClient = new CASWebViewClient(getString(R.string.COOKIE_URL_2), this);
-        loginWebView.setWebViewClient(webViewClient);
+        this.loginWebView.setWebViewClient(webViewClient);
 
         //The CAS system requires Javascript for the login to even load
-        loginWebView.getSettings().setJavaScriptEnabled(true);
-        loginWebView.loadUrl(getString(R.string.CAS_BASE_URL));
+        this.loginWebView.getSettings().setJavaScriptEnabled(true);
+        this.loginWebView.loadUrl(getString(R.string.CAS_BASE_URL));
 
         // Attempt to log in automatically through Google Smart Lock for Passwords
         this.tryAutoLogin();
@@ -113,6 +121,9 @@ public class WebViewActivity extends AppCompatActivity implements CASWebViewClie
     }
 
     private void signInWithCredentials(Credential credential) {
+        // Ensure the user doesn't keep spamming buttons/it is obvious that login is loading
+        this.hideLogin();
+
         // set isAutoLoggingIn so that we don't try to make redundant save calls
         this.isAutoLoggingIn = true;
         String username = credential.getId();
@@ -125,13 +136,14 @@ public class WebViewActivity extends AppCompatActivity implements CASWebViewClie
                     "document.querySelector('input.btn-submit[value=\"LOGIN\"]').click();";
             query = String.format(query, username, password);
             this.loginWebView.evaluateJavascript(query, null);
-            // make sure user does not spam login button
-            this.loginWebView.setEnabled(false);
         }
     }
 
     @Override
     public void onLoginSuccess(String username, String password) {
+        // Ensure the user doesn't keep spamming buttons/it is obvious that login is loading
+        runOnUiThread(this::hideLogin);
+
         // Evaluate javascript does not work on API Level < 19, in which case
         // username and password are null
         if(this.isAutoLoggingIn || username == null || password == null) {
@@ -139,7 +151,8 @@ public class WebViewActivity extends AppCompatActivity implements CASWebViewClie
             return;
         }
 
-        // This is the credential we will be saving
+        // We save the credential here because we only want to save if it is a successful
+        // login attempt
         Credential credential = new Credential.Builder(username)
                 .setPassword(password)
                 .build();
@@ -153,10 +166,10 @@ public class WebViewActivity extends AppCompatActivity implements CASWebViewClie
                 // the credential is new.
                 ResolvableApiException rae = (ResolvableApiException) e;
                 try {
-                    rae.startResolutionForResult(WebViewActivity.this, RC_SAVE);
+                    rae.startResolutionForResult(LoginActivity.this, RC_SAVE);
                 } catch (IntentSender.SendIntentException intentSenderException) {
                     // Could not resolve the request, proceed to content (no point retrying)
-                    Toast.makeText(WebViewActivity.this, "Credential save failed", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "Credential save failed", Toast.LENGTH_SHORT).show();
                     this.showContent();
                 }
             }
@@ -170,8 +183,15 @@ public class WebViewActivity extends AppCompatActivity implements CASWebViewClie
             CookieManager.getInstance().flush();
         }
 
-        Intent intent = new Intent(WebViewActivity.this, MainActivity.class);
+        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    private void hideLogin() {
+        // Make sure user does not spam login button and indicate that login is in progress
+        this.loginWebView.setEnabled(false);
+        this.webViewOverlay.setVisibility(View.VISIBLE);
+        this.loadingIndicator.setVisibility(View.VISIBLE);
     }
 }

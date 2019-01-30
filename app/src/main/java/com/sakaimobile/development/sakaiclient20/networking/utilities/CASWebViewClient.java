@@ -24,7 +24,7 @@ public class CASWebViewClient extends WebViewClient {
         void onLoginSuccess(String username, String password);
     }
 
-    // This listener let's our WebViewActivity know that
+    // This listener let's our LoginActivity know that
     // login was successful, and a new activity can be started
     private SakaiLoadedListener sakaiLoadedListener;
 

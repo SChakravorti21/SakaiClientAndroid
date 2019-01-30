@@ -20,11 +20,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.credentials.Credentials;
-import com.google.android.gms.auth.api.credentials.CredentialsClient;
 import com.sakaimobile.development.sakaiclient20.BuildConfig;
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.ui.activities.CreditsActivity;
-import com.sakaimobile.development.sakaiclient20.ui.activities.WebViewActivity;
+import com.sakaimobile.development.sakaiclient20.ui.activities.LoginActivity;
 
 
 /**
@@ -79,7 +78,7 @@ public class SettingsFragment extends Fragment {
             CookieManager.getInstance().removeAllCookie();
             Credentials.getClient(getContext()).disableAutoSignIn();
             // Start the login activity, clearing all activities in back stack
-            Intent intent = new Intent(getContext(), WebViewActivity.class);
+            Intent intent = new Intent(getContext(), LoginActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         });
