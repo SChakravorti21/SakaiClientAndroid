@@ -253,16 +253,16 @@ public class MainActivity extends AppCompatActivity
             Bundle b = new Bundle();
             b.putString(getString(R.string.siteid_tag), null);
             b.putSerializable(getString(R.string.siteid_to_course_map), map);
+            boolean shouldRefresh = getAndUpdateRefreshedState(AnnouncementsFragment.class);
+            b.putBoolean(AnnouncementsFragment.SHOULD_REFRESH, shouldRefresh);
 
             // create and load the fragment
             AnnouncementsFragment frag = new AnnouncementsFragment();
             frag.setArguments(b);
-
             loadFragment(frag, FRAGMENT_REPLACE, false, false);
 
             this.container.setVisibility(View.VISIBLE);
             stopProgressBar();
-
             coursesLiveData.removeObservers(this);
         });
     }

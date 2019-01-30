@@ -47,6 +47,7 @@ public class AnnouncementsFragment extends BaseFragment implements OnAnnouncemen
 
     public static final int ALL_ANNOUNCEMENTS = 0;
     public static final int SITE_ANNOUNCEMENTS = 1;
+    public static final String SHOULD_REFRESH = "SHOULD_REFRESH";
 
     @Inject ViewModelFactory viewModelFactory;
     private AnnouncementViewModel announcementViewModel;
@@ -54,6 +55,7 @@ public class AnnouncementsFragment extends BaseFragment implements OnAnnouncemen
 
     // announcement type (SITE or ALL)
     private int announcementType;
+    private boolean shouldRefresh;
     private String announcementsSiteId;
     // announcements to display
     private List<Announcement> allAnnouncements;
@@ -76,6 +78,7 @@ public class AnnouncementsFragment extends BaseFragment implements OnAnnouncemen
         announcementsSiteId = bun.getString(getString(R.string.siteid_tag));
         announcementType = (announcementsSiteId == null) ? ALL_ANNOUNCEMENTS : SITE_ANNOUNCEMENTS;
         siteIdToCourseMap = (HashMap) bun.getSerializable(getString(R.string.siteid_to_course_map));
+        shouldRefresh = bun.getBoolean(SHOULD_REFRESH);
         allAnnouncements = new ArrayList<>();
 
         // setup the correct live data and loadMoreListener depending on
@@ -126,8 +129,17 @@ public class AnnouncementsFragment extends BaseFragment implements OnAnnouncemen
             return null;
         });
 
+        // Possibly refresh if announcements are being loaded for the first time
+        if(shouldRefresh) refreshAnnouncements();
+
         // each time the observation is triggered, we have new announcements (after refreshing)
         announcementLiveData.observe(getViewLifecycleOwner(), announcements -> {
+            // If we are refreshing, there will be one initial false emission
+            if(shouldRefresh) {
+                shouldRefresh = false;
+                return;
+            }
+
             if(announcements == null) {
                 Toast.makeText(getContext(), "No announcements found", Toast.LENGTH_SHORT).show();
                 spinner.setVisibility(View.GONE);
@@ -204,12 +216,7 @@ public class AnnouncementsFragment extends BaseFragment implements OnAnnouncemen
                 // save the state so we can scroll to the right position
                 // after reloading
                 saveScrollState();
-
-                if(announcementType == SITE_ANNOUNCEMENTS)
-                    announcementViewModel.refreshSiteData(announcementsSiteId);
-                else
-                    announcementViewModel.refreshAllData();
-
+                refreshAnnouncements();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -269,6 +276,13 @@ public class AnnouncementsFragment extends BaseFragment implements OnAnnouncemen
         }
 
         ft.commit();
+    }
+
+    private void refreshAnnouncements() {
+        if(announcementType == SITE_ANNOUNCEMENTS)
+            announcementViewModel.refreshSiteData(announcementsSiteId);
+        else
+            announcementViewModel.refreshAllData();
     }
 
     private void saveScrollState() {
