@@ -123,6 +123,7 @@ public class AllCoursesFragment extends BaseFragment {
 
                     this.renderTree(courses);
                     this.progressBar.setVisibility(View.GONE);
+                    this.treeContainer.setVisibility(View.VISIBLE);
 
                     // Allow user to resume navigating around app if that functionality
                     // had previously been locked
@@ -161,6 +162,7 @@ public class AllCoursesFragment extends BaseFragment {
                     this.onCoursesRefreshListener.onCoursesRefreshStarted();
 
                 this.progressBar.setVisibility(View.VISIBLE);
+                this.treeContainer.setVisibility(View.INVISIBLE);
                 this.saveTreeState();
                 this.courseViewModel.refreshAllData();
             default:
