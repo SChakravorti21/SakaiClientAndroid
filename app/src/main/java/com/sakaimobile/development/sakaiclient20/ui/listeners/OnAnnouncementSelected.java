@@ -9,7 +9,7 @@ import java.util.Map;
 
 public interface OnAnnouncementSelected {
 
-    void onAnnouncementSelected(Announcement announcement, Course course,
+    void onAnnouncementSelected(Announcement announcement,
                                 View cardView, int position);
 
 }

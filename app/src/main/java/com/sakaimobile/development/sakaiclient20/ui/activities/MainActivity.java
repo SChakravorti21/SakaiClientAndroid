@@ -244,27 +244,19 @@ public class MainActivity extends AppCompatActivity
         this.container.setVisibility(View.GONE);
         startProgressBar();
 
-        LiveData<List<List<Course>>> coursesLiveData = courseViewModel.getCoursesByTerm(false);
-        coursesLiveData.observe(this, courses -> {
+        // create fragment arguments
+        Bundle b = new Bundle();
+        b.putString(getString(R.string.siteid_tag), null);
+        boolean shouldRefresh = getAndUpdateRefreshedState(AnnouncementsFragment.class);
+        b.putBoolean(AnnouncementsFragment.SHOULD_REFRESH, shouldRefresh);
 
-            HashMap<String, Course> map = createSiteIdToCourseMap(courses);
+        // create and load the fragment
+        AnnouncementsFragment frag = new AnnouncementsFragment();
+        frag.setArguments(b);
+        loadFragment(frag, FRAGMENT_REPLACE, false, false);
 
-            // create fragment arguments
-            Bundle b = new Bundle();
-            b.putString(getString(R.string.siteid_tag), null);
-            b.putSerializable(getString(R.string.siteid_to_course_map), map);
-            boolean shouldRefresh = getAndUpdateRefreshedState(AnnouncementsFragment.class);
-            b.putBoolean(AnnouncementsFragment.SHOULD_REFRESH, shouldRefresh);
-
-            // create and load the fragment
-            AnnouncementsFragment frag = new AnnouncementsFragment();
-            frag.setArguments(b);
-            loadFragment(frag, FRAGMENT_REPLACE, false, false);
-
-            this.container.setVisibility(View.VISIBLE);
-            stopProgressBar();
-            coursesLiveData.removeObservers(this);
-        });
+        this.container.setVisibility(View.VISIBLE);
+        stopProgressBar();
     }
 
     //=======================
@@ -278,18 +270,6 @@ public class MainActivity extends AppCompatActivity
             refreshedFragments.add(clazz);
             return true;
         }
-    }
-
-    private HashMap<String, Course> createSiteIdToCourseMap(List<List<Course>> courses) {
-        HashMap<String, Course> siteIdToCourse = new HashMap<>();
-
-        for (List<Course> term : courses) {
-            for (Course course : term) {
-                siteIdToCourse.put(course.siteId, course);
-            }
-        }
-
-        return siteIdToCourse;
     }
 
     public void setActionBarTitle(String title) {

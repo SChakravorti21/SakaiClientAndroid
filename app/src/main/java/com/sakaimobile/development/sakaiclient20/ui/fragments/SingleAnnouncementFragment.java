@@ -37,7 +37,6 @@ public class SingleAnnouncementFragment extends Fragment {
     private TextView closeButton;
     private int position;
     private Announcement announcement;
-    private Course announcementCourse;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -46,7 +45,6 @@ public class SingleAnnouncementFragment extends Fragment {
 
         Bundle b = getArguments();
         announcement = (Announcement) b.getSerializable(SINGLE_ANNOUNCEMENT);
-        announcementCourse = (Course) b.getSerializable(ANNOUNCEMENT_COURSE);
         position = b.getInt(ANNOUNCEMENT_POSITION);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -76,7 +74,7 @@ public class SingleAnnouncementFragment extends Fragment {
         //if the title won't fit on the text box, make it scrollable
         titleTxt.setText(announcement.title);
         authorTxt.setText(announcement.createdBy);
-        courseTxt.setText(announcementCourse.title);
+        courseTxt.setText(announcement.courseTitle);
         dateTxt.setText(announcement.getLongFormattedDate());
         contentTxt.setText(HtmlUtils.getSpannedFromHtml(announcement.body));
         contentTxt.setMovementMethod(CustomLinkMovementMethod.getInstance());

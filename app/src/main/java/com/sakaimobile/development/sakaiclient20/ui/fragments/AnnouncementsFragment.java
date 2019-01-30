@@ -59,8 +59,6 @@ public class AnnouncementsFragment extends BaseFragment implements OnAnnouncemen
     private String announcementsSiteId;
     // announcements to display
     private List<Announcement> allAnnouncements;
-    // Needed for the adapter to show icons
-    private Map<String, Course> siteIdToCourseMap;
 
     private ProgressBar spinner;
     private AnnouncementsAdapter adapter;
@@ -77,7 +75,6 @@ public class AnnouncementsFragment extends BaseFragment implements OnAnnouncemen
         Bundle bun = getArguments();
         announcementsSiteId = bun.getString(getString(R.string.siteid_tag));
         announcementType = (announcementsSiteId == null) ? ALL_ANNOUNCEMENTS : SITE_ANNOUNCEMENTS;
-        siteIdToCourseMap = (HashMap) bun.getSerializable(getString(R.string.siteid_to_course_map));
         shouldRefresh = bun.getBoolean(SHOULD_REFRESH);
         allAnnouncements = new ArrayList<>();
 
@@ -226,7 +223,6 @@ public class AnnouncementsFragment extends BaseFragment implements OnAnnouncemen
     private void createAnnouncementsAdapter() {
         adapter = new AnnouncementsAdapter(
                 allAnnouncements,
-                siteIdToCourseMap,
                 announcementRecycler,
                 announcementType
         );
@@ -253,11 +249,9 @@ public class AnnouncementsFragment extends BaseFragment implements OnAnnouncemen
     }
 
     @Override
-    public void onAnnouncementSelected(Announcement announcement, Course course,
-                                       View cardView, int position) {
+    public void onAnnouncementSelected(Announcement announcement, View cardView, int position) {
         Bundle b = new Bundle();
         b.putSerializable(SingleAnnouncementFragment.SINGLE_ANNOUNCEMENT, announcement);
-        b.putSerializable(SingleAnnouncementFragment.ANNOUNCEMENT_COURSE, course);
         b.putInt(SingleAnnouncementFragment.ANNOUNCEMENT_POSITION, position);
 
         SingleAnnouncementFragment announcementFragment = new SingleAnnouncementFragment();

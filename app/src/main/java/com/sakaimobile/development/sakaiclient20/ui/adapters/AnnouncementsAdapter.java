@@ -28,22 +28,17 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<AnnouncementsAdap
 
     // list of announcements to display
     private List<Announcement> announcements;
-    // mapping siteIdToCourse, needed to get subject code and course title
-    private Map<String, Course> siteIdToCourse;
     // click listener for each announcement card
     private OnAnnouncementSelected announcementclickListener;
 
     private LinearLayoutManager manager;
 
     public AnnouncementsAdapter(List<Announcement> announcements,
-                                Map<String, Course> siteIdToCourse,
                                 RecyclerView recyclerView,
                                 int type) {
 
         this.announcements = announcements;
         this.announcementType = type;
-        this.siteIdToCourse = siteIdToCourse;
-
         manager = (LinearLayoutManager) recyclerView.getLayoutManager();
     }
 
@@ -84,8 +79,7 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<AnnouncementsAdap
         public void onClick(View v) {
             int pos = getAdapterPosition();
             Announcement announcementToExpand = announcements.get(pos);
-            Course course = siteIdToCourse.get(announcementToExpand.siteId);
-            announcementclickListener.onAnnouncementSelected(announcementToExpand, course, v, pos);
+            announcementclickListener.onAnnouncementSelected(announcementToExpand, v, pos);
         }
     }
 
@@ -103,12 +97,12 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<AnnouncementsAdap
         //set the data inside the card
         Announcement currAnnouncement = announcements.get(position);
 
-        int subjCode = siteIdToCourse.get(currAnnouncement.siteId).subjectCode;
+        int subjCode = currAnnouncement.subjectCode;
         holder.courseIcon.setText(CourseIconProvider.getCourseIcon(subjCode));
 
         holder.authorTxt.setText(currAnnouncement.createdBy);
         holder.date.setText(currAnnouncement.getShortFormattedDate());
-        holder.courseNameTxt.setText(siteIdToCourse.get(currAnnouncement.siteId).title);
+        holder.courseNameTxt.setText(currAnnouncement.courseTitle);
         holder.announcementTitleTxt.setText(currAnnouncement.title);
 
         ViewCompat.setTransitionName(holder.itemView, SingleAnnouncementFragment.ANNOUNCEMENT_TRANSITION + position);
