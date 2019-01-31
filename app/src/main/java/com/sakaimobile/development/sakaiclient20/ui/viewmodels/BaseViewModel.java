@@ -53,6 +53,20 @@ public abstract class BaseViewModel extends ViewModel {
         return this.coursesByTerm;
     }
 
+    LiveData<List<Course>> getUnsortedCourses() {
+        MutableLiveData<List<Course>> allCourses = new MutableLiveData<>();
+        this.compositeDisposable.add(
+            this.courseRepository.getAllCourses()
+                .subscribeOn(Schedulers.io())
+                .subscribe(
+                        allCourses::postValue,
+                        Throwable::printStackTrace
+                )
+        );
+
+        return allCourses;
+    }
+
     private void loadCourses() {
         this.compositeDisposable.add(
             this.courseRepository.getCoursesSortedByTerm()

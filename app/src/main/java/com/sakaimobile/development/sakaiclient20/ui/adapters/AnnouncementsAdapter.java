@@ -1,7 +1,6 @@
 package com.sakaimobile.development.sakaiclient20.ui.adapters;
 
 import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,47 +9,26 @@ import android.widget.TextView;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Announcement;
-import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.SingleAnnouncementFragment;
 import com.sakaimobile.development.sakaiclient20.ui.helpers.CourseIconProvider;
-import com.sakaimobile.development.sakaiclient20.ui.listeners.OnAnnouncementSelected;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by atharva on 7/8/18
  */
 public class AnnouncementsAdapter extends RecyclerView.Adapter<AnnouncementsAdapter.AnnouncementItemViewHolder> {
 
+    public interface OnAnnouncementSelected {
+        void onAnnouncementSelected(Announcement announcement, View cardView, int position);
+    }
 
-    private int announcementType;
-
-    // list of announcements to display
     private List<Announcement> announcements;
-    // mapping siteIdToCourse, needed to get subject code and course title
-    private Map<String, Course> siteIdToCourse;
-    // click listener for each announcement card
-    private OnAnnouncementSelected announcementclickListener;
+    private OnAnnouncementSelected announcementClickListener;
 
-    private LinearLayoutManager manager;
-
-    public AnnouncementsAdapter(List<Announcement> announcements,
-                                Map<String, Course> siteIdToCourse,
-                                RecyclerView recyclerView,
-                                int type) {
-
+    public AnnouncementsAdapter(List<Announcement> announcements) {
         this.announcements = announcements;
-        this.announcementType = type;
-        this.siteIdToCourse = siteIdToCourse;
-
-        manager = (LinearLayoutManager) recyclerView.getLayoutManager();
     }
-
-    public int getCurScrollPos() {
-        return manager.findFirstCompletelyVisibleItemPosition();
-    }
-
 
     /**
      * View holder for each announcement card
@@ -64,7 +42,6 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<AnnouncementsAdap
         TextView courseNameTxt;
         TextView announcementTitleTxt;
 
-
         AnnouncementItemViewHolder(View cardView) {
             //give this card view to the reycler view's view holder
             super(cardView);
@@ -77,25 +54,20 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<AnnouncementsAdap
             courseNameTxt = cardView.findViewById(R.id.course_name);
 
             cardView.setOnClickListener(this);
-
         }
 
         @Override
         public void onClick(View v) {
             int pos = getAdapterPosition();
             Announcement announcementToExpand = announcements.get(pos);
-            Course course = siteIdToCourse.get(announcementToExpand.siteId);
-            announcementclickListener.onAnnouncementSelected(announcementToExpand, course, v, pos);
+            announcementClickListener.onAnnouncementSelected(announcementToExpand, v, pos);
         }
     }
 
-
     @Override
     public AnnouncementItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_announcements, parent, false);
         return new AnnouncementItemViewHolder(itemView);
-
     }
 
     @Override
@@ -103,26 +75,23 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<AnnouncementsAdap
         //set the data inside the card
         Announcement currAnnouncement = announcements.get(position);
 
-        int subjCode = siteIdToCourse.get(currAnnouncement.siteId).subjectCode;
+        int subjCode = currAnnouncement.subjectCode;
         holder.courseIcon.setText(CourseIconProvider.getCourseIcon(subjCode));
 
         holder.authorTxt.setText(currAnnouncement.createdBy);
         holder.date.setText(currAnnouncement.getShortFormattedDate());
-        holder.courseNameTxt.setText(siteIdToCourse.get(currAnnouncement.siteId).title);
+        holder.courseNameTxt.setText(currAnnouncement.courseTitle);
         holder.announcementTitleTxt.setText(currAnnouncement.title);
 
         ViewCompat.setTransitionName(holder.itemView, SingleAnnouncementFragment.ANNOUNCEMENT_TRANSITION + position);
     }
-
 
     @Override
     public int getItemCount() {
         return announcements == null ? 0 : announcements.size();
     }
 
-
-    public void setClickListener(OnAnnouncementSelected announcementclickListener) {
-        this.announcementclickListener = announcementclickListener;
+    public void setClickListener(OnAnnouncementSelected announcementClickListener) {
+        this.announcementClickListener = announcementClickListener;
     }
-
 }

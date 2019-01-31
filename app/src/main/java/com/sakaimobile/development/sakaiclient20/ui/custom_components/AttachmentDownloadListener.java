@@ -13,6 +13,7 @@ import android.webkit.DownloadListener;
 import android.widget.Toast;
 
 import com.sakaimobile.development.sakaiclient20.R;
+import com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.AssignmentSubmissionDialogFragment;
 
 import java.lang.ref.WeakReference;
 
@@ -131,7 +132,8 @@ public class AttachmentDownloadListener implements DownloadListener {
         // Detach the fragment because it won't be displaying any information
         // The WebFragment is always added to the back stack, so we need to pop
         // the back stack for the back button to function as expected
-        fragment.getActivity().onBackPressed();
+        if(!(fragment instanceof AssignmentSubmissionDialogFragment))
+            fragment.getActivity().onBackPressed();
     }
 
     /**
