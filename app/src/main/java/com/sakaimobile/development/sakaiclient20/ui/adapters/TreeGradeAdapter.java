@@ -10,8 +10,6 @@ import android.widget.TextView;
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Grade;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.List;
 import java.util.Locale;
 
