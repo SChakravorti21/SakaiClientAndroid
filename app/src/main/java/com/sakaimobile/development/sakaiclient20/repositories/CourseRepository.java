@@ -46,18 +46,19 @@ public class CourseRepository {
                 .map(this::flattenCompositeToEntity);
     }
 
-    public Flowable<List<List<Course>>> getCoursesSortedByTerm() {
+    public Flowable<List<Course>> getAllCourses() {
         return courseDao.getAllCourses()
-                //.firstOrError()
-                //.toObservable()
                 .debounce(300, TimeUnit.MILLISECONDS)
                 .map(courses -> {
                     List<Course> flattened = new ArrayList<>(courses.size());
                     for(CourseWithAllData course : courses)
                         flattened.add(flattenCompositeToEntity(course));
                     return flattened;
-                })
-                .map(this::sortCoursesByTerm);
+                });
+    }
+
+    public Flowable<List<List<Course>>> getCoursesSortedByTerm() {
+        return this.getAllCourses().map(this::sortCoursesByTerm);
     }
 
     public Completable refreshCourse(String siteId) {

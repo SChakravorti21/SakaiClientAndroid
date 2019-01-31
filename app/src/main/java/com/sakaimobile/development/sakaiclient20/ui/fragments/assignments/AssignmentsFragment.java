@@ -154,6 +154,7 @@ public class AssignmentsFragment extends BaseFragment {
 
                 this.renderTree();
                 this.progressBar.setVisibility(View.GONE);
+                this.treeContainer.setVisibility(View.VISIBLE);
 
                 // If this is the first time the observation is called,
                 // inflate the sort menu
@@ -222,6 +223,7 @@ public class AssignmentsFragment extends BaseFragment {
                 break;
             }
             case R.id.action_refresh: {
+                this.treeContainer.setVisibility(View.INVISIBLE);
                 this.progressBar.setVisibility(View.VISIBLE);
                 this.saveTreeState();
                 this.assignmentViewModel.refreshAllData();

@@ -108,6 +108,7 @@ public class AllGradesFragment extends BaseFragment {
 
                     this.renderTree(courses);
                     this.progressBar.setVisibility(View.GONE);
+                    this.treeContainer.setVisibility(View.VISIBLE);
                 });
     }
 
@@ -135,6 +136,7 @@ public class AllGradesFragment extends BaseFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.action_refresh:
+                this.treeContainer.setVisibility(View.INVISIBLE);
                 this.progressBar.setVisibility(View.VISIBLE);
                 this.saveTreeState();
                 this.gradeViewModel.refreshAllData();

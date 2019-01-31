@@ -24,7 +24,10 @@
     <string name="grade_item_null">/%1$.2f</string>
 
     <string name="siteid_tag" translatable="false">SITEID</string>
-    <string name="siteid_to_course_map" translatable="false">SITEIDTOCOURSE</string>
+    <string name="all_announcements_tag" translatable="false">ALL_ANNOUNCEMENTS</string>
+    <string name="site_announcements_tag" translatable="false">SITE_ANNOUNCEMENTS</string>
+    <string name="site_resources_tag" translatable="false">SITERESOURCES</string>
+    <string name="site_grades_tag" translatable="false">SITEGRADES</string>
 
     <string name="site_type_tag" translatable="false">SITE_TYPE</string>
     <string name="course_tag" translatable="false">COURSE_TAG</string>
