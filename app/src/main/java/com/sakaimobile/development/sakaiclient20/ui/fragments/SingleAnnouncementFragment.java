@@ -31,7 +31,6 @@ public class SingleAnnouncementFragment extends Fragment {
 
     // BUNDLE ARGUMENTS
     public static final String SINGLE_ANNOUNCEMENT = "SINGLE_ANNOUNCEMENT";
-    public static final String ANNOUNCEMENT_COURSE = "ANNOUNCEMENT_COURSE";
     public static final String ANNOUNCEMENT_POSITION = "ANNOUNCEMENT_POSITION";
 
     private TextView closeButton;

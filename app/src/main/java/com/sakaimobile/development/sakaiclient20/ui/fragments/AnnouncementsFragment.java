@@ -115,7 +115,7 @@ public class AnnouncementsFragment extends BaseFragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        initRefreshFailureListener(announcementViewModel, () -> {
+        this.initRefreshFailureListener(announcementViewModel, () -> {
             spinner.setVisibility(View.GONE);
             announcementRecycler.setVisibility(View.VISIBLE);
             return null;
