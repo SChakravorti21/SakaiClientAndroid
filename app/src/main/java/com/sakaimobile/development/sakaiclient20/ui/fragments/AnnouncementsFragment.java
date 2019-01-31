@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -20,30 +19,25 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
-import android.view.animation.LayoutAnimationController;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Announcement;
-import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 import com.sakaimobile.development.sakaiclient20.ui.adapters.AnnouncementsAdapter;
-import com.sakaimobile.development.sakaiclient20.ui.listeners.OnAnnouncementSelected;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.AnnouncementViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
 
-public class AnnouncementsFragment extends BaseFragment implements OnAnnouncementSelected {
+public class AnnouncementsFragment extends BaseFragment
+        implements AnnouncementsAdapter.OnAnnouncementSelected {
 
     public static final int ALL_ANNOUNCEMENTS = 0;
     public static final int SITE_ANNOUNCEMENTS = 1;
@@ -56,9 +50,8 @@ public class AnnouncementsFragment extends BaseFragment implements OnAnnouncemen
     // announcement type (SITE or ALL)
     private int announcementType;
     private boolean shouldRefresh;
-    private String announcementsSiteId;
-    // announcements to display
-    private List<Announcement> allAnnouncements;
+    private String announcementsSiteId; // null if announcementType == ALL
+    private List<Announcement> announcements;
 
     private ProgressBar spinner;
     private AnnouncementsAdapter adapter;
@@ -76,7 +69,7 @@ public class AnnouncementsFragment extends BaseFragment implements OnAnnouncemen
         announcementsSiteId = bun.getString(getString(R.string.siteid_tag));
         announcementType = (announcementsSiteId == null) ? ALL_ANNOUNCEMENTS : SITE_ANNOUNCEMENTS;
         shouldRefresh = bun.getBoolean(SHOULD_REFRESH);
-        allAnnouncements = new ArrayList<>();
+        announcements = new ArrayList<>();
 
         // setup the correct live data and loadMoreListener depending on
         // showing site or all announcements
@@ -112,7 +105,9 @@ public class AnnouncementsFragment extends BaseFragment implements OnAnnouncemen
         scrollUpButton = view.findViewById(R.id.scroll_up_button);
 
         // create the adapter which the recycler view will use to display announcements
-        createAnnouncementsAdapter();
+        adapter = new AnnouncementsAdapter(announcements);
+        adapter.setClickListener(this);
+        announcementRecycler.setAdapter(adapter);
         return view;
     }
 
@@ -120,9 +115,9 @@ public class AnnouncementsFragment extends BaseFragment implements OnAnnouncemen
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        this.initRefreshFailureListener(announcementViewModel, () -> {
-            this.spinner.setVisibility(View.GONE);
-            this.announcementRecycler.setVisibility(View.VISIBLE);
+        initRefreshFailureListener(announcementViewModel, () -> {
+            spinner.setVisibility(View.GONE);
+            announcementRecycler.setVisibility(View.VISIBLE);
             return null;
         });
 
@@ -146,27 +141,30 @@ public class AnnouncementsFragment extends BaseFragment implements OnAnnouncemen
             scrollUpButton.show();
             announcementRecycler.setVisibility(View.VISIBLE);
             spinner.setVisibility(View.GONE);
-            addNewAnnouncementsToAdapter(announcements);
-        });
-
-        scrollUpButton.setOnClickListener((v) -> {
-            announcementRecycler.getLayoutManager()
-                    .smoothScrollToPosition(announcementRecycler, new RecyclerView.State(), 0);
+            replaceAnnouncements(announcements);
         });
 
         // grow/shrink the FAB when scrolling
         LinearLayoutManager manager = (LinearLayoutManager) announcementRecycler.getLayoutManager();
+        scrollUpButton.setOnClickListener((v) -> {
+            if(manager != null) {
+                manager.smoothScrollToPosition(announcementRecycler, new RecyclerView.State(), 0);
+            }
+        });
+
         announcementRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 // if the first item is visible then make the FAB disappear
                 // or if the user is scrolling down
-                if(dy > 0 || manager.findFirstCompletelyVisibleItemPosition() == 0)
+                if((manager != null && manager.findFirstCompletelyVisibleItemPosition() == 0)
+                        || dy > 0) {
                     scrollUpButton.hide();
                     // otherwise make the FAB reappear
-                else
+                } else {
                     scrollUpButton.show();
+                }
             }
         });
     }
@@ -182,14 +180,9 @@ public class AnnouncementsFragment extends BaseFragment implements OnAnnouncemen
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
-        this.saveScrollState();
-    }
-
-    @Override
     public void onDestroyView() {
         super.onDestroyView();
+        saveScrollState();
         announcementRecycler.clearOnScrollListeners();
         scrollUpButton.setOnClickListener(null);
         announcementRecycler = null;
@@ -209,9 +202,7 @@ public class AnnouncementsFragment extends BaseFragment implements OnAnnouncemen
                 announcementRecycler.setVisibility(View.GONE);
                 spinner.setVisibility(View.VISIBLE);
                 scrollUpButton.hide();
-
-                // save the state so we can scroll to the right position
-                // after reloading
+                // save the state so we can scroll to the right position after reloading
                 saveScrollState();
                 refreshAnnouncements();
                 return true;
@@ -220,24 +211,9 @@ public class AnnouncementsFragment extends BaseFragment implements OnAnnouncemen
         }
     }
 
-    private void createAnnouncementsAdapter() {
-        adapter = new AnnouncementsAdapter(
-                allAnnouncements,
-                announcementRecycler,
-                announcementType
-        );
-        adapter.setClickListener(this);
-        announcementRecycler.setAdapter(adapter);
-
-        //rerun animations for card entry
-        final LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(getContext(), R.anim.layout_anim_enter);
-        announcementRecycler.setLayoutAnimation(controller);
-        announcementRecycler.scheduleLayoutAnimation();
-    }
-
-    private void addNewAnnouncementsToAdapter(List<Announcement> announcements) {
-        this.allAnnouncements.clear();
-        allAnnouncements.addAll(announcements);
+    private void replaceAnnouncements(List<Announcement> announcements) {
+        this.announcements.clear();
+        this.announcements.addAll(announcements);
         adapter.notifyDataSetChanged();
 
         // restore scroll state
@@ -258,11 +234,11 @@ public class AnnouncementsFragment extends BaseFragment implements OnAnnouncemen
         announcementFragment.setArguments(b);
 
         FragmentTransaction ft = getFragmentManager()
-                                    .beginTransaction()
-                                    .hide(this)
-                                    .add(R.id.fragment_container, announcementFragment)
-                                    .setReorderingAllowed(true)
-                                    .addToBackStack(null);
+                .beginTransaction()
+                .hide(this)
+                .add(R.id.fragment_container, announcementFragment)
+                .setReorderingAllowed(true)
+                .addToBackStack(null);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             // Add second fragment by replacing first
@@ -273,15 +249,20 @@ public class AnnouncementsFragment extends BaseFragment implements OnAnnouncemen
     }
 
     private void refreshAnnouncements() {
-        if(announcementType == SITE_ANNOUNCEMENTS)
+        if(announcementType == SITE_ANNOUNCEMENTS) {
             announcementViewModel.refreshSiteData(announcementsSiteId);
-        else
+        } else {
             announcementViewModel.refreshAllData();
+        }
     }
 
     private void saveScrollState() {
-        if(announcementType == ALL_ANNOUNCEMENTS)
-            SharedPrefsUtil.saveAnnouncementScrollState(getContext(), adapter.getCurScrollPos());
+        Context context = getContext();
+        LinearLayoutManager layoutManager = (LinearLayoutManager) announcementRecycler.getLayoutManager();
+        if(announcementType == ALL_ANNOUNCEMENTS && context != null && layoutManager != null) {
+            int currentPosition = layoutManager.findFirstCompletelyVisibleItemPosition();
+            SharedPrefsUtil.saveAnnouncementScrollState(context, currentPosition);
+        }
     }
 }
 
