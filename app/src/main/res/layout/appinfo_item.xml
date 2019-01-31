@@ -5,18 +5,15 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:foreground="?android:attr/selectableItemBackground"
-    android:padding="15dp"
-    >
+    android:padding="16dp">
 
     <TextView
         android:id="@+id/info_icon"
         style="@style/FontawesomeText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingStart="0dp"
-        android:paddingLeft="0dp"
-        android:paddingEnd="10dp"
-        android:paddingRight="10dp"
+        android:paddingTop="4dp"
+        android:paddingRight="16dp"
         android:textSize="16sp"
         tools:text="X" />
 
@@ -27,13 +24,14 @@
         android:layout_weight="1"
         android:textColor="@color/secondaryTextColor"
         android:textSize="16sp"
+        android:layout_gravity="center_vertical"
         tools:text="INFO ITEM INFO ITEM" />
 
     <TextView
         style="@style/FontawesomeText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="right"
+        android:paddingTop="4dp"
         android:text="\uf105" />
 
 </LinearLayout>

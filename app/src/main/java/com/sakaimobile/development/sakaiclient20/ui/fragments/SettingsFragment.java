@@ -54,6 +54,8 @@ public class SettingsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
+        TextView appVersionText = view.findViewById(R.id.app_version_txt);
+        appVersionText.setText("Version " + BuildConfig.VERSION_NAME);
 
         // Make the button a red color
         // Setting android:backgroundColor makes the button lose its original shape

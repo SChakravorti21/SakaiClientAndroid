@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-
+    <PreferenceCategory>
+        <Preference
+            android:icon="@drawable/ic_book"
+            android:title="Contact Us">
+            <intent android:action="android.intent.action.SENDTO"
+                android:data="mailto:rutgerssakaiapp@gmail.com">
+                <extra android:name="android.intent.extra.SUBJECT"
+                    android:value="Rutgers Sakai Android: Feedback" />
+                <extra android:name="android.intent.extra.TEXT"
+                    android:value="Dear Rutgers Sakai Mobile developers,\n\nHere is some feedback to improve the app:\n\n\n\nRegards," />
+            </intent>
+        </Preference>
+    </PreferenceCategory>
 </PreferenceScreen>
