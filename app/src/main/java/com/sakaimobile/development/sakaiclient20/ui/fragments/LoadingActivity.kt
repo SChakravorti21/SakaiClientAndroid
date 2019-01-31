@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.activity_loading.*
 import javax.inject.Inject
 import android.view.animation.DecelerateInterpolator
 import android.animation.ObjectAnimator
-
+import android.widget.Toast
 
 
 /**
@@ -41,9 +41,16 @@ class LoadingActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
+        // Just in case network connectivity changes as refresh is occurring,
+        // make sure the user is notified of this.
+        loadingPageViewModel.errorState.observe(this, Observer {
+            Toast.makeText(this, "We had trouble reaching Sakai!", Toast.LENGTH_SHORT).show()
+        })
+
         loadingPageViewModel.getRefreshProgress(true).observe(this, Observer { progress ->
             updateProgress(progress)
             // Use hasShowedContent to prevent double-loading the next page
+            // If progress equals NUM_REFRESH_REQUESTS then we finished loading everything
             if(progress == LoadingPageViewModel.NUM_REFRESH_REQUESTS && !hasShowedContent) {
                 hasShowedContent = true
                 val intent = Intent(this, MainActivity::class.java)
@@ -54,6 +61,7 @@ class LoadingActivity : AppCompatActivity() {
     }
 
     private fun updateProgress(progress: Int?) {
+        // Create an animation for smooth update of progress bar
         val displayProgress = progress?.times((100 / LoadingPageViewModel.NUM_REFRESH_REQUESTS)) ?: 0
         val animation = ObjectAnimator.ofInt(progressbar, "progress", displayProgress)
         animation.duration = 500 // 0.5 second
