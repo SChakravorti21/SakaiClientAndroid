@@ -8,7 +8,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColorLink">@color/linkColor</item>
         <item name="android:fontFamily">@font/lato</item>
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <item name="preferenceTheme">@style/PreferencesTheme</item>
     </style>
 
     <style name="ToolbarTheme" parent="AppTheme">
@@ -61,6 +61,10 @@
         <item name="android:singleLine">true</item>
         <item name="android:ellipsize">marquee</item>
         <item name="android:marqueeRepeatLimit">marquee_forever</item>
+    </style>
+
+    <style name="PreferencesTheme" parent="@style/PreferenceThemeOverlay">
+        <item name="android:textColor">@color/secondaryTextColor</item>
     </style>
 
 </resources>
