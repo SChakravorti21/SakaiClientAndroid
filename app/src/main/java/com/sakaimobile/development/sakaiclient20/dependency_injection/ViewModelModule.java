@@ -7,6 +7,7 @@ import com.sakaimobile.development.sakaiclient20.ui.viewmodels.AnnouncementViewM
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.AssignmentViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.CourseViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.GradeViewModel;
+import com.sakaimobile.development.sakaiclient20.ui.viewmodels.LoadingPageViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ResourceViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
@@ -41,6 +42,11 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(GradeViewModel.class)
     abstract ViewModel bindGradeViewModel(GradeViewModel gradeViewModel);
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(LoadingPageViewModel.class)
+    abstract ViewModel bindLoadingPageViewModel(LoadingPageViewModel loadingPageViewModel);
 
     @Binds
     abstract ViewModelProvider.Factory bindViewModelFactory(ViewModelFactory factory);

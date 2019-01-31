@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/primaryBackgroundColor"
+    tools:context=".ui.fragments.LoadingActivity">
+
+    <ImageView
+        android:id="@+id/app_icon"
+        android:layout_width="128dp"
+        android:layout_height="128dp"
+        android:src="@mipmap/ic_launcher"
+        android:contentDescription="@string/app_name"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <ProgressBar
+        android:id="@+id/progressbar"
+        android:layout_width="0dp"
+        android:layout_height="6dp"
+        android:layout_marginTop="12dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        app:layout_constraintEnd_toEndOf="@id/app_icon"
+        app:layout_constraintStart_toStartOf="@id/app_icon"
+        app:layout_constraintTop_toBottomOf="@id/app_icon"
+        android:indeterminate="false"
+        android:progressDrawable="@drawable/rounded_progress_bar"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
+
+</android.support.constraint.ConstraintLayout>

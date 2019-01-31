@@ -41,7 +41,6 @@ public class AnnouncementsFragment extends BaseFragment
 
     public static final int ALL_ANNOUNCEMENTS = 0;
     public static final int SITE_ANNOUNCEMENTS = 1;
-    public static final String SHOULD_REFRESH = "SHOULD_REFRESH";
 
     @Inject ViewModelFactory viewModelFactory;
     private AnnouncementViewModel announcementViewModel;
@@ -49,7 +48,6 @@ public class AnnouncementsFragment extends BaseFragment
 
     // announcement type (SITE or ALL)
     private int announcementType;
-    private boolean shouldRefresh;
     private String announcementsSiteId; // null if announcementType == ALL
     private List<Announcement> announcements;
 
@@ -68,16 +66,13 @@ public class AnnouncementsFragment extends BaseFragment
         Bundle bun = getArguments();
         announcementsSiteId = bun.getString(getString(R.string.siteid_tag));
         announcementType = (announcementsSiteId == null) ? ALL_ANNOUNCEMENTS : SITE_ANNOUNCEMENTS;
-        shouldRefresh = bun.getBoolean(SHOULD_REFRESH);
         announcements = new ArrayList<>();
 
         // setup the correct live data and loadMoreListener depending on
         // showing site or all announcements
-        if (announcementType == ALL_ANNOUNCEMENTS) {
-            announcementLiveData = announcementViewModel.getAllAnnouncements();
-        } else {
-            announcementLiveData = announcementViewModel.getSiteAnnouncements(announcementsSiteId);
-        }
+        announcementLiveData = announcementType == ALL_ANNOUNCEMENTS
+                ? announcementViewModel.getAllAnnouncements()
+                : announcementViewModel.getSiteAnnouncements(announcementsSiteId);
 
         // Now that we have gotten all the data we need, clear the bundle.
         // Otherwise, we'll probably get a runtime exception (TransactionTooLarge)
@@ -121,17 +116,8 @@ public class AnnouncementsFragment extends BaseFragment
             return null;
         });
 
-        // Possibly refresh if announcements are being loaded for the first time
-        if(shouldRefresh) refreshAnnouncements();
-
         // each time the observation is triggered, we have new announcements (after refreshing)
         announcementLiveData.observe(getViewLifecycleOwner(), announcements -> {
-            // If we are refreshing, there will be one initial false emission
-            if(shouldRefresh) {
-                shouldRefresh = false;
-                return;
-            }
-
             if(announcements == null) {
                 Toast.makeText(getContext(), "No announcements found", Toast.LENGTH_SHORT).show();
                 spinner.setVisibility(View.GONE);

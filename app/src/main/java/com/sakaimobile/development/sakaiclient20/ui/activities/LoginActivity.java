@@ -2,7 +2,6 @@ package com.sakaimobile.development.sakaiclient20.ui.activities;
 
 import android.content.Intent;
 import android.content.IntentSender;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -25,6 +24,7 @@ import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.CASWebViewClient;
+import com.sakaimobile.development.sakaiclient20.ui.fragments.LoadingActivity;
 
 public class LoginActivity extends AppCompatActivity implements CASWebViewClient.SakaiLoadedListener {
 
@@ -36,6 +36,7 @@ public class LoginActivity extends AppCompatActivity implements CASWebViewClient
     private View webViewOverlay;
 
     private CredentialsClient credentialsClient;
+    private boolean hasShowedContent = false;
     private boolean isAutoLoggingIn = false;
 
     @Override
@@ -177,13 +178,17 @@ public class LoginActivity extends AppCompatActivity implements CASWebViewClient
     }
 
     private void showContent() {
+        // Prevent opening loading page twice
+        if(hasShowedContent) return;
+
         // In case the phone is not logged into a Google account, at least flush the cookies
         // for session persistence for the next two-ish hours
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             CookieManager.getInstance().flush();
         }
 
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        hasShowedContent = true;
+        Intent intent = new Intent(LoginActivity.this, LoadingActivity.class);
         startActivity(intent);
         finish();
     }
