@@ -61,7 +61,7 @@ public class SettingsFragment extends Fragment {
         // Setting android:backgroundColor makes the button lose its original shape
         // and ripple effect, and android:backgroundTint is not available below API 21
         this.logoutButton = view.findViewById(R.id.logout_button);
-        ViewCompat.setBackgroundTintList(logoutButton, ContextCompat.getColorStateList(getContext(), R.color.sakai_medium_red));
+        ViewCompat.setBackgroundTintList(logoutButton, ContextCompat.getColorStateList(getContext(), R.color.sakaiTint));
 
         // init the maps then set the data in the views
         initAppInfoMaps();

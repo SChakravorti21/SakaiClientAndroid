@@ -28,7 +28,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
             android:text="@string/logout"
-            android:textColor="@color/sakai_light_silver"
+            android:textColor="@color/secondaryTextColor"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -47,7 +47,6 @@
             android:gravity="center">
 
             <ImageView
-                android:id="@+id/app_icon"
                 android:layout_width="72dp"
                 android:layout_height="72dp"
                 android:contentDescription="@string/app_name"

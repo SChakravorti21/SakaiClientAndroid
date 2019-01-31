@@ -5,17 +5,8 @@
     <color name="colorAccent">#8F1717</color>
     <color name="white">#FFFFFF</color>
 
-    <!-- Term header colors -->
-    <color name="sakai_medium_red">#a6112c</color>
-    <color name="sakai_medium_silver">#d8d8d8</color>
-
     <!-- Course Header colors -->
     <color name="sakai_light_silver">#f2f2f2</color>
-    <color name="sakai_light_black">#414141</color>
-
-    <!-- Leaf Node colors -->
-    <color name="leaf_background">#fffbf2</color>
-    <color name="leaf_text">#664147</color>
 
     <color name="sakaiTint">#a90023</color>
     <color name="sakaiWhite">#FFFFFF</color>
