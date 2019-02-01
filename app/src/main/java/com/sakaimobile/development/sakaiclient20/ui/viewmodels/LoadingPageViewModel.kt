@@ -84,7 +84,7 @@ class LoadingPageViewModel
         this.gradeRepository.refreshAllGrades()
                 .doOnSubscribe { compositeDisposable.add(it) }
                 .doOnError { this.emitError(it) }
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(Schedulers.newThread())
                 .subscribe({ incrementProgress() }, { it.printStackTrace() })
     }
 
@@ -92,7 +92,7 @@ class LoadingPageViewModel
         this.announcementsRepository.refreshAllAnnouncements()
                 .doOnSubscribe { compositeDisposable.add(it) }
                 .doOnError { this.emitError(it) }
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(Schedulers.newThread())
                 .subscribe({ incrementProgress() }, { it.printStackTrace() })
     }
 
@@ -100,7 +100,7 @@ class LoadingPageViewModel
         this.assignmentRepository.refreshAllAssignments()
                 .doOnSubscribe { compositeDisposable.add(it) }
                 .doOnError { this.emitError(it) }
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(Schedulers.newThread())
                 .subscribe({ incrementProgress() }, { it.printStackTrace() })
     }
 
