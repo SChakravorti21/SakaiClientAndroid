@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory>
+    <PreferenceCategory
+        android:title="General">
         <Preference
             android:icon="@drawable/ic_info"
+            android:key="version"
             android:title="About">
             <intent android:action="android.intent.action.VIEW"
                 android:targetPackage="com.android.chrome"
@@ -41,4 +43,29 @@
                 android:data="https://play.google.com/store/apps/details?id=com.sakaimobile.development.sakaiclient20"/>
         </Preference>
     </PreferenceCategory>
+    <PreferenceCategory
+        android:title="Credential Management">
+        <Preference
+            android:title="How does Sakai Mobile keep me logged in?">
+            <intent android:action="android.intent.action.VIEW"
+                android:targetPackage="com.android.chrome"
+                android:data="https://rutgerssakai.github.io/SakaiMobile/faq.html#android-how-does-smart-lock-work"/>
+        </Preference>
+        <Preference
+            android:title="I previously disabled auto-login and want to re-enable it">
+            <intent android:action="android.intent.action.VIEW"
+                android:targetPackage="com.android.chrome"
+                android:data="https://rutgerssakai.github.io/SakaiMobile/faq.html#android-how-enable-smart-lock"/>
+        </Preference>
+        <Preference
+            android:title="I want Sakai Mobile to forget my credentials">
+            <intent android:action="android.intent.action.VIEW"
+                android:targetPackage="com.android.chrome"
+                android:data="https://rutgerssakai.github.io/SakaiMobile/faq.html#android-how-to-delete-credentials"/>
+        </Preference>
+    </PreferenceCategory>
+
+    <!--Logout Button-->
+    <com.sakaimobile.development.sakaiclient20.ui.fragments.preferences.LogoutPreference />
+
 </PreferenceScreen>

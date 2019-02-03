@@ -15,12 +15,9 @@ import com.sakaimobile.development.sakaiclient20.ui.custom_components.CustomLink
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AllCoursesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AllGradesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AnnouncementsFragment;
-import com.sakaimobile.development.sakaiclient20.ui.fragments.SettingsFragment;
+import com.sakaimobile.development.sakaiclient20.ui.fragments.preferences.SettingsFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.AssignmentsFragment;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
-
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.inject.Inject;
 

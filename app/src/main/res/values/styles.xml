@@ -65,6 +65,12 @@
 
     <style name="PreferencesTheme" parent="@style/PreferenceThemeOverlay">
         <item name="android:textColor">@color/secondaryTextColor</item>
+        <item name="android:textColorSecondary">@color/secondaryTextColor</item>
+        <!-- White color for category headings -->
+        <item name="colorAccent">@color/primaryTextColor</item>
+        <item name="colorPrimary">@color/primaryTextColor</item>
+        <item name="colorPrimaryDark">@color/primaryTextColor</item>
+        <item name="colorSecondary">@color/primaryTextColor</item>
     </style>
 
 </resources>
