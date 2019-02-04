@@ -40,14 +40,10 @@ public abstract class BaseViewModel extends ViewModel {
         this.errorState.postValue(SakaiErrorState.FAILURE);
     }
 
-    public LiveData<List<List<Course>>> getCoursesByTerm(boolean refresh) {
+    public LiveData<List<List<Course>>> getCoursesByTerm() {
         if(this.coursesByTerm == null) {
             this.coursesByTerm = new MutableLiveData<>();
             loadCourses();
-        }
-
-        if(refresh) {
-            refreshAllData();
         }
 
         return this.coursesByTerm;

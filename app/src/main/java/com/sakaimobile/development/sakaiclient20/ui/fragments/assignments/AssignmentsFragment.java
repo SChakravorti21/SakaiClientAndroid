@@ -51,8 +51,6 @@ import kotlin.Unit;
 
 public class AssignmentsFragment extends BaseFragment {
 
-    public static final String SHOULD_REFRESH = "SHOULD_REFRESH";
-
     /**
      * The {@link AndroidTreeView} that is represented by this
      *  {@link android.support.v4.app.Fragment}.
@@ -86,7 +84,6 @@ public class AssignmentsFragment extends BaseFragment {
     // selected to sort by a different type, the app would crash,
     // so we wait to show the sort menu group until the necessary data has loaded.
     private boolean hasFinishedInitialDataLoad = false;
-    private boolean shouldRefresh;
 
     /**
      * Whether the assignments should be shown as being sorted by course. {@code False} if
@@ -99,7 +96,6 @@ public class AssignmentsFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
         // This fragment provides the option to sort assignments by course or date.
         setHasOptionsMenu(true);
-        this.shouldRefresh = getArguments().getBoolean(SHOULD_REFRESH);
     }
 
     @Nullable
@@ -127,15 +123,8 @@ public class AssignmentsFragment extends BaseFragment {
             return null;
         });
 
-        this.assignmentViewModel
-            .getCoursesByTerm(shouldRefresh)
+        this.assignmentViewModel.getCoursesByTerm()
             .observe(getViewLifecycleOwner(), courses -> {
-                // If we are refreshing, there will be one initial false emission
-                if(shouldRefresh) {
-                    shouldRefresh = false;
-                    return;
-                }
-
                 // Since new data has arrived, the old data might not be
                 // relevant any more, so we need to do both sorts (by course and by term) again.
                 this.courses = courses;

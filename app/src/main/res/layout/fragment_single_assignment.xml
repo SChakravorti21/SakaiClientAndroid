@@ -75,7 +75,6 @@
                 android:background="@color/highlightColor" />
 
             <ScrollView
-                android:id="@+id/body"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/divider"
@@ -89,7 +88,6 @@
                     android:padding="16dp">
 
                     <TableLayout
-                        android:id="@+id/table_body"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="8dp">

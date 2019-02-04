@@ -90,7 +90,7 @@ public class ResourceDirectoryViewHolder extends TreeNode.BaseNodeViewHolder<Res
      */
     private static int getColorForNode(TreeNode node, Resources resources) {
         // Get the default color
-        int sakaiMediumRed = resources.getColor(R.color.sakai_medium_red);
+        int sakaiMediumRed = resources.getColor(R.color.sakaiTint);
 
         // If this is a top-level node (level of 1 indicate a top-level resource directory),
         // then do not perform unnecessary computations

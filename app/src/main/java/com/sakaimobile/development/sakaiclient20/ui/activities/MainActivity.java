@@ -15,12 +15,9 @@ import com.sakaimobile.development.sakaiclient20.ui.custom_components.CustomLink
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AllCoursesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AllGradesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AnnouncementsFragment;
-import com.sakaimobile.development.sakaiclient20.ui.fragments.SettingsFragment;
+import com.sakaimobile.development.sakaiclient20.ui.fragments.preferences.SettingsFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.AssignmentsFragment;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
-
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -35,7 +32,6 @@ public class MainActivity extends AppCompatActivity
 
     @Inject ViewModelFactory viewModelFactory;
     private boolean allowNavigation;
-    private Set<Class> refreshedFragments;
 
     //==============================
     // LIFECYCLE/INTERFACE METHODS
@@ -57,7 +53,6 @@ public class MainActivity extends AppCompatActivity
 
         // Request all site pages for the Home Fragment and then loads the fragment
         // refresh since we are loading for the same time
-        refreshedFragments = new HashSet<>();
         loadCoursesFragment();
     }
 
@@ -176,9 +171,6 @@ public class MainActivity extends AppCompatActivity
 
     public void loadCoursesFragment() {
         Bundle bundle = new Bundle();
-        boolean shouldRefresh = getAndUpdateRefreshedState(AllCoursesFragment.class);
-        bundle.putBoolean(AllCoursesFragment.SHOULD_REFRESH, shouldRefresh);
-
         Fragment fragment = new AllCoursesFragment();
         fragment.setArguments(bundle);
         loadFragment(fragment, FRAGMENT_REPLACE, false, false);
@@ -186,9 +178,6 @@ public class MainActivity extends AppCompatActivity
 
     public void loadAssignmentsFragment() {
         Bundle bundle = new Bundle();
-        boolean shouldRefresh = getAndUpdateRefreshedState(AssignmentsFragment.class);
-        bundle.putBoolean(AssignmentsFragment.SHOULD_REFRESH, shouldRefresh);
-
         Fragment fragment = new AssignmentsFragment();
         fragment.setArguments(bundle);
         loadFragment(fragment, FRAGMENT_REPLACE, false, false);
@@ -196,9 +185,6 @@ public class MainActivity extends AppCompatActivity
 
     public void loadGradesFragment() {
         Bundle bundle = new Bundle();
-        boolean shouldRefresh = getAndUpdateRefreshedState(AllGradesFragment.class);
-        bundle.putBoolean(AllGradesFragment.SHOULD_REFRESH, shouldRefresh);
-
         Fragment fragment = new AllGradesFragment();
         fragment.setArguments(bundle);
         loadFragment(fragment, FRAGMENT_REPLACE, false, false);
@@ -208,8 +194,6 @@ public class MainActivity extends AppCompatActivity
         // create fragment arguments
         Bundle b = new Bundle();
         b.putString(getString(R.string.siteid_tag), null);
-        boolean shouldRefresh = getAndUpdateRefreshedState(AnnouncementsFragment.class);
-        b.putBoolean(AnnouncementsFragment.SHOULD_REFRESH, shouldRefresh);
 
         // create and load the fragment
         AnnouncementsFragment frag = new AnnouncementsFragment();
@@ -220,15 +204,6 @@ public class MainActivity extends AppCompatActivity
     //=======================
     // CONVENIENCE METHODS
     //=======================
-
-    private boolean getAndUpdateRefreshedState(Class clazz) {
-        if(refreshedFragments.contains(clazz)) {
-            return false;
-        } else {
-            refreshedFragments.add(clazz);
-            return true;
-        }
-    }
 
     public void setActionBarTitle(String title) {
         getSupportActionBar().setTitle(title);

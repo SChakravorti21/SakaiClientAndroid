@@ -8,7 +8,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColorLink">@color/linkColor</item>
         <item name="android:fontFamily">@font/lato</item>
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <item name="preferenceTheme">@style/PreferencesTheme</item>
     </style>
 
     <style name="ToolbarTheme" parent="AppTheme">
@@ -63,8 +63,12 @@
         <item name="android:marqueeRepeatLimit">marquee_forever</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="PreferencesTheme" parent="@style/PreferenceThemeOverlay">
+        <item name="android:textColor">@color/secondaryTextColor</item>
+        <!-- Color for summaries (eg. version text) -->
+        <item name="android:textColorSecondary">@color/secondaryTextColor</item>
+        <!-- White color for category headings -->
+        <item name="colorAccent">@color/primaryTextColor</item>
+    </style>
 
 </resources>

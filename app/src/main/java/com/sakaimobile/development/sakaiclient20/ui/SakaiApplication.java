@@ -17,7 +17,7 @@ import com.crashlytics.android.Crashlytics;
 import com.sakaimobile.development.sakaiclient20.BuildConfig;
 import com.sakaimobile.development.sakaiclient20.dependency_injection.DaggerSakaiApplicationComponent;
 import com.sakaimobile.development.sakaiclient20.networking.services.SessionService;
-import com.sakaimobile.development.sakaiclient20.ui.activities.WebViewActivity;
+import com.sakaimobile.development.sakaiclient20.ui.activities.LoginActivity;
 import com.sakaimobile.development.sakaiclient20.ui.custom_components.DownloadCompleteReceiver;
 import com.sakaimobile.development.sakaiclient20.ui.helpers.CourseIconProvider;
 import com.squareup.leakcanary.LeakCanary;
@@ -29,7 +29,6 @@ import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasActivityInjector;
 import dagger.android.support.HasSupportFragmentInjector;
 import io.fabric.sdk.android.Fabric;
-import io.reactivex.android.plugins.RxAndroidPlugins;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -120,7 +119,7 @@ public class SakaiApplication extends Application
 
                             // Otherwise, session has become inactive and user must be prompted
                             // to log in
-                            Intent intent = new Intent(SakaiApplication.this, WebViewActivity.class);
+                            Intent intent = new Intent(SakaiApplication.this, LoginActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(intent);
                         }, Throwable::printStackTrace)
