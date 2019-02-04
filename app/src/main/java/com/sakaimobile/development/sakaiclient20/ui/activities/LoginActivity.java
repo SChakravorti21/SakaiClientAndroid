@@ -24,7 +24,6 @@ import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.CASWebViewClient;
-import com.sakaimobile.development.sakaiclient20.ui.fragments.LoadingActivity;
 
 public class LoginActivity extends AppCompatActivity implements CASWebViewClient.SakaiLoadedListener {
 

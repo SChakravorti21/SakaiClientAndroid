@@ -1,4 +1,4 @@
-package com.sakaimobile.development.sakaiclient20.ui.fragments
+package com.sakaimobile.development.sakaiclient20.ui.activities
 
 
 import android.arch.lifecycle.Observer
@@ -9,7 +9,6 @@ import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 
 import com.sakaimobile.development.sakaiclient20.R
-import com.sakaimobile.development.sakaiclient20.ui.activities.MainActivity
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.LoadingPageViewModel
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory
 import dagger.android.AndroidInjection
@@ -17,6 +16,9 @@ import kotlinx.android.synthetic.main.activity_loading.*
 import javax.inject.Inject
 import android.view.animation.DecelerateInterpolator
 import android.animation.ObjectAnimator
+import android.graphics.BitmapFactory
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory
 import android.widget.Toast
 
 
@@ -34,6 +36,7 @@ class LoadingActivity : AppCompatActivity() {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_loading)
+
         this.loadingPageViewModel =
                 ViewModelProviders.of(this, viewModelFactory)[LoadingPageViewModel::class.java]
     }

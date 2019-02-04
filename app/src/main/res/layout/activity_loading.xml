@@ -5,26 +5,30 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/primaryBackgroundColor"
-    tools:context=".ui.fragments.LoadingActivity">
+    tools:context=".ui.activities.LoadingActivity">
 
     <ImageView
         android:id="@+id/app_icon"
-        android:layout_width="128dp"
-        android:layout_height="128dp"
-        android:src="@mipmap/ic_launcher"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:padding="8dp"
+        app:srcCompat="@drawable/ic_app_logo"
+        android:background="@drawable/app_logo_rounded_corners"
         android:contentDescription="@string/app_name"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+
 
     <ProgressBar
         android:id="@+id/progressbar"
         android:layout_width="0dp"
         android:layout_height="6dp"
-        android:layout_marginTop="12dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="@id/app_icon"
         app:layout_constraintStart_toStartOf="@id/app_icon"
         app:layout_constraintTop_toBottomOf="@id/app_icon"
