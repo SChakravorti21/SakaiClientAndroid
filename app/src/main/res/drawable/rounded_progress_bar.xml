@@ -10,7 +10,8 @@
         <scale android:scaleWidth="100%">
             <shape>
                 <corners android:radius="4dp"/>
-                <solid android:color="@color/sakaiTint"/>
+                <!--This is a non-standard color to match the red in the app icon-->
+                <solid android:color="#c62828"/>
             </shape>
         </scale>
     </item>

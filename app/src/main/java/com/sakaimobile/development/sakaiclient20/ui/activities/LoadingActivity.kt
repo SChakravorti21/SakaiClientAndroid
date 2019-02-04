@@ -16,9 +16,6 @@ import kotlinx.android.synthetic.main.activity_loading.*
 import javax.inject.Inject
 import android.view.animation.DecelerateInterpolator
 import android.animation.ObjectAnimator
-import android.graphics.BitmapFactory
-import android.support.v4.graphics.drawable.RoundedBitmapDrawable
-import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory
 import android.widget.Toast
 
 
@@ -47,7 +44,7 @@ class LoadingActivity : AppCompatActivity() {
         // Just in case network connectivity changes as refresh is occurring,
         // make sure the user is notified of this.
         loadingPageViewModel.errorState.observe(this, Observer {
-            Toast.makeText(this, "We had trouble reaching Sakai!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "We had trouble reaching Sakai, please restart this application", Toast.LENGTH_LONG).show()
         })
 
         loadingPageViewModel.getRefreshProgress(true).observe(this, Observer { progress ->

@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#d34646</color>
-    <color name="colorPrimaryDark">#8F1717</color>
-    <color name="colorAccent">#8F1717</color>
+    <!--<color name="colorPrimary">#d34646</color>-->
+    <!--<color name="colorPrimaryDark">#8F1717</color>-->
+    <color name="colorPrimary">#333333</color>
+    <color name="colorPrimaryDark">@color/sakaiTint</color>
+    <color name="colorAccent">@color/sakaiTint</color>
     <color name="white">#FFFFFF</color>
 
     <!-- Course Header colors -->
