@@ -25,7 +25,6 @@ import java.util.Locale;
                 @Index(value = "siteId"),
                 @Index(value = "announcementId")
         })
-// TODO: implement parcelable
 public class Announcement implements Serializable {
 
     @Ignore
@@ -44,12 +43,14 @@ public class Announcement implements Serializable {
     public String createdBy;
     public long createdOn;
 
+    @Ignore public int subjectCode;
+    @Ignore public String courseTitle;
+
     // Formatted dates are generated at runtime to be shown to the user
     // since we use relative terms like "Today"
-    @Ignore
-    private String shortFormattedDate;
-    @Ignore
-    private String longFormattedDate;
+    @Ignore private String shortFormattedDate;
+    @Ignore private String longFormattedDate;
+
 
     public Announcement(@NonNull String announcementId) {
         this.announcementId = announcementId;

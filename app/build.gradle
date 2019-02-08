@@ -32,8 +32,8 @@ android {
         applicationId "com.sakaimobile.development.sakaiclient20"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 6
-        versionName "1.0"
+        versionCode 8
+        versionName "1.1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         javaCompileOptions {
             annotationProcessorOptions {
@@ -107,9 +107,6 @@ dependencies {
     api 'com.google.code.gson:gson:2.8.4'
     api 'com.squareup.retrofit2:converter-gson:2.3.0'
 
-    //Common-Lang3 is used for toString of POJOs
-    api 'org.apache.commons:commons-lang3:3.6'
-
     //Android TreeView library for generating tree-like structures
     api 'com.github.bmelnychuk:atv:1.2.9'
 
@@ -129,6 +126,8 @@ dependencies {
 
     // Crashlytics for crash/error reporting
     implementation 'com.crashlytics.sdk.android:crashlytics:2.9.8'
+    // Google Play Services used for Smart Lock integration
+    implementation 'com.google.android.gms:play-services-auth:16.0.1'
 
     // LeakCanary for memory leak detection
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.3'

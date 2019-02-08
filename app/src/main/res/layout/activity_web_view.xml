@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.sakaimobile.development.sakaiclient20.ui.activities.WebViewActivity">
+    tools:context="com.sakaimobile.development.sakaiclient20.ui.activities.LoginActivity">
 
 
     <android.support.v7.widget.Toolbar
@@ -27,4 +27,29 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/webview_toolbar" />
+
+    <!-- Overlay to show that the login is loading when credentials are retrieved -->
+    <View
+        android:id="@+id/webview_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/webview_toolbar"
+        android:background="#80000000"
+        android:visibility="invisible"/>
+
+    <ProgressBar
+        android:id="@+id/loading_indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/login_web_view"
+        app:layout_constraintBottom_toBottomOf="@id/login_web_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:indeterminate="true"
+        android:visibility="invisible"/>
+
 </android.support.constraint.ConstraintLayout>

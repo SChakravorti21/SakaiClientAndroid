@@ -1,7 +1,5 @@
 package com.sakaimobile.development.sakaiclient20.ui.activities;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -11,25 +9,15 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.ProgressBar;
 
 import com.sakaimobile.development.sakaiclient20.R;
-import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 import com.sakaimobile.development.sakaiclient20.ui.custom_components.CustomLinkMovementMethod;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AllCoursesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AllGradesFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AnnouncementsFragment;
-import com.sakaimobile.development.sakaiclient20.ui.fragments.SettingsFragment;
+import com.sakaimobile.development.sakaiclient20.ui.fragments.preferences.SettingsFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.AssignmentsFragment;
-import com.sakaimobile.development.sakaiclient20.ui.viewmodels.CourseViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -42,13 +30,8 @@ public class MainActivity extends AppCompatActivity
     private static final short FRAGMENT_ADD = 1;
     private static final short FRAGMENT_REPLACE = 0;
 
-    private CourseViewModel courseViewModel;
     @Inject ViewModelFactory viewModelFactory;
-
-    private ProgressBar spinner;
-    private FrameLayout container;
     private boolean allowNavigation;
-    private Set<Class> refreshedFragments;
 
     //==============================
     // LIFECYCLE/INTERFACE METHODS
@@ -60,13 +43,6 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        this.courseViewModel =
-                ViewModelProviders.of(this, viewModelFactory).get(CourseViewModel.class);
-
-        this.container = findViewById(R.id.fragment_container);
-        this.spinner = findViewById(R.id.nav_activity_progressbar);
-        this.spinner.setVisibility(View.GONE);
-
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -77,7 +53,6 @@ public class MainActivity extends AppCompatActivity
 
         // Request all site pages for the Home Fragment and then loads the fragment
         // refresh since we are loading for the same time
-        refreshedFragments = new HashSet<>();
         loadCoursesFragment();
     }
 
@@ -174,7 +149,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * Loads a given fragment into the fragment container in the NavActivity layout
+     * Loads a given fragment into the fragment container in the MainActivity layout
      *
      * @param fragment the Fragment to make visible
      */
@@ -194,114 +169,43 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    /**
-     * Loads the all courses fragment (home page)
-     */
     public void loadCoursesFragment() {
         Bundle bundle = new Bundle();
-        boolean shouldRefresh = getAndUpdateRefreshedState(AllCoursesFragment.class);
-        bundle.putBoolean(AllCoursesFragment.SHOULD_REFRESH, shouldRefresh);
-
         Fragment fragment = new AllCoursesFragment();
         fragment.setArguments(bundle);
         loadFragment(fragment, FRAGMENT_REPLACE, false, false);
     }
 
-    /**
-     * Loads all assignments tab
-     */
     public void loadAssignmentsFragment() {
         Bundle bundle = new Bundle();
-        boolean shouldRefresh = getAndUpdateRefreshedState(AssignmentsFragment.class);
-        bundle.putBoolean(AssignmentsFragment.SHOULD_REFRESH, shouldRefresh);
-
         Fragment fragment = new AssignmentsFragment();
         fragment.setArguments(bundle);
         loadFragment(fragment, FRAGMENT_REPLACE, false, false);
     }
 
-    /**
-     * Loads the all grades fragment
-     */
     public void loadGradesFragment() {
         Bundle bundle = new Bundle();
-        boolean shouldRefresh = getAndUpdateRefreshedState(AllGradesFragment.class);
-        bundle.putBoolean(AllGradesFragment.SHOULD_REFRESH, shouldRefresh);
-
         Fragment fragment = new AllGradesFragment();
         fragment.setArguments(bundle);
         loadFragment(fragment, FRAGMENT_REPLACE, false, false);
     }
 
-    /**
-     * Loads the all announcements fragment by obser
-     * ving on the live data from the
-     * announcements view model
-     * <p>
-     * whenever an update is detected in the live data, recreate the fragment
-     */
     public void loadAnnouncementsFragment() {
-        this.container.setVisibility(View.GONE);
-        startProgressBar();
+        // create fragment arguments
+        Bundle b = new Bundle();
+        b.putString(getString(R.string.siteid_tag), null);
 
-        LiveData<List<List<Course>>> coursesLiveData = courseViewModel.getCoursesByTerm(false);
-        coursesLiveData.observe(this, courses -> {
-
-            HashMap<String, Course> map = createSiteIdToCourseMap(courses);
-
-            // create fragment arguments
-            Bundle b = new Bundle();
-            b.putString(getString(R.string.siteid_tag), null);
-            b.putSerializable(getString(R.string.siteid_to_course_map), map);
-
-            // create and load the fragment
-            AnnouncementsFragment frag = new AnnouncementsFragment();
-            frag.setArguments(b);
-
-            loadFragment(frag, FRAGMENT_REPLACE, false, false);
-
-            this.container.setVisibility(View.VISIBLE);
-            stopProgressBar();
-
-            coursesLiveData.removeObservers(this);
-        });
+        // create and load the fragment
+        AnnouncementsFragment frag = new AnnouncementsFragment();
+        frag.setArguments(b);
+        loadFragment(frag, FRAGMENT_REPLACE, false, false);
     }
 
     //=======================
     // CONVENIENCE METHODS
     //=======================
 
-    private boolean getAndUpdateRefreshedState(Class clazz) {
-        if(refreshedFragments.contains(clazz)) {
-            return false;
-        } else {
-            refreshedFragments.add(clazz);
-            return true;
-        }
-    }
-
-    private HashMap<String, Course> createSiteIdToCourseMap(List<List<Course>> courses) {
-        HashMap<String, Course> siteIdToCourse = new HashMap<>();
-
-        for (List<Course> term : courses) {
-            for (Course course : term) {
-                siteIdToCourse.put(course.siteId, course);
-            }
-        }
-
-        return siteIdToCourse;
-    }
-
     public void setActionBarTitle(String title) {
         getSupportActionBar().setTitle(title);
     }
-
-    public void startProgressBar() {
-        spinner.setVisibility(View.VISIBLE);
-    }
-
-    public void stopProgressBar() {
-        spinner.setVisibility(View.GONE);
-    }
-
 }

@@ -2,17 +2,16 @@ package com.sakaimobile.development.sakaiclient20.ui.fragments;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.transition.Transition;
 import android.support.transition.TransitionInflater;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
-import android.text.Html;
-import android.text.Spanned;
-import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.sakaimobile.development.sakaiclient20.R;
@@ -32,12 +31,11 @@ public class SingleAnnouncementFragment extends Fragment {
 
     // BUNDLE ARGUMENTS
     public static final String SINGLE_ANNOUNCEMENT = "SINGLE_ANNOUNCEMENT";
-    public static final String ANNOUNCEMENT_COURSE = "ANNOUNCEMENT_COURSE";
     public static final String ANNOUNCEMENT_POSITION = "ANNOUNCEMENT_POSITION";
 
+    private TextView closeButton;
     private int position;
-    private Announcement currAnnouncement;
-    private Course announcementCourse;
+    private Announcement announcement;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -45,16 +43,15 @@ public class SingleAnnouncementFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         Bundle b = getArguments();
-        currAnnouncement = (Announcement) b.getSerializable(SINGLE_ANNOUNCEMENT);
-        announcementCourse = (Course) b.getSerializable(ANNOUNCEMENT_COURSE);
+        announcement = (Announcement) b.getSerializable(SINGLE_ANNOUNCEMENT);
         position = b.getInt(ANNOUNCEMENT_POSITION);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Transition moveTransition = TransitionInflater.from(getContext()).inflateTransition(android.R.transition.move);
-            Transition fadeTransition = TransitionInflater.from(getContext()).inflateTransition(android.R.transition.slide_right);
+            Transition slideTransition = TransitionInflater.from(getContext()).inflateTransition(android.R.transition.slide_right);
             setSharedElementEnterTransition(moveTransition);
             setSharedElementReturnTransition(null);
-            setReturnTransition(fadeTransition);
+            setReturnTransition(slideTransition);
         }
     }
 
@@ -65,6 +62,7 @@ public class SingleAnnouncementFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_full_announcement, container, false);
         ViewCompat.setTransitionName(view, ANNOUNCEMENT_TRANSITION + position);
 
+        this.closeButton = view.findViewById(R.id.announcement_close_button);
         TextView titleTxt = view.findViewById(R.id.announcement_title);
         TextView authorTxt = view.findViewById(R.id.author_name);
         TextView courseTxt = view.findViewById(R.id.course_name);
@@ -73,14 +71,31 @@ public class SingleAnnouncementFragment extends Fragment {
         TextView attachmentsView = view.findViewById(R.id.announcement_attachments);
 
         //if the title won't fit on the text box, make it scrollable
-        titleTxt.setText(currAnnouncement.title);
-        authorTxt.setText(currAnnouncement.createdBy);
-        courseTxt.setText(announcementCourse.title);
-        dateTxt.setText(currAnnouncement.getLongFormattedDate());
-        contentTxt.setText(HtmlUtils.getSpannedFromHtml(currAnnouncement.body));
+        titleTxt.setText(announcement.title);
+        authorTxt.setText(announcement.createdBy);
+        courseTxt.setText(announcement.courseTitle);
+        dateTxt.setText(announcement.getLongFormattedDate());
+        contentTxt.setText(HtmlUtils.getSpannedFromHtml(announcement.body));
         contentTxt.setMovementMethod(CustomLinkMovementMethod.getInstance());
-        HtmlUtils.constructAttachmentsView(attachmentsView, currAnnouncement.attachments);
+        HtmlUtils.constructAttachmentsView(attachmentsView, announcement.attachments);
 
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        this.closeButton.setOnClickListener(v -> {
+            // Pop this fragment off the back stack (using onBackPressed in case
+            // this fragment is ever refactored to an Activity)
+            if(getActivity() != null) getActivity().onBackPressed();
+        });
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        this.closeButton.setOnClickListener(null);
+        this.closeButton = null;
     }
 }

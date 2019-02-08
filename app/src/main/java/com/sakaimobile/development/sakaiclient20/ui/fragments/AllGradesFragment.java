@@ -38,11 +38,8 @@ import dagger.android.support.AndroidSupportInjection;
 
 public class AllGradesFragment extends BaseFragment {
 
-    public static final String SHOULD_REFRESH = "SHOULD_REFRESH";
-
     @Inject ViewModelFactory viewModelFactory;
     private GradeViewModel gradeViewModel;
-    private boolean shouldRefresh;
 
     private ProgressBar progressBar;
     private AndroidTreeView treeView;
@@ -52,7 +49,6 @@ public class AllGradesFragment extends BaseFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        this.shouldRefresh = getArguments().getBoolean(SHOULD_REFRESH);
     }
 
     @Override
@@ -88,27 +84,21 @@ public class AllGradesFragment extends BaseFragment {
             return null;
         });
 
-        gradeViewModel.getCoursesByTerm(shouldRefresh)
-                .observe(getViewLifecycleOwner(), courses -> {
-                    // If we are refreshing, there will be one initial false emission
-                    if(shouldRefresh) {
-                        shouldRefresh = false;
-                        return;
-                    }
+        gradeViewModel.getCoursesByTerm().observe(getViewLifecycleOwner(), courses -> {
+            // Construct the tree view based on th
+            // Make the TreeView visible inside the parent layout
+            if(this.treeView == null) {
+                this.treeView = new AndroidTreeView(getContext());
+                this.treeView.setDefaultAnimation(true);
 
-                    // Construct the tree view based on th
-                    // Make the TreeView visible inside the parent layout
-                    if(this.treeView == null) {
-                        this.treeView = new AndroidTreeView(getContext());
-                        this.treeView.setDefaultAnimation(true);
+                TreeViewItemClickListener nodeClickListener = new TreeViewItemClickListener(this.treeView);
+                this.treeView.setDefaultNodeClickListener(nodeClickListener);
+            }
 
-                        TreeViewItemClickListener nodeClickListener = new TreeViewItemClickListener(this.treeView);
-                        this.treeView.setDefaultNodeClickListener(nodeClickListener);
-                    }
-
-                    this.renderTree(courses);
-                    this.progressBar.setVisibility(View.GONE);
-                });
+            this.renderTree(courses);
+            this.progressBar.setVisibility(View.GONE);
+            this.treeContainer.setVisibility(View.VISIBLE);
+        });
     }
 
     @Override
@@ -135,6 +125,7 @@ public class AllGradesFragment extends BaseFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.action_refresh:
+                this.treeContainer.setVisibility(View.INVISIBLE);
                 this.progressBar.setVisibility(View.VISIBLE);
                 this.saveTreeState();
                 this.gradeViewModel.refreshAllData();

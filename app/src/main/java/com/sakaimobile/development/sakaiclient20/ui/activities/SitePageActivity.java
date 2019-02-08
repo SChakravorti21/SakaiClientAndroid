@@ -104,12 +104,8 @@ public class SitePageActivity extends AppCompatActivity {
     }
 
     private void startSiteAnnouncementsFragment(Course course) {
-        HashMap<String, Course> siteIdToCourse = new HashMap<>();
-        siteIdToCourse.put(course.siteId, course);
-
         Bundle bun = new Bundle();
         bun.putString(getString(R.string.siteid_tag), course.siteId);
-        bun.putSerializable(getString(R.string.siteid_to_course_map), siteIdToCourse);
 
         AnnouncementsFragment fragment = new AnnouncementsFragment();
         fragment.setArguments(bun);

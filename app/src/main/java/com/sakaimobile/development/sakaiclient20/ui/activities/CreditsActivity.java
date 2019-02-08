@@ -16,7 +16,6 @@ public class CreditsActivity extends AppCompatActivity {
     private static final String[] creditsList = {
             "Rutgers Sakai",
             "Icons8",
-            "Logomakr",
             "RxAndroid",
             "AndroidTreeView",
             "Retrofit",
@@ -26,13 +25,11 @@ public class CreditsActivity extends AppCompatActivity {
     private static final String[] creditsURLs = {
             "https://sakai.rutgers.edu/direct/describe",
             "https://icons8.com/",
-            "https://logomakr.com/",
             "https://github.com/ReactiveX/RxAndroid",
             "https://github.com/bmelnychuk/AndroidTreeView",
             "https://github.com/square/retrofit",
             "https://github.com/square/okhttp"
     };
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,21 +41,17 @@ public class CreditsActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener((v) -> onBackPressed());
 
         ListView creditsListView = findViewById(R.id.credits_list_view);
-        creditsListView.setOnItemClickListener(
-                ((parent, view, position, id) -> {
-                    String url = creditsURLs[position];
-                    openURL(url);
-                })
-        );
+        creditsListView.setOnItemClickListener((parent, view, position, id) -> {
+            String url = creditsURLs[position];
+            openURL(url);
+        });
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.credits_item, R.id.creditNameTxt, creditsList);
         creditsListView.setAdapter(adapter);
-
     }
 
 
     private void openURL(String url) {
-
         Intent viewIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         viewIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         viewIntent.setPackage("com.android.chrome");

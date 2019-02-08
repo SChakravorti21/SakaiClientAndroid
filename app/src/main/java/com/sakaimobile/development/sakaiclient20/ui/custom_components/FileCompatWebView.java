@@ -148,6 +148,19 @@ public class FileCompatWebView extends WebView implements NestedScrollingChild {
                 view.loadUrl(url);
                 return true;
             }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                // Remove the annoying banner if possible (if no such DOM elements exist,
+                // nothing will happen, normal execution continues)
+                if(view != null)
+                    view.loadUrl("javascript:document.querySelector('nav#skipNav').remove();" +
+                            "document.querySelector('div.Mrphs-topHeader').remove();" +
+                            "document.querySelector('nav.Mrphs-siteHierarchy').remove();" +
+                            "document.querySelector('main#content').style.marginTop = 0;" +
+                            "document.querySelector('.workspace').style.paddingTop = 0;");
+            }
         });
     }
 

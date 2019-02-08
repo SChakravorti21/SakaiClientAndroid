@@ -7,58 +7,25 @@
     <string name="logout">Logout</string>
 
     <!-- Strings related to login -->
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password (optional)</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
-    <string name="error_invalid_email">This email address is invalid</string>
-    <string name="error_invalid_password">This password is too short</string>
-    <string name="error_incorrect_password">This password is incorrect</string>
-    <string name="error_field_required">This field is required</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
-
-    <string name="all_sites">All Sites</string>
-    <string name="announcements">Alerts</string>
-    <string name="assignments">Assignments</string>
-    <string name="gradebook">Gradebook</string>
-    <string name="none_string">None</string>
-
-    <string name="spring">Spring</string>
-    <string name="summer">Summer</string>
-    <string name="winter">Winter</string>
-    <string name="fall">Fall</string>
 
 
     <string name="BASE_URL">https://sakai.rutgers.edu/direct/</string>
     <string name="CAS_BASE_URL">https://cas.rutgers.edu/login?service=https%3A%2F%2Fsakai.rutgers.edu%2Fsakai-login-tool%2Fcontainer</string>
     <string name="COOKIE_URL_1">https://sakai.rutgers.edu/sakai-login-tool/container</string>
     <string name="COOKIE_URL_2">https://sakai.rutgers.edu/portal</string>
-    <string name="COOKIE_URL_3">https://cas.rutgers.edu/login</string>
-    <string name="title_activity_nav">NavActivity</string>
 
     <string name="title_home">Classes</string>
-    <string name="title_dashboard">Dashboard</string>
     <string name="title_announcements">Alerts</string>
     <string name="title_assignments">Assignments</string>
     <string name="title_gradebook">Gradebook</string>
     <string name="title_settings">Settings</string>
 
-    <string name="no_grades">There were no grades found</string>
-    <string name="no_courses">There were no courses found</string>
-    <string name="network_error">A network error has occurred. Please try again later. </string>
-
-    <string name="fetched_grades">Fetched latest grades!</string>
-
     <string name="grade_item">%1$s/%2$.2f</string>
     <string name="grade_item_null">/%1$.2f</string>
-    <string name="title_activity_settings">SettingsActivity</string>
 
     <string name="siteid_tag" translatable="false">SITEID</string>
     <string name="all_announcements_tag" translatable="false">ALL_ANNOUNCEMENTS</string>
     <string name="site_announcements_tag" translatable="false">SITE_ANNOUNCEMENTS</string>
-    <string name="siteid_to_course_map" translatable="false">SITEIDTOCOURSE</string>
     <string name="site_resources_tag" translatable="false">SITERESOURCES</string>
     <string name="site_grades_tag" translatable="false">SITEGRADES</string>
 
@@ -67,7 +34,5 @@
     <string name="assignments_tag" translatable="false">ASSIGNMENTS_TAG</string>
 
 
-    <string name="no_announcements">There are no announcements available.</string>
-    <string name="title_activity_site_announcement">SiteAnnouncementActivity</string>
 </resources>
 

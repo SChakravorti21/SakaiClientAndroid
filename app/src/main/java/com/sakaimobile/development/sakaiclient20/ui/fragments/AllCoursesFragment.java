@@ -42,12 +42,9 @@ public class AllCoursesFragment extends BaseFragment {
         void onCoursesRefreshCompleted();
     }
 
-    public static final String SHOULD_REFRESH = "SHOULD_REFRESH";
-
     @Inject ViewModelFactory viewModelFactory;
     private CourseViewModel courseViewModel;
     private AndroidTreeView treeView;
-    private boolean shouldRefresh;
 
     private FrameLayout treeContainer;
     private ProgressBar progressBar;
@@ -57,7 +54,6 @@ public class AllCoursesFragment extends BaseFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        this.shouldRefresh = getArguments().getBoolean(SHOULD_REFRESH);
     }
 
     @Override
@@ -103,32 +99,26 @@ public class AllCoursesFragment extends BaseFragment {
             return null;
         });
 
-        courseViewModel.getCoursesByTerm(shouldRefresh)
-                .observe(getViewLifecycleOwner(), courses -> {
-                    // If we are refreshing, there will be one initial false emission
-                    if(shouldRefresh) {
-                        shouldRefresh = false;
-                        return;
-                    }
+        courseViewModel.getCoursesByTerm().observe(getViewLifecycleOwner(), courses -> {
+            // Construct the tree view based on th
+            // Make the TreeView visible inside the parent layout
+            if(this.treeView == null) {
+                this.treeView = new AndroidTreeView(getContext());
+                this.treeView.setDefaultAnimation(true);
 
-                    // Construct the tree view based on th
-                    // Make the TreeView visible inside the parent layout
-                    if(this.treeView == null) {
-                        this.treeView = new AndroidTreeView(getContext());
-                        this.treeView.setDefaultAnimation(true);
+                TreeViewItemClickListener nodeClickListener = new TreeViewItemClickListener(this.treeView);
+                this.treeView.setDefaultNodeClickListener(nodeClickListener);
+            }
 
-                        TreeViewItemClickListener nodeClickListener = new TreeViewItemClickListener(this.treeView);
-                        this.treeView.setDefaultNodeClickListener(nodeClickListener);
-                    }
+            this.renderTree(courses);
+            this.progressBar.setVisibility(View.GONE);
+            this.treeContainer.setVisibility(View.VISIBLE);
 
-                    this.renderTree(courses);
-                    this.progressBar.setVisibility(View.GONE);
-
-                    // Allow user to resume navigating around app if that functionality
-                    // had previously been locked
-                    if(this.onCoursesRefreshListener != null)
-                        this.onCoursesRefreshListener.onCoursesRefreshCompleted();
-                });
+            // Allow user to resume navigating around app if that functionality
+            // had previously been locked
+            if(this.onCoursesRefreshListener != null)
+                this.onCoursesRefreshListener.onCoursesRefreshCompleted();
+        });
     }
 
     @Override
@@ -161,6 +151,7 @@ public class AllCoursesFragment extends BaseFragment {
                     this.onCoursesRefreshListener.onCoursesRefreshStarted();
 
                 this.progressBar.setVisibility(View.VISIBLE);
+                this.treeContainer.setVisibility(View.INVISIBLE);
                 this.saveTreeState();
                 this.courseViewModel.refreshAllData();
             default:

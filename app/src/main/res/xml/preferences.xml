@@ -1,4 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="General">
+        <Preference
+            android:icon="@drawable/ic_info"
+            android:key="version"
+            android:title="About">
+            <intent android:action="android.intent.action.VIEW"
+                android:data="https://rutgerssakai.github.io/SakaiMobile/"/>
+        </Preference>
+        <Preference
+            android:icon="@drawable/ic_security"
+            android:title="Privacy Policy">
+            <intent android:action="android.intent.action.VIEW"
+                android:data="https://rutgerssakai.github.io/SakaiMobile/privacy.html"/>
+        </Preference>
+        <Preference
+            android:icon="@drawable/ic_tag_faces"
+            android:title="Thanks To">
+            <intent android:action="android.intent.action.VIEW"
+                android:targetPackage="com.sakaimobile.development.sakaiclient20"
+                android:targetClass="com.sakaimobile.development.sakaiclient20.ui.activities.CreditsActivity"/>
+        </Preference>
+        <Preference
+            android:icon="@drawable/ic_email"
+            android:title="Contact Us">
+            <intent android:action="android.intent.action.SENDTO"
+                android:data="mailto:rutgerssakaiapp@gmail.com">
+                <extra android:name="android.intent.extra.SUBJECT"
+                    android:value="Rutgers Sakai Android: Feedback" />
+                <extra android:name="android.intent.extra.TEXT"
+                    android:value="Dear Rutgers Sakai Mobile developers,\n\nHere is some feedback to improve the app:\n\n\n\nRegards," />
+            </intent>
+        </Preference>
+        <Preference
+            android:icon="@drawable/ic_star"
+            android:title="Rate Rutgers Sakai Mobile">
+            <intent android:action="android.intent.action.VIEW"
+                android:data="https://play.google.com/store/apps/details?id=com.sakaimobile.development.sakaiclient20"/>
+        </Preference>
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="Credential Management">
+        <Preference
+            android:title="How does Sakai Mobile keep me logged in?">
+            <intent android:action="android.intent.action.VIEW"
+                android:data="https://rutgerssakai.github.io/SakaiMobile/faq.html#android-how-does-smart-lock-work"/>
+        </Preference>
+        <Preference
+            android:title="I previously disabled auto-login and want to re-enable it">
+            <intent android:action="android.intent.action.VIEW"
+                android:data="https://rutgerssakai.github.io/SakaiMobile/faq.html#android-how-enable-smart-lock"/>
+        </Preference>
+        <Preference
+            android:title="I want Sakai Mobile to forget my credentials">
+            <intent android:action="android.intent.action.VIEW"
+                android:data="https://rutgerssakai.github.io/SakaiMobile/faq.html#android-how-to-delete-credentials"/>
+        </Preference>
+    </PreferenceCategory>
+
+    <!--Logout Button-->
+    <com.sakaimobile.development.sakaiclient20.ui.fragments.preferences.LogoutPreference />
 
 </PreferenceScreen>

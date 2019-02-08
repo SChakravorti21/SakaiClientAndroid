@@ -149,6 +149,7 @@ public class SiteAssignmentsFragment extends BaseFragment {
                     // show the first assignment
                     this.assignmentsPager.setCurrentItem(initialPosition);
                     this.progressBar.setVisibility(View.GONE);
+                    this.assignmentsPager.setVisibility(View.VISIBLE);
                 });
     }
 
@@ -171,6 +172,7 @@ public class SiteAssignmentsFragment extends BaseFragment {
                 this.initialPosition = this.assignmentsPager.getCurrentItem();
                 this.assignmentViewModel.refreshSiteData(this.siteIds);
                 this.progressBar.setVisibility(View.VISIBLE);
+                this.assignmentsPager.setVisibility(View.INVISIBLE);
             default:
                 return super.onOptionsItemSelected(item);
         }

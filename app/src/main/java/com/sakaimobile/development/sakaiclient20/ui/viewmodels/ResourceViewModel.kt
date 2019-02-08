@@ -3,8 +3,6 @@ package com.sakaimobile.development.sakaiclient20.ui.viewmodels
 import android.annotation.SuppressLint
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
-import android.util.Log
 
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Resource
 import com.sakaimobile.development.sakaiclient20.repositories.ResourceRepository
@@ -12,12 +10,9 @@ import com.sakaimobile.development.sakaiclient20.ui.viewholders.ResourceDirector
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.ResourceItemViewHolder
 import com.unnamed.b.atv.model.TreeNode
 
-import org.apache.commons.lang3.NotImplementedException
-
 import javax.inject.Inject
 
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
 class ResourceViewModel
@@ -26,7 +21,7 @@ class ResourceViewModel
     private val resourcesLiveData: MutableLiveData<TreeNode> = MutableLiveData()
 
     override fun refreshAllData() {
-        throw NotImplementedException("Never need to request resources for all courses at once")
+        throw NotImplementedError("Never need to request resources for all courses at once")
     }
 
     /**
