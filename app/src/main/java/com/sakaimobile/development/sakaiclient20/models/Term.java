@@ -69,7 +69,7 @@ public class Term implements Comparable<Term>, Serializable{
             return this.termString;
 
         // Otherwise combine the semester and year, eg. "Fall 2018"
-        return this.termString + "  " + this.year;
+        return this.termString + " " + this.year;
     }
 
     public int getYear() {
