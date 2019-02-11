@@ -10,6 +10,7 @@ import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.OnLifecycleEvent;
 import android.arch.lifecycle.ProcessLifecycleOwner;
 import android.content.Intent;
+import android.support.multidex.MultiDexApplication;
 import android.support.v4.app.Fragment;
 import android.webkit.CookieManager;
 
@@ -34,7 +35,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 
-public class SakaiApplication extends Application
+public class SakaiApplication extends MultiDexApplication
         implements HasActivityInjector, HasSupportFragmentInjector {
 
     @Inject SessionService sessionService;
