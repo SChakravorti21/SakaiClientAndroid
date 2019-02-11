@@ -21,10 +21,10 @@ repositories {
 android {
     signingConfigs {
         config {
-            storeFile file('/Users/shoumyo/Documents/StudioProjects/keystore')
-            storePassword SAKAI_CLIENT_STORE_PASSWORD
+            storeFile file(System.getenv('SAKAI_MOBILE_STORE_PATH'))
+            storePassword System.getenv('SAKAI_MOBILE_STORE_PASSWORD')
             keyAlias 'key0'
-            keyPassword SAKAI_CLIENT_KEY_PASSWORD
+            keyPassword System.getenv('SAKAI_MOBILE_KEY_PASSWORD')
         }
     }
     compileSdkVersion 28
@@ -41,7 +41,7 @@ android {
             }
         }
         vectorDrawables.useSupportLibrary = true
-        manifestPlaceholders = [fabric_io_id: SAKAI_CLIENT_FABRIC_API_KEY]
+        manifestPlaceholders = [fabric_io_id: System.getenv('SAKAI_MOBILE_FABRIC_API_KEY')]
     }
     buildTypes {
         release {
