@@ -14,34 +14,29 @@ import java.util.ArrayList
 
 class SitePagesBuilder(jsonArray: JsonArray) : AbstractBuilder<JsonArray, List<SitePage>>(jsonArray) {
 
-    private var assignmentSitePageUrl: String? = null
+    var assignmentSitePageUrl: String? = null
+        get() { return field ?: "" }
+        private set
 
     override fun build(): AbstractBuilder<JsonArray, List<SitePage>> {
         result = source.map { element ->
             val json = element.asJsonObject
-            val sitePage = buildSitePage(json)
+            val sitePage = SitePage(json.getStringMember("id"),
+                                    json.getStringMember("siteId"),
+                                    json.getStringMember("title"),
+                                    // default url of null ensures that UI will not show
+                                    // the site page if the url is not provided
+                                    json.getStringMember("url", default = null))
 
-            if (sitePage.title.toLowerCase().contains("assignment"))
+            // The assignment site page URL is used to initialize the submission
+            // dialog WebView
+            if (sitePage.title.toLowerCase().contains("assignment")
+                    && this.assignmentSitePageUrl == null)
                 this.assignmentSitePageUrl = sitePage.url
 
             sitePage
         }
 
         return this
-    }
-
-    private fun buildSitePage(json: JsonObject): SitePage {
-        return SitePage(
-                json.getStringMember("id"),
-                json.getStringMember("siteId"),
-                json.getStringMember("title"),
-                // default url of null ensures that UI will not show the site page
-                // if the url is not provided
-                json.getStringMember("url", default = null)
-        )
-    }
-
-    fun getAssignmentSitePageUrl(): String {
-        return this.assignmentSitePageUrl ?: ""
     }
 }

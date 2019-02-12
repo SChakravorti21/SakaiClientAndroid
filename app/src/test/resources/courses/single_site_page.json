@@ -1,0 +1,22 @@
+
+{
+  "siteOwner": {
+      "userDisplayName": "Shoumyo"
+  },
+   "sitePages": [{
+       "id": "e609a0d5-3745-4de5-b1d5-bc483dd2178b",
+       "layout": 0,
+       "layoutTitle": "Single Column Layout",
+       "position": 2,
+       "props": null,
+       "reference": "/site/288289a0-8842-4c8c-ad84-6cdde9179e26/page/e609a0d5-3745-4de5-b1d5-bc483dd2178b",
+       "siteId": "288289a0-8842-4c8c-ad84-6cdde9179e26",
+       "skin": "morpheus-default",
+       "title": "Assignments",
+       "titleCustom": false,
+       "url": "https://sakai.rutgers.edu/portal/site/288289a0-8842-4c8c-ad84-6cdde9179e26/page/e609a0d5-3745-4de5-b1d5-bc483dd2178b",
+       "activeEdit": false,
+       "homePage": false,
+       "popUp": false
+   }]
+}

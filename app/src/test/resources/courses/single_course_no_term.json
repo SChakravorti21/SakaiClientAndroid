@@ -1,0 +1,60 @@
+{
+  "contactEmail": null,
+  "contactName": null,
+  "createdDate": 1516393439000,
+  "createdTime": {
+    "display": "Jan 19, 2018 3:23 pm",
+    "time": 1516393439000
+  },
+  "description": "<h1 style=\"text-align: center;\">HC MongoDB Field Trip</h1>  <h4 style=\"text-align: center;\">February 23rd, 2018<br />  </h4>  <p dir=\"ltr\">ATTENTION STUDENTS IN THE SCHOOL OF ENGINEERING!</p>  <p dir=\"ltr\">Are you interested in exploring careers in software engineering? Join the Honors College and University Career Services on a trip to MongoDB and network with professionals in software engineering. All majors are welcome on this trip, specifically students in the School of Engineering.</p> <br /> SCHEDULE:<span style=\"background-color: rgb(255,255,0);\"> Students need to arrive at the Honors College, South (Druskin) Lounge by 10:20AM to check-in</span>; the bus will depart at 10:40AM; the site visit is scheduled from 12:00PM to 3:00PM and includes a welcome by the CEO (a Rutgers alum), tour, information session, panel, and networking. The bus is expected to return to campus around 4:30PM.<br /> <br /> RECOMMENDED ATTIRE: Please bring as little as possible with you. We will provide all participants with a pen and portfolio for you to take notes. Acceptable attire for the visit is business casualâ€”no sneakers, t-shirts, shorts, or jeans. (Learn more about business casual at http://careers.rutgers.edu/userfiles/files/Fair_Attire.pdf)<br /> <br /> If you have any additional questions, please feel free to email me at nicholas.kobol@rutgers.edu.<br /> <br /> Nick Kobol<br /> President, HC Winternship &amp; Field Trip Program",
+  "htmlDescription": "&lt;h1 style=&quot;text-align: center;&quot;&gt;HC MongoDB Field Trip&lt;/h1&gt;  &lt;h4 style=&quot;text-align: center;&quot;&gt;February 23rd, 2018&lt;br /&gt; &nbsp;&lt;/h4&gt;  &lt;p dir=&quot;ltr&quot;&gt;ATTENTION STUDENTS IN THE SCHOOL OF ENGINEERING!&lt;/p&gt;  &lt;p dir=&quot;ltr&quot;&gt;Are you interested in exploring careers in software engineering? Join the Honors College and University Career Services on a trip to MongoDB and network with professionals in software engineering. All majors are welcome on this trip, specifically students in the School of Engineering.&lt;/p&gt; &lt;br /&gt; SCHEDULE:&lt;span style=&quot;background-color: rgb(255,255,0);&quot;&gt; Students need to arrive at the Honors College, South (Druskin) Lounge by 10:20AM to check-in&lt;/span&gt;; the bus will depart at 10:40AM; the site visit is scheduled from 12:00PM to 3:00PM and includes a welcome by the CEO (a Rutgers alum), tour, information session, panel, and networking. The bus is expected to return to campus around 4:30PM.&lt;br /&gt; &lt;br /&gt; RECOMMENDED ATTIRE: Please bring as little as possible with you. We will provide all participants with a pen and portfolio for you to take notes. Acceptable attire for the visit is business casual&acirc;&euro;&rdquo;no sneakers, t-shirts, shorts, or jeans. (Learn more about business casual at http://careers.rutgers.edu/userfiles/files/Fair_Attire.pdf)&lt;br /&gt; &lt;br /&gt; If you have any additional questions, please feel free to email me at nicholas.kobol@rutgers.edu.&lt;br /&gt; &lt;br /&gt; Nick Kobol&lt;br /&gt; President, HC Winternship &amp;amp; Field Trip Program",
+  "htmlShortDescription": "",
+  "iconUrl": null,
+  "iconUrlFull": null,
+  "id": "ad1a55da-83a7-49c4-a685-b152e9ef3cfe",
+  "infoUrl": null,
+  "infoUrlFull": null,
+  "joinerRole": null,
+  "lastModified": 1518980131000,
+  "maintainRole": "maintain",
+  "modifiedDate": 1518980131000,
+  "modifiedTime": {
+    "display": "Feb 18, 2018 1:55 pm",
+    "time": 1518980131000
+  },
+  "owner": "cf897213-78c7-49b5-a425-d314c5254883",
+  "props": {
+    "contact-name": "Nicholas Kobol",
+    "contact-email": "nicholas.kobol@rutgers.edu",
+    "mathJaxAllowed": "true"
+  },
+  "providerGroupId": null,
+  "reference": "/site/ad1a55da-83a7-49c4-a685-b152e9ef3cfe",
+  "shortDescription": null,
+  "siteGroups": null,
+  "siteOwner": {
+    "userDisplayName": "Nicholas Kobol",
+    "userEntityURL": "/direct/user/cf897213-78c7-49b5-a425-d314c5254883",
+    "userId": "cf897213-78c7-49b5-a425-d314c5254883"
+  },
+  "sitePages": [],
+  "skin": null,
+  "softlyDeletedDate": null,
+  "title": "HC MongoDB Site Visit '18",
+  "type": "project",
+  "userRoles": [
+    "access",
+    "maintain"
+  ],
+  "activeEdit": false,
+  "customPageOrdered": false,
+  "empty": false,
+  "joinable": false,
+  "pubView": true,
+  "published": true,
+  "softlyDeleted": false,
+  "entityReference": "/site/ad1a55da-83a7-49c4-a685-b152e9ef3cfe",
+  "entityURL": "https://sakai.rutgers.edu/direct/site/ad1a55da-83a7-49c4-a685-b152e9ef3cfe",
+  "entityId": "ad1a55da-83a7-49c4-a685-b152e9ef3cfe",
+  "entityTitle": "HC MongoDB Site Visit '18"
+}

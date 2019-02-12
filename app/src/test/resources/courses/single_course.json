@@ -1,0 +1,68 @@
+{
+  "contactEmail": null,
+  "contactName": null,
+  "createdDate": 1537216571000,
+  "createdTime": {
+    "display": "Sep 17, 2018 4:36 pm",
+    "time": 1537216571000
+  },
+  "description": "IMPORTANT: Please note that only Announcements, Gradebook, Assignments, and Resources have native mobile screens on the app because those are the only items with REST API's. <p><strong>This template contains all of the essential tools to supplement a physical course. It has tools for holding discussions, assigning homework, distributing syllabi and course materials, and grading.</strong></p>    <p>Tools: Announcements, Assignments, Forums, Gradebook, Lessons, Mailtool, Resources, Tests &amp; Quizzes, Kaltura Media Gallery, &amp; Site Statistics.</p>",
+  "htmlDescription": "IMPORTANT: Please note that only Announcements, Gradebook, Assignments, and Resources have native mobile screens on the app because those are the only items with REST API's. &lt;p&gt;&lt;strong&gt;This template contains all of the essential tools to supplement a physical course. It has tools for holding discussions, assigning homework, distributing syllabi and course materials, and grading.&lt;/strong&gt;&lt;/p&gt; &nbsp;  &lt;p&gt;Tools: Announcements, Assignments, Forums, Gradebook, Lessons, Mailtool, Resources, Tests &amp;amp; Quizzes, Kaltura Media Gallery, &amp;amp; Site Statistics.&lt;/p&gt;",
+  "htmlShortDescription": "This is a test site intended for App Review",
+  "iconUrl": null,
+  "iconUrlFull": null,
+  "id": "459ddd89-6afc-439d-95dd-f67725dc6ce6",
+  "infoUrl": null,
+  "infoUrlFull": null,
+  "joinerRole": null,
+  "lastModified": 1537231831000,
+  "maintainRole": "Instructor",
+  "modifiedDate": 1537231831000,
+  "modifiedTime": {
+    "display": "Sep 17, 2018 8:50 pm",
+    "time": 1537231831000
+  },
+  "owner": "262abe02-1078-4eb2-bc30-b3b065792484",
+  "props": {
+    "contact-email": "pranay.neelagiri@rutgers.edu",
+    "sections_externally_maintained": "false",
+    "contact-name": "Pranay Neelagiri",
+    "original-site-id": "754777eb-07b3-45d2-abb3-59440f57815b",
+    "template_used": "754777eb-07b3-45d2-abb3-59440f57815b",
+    "mathJaxAllowed": "true",
+    "term": "Fall 2018",
+    "site-request-course-sections": "Course Supplement Templ",
+    "term_eid": "2018:9"
+  },
+  "providerGroupId": null,
+  "reference": "/site/459ddd89-6afc-439d-95dd-f67725dc6ce6",
+  "shortDescription": "This is a test site intended for App Review",
+  "siteGroups": null,
+  "siteOwner": {
+    "userDisplayName": "Pranay Neelagiri",
+    "userEntityURL": "/direct/user/262abe02-1078-4eb2-bc30-b3b065792484",
+    "userId": "262abe02-1078-4eb2-bc30-b3b065792484"
+  },
+  "sitePages": [],
+  "skin": null,
+  "softlyDeletedDate": null,
+  "title": "App Review",
+  "type": "course",
+  "userRoles": [
+    "Instructor",
+    "Teaching Assistant",
+    "Teaching Assistant (whole course)",
+    "Student"
+  ],
+  "activeEdit": false,
+  "customPageOrdered": true,
+  "empty": false,
+  "joinable": false,
+  "pubView": true,
+  "published": true,
+  "softlyDeleted": false,
+  "entityReference": "/site/459ddd89-6afc-439d-95dd-f67725dc6ce6",
+  "entityURL": "https://sakai.rutgers.edu/direct/site/459ddd89-6afc-439d-95dd-f67725dc6ce6",
+  "entityId": "459ddd89-6afc-439d-95dd-f67725dc6ce6",
+  "entityTitle": "App Review"
+}

@@ -27,7 +27,7 @@ class CourseBuilder(jsonObject: JsonObject) : AbstractBuilder<JsonObject, Course
         val rawSitePages = source.getAsJsonArray("sitePages")
         val builder = SitePagesBuilder(rawSitePages)
         result.sitePages = builder.build().result
-        result.assignmentSitePageUrl = builder.getAssignmentSitePageUrl()
+        result.assignmentSitePageUrl = builder.assignmentSitePageUrl
 
         return this
     }
@@ -37,7 +37,8 @@ class CourseBuilder(jsonObject: JsonObject) : AbstractBuilder<JsonObject, Course
         // is not provided, in which case the element itself will
         // be null (instead of holding a null value and being JsonNull)
         val props = source.getAsJsonObject("props")
-        val termEid = props.getStringMember("term_eid", default = "0000:0")
+        val defaultTermEid = "0000:0"
+        val termEid = props?.getStringMember("term_eid", default = defaultTermEid) ?: defaultTermEid
         return Term(termEid)
     }
 
