@@ -20,12 +20,16 @@ import okhttp3.Response;
 public class CASWebViewClient extends WebViewClient {
 
     public interface SakaiLoadedListener {
+        void onLoginPageLoaded();
         void onLoginSuccess(String username, String password);
     }
 
     // This listener let's our LoginActivity know that
     // login was successful, and a new activity can be started
     private SakaiLoadedListener sakaiLoadedListener;
+    // The login page url. We initiate auto-login (if possible)
+    // once this page is loaded
+    private final String baseUrl;
 
     // CookieManager automatically saves all cookies from requests,
     // we just need to set the acceptance policy
@@ -40,15 +44,13 @@ public class CASWebViewClient extends WebViewClient {
     private boolean gotHeaders;
     private String username, password;
 
-    public CASWebViewClient(String url, SakaiLoadedListener loadedListener) {
+    public CASWebViewClient(String baseUrl, String cookieUrl, SakaiLoadedListener loadedListener) {
         super();
-
-        cookieUrl = url;
+        this.baseUrl = baseUrl;
+        this.cookieUrl = cookieUrl;
         sakaiLoadedListener = loadedListener;
-
         httpClient = new OkHttpClient();
         gotHeaders = false;
-
         // Make sure that the CookieManager accepts all cookies
         cookieManager = CookieManager.getInstance();
         cookieManager.setAcceptCookie(true);
@@ -62,7 +64,6 @@ public class CASWebViewClient extends WebViewClient {
         return true;
     }
 
-
     @Override
     public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
         // We only need to intercept once authentication is complete, as the
@@ -71,6 +72,15 @@ public class CASWebViewClient extends WebViewClient {
             return handleRequest(view, url);
 
         return super.shouldInterceptRequest(view, url);
+    }
+
+    @Override
+    public void onPageFinished(WebView view, String url) {
+        super.onPageFinished(view, url);
+        // Attempt to auto-login when the base url loads
+        if(url.equals(baseUrl)) {
+            sakaiLoadedListener.onLoginPageLoaded();
+        }
     }
 
     private WebResourceResponse handleRequest(WebView view, String url) {
