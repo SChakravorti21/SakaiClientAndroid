@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 
+import com.sakaimobile.development.sakaiclient20.networking.utilities.HeaderInterceptor;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 import com.sakaimobile.development.sakaiclient20.repositories.CourseRepository;
 
@@ -37,7 +38,11 @@ public abstract class BaseViewModel extends ViewModel {
     }
 
     void emitError(Throwable throwable) {
-        this.errorState.postValue(SakaiErrorState.FAILURE);
+        SakaiErrorState error =
+                throwable.getMessage().equals(HeaderInterceptor.SESSION_EXPIRED_ERROR)
+                        ? SakaiErrorState.SESSION_EXPIRED
+                        : SakaiErrorState.FAILURE;
+        this.errorState.postValue(error);
     }
 
     public LiveData<List<List<Course>>> getCoursesByTerm() {

@@ -35,7 +35,6 @@ public class LoginActivity extends AppCompatActivity implements CASWebViewClient
     private View webViewOverlay;
 
     private CredentialsClient credentialsClient;
-    private boolean hasShowedContent = false;
     private boolean isAutoLoggingIn = false;
 
     @Override
@@ -193,16 +192,12 @@ public class LoginActivity extends AppCompatActivity implements CASWebViewClient
     }
 
     private void showContent() {
-        // Prevent opening loading page twice
-        if(hasShowedContent) return;
-
         // In case the phone is not logged into a Google account, at least flush the cookies
         // for session persistence for the next two-ish hours
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             CookieManager.getInstance().flush();
         }
 
-        hasShowedContent = true;
         Intent intent = new Intent(LoginActivity.this, LoadingActivity.class);
         startActivity(intent);
         finish();

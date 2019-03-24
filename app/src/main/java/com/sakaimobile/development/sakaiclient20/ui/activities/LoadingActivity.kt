@@ -27,7 +27,6 @@ class LoadingActivity : AppCompatActivity() {
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
     private lateinit var loadingPageViewModel: LoadingPageViewModel
-    private var hasShowedContent = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -51,8 +50,7 @@ class LoadingActivity : AppCompatActivity() {
             updateProgress(progress)
             // Use hasShowedContent to prevent double-loading the next page
             // If progress equals NUM_REFRESH_REQUESTS then we finished loading everything
-            if(progress == LoadingPageViewModel.NUM_REFRESH_REQUESTS && !hasShowedContent) {
-                hasShowedContent = true
+            if(progress == LoadingPageViewModel.NUM_REFRESH_REQUESTS) {
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
                 finish()
