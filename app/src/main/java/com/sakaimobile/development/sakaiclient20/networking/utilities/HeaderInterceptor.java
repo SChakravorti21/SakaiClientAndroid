@@ -16,12 +16,11 @@ import okhttp3.Response;
 
 public class HeaderInterceptor implements Interceptor {
 
-    private final String cookieUrl;
+    public static final String SESSION_EXPIRED_ERROR = "Sakai session has expired";
     private final String cookies;
 
-    public HeaderInterceptor(String url) {
-        cookieUrl = url;
-        cookies = getCookies();
+    public HeaderInterceptor(String cookieUrl) {
+        cookies = getCookies(cookieUrl);
     }
 
     @Override
@@ -32,10 +31,21 @@ public class HeaderInterceptor implements Interceptor {
                 .newBuilder()
                 .addHeader("Cookie", cookies)
                 .build();
-        return chain.proceed(request);
+
+        // Check if the Sakai session is active, because if not
+        // then the request is considered to have failed.
+        // Sakai returns a status code of 200 OK with empty responses,
+        // necessitating this manual check.
+        Response response = chain.proceed(request);
+        String sakaiSessionHeader = response.header("X-Sakai-Session");
+        if(sakaiSessionHeader == null || sakaiSessionHeader.isEmpty()) {
+            throw new IOException(SESSION_EXPIRED_ERROR);
+        }
+
+        return response;
     }
 
-    private String getCookies() {
+    private String getCookies(String cookieUrl) {
         // Since the CookieManager was managed by reference earlier
         // in the WebViewClient, the cookies should remain updated
         // We only need one set of cookies, the Sakai cookies,

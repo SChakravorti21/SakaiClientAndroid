@@ -74,32 +74,8 @@ public class DownloadCompleteReceiver extends BroadcastReceiver {
             // Get the file and open it if the uri is not empty
             if(uriString != null && !uriString.isEmpty()) {
                 Uri fileUri = Uri.parse(uriString);
-
-                // In newer versions of Android (API 24+), the way files are shared
-                // to other applications has changed, and must use the "content://"
-                // scheme with a valid path. FileProvider allows us to expose the file
-                // externally so that it that can be opened by a PDF viewer
-                if(fileUri.getScheme().equals(ContentResolver.SCHEME_FILE)) {
-                    File downloadFile = new File(fileUri.getPath());
-                    fileUri = FileProvider.getUriForFile(context,
-                            "com.sakaimobile.development.sakaiclientandroid.fileprovider",
-                            downloadFile);
-                }
-
-                Intent selectViewerIntent = new Intent(Intent.ACTION_VIEW);
-                selectViewerIntent.setData(fileUri);
-                // Flag is necessary for opening application to be able to actually
-                // read the file contents and render it.
-                selectViewerIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-                // Allow the user to select what they want to open the file with.
-                // (This is also a failsafe, because if there aren't any apps
-                // that can open the file, Android will provide this message
-                // and our app won't crash if it doesn't find a default app to open with).
-                Intent openIntent = Intent.createChooser(selectViewerIntent,
-                        "Select an application to open this file:");
-                openIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(openIntent);
+                File downloadedFile = new File(fileUri.getPath());
+                openDownloadedFile(context, downloadedFile);
             }
         }
 
@@ -112,5 +88,30 @@ public class DownloadCompleteReceiver extends BroadcastReceiver {
      */
     public static void addDownloadId(long downloadId) {
         downloads.add(downloadId);
+    }
+
+    public static void openDownloadedFile(Context context, File downloadedFile) {
+        // In newer versions of Android (API 24+), the way files are shared
+        // to other applications has changed, and must use the "content://"
+        // scheme with a valid path. FileProvider allows us to expose the file
+        // externally so that it that can be opened by a PDF viewer
+        Uri fileUri = FileProvider.getUriForFile(context,
+                "com.sakaimobile.development.sakaiclientandroid.fileprovider",
+                downloadedFile);
+
+        Intent selectViewerIntent = new Intent(Intent.ACTION_VIEW);
+        selectViewerIntent.setData(fileUri);
+        // Flag is necessary for opening application to be able to actually
+        // read the file contents and render it.
+        selectViewerIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        // Allow the user to select what they want to open the file with.
+        // (This is also a failsafe, because if there aren't any apps
+        // that can open the file, Android will provide this message
+        // and our app won't crash if it doesn't find a default app to open with).
+        Intent openIntent = Intent.createChooser(selectViewerIntent,
+                "Select an application to open this file:");
+        openIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(openIntent);
     }
 }
