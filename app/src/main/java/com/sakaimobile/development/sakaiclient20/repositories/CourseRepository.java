@@ -1,8 +1,5 @@
 package com.sakaimobile.development.sakaiclient20.repositories;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Transformations;
-
 import com.sakaimobile.development.sakaiclient20.models.Term;
 import com.sakaimobile.development.sakaiclient20.models.sakai.courses.CoursesResponse;
 import com.sakaimobile.development.sakaiclient20.networking.services.CoursesService;
@@ -22,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
-import io.reactivex.schedulers.Schedulers;
 
 public class CourseRepository {
 

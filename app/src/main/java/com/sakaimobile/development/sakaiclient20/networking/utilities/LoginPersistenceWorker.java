@@ -1,7 +1,6 @@
 package com.sakaimobile.development.sakaiclient20.networking.utilities;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.sakaimobile.development.sakaiclient20.R;
@@ -10,6 +9,7 @@ import com.sakaimobile.development.sakaiclient20.networking.services.SessionServ
 
 import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.NonNull;
 import androidx.work.Constraints;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.NetworkType;

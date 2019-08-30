@@ -2,9 +2,6 @@ package com.sakaimobile.development.sakaiclient20.ui.viewholders;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutCompat;
-import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +14,10 @@ import com.sakaimobile.development.sakaiclient20.ui.helpers.TreeAnimationUtils;
 import com.unnamed.b.atv.model.TreeNode;
 
 import java.util.List;
+
+import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by Shoumyo Chakravorti on 7/8/18.

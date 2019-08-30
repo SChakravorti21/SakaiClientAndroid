@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.webkit.CookieManager;
@@ -24,6 +22,9 @@ import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.CASWebViewClient;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 public class LoginActivity extends AppCompatActivity implements CASWebViewClient.SakaiLoadedListener {
 
@@ -93,7 +94,7 @@ public class LoginActivity extends AppCompatActivity implements CASWebViewClient
                 .setPasswordLoginSupported(true)
                 .build();
 
-        credentialsClient.request(credentialRequest).addOnCompleteListener(task -> {
+        this.credentialsClient.request(credentialRequest).addOnCompleteListener(task -> {
             // If credentials available, perform auto-login
             if (task.isSuccessful() && task.getResult() != null) {
                 signInWithCredentials(task.getResult().getCredential());
@@ -157,7 +158,7 @@ public class LoginActivity extends AppCompatActivity implements CASWebViewClient
                 .setPassword(password)
                 .build();
 
-        credentialsClient.save(credential).addOnCompleteListener(task -> {
+        this.credentialsClient.save(credential).addOnCompleteListener(task -> {
             Exception e = task.getException();
             if (task.isSuccessful() || !(e instanceof ResolvableApiException)) {
                 this.showContent();

@@ -1,17 +1,14 @@
 package com.sakaimobile.development.sakaiclient20.persistence.access;
 
-import android.arch.persistence.room.Dao;
-import android.arch.persistence.room.Query;
-import android.arch.persistence.room.Transaction;
-
 import com.sakaimobile.development.sakaiclient20.persistence.composites.AnnouncementWithAttachments;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Announcement;
 
 import java.util.List;
 
+import androidx.room.Dao;
+import androidx.room.Query;
+import androidx.room.Transaction;
 import io.reactivex.Flowable;
-import io.reactivex.Maybe;
-import io.reactivex.Single;
 
 @Dao
 public abstract class AnnouncementDao extends BaseDao<Announcement> {

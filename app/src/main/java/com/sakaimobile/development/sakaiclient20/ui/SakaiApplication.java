@@ -1,16 +1,15 @@
 package com.sakaimobile.development.sakaiclient20.ui;
 
-import android.app.Activity;
 import android.app.Application;
 import android.app.DownloadManager;
 import android.content.IntentFilter;
 import android.os.Build;
-import android.arch.lifecycle.Lifecycle;
-import android.arch.lifecycle.LifecycleObserver;
-import android.arch.lifecycle.OnLifecycleEvent;
-import android.arch.lifecycle.ProcessLifecycleOwner;
+
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.OnLifecycleEvent;
+import androidx.lifecycle.ProcessLifecycleOwner;
 import android.content.Intent;
-import android.support.v4.app.Fragment;
 import android.webkit.CookieManager;
 
 import com.crashlytics.android.Crashlytics;
@@ -26,8 +25,7 @@ import javax.inject.Inject;
 
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
-import dagger.android.HasActivityInjector;
-import dagger.android.support.HasSupportFragmentInjector;
+import dagger.android.HasAndroidInjector;
 import io.fabric.sdk.android.Fabric;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -35,20 +33,15 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 
 public class SakaiApplication extends Application
-        implements HasActivityInjector, HasSupportFragmentInjector {
+        implements HasAndroidInjector {
 
     @Inject SessionService sessionService;
-    @Inject DispatchingAndroidInjector<Activity> activityInjector;
-    @Inject DispatchingAndroidInjector<Fragment> supportFragmentInjector;
+    @Inject DispatchingAndroidInjector<Object> androidInjector;
+
 
     @Override
-    public AndroidInjector<Activity> activityInjector() {
-        return activityInjector;
-    }
-
-    @Override
-    public AndroidInjector<Fragment> supportFragmentInjector() {
-        return supportFragmentInjector;
+    public AndroidInjector<Object> androidInjector() {
+        return this.androidInjector;
     }
 
     @Override

@@ -2,9 +2,6 @@ package com.sakaimobile.development.sakaiclient20.ui.adapters;
 
 import android.content.Intent;
 import android.os.Build;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.LayoutInflater;
@@ -22,10 +19,14 @@ import com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.SiteAs
 import java.io.Serializable;
 import java.util.List;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.RecyclerView;
+
 /**
  * Created by Shoumyo Chakravorti on 6/23/18.
  *
- * An {@link android.support.v7.widget.RecyclerView.Adapter} for a {@link RecyclerView}
+ * An {@link RecyclerView.Adapter} for a {@link RecyclerView}
  * that holds several small {@link CardView}s to represent {@link Assignment} objects,
  * either sorted by date for a given term or sorted within their courses.
  *
@@ -57,7 +58,7 @@ public class TreeAssignmentAdapter extends RecyclerView.Adapter<TreeAssignmentAd
     /**
      * Returns the size of your data set (invoked by the layout manager)
      * @return the number of assignments represented by this
-     *  {@link android.support.v7.widget.RecyclerView.Adapter}
+     *  {@link RecyclerView.Adapter}
      */
     @Override
     public int getItemCount() {
@@ -65,10 +66,10 @@ public class TreeAssignmentAdapter extends RecyclerView.Adapter<TreeAssignmentAd
     }
 
     /**
-     * Invoked by the {@link android.support.v7.widget.RecyclerView.LayoutManager},
+     * Invoked by the {@link RecyclerView.LayoutManager},
      * allows the {@link RecyclerView} to instantiate views for the assignments.
      * @param parent the parent {@link ViewGroup} to attach the {@link View} to
-     * @param viewType the type of {@link android.support.v7.widget.RecyclerView.ViewHolder}
+     * @param viewType the type of {@link RecyclerView.ViewHolder}
      *                 to create (unused)
      * @return A {@link AssignmentViewHolder} representing an {@link Assignment} (but not a specifically
      * any single assignment).
@@ -87,7 +88,7 @@ public class TreeAssignmentAdapter extends RecyclerView.Adapter<TreeAssignmentAd
     }
 
     /**
-     * Invoked by the {@link android.support.v7.widget.RecyclerView.LayoutManager},
+     * Invoked by the {@link RecyclerView.LayoutManager},
      * binds the data of an {@link Assignment} to its {@link View} through the
      * {@link AssignmentViewHolder}.
      * @param viewHolder the {@link AssignmentViewHolder} with the sub-{@link View}s to populate
@@ -149,7 +150,7 @@ public class TreeAssignmentAdapter extends RecyclerView.Adapter<TreeAssignmentAd
     }
 
     /**
-     * Subclasses {@link android.support.v7.widget.RecyclerView.ViewHolder} to manage
+     * Subclasses {@link RecyclerView.ViewHolder} to manage
      * the {@link View} for a single {@link Assignment}.
      */
     public class AssignmentViewHolder extends RecyclerView.ViewHolder

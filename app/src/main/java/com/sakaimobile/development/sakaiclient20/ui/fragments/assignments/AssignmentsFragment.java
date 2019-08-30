@@ -1,10 +1,7 @@
 package com.sakaimobile.development.sakaiclient20.ui.fragments.assignments;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -13,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
@@ -36,13 +32,15 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 import dagger.android.support.AndroidSupportInjection;
-import kotlin.Unit;
 
 /**
  * Created by Shoumyo Chakravorti.
  *
- * The main tab ({@link android.support.v4.app.Fragment}) that shows the user's
+ * The main tab ({@link Fragment}) that shows the user's
  * assignments. Assignments are always found within their respective term. If assignments
  * are sorted by date, they are not under any particular course header, but if
  * assignments are sorted by courses then they show up under their respective
@@ -53,7 +51,7 @@ public class AssignmentsFragment extends BaseFragment {
 
     /**
      * The {@link AndroidTreeView} that is represented by this
-     *  {@link android.support.v4.app.Fragment}.
+     *  {@link Fragment}.
      */
     private AndroidTreeView treeView;
 
@@ -64,13 +62,13 @@ public class AssignmentsFragment extends BaseFragment {
     private ProgressBar progressBar;
 
     /**
-     * If the {@link android.support.v4.app.Fragment} is specified to show assignments
+     * If the {@link Fragment} is specified to show assignments
      * sorted by their courses, this is the non-null list of courses sorted by their terms.
      */
     private List<List<Course>> courses;
 
     /**
-     * If the {@link android.support.v4.app.Fragment} is specified to show assignments
+     * If the {@link Fragment} is specified to show assignments
      * sorted by date, this is the list of assignments sorted by date within their repsective
      * terms.
      */

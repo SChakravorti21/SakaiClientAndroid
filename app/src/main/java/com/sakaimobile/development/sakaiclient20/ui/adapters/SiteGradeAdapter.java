@@ -1,28 +1,22 @@
 package com.sakaimobile.development.sakaiclient20.ui.adapters;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Grade;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class SiteGradeAdapter extends ArrayAdapter {
 
-    private static final float PADDING_LEFT_DP = 10f;
-    private static final float PADDING_VERTICAL_DP = 8f;
     private final List<Grade> assignmentsList;
 
     public SiteGradeAdapter(Context context, List<Grade> assignmentsList) {

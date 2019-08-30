@@ -5,18 +5,18 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetDialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.ui.custom_components.AttachmentDownloadListener;
 import com.sakaimobile.development.sakaiclient20.ui.custom_components.FileCompatWebView;
 
-import java.lang.ref.WeakReference;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 /**
  * Created by Shoumyo Chakravorti.
@@ -80,7 +80,7 @@ public class AssignmentSubmissionDialogFragment extends BottomSheetDialogFragmen
 
     /**
      * Listens for results from other {@link android.app.Activity}s. For this
-     * submission {@link android.support.v4.app.Fragment}, the only result that is
+     * submission {@link Fragment}, the only result that is
      * meaningful is a file upload. The work of this method is offloaded
      * to the {@link FileCompatWebView}, as that contains the {@link android.webkit.ValueCallback}s
      * that allow anything to be uploaded to the WebView.
@@ -101,7 +101,7 @@ public class AssignmentSubmissionDialogFragment extends BottomSheetDialogFragmen
     }
 
     /**
-     * Called when permissions are requested by the {@link android.support.v4.app.Fragment}
+     * Called when permissions are requested by the {@link Fragment}
      * (this is done on behalf of this {@code Fragment} through the
      * {@link FileCompatWebView} if downloading an attachment fails as a result of
      * missing permissions to write to external storage).

@@ -1,9 +1,5 @@
 package com.sakaimobile.development.sakaiclient20.persistence.access;
 
-import android.arch.persistence.room.Dao;
-import android.arch.persistence.room.Query;
-import android.arch.persistence.room.Transaction;
-
 import com.sakaimobile.development.sakaiclient20.persistence.composites.CourseWithAllData;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;
 
@@ -11,6 +7,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import androidx.room.Dao;
+import androidx.room.Query;
+import androidx.room.Transaction;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 

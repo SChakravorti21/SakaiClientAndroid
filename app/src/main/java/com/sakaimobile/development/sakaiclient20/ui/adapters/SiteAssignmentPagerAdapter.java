@@ -1,24 +1,26 @@
 package com.sakaimobile.development.sakaiclient20.ui.adapters;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
-import com.sakaimobile.development.sakaiclient20.ui.activities.MainActivity;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.SingleAssignmentFragment;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.SiteAssignmentsFragment;
 
 import java.util.List;
 
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
+
 /**
  * Created by Shoumyo Chakravorti on 6/30/18.
  *
- * The {@link android.support.v7.widget.RecyclerView.Adapter} that instantiates
- * instances of {@link com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.SingleAssignmentFragment} to populate the
- * {@link android.support.v4.view.ViewPager} of a
- * {@link com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.SiteAssignmentsFragment}.
+ * The {@link RecyclerView.Adapter} that instantiates
+ * instances of {@link SingleAssignmentFragment} to populate the
+ * {@link ViewPager} of a
+ * {@link SiteAssignmentsFragment}.
  */
 public class SiteAssignmentPagerAdapter extends FragmentStatePagerAdapter {
 
