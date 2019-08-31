@@ -94,12 +94,13 @@ public class LoginActivity extends AppCompatActivity implements CASWebViewClient
      * This auto-login attempt is deferred until the login page finishes loading,
      * otherwise we end up with race conditions where the CredentialRequest completes
      * before the login form is available to be auto-filled.
-     * {@see CASWebViewClient#onPageFinished} to see how this occurs.
+     * {@link CASWebViewClient#onPageFinished} to see how this occurs.
      */
     @Override
     public void onLoginPageLoaded() {
         // We don't need to set the account type because Smart Lock defaults
         // to looking for credentials associated with our app package
+        Log.e("Login", "Starting login");
         CredentialRequest credentialRequest = new CredentialRequest.Builder()
                 .setPasswordLoginSupported(true)
                 .build();
@@ -114,6 +115,13 @@ public class LoginActivity extends AppCompatActivity implements CASWebViewClient
                 // If SIGN_IN_REQUIRED or CANCELLED, the user has the intention of manually logging in
                 ApiException apiException = (ApiException) task.getException();
                 int statusCode = apiException.getStatusCode();
+                Log.i("Login status code", "" + statusCode);
+
+                // If we encounter an INTERNAL_ERROR, just give it another try
+                if(statusCode == CommonStatusCodes.INTERNAL_ERROR) {
+                    this.onLoginPageLoaded();
+                    return;
+                }
 
                 if(statusCode != CommonStatusCodes.SIGN_IN_REQUIRED
                         && statusCode != CommonStatusCodes.CANCELED
@@ -159,6 +167,7 @@ public class LoginActivity extends AppCompatActivity implements CASWebViewClient
     public void onLoginSuccess(String username, String password) {
         // Ensure the user doesn't keep spamming buttons/it is obvious that login is loading
         runOnUiThread(this::hideLogin);
+        this.credentialsClient.disableAutoSignIn();
 
         // Evaluate javascript does not work on API Level < 19, in which case
         // username and password are null
