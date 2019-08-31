@@ -3,6 +3,7 @@ package com.sakaimobile.development.sakaiclient20.ui.custom_components;
 import android.Manifest;
 import android.app.DownloadManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Environment;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.assignments.AssignmentSubmissionDialogFragment;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 
 /**
@@ -91,16 +93,46 @@ public class AttachmentDownloadListener implements DownloadListener {
 
         // Parse the URI and create a download request
         Uri downloadUri = Uri.parse(url);
-        DownloadManager.Request request = new DownloadManager.Request(downloadUri);
+        // Title that will show up in the download manager/notification region
+        String title = downloadUri.getLastPathSegment();
+
+        // Check if the file has already been downloaded before enqueueing the request
+        File downloadsDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        File downloadedFile = new File(downloadsDirectory.getAbsolutePath() + File.separatorChar + title);
+        // If the file does not exist, proceed to download it, otherwise confirm to re-download
+        if(!downloadedFile.exists()) {
+            enqueueDownloadRequest(downloadUri, title);
+        } else {
+            new AlertDialog.Builder(this.fragment.get().getContext())
+                .setTitle("Resource already exists")
+                .setIcon(R.drawable.ic_folder_open_24dp)
+                .setMessage("A file named \"" + title +
+                        "\" already exists, are you sure you would like to download it again?")
+                .setPositiveButton("Download again", (dialog, buttonClicked) -> {
+                    // User chose to download the file again, so enqueue the
+                    // download request anyways
+                    enqueueDownloadRequest(downloadUri, title);
+                })
+                .setNegativeButton("Open existing file", (dialog, buttonClicked) -> {
+                    openExistingFile(downloadedFile);
+                })
+                .show();
+        }
+    }
+
+    /**
+     * Uses the {@see DownloadManager} to initiate a file download for
+     * the given URI. The file will be stored in the publicly-visible
+     * downloads directory.
+     */
+    private void enqueueDownloadRequest(Uri downloadUri, String title) {
+        DownloadManager.Request request = new DownloadManager.Request(downloadUri).setTitle(title);
 
         // Request header is necessary for the download to be successful, as it indicates
         // to Sakai that the user has permission to access this document.
         Fragment fragment = this.fragment.get();
         request.addRequestHeader("Cookie", getCookies(fragment));
 
-        // Title that will show up in the download manager/notification region
-        String title = downloadUri.getLastPathSegment();
-        request.setTitle(title);
         // Allows the file to be found by the device
         request.allowScanningByMediaScanner();
         request.setVisibleInDownloadsUi(true);
@@ -130,11 +162,21 @@ public class AttachmentDownloadListener implements DownloadListener {
             errorToast.show();
         }
 
-        // Detach the fragment because it won't be displaying any information
-        // The WebFragment is always added to the back stack, so we need to pop
-        // the back stack for the back button to function as expected
-        if(!(fragment instanceof AssignmentSubmissionDialogFragment))
-            fragment.getActivity().onBackPressed();
+        // Return to previous screen while download is in progress
+        exitDownloadFragment();
+    }
+
+    /**
+     * Exits the {@see WebFragment} that initiated the file download
+     * and opens the previously-downloaded file.
+     */
+    private void openExistingFile(File downloadedFile) {
+        // Get the activity context and exit this fragment before
+        // opening the file so that the user returns to the previous
+        // fragment rather than a blank WebView
+        Context context = this.fragment.get().getActivity();
+        exitDownloadFragment();
+        DownloadCompleteReceiver.openDownloadedFile(context, downloadedFile);
     }
 
     /**
@@ -163,6 +205,20 @@ public class AttachmentDownloadListener implements DownloadListener {
 
         // Permission has already been granted to the application, download can be initiated.
         return true;
+    }
+
+    /**
+     * Returns to the previous Fragment in the backstack once a download
+     * is initiated, or if an existing file is opened (so that the user
+     * returns to the expected Fragment rather than a blank WebView).
+     */
+    private void exitDownloadFragment() {
+        Fragment fragment = this.fragment.get();
+        // Detach the fragment because it won't be displaying any information
+        // The WebFragment is always added to the back stack, so we need to pop
+        // the back stack for the back button to function as expected
+        if(fragment != null && !(fragment instanceof AssignmentSubmissionDialogFragment))
+            fragment.getActivity().onBackPressed();
     }
 
     /**

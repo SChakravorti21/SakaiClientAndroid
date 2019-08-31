@@ -36,7 +36,6 @@ public class LoginActivity extends AppCompatActivity implements CASWebViewClient
     private View webViewOverlay;
 
     private CredentialsClient credentialsClient;
-    private boolean hasShowedContent = false;
     private boolean isAutoLoggingIn = false;
 
     @Override
@@ -58,21 +57,20 @@ public class LoginActivity extends AppCompatActivity implements CASWebViewClient
         this.loginWebView = findViewById(R.id.login_web_view);
         this.loadingIndicator = findViewById(R.id.loading_indicator);
         this.webViewOverlay = findViewById(R.id.webview_overlay);
-        WebViewClient webViewClient = new CASWebViewClient(getString(R.string.COOKIE_URL_2), this);
+
+        String baseUrl = getString(R.string.CAS_BASE_URL);
+        String loginCompletionUrl = getString(R.string.COOKIE_URL_2);
+        WebViewClient webViewClient = new CASWebViewClient(baseUrl, loginCompletionUrl, this);
         this.loginWebView.setWebViewClient(webViewClient);
 
         //The CAS system requires Javascript for the login to even load
         this.loginWebView.getSettings().setJavaScriptEnabled(true);
-        this.loginWebView.loadUrl(getString(R.string.CAS_BASE_URL));
-
-        // Attempt to log in automatically through Google Smart Lock for Passwords
-        this.tryAutoLogin();
+        this.loginWebView.loadUrl(baseUrl);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         // We make two types of requests, either to read existing credentials,
         // or save new ones. Saving might fail if the user decides to "Never" save _any_ info
         if (requestCode == RC_READ && resultCode == RESULT_OK) {
@@ -87,7 +85,19 @@ public class LoginActivity extends AppCompatActivity implements CASWebViewClient
         }
     }
 
-    private void tryAutoLogin() {
+    /**
+     * Attempts to auto-login the user by requesting their saved credentials
+     * from Smart Lock and auto-filling the login form. If the user has multiple
+     * Sakai accounts (unlikely, but best practice to implement), then the account
+     * they would like to log in with is resolved with a secondary request.
+     *
+     * This auto-login attempt is deferred until the login page finishes loading,
+     * otherwise we end up with race conditions where the CredentialRequest completes
+     * before the login form is available to be auto-filled.
+     * {@see CASWebViewClient#onPageFinished} to see how this occurs.
+     */
+    @Override
+    public void onLoginPageLoaded() {
         // We don't need to set the account type because Smart Lock defaults
         // to looking for credentials associated with our app package
         CredentialRequest credentialRequest = new CredentialRequest.Builder()
@@ -104,6 +114,7 @@ public class LoginActivity extends AppCompatActivity implements CASWebViewClient
                 // If SIGN_IN_REQUIRED or CANCELLED, the user has the intention of manually logging in
                 ApiException apiException = (ApiException) task.getException();
                 int statusCode = apiException.getStatusCode();
+
                 if(statusCode != CommonStatusCodes.SIGN_IN_REQUIRED
                         && statusCode != CommonStatusCodes.CANCELED
                         && apiException instanceof ResolvableApiException) {
@@ -121,6 +132,10 @@ public class LoginActivity extends AppCompatActivity implements CASWebViewClient
         });
     }
 
+    /**
+     * Automatically populates the login form with the given credentials.
+     * @param credential the username and password
+     */
     private void signInWithCredentials(Credential credential) {
         // Ensure the user doesn't keep spamming buttons/it is obvious that login is loading
         this.hideLogin();
@@ -178,16 +193,12 @@ public class LoginActivity extends AppCompatActivity implements CASWebViewClient
     }
 
     private void showContent() {
-        // Prevent opening loading page twice
-        if(hasShowedContent) return;
-
         // In case the phone is not logged into a Google account, at least flush the cookies
         // for session persistence for the next two-ish hours
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             CookieManager.getInstance().flush();
         }
 
-        hasShowedContent = true;
         Intent intent = new Intent(LoginActivity.this, LoadingActivity.class);
         startActivity(intent);
         finish();
