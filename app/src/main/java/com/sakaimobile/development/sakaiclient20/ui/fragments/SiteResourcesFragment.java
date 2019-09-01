@@ -86,7 +86,7 @@ public class SiteResourcesFragment extends BaseFragment {
 
         resourceViewModel.getResourcesForSite(currentSiteId)
                 .observe(getViewLifecycleOwner(), resources -> {
-                    if(resources == null || resources.size() == 1) {
+                    if(resources == null || resources.size() == 0) {
                         Toast.makeText(getContext(), "No resources found", Toast.LENGTH_SHORT).show();
                     } else {
                         // update the resources tree view
