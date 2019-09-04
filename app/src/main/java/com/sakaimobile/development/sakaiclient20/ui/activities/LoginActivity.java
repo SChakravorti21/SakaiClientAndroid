@@ -167,6 +167,8 @@ public class LoginActivity extends AppCompatActivity implements CASWebViewClient
     public void onLoginSuccess(String username, String password) {
         // Ensure the user doesn't keep spamming buttons/it is obvious that login is loading
         runOnUiThread(this::hideLogin);
+        // Disable auto sign-in so that users can have a chance to close and reopen
+        // the app to sign in if their password changes
         this.credentialsClient.disableAutoSignIn();
 
         // Evaluate javascript does not work on API Level < 19, in which case
