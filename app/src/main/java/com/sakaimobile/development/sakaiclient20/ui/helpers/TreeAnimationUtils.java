@@ -1,9 +1,10 @@
 package com.sakaimobile.development.sakaiclient20.ui.helpers;
 
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 public final class TreeAnimationUtils {
 

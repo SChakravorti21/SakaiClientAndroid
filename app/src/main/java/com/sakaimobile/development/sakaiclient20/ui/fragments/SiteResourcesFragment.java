@@ -1,10 +1,7 @@
 package com.sakaimobile.development.sakaiclient20.ui.fragments;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,7 +14,6 @@ import android.widget.Toast;
 
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.networking.utilities.SharedPrefsUtil;
-import com.sakaimobile.development.sakaiclient20.persistence.entities.Resource;
 import com.sakaimobile.development.sakaiclient20.ui.listeners.TreeViewItemClickListener;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.ResourceDirectoryViewHolder;
 import com.sakaimobile.development.sakaiclient20.ui.viewholders.ResourceItemViewHolder;
@@ -26,11 +22,11 @@ import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProviders;
 import dagger.android.support.AndroidSupportInjection;
 
 public class SiteResourcesFragment extends BaseFragment {
@@ -90,7 +86,7 @@ public class SiteResourcesFragment extends BaseFragment {
 
         resourceViewModel.getResourcesForSite(currentSiteId)
                 .observe(getViewLifecycleOwner(), resources -> {
-                    if(resources == null || resources.size() == 1) {
+                    if(resources == null || resources.size() == 0) {
                         Toast.makeText(getContext(), "No resources found", Toast.LENGTH_SHORT).show();
                     } else {
                         // update the resources tree view

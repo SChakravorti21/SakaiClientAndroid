@@ -2,10 +2,6 @@ package com.sakaimobile.development.sakaiclient20.ui.viewholders;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,11 +13,16 @@ import com.sakaimobile.development.sakaiclient20.ui.adapters.TreeAssignmentAdapt
 import com.sakaimobile.development.sakaiclient20.ui.helpers.TreeAnimationUtils;
 import com.unnamed.b.atv.model.TreeNode;
 
+import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 /**
  * Created by Shoumyo Chakravorti on 6/9/18.
  *
  * A subclass of {@link com.unnamed.b.atv.model.TreeNode.BaseNodeViewHolder} that acts as a
- * specialized {@link android.support.v7.widget.RecyclerView.ViewHolder} for a course that
+ * specialized {@link RecyclerView.ViewHolder} for a course that
  * contains {@link Assignment} objects. There are two halves to the view: the course header
  * indicating the course, and the {@link RecyclerView} that contains the cards for the assignments.
  * Assignments are populated using an {@link TreeAssignmentAdapter}, and clicking an {@link Assignment}

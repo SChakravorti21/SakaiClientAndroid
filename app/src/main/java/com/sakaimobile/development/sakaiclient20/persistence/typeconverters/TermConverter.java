@@ -1,8 +1,8 @@
 package com.sakaimobile.development.sakaiclient20.persistence.typeconverters;
 
-import android.arch.persistence.room.TypeConverter;
-
 import com.sakaimobile.development.sakaiclient20.models.Term;
+
+import androidx.room.TypeConverter;
 
 /**
  * Created by Development on 8/5/18.

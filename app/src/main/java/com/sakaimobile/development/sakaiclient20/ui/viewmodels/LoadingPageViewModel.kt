@@ -1,8 +1,7 @@
 package com.sakaimobile.development.sakaiclient20.ui.viewmodels
 
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MediatorLiveData
-import android.arch.lifecycle.MutableLiveData
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.sakaimobile.development.sakaiclient20.repositories.AnnouncementRepository
 import com.sakaimobile.development.sakaiclient20.repositories.AssignmentRepository
 import com.sakaimobile.development.sakaiclient20.repositories.CourseRepository

@@ -1,8 +1,8 @@
 package com.sakaimobile.development.sakaiclient20.models;
 
-import android.support.annotation.NonNull;
-
 import java.io.Serializable;
+
+import androidx.annotation.NonNull;
 
 public class Term implements Comparable<Term>, Serializable{
 

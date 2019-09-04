@@ -1,8 +1,5 @@
 package com.sakaimobile.development.sakaiclient20.dependency_injection;
 
-import android.arch.lifecycle.ViewModel;
-import android.arch.lifecycle.ViewModelProvider;
-
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.AnnouncementViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.AssignmentViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.CourseViewModel;
@@ -11,6 +8,8 @@ import com.sakaimobile.development.sakaiclient20.ui.viewmodels.LoadingPageViewMo
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ResourceViewModel;
 import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 import dagger.Binds;
 import dagger.Module;
 import dagger.multibindings.IntoMap;
