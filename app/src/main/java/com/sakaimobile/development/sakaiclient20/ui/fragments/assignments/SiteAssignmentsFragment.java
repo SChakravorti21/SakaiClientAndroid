@@ -1,14 +1,8 @@
 package com.sakaimobile.development.sakaiclient20.ui.fragments.assignments;
 
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.material.tabs.TabLayout;
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
 import com.sakaimobile.development.sakaiclient20.ui.adapters.SiteAssignmentPagerAdapter;
@@ -31,6 +26,11 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.viewpager.widget.ViewPager;
 import dagger.android.support.AndroidSupportInjection;
 
 /**

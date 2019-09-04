@@ -1,6 +1,5 @@
 package com.sakaimobile.development.sakaiclient20.ui.custom_components;
 
-import android.support.v4.app.FragmentManager;
 import android.text.Layout;
 import android.text.Selection;
 import android.text.Spannable;
@@ -15,6 +14,8 @@ import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.WebFragment;
 
 import java.lang.ref.WeakReference;
+
+import androidx.fragment.app.FragmentManager;
 
 /**
  * Created by Shoumyo Chakravorti on 6/23/18.

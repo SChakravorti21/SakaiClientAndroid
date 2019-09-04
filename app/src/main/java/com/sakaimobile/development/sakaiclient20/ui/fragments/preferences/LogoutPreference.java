@@ -2,15 +2,15 @@ package com.sakaimobile.development.sakaiclient20.ui.fragments.preferences;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.preference.Preference;
-import android.support.v7.preference.PreferenceViewHolder;
 import android.util.AttributeSet;
 import android.webkit.CookieManager;
 import android.widget.Button;
 
-import com.google.android.gms.auth.api.credentials.Credentials;
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.ui.activities.LoginActivity;
+
+import androidx.preference.Preference;
+import androidx.preference.PreferenceViewHolder;
 
 public class LogoutPreference extends Preference {
 
@@ -49,7 +49,6 @@ public class LogoutPreference extends Preference {
             // will allow user to login again (instead of automatically logging
             // in with saved cookies)
             CookieManager.getInstance().removeAllCookie();
-            Credentials.getClient(context).disableAutoSignIn();
             // Start the login activity, clearing all activities in back stack
             Intent intent = new Intent(context, LoginActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);

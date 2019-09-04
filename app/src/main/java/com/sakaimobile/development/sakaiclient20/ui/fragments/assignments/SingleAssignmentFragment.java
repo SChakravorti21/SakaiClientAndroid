@@ -1,13 +1,7 @@
 package com.sakaimobile.development.sakaiclient20.ui.fragments.assignments;
 
 
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetDialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
-import android.text.Html;
 import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,21 +9,24 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.sakaimobile.development.sakaiclient20.R;
-import com.sakaimobile.development.sakaiclient20.persistence.entities.Announcement;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Assignment;
-import com.sakaimobile.development.sakaiclient20.persistence.entities.Attachment;
-import com.sakaimobile.development.sakaiclient20.ui.activities.MainActivity;
 import com.sakaimobile.development.sakaiclient20.ui.custom_components.CustomLinkMovementMethod;
 import com.sakaimobile.development.sakaiclient20.ui.helpers.HtmlUtils;
 
-import java.util.List;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 /**
  * Created by Shoumyo Chakravorti.
  *
  * A {@link Fragment} subclass that represents a single
- * {@link Assignment} as a large {@link android.support.v7.widget.CardView}.
+ * {@link Assignment} as a large {@link CardView}.
  */
 public class SingleAssignmentFragment extends Fragment implements View.OnClickListener {
 
@@ -113,8 +110,8 @@ public class SingleAssignmentFragment extends Fragment implements View.OnClickLi
     /**
      * Shows the assignment submission dialog by instantiating a
      * {@link AssignmentSubmissionDialogFragment} that behaves like a
-     * {@link android.support.design.widget.BottomSheetDialog} when the
-     * {@link android.support.v4.app.FragmentManager} shows it.
+     * {@link BottomSheetDialog} when the
+     * {@link FragmentManager} shows it.
      */
     private void showSubmissionSheet() {
         String assignmentSubmissionUrl =

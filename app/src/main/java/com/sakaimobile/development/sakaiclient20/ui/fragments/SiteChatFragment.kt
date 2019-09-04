@@ -4,7 +4,6 @@ package com.sakaimobile.development.sakaiclient20.ui.fragments
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +11,7 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 
 import com.sakaimobile.development.sakaiclient20.R
 import com.sakaimobile.development.sakaiclient20.networking.services.ChatService

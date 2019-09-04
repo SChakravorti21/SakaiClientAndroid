@@ -1,54 +1,35 @@
 package com.sakaimobile.development.sakaiclient20.ui;
 
-import android.app.Activity;
-import android.app.Application;
 import android.app.DownloadManager;
 import android.content.IntentFilter;
-import android.os.Build;
-import android.arch.lifecycle.Lifecycle;
-import android.arch.lifecycle.LifecycleObserver;
-import android.arch.lifecycle.OnLifecycleEvent;
-import android.arch.lifecycle.ProcessLifecycleOwner;
-import android.content.Intent;
-import android.support.v4.app.Fragment;
-import android.webkit.CookieManager;
 
 import com.crashlytics.android.Crashlytics;
 import com.sakaimobile.development.sakaiclient20.BuildConfig;
 import com.sakaimobile.development.sakaiclient20.dependency_injection.DaggerSakaiApplicationComponent;
 import com.sakaimobile.development.sakaiclient20.networking.services.SessionService;
-import com.sakaimobile.development.sakaiclient20.ui.activities.LoginActivity;
 import com.sakaimobile.development.sakaiclient20.ui.custom_components.DownloadCompleteReceiver;
 import com.sakaimobile.development.sakaiclient20.ui.helpers.CourseIconProvider;
 import com.squareup.leakcanary.LeakCanary;
 
 import javax.inject.Inject;
 
+import androidx.multidex.MultiDexApplication;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
-import dagger.android.HasActivityInjector;
-import dagger.android.support.HasSupportFragmentInjector;
+import dagger.android.HasAndroidInjector;
 import io.fabric.sdk.android.Fabric;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.schedulers.Schedulers;
 
-public class SakaiApplication extends Application
-        implements HasActivityInjector, HasSupportFragmentInjector {
+public class SakaiApplication extends MultiDexApplication
+        implements HasAndroidInjector {
 
     @Inject SessionService sessionService;
-    @Inject DispatchingAndroidInjector<Activity> activityInjector;
-    @Inject DispatchingAndroidInjector<Fragment> supportFragmentInjector;
+    @Inject DispatchingAndroidInjector<Object> androidInjector;
+
 
     @Override
-    public AndroidInjector<Activity> activityInjector() {
-        return activityInjector;
-    }
-
-    @Override
-    public AndroidInjector<Fragment> supportFragmentInjector() {
-        return supportFragmentInjector;
+    public AndroidInjector<Object> androidInjector() {
+        return this.androidInjector;
     }
 
     @Override

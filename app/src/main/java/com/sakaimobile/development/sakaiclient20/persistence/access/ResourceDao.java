@@ -1,12 +1,11 @@
 package com.sakaimobile.development.sakaiclient20.persistence.access;
 
-import android.arch.persistence.room.Dao;
-import android.arch.persistence.room.Query;
-
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Resource;
 
 import java.util.List;
 
+import androidx.room.Dao;
+import androidx.room.Query;
 import io.reactivex.Flowable;
 
 @Dao

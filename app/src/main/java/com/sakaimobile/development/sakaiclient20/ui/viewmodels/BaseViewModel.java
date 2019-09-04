@@ -1,8 +1,8 @@
 package com.sakaimobile.development.sakaiclient20.ui.viewmodels;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.ViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 
 import com.sakaimobile.development.sakaiclient20.networking.utilities.HeaderInterceptor;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.Course;

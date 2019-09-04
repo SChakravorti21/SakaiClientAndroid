@@ -1,15 +1,9 @@
 package com.sakaimobile.development.sakaiclient20.ui.activities;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.sakaimobile.development.sakaiclient20.R;
 import com.sakaimobile.development.sakaiclient20.ui.custom_components.CustomLinkMovementMethod;
 import com.sakaimobile.development.sakaiclient20.ui.fragments.AllCoursesFragment;
@@ -21,6 +15,12 @@ import com.sakaimobile.development.sakaiclient20.ui.viewmodels.ViewModelFactory;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import dagger.android.AndroidInjection;
 
 public class MainActivity extends AppCompatActivity

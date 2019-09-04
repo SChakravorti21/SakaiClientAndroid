@@ -1,7 +1,5 @@
 package com.sakaimobile.development.sakaiclient20.repositories;
 
-import android.arch.lifecycle.LiveData;
-
 import com.sakaimobile.development.sakaiclient20.models.sakai.announcements.AnnouncementsResponse;
 import com.sakaimobile.development.sakaiclient20.networking.services.AnnouncementsService;
 import com.sakaimobile.development.sakaiclient20.persistence.access.AnnouncementDao;
@@ -14,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 

@@ -1,9 +1,5 @@
 package com.sakaimobile.development.sakaiclient20.persistence;
 
-import android.arch.persistence.room.Database;
-import android.arch.persistence.room.Room;
-import android.arch.persistence.room.RoomDatabase;
-import android.arch.persistence.room.TypeConverters;
 import android.content.Context;
 
 import com.sakaimobile.development.sakaiclient20.persistence.access.AnnouncementDao;
@@ -22,6 +18,11 @@ import com.sakaimobile.development.sakaiclient20.persistence.entities.Resource;
 import com.sakaimobile.development.sakaiclient20.persistence.entities.SitePage;
 import com.sakaimobile.development.sakaiclient20.persistence.typeconverters.DateConverter;
 import com.sakaimobile.development.sakaiclient20.persistence.typeconverters.TermConverter;
+
+import androidx.room.Database;
+import androidx.room.Room;
+import androidx.room.RoomDatabase;
+import androidx.room.TypeConverters;
 
 /**
  * Created by Development on 8/5/18.

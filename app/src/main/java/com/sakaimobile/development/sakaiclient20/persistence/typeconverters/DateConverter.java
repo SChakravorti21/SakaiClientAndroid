@@ -1,8 +1,9 @@
 package com.sakaimobile.development.sakaiclient20.persistence.typeconverters;
 
-import android.arch.persistence.room.TypeConverter;
 
 import java.util.Date;
+
+import androidx.room.TypeConverter;
 
 /**
  * Created by Development on 8/5/18.
