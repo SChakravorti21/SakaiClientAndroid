@@ -1,6 +1,6 @@
 # SakaiClientAndroid
 
-### Status: [In Production](https://play.google.com/store/apps/details?id=com.sakaimobile.development.sakaiclient20&hl=en_US)
+### Status: [In Production](https://play.google.com/store/apps/details?id=com.sakaimobile.development.sakaiclient20&hl=en_US) with over 3,500+ monthly active users ([proof](https://github.com/SChakravorti21/SakaiClientAndroid/blob/master/imgs/Sakai_Mobile_Adoption.png))
 
 A native mobile client for Rutgers Sakai on Android (iOS version: https://github.com/PRAN1999/SakaiClientiOS)
 
